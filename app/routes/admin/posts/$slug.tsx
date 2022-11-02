@@ -1,7 +1,7 @@
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { marked } from "marked";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData, Form } from "@remix-run/react";
+import { useLoaderData, Form, Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import type { Post } from "~/models/post.server";
@@ -30,9 +30,6 @@ export const action: ActionFunction = async ({ request }) => {
   const title = formData.get("title");
   const markdown = formData.get("markdown");
   const slug = formData.get("slug");
-  const projectSlug = formData.get("projectSlug");
-
-  console.log("slug", slug);
 
   invariant(typeof title === "string", "title must be a string");
 
@@ -40,20 +37,17 @@ export const action: ActionFunction = async ({ request }) => {
 
   invariant(typeof markdown === "string", "markdown must be a string");
 
-  invariant(typeof projectSlug === "string", "slug must be a string");
-
   await upsertPost({
     title,
     markdown,
-    slug: encodeURIComponent(title),
-    projectSlug,
+    slug,
   });
 
   return redirect(`admin/posts/preview/${slug}`);
 };
 
 export default function PostSlug() {
-  const { post, projects } = useLoaderData<LoaderData>();
+  const { post } = useLoaderData<LoaderData>();
 
   return (
     <main>
@@ -71,18 +65,16 @@ export default function PostSlug() {
           />
         </label>
 
-        <label htmlFor="">
-          Project
+        <label>
+          Slug
           <br />
-          <select name="projectSlug" id="project" className="select">
-            {projects.map((project) => {
-              return (
-                <option key={project.slug} value={project.slug}>
-                  {project.title}
-                </option>
-              );
-            })}
-          </select>
+          <input
+            name="slug"
+            type="text"
+            defaultValue={post.slug}
+            className="input"
+            style={{ width: `calc(100% - var(--space-md))` }}
+          />
         </label>
 
         <label>
@@ -93,7 +85,7 @@ export default function PostSlug() {
             name="markdown"
             defaultValue={post.markdown}
             className="textarea"
-            style={{ width: `calc(100% - var(--space-md))`, height: `50vh` }}
+            style={{ width: `calc(100% - var(--space-md))`, height: `75vh` }}
           ></textarea>
         </label>
 
@@ -102,11 +94,17 @@ export default function PostSlug() {
         <button
           type="submit"
           className="btn btn-primary"
-          style={{ width: `calc(100% - var(--space-md))` }}
+          style={{ width: `100%` }}
         >
-          Preview Post
+          Preview
         </button>
       </Form>
+
+      <Link to={`/admin/posts/delete/${post.slug}`}>
+        <button className="btn" style={{ width: `100%` }}>
+          Delete
+        </button>
+      </Link>
     </main>
   );
 }

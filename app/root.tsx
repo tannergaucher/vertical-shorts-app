@@ -40,10 +40,13 @@ export default function App() {
         <nav>
           <Link to="/">
             <em>
-              <h1>Content Publisher</h1>
+              <h1 style={{ marginTop: `var(--space-xl)` }}>
+                Content Publisher
+              </h1>
             </em>
           </Link>
         </nav>
+        <hr className="hr" />
         <Outlet />
         <ScrollRestoration />
         <Scripts />
