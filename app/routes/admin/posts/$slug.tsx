@@ -6,10 +6,8 @@ import invariant from "tiny-invariant";
 
 import type { Post } from "~/models/post.server";
 import { getPost, upsertPost } from "~/models/post.server";
-import type { Project } from "~/models/project.server";
-import { getProjects } from "~/models/project.server";
 
-type LoaderData = { post: Post; html: string; projects: Project[] };
+type LoaderData = { post: Post; html: string };
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.slug, `params.slug is required`);
@@ -19,17 +17,15 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   const html = marked(post.markdown);
 
-  const projects = await getProjects();
-
-  return json<LoaderData>({ post, html, projects });
+  return json<LoaderData>({ post, html });
 };
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
 
   const title = formData.get("title");
-  const markdown = formData.get("markdown");
   const slug = formData.get("slug");
+  const markdown = formData.get("markdown");
 
   invariant(typeof title === "string", "title must be a string");
 
@@ -39,8 +35,8 @@ export const action: ActionFunction = async ({ request }) => {
 
   await upsertPost({
     title,
-    markdown,
     slug,
+    markdown,
   });
 
   return redirect(`admin/posts/preview/${slug}`);
