@@ -45,6 +45,7 @@ export default function ProjectSlugPreview() {
     <main>
       <h1>{post.title}</h1>
       <div dangerouslySetInnerHTML={{ __html: html }} />
+      <hr className="hr" />
       <button
         onClick={handleEdit}
         className="btn"
@@ -55,12 +56,16 @@ export default function ProjectSlugPreview() {
       <Form method="post">
         <button
           className="btn btn-primary"
-          style={{ width: `calc(100% - var(--space-md))` }}
+          style={{
+            width: `calc(100% - var(--space-md))`,
+            marginBlockStart: `var(--space-md)`,
+          }}
         >
           Publish
         </button>
         <input type="hidden" name="slug" value={post.slug} />
       </Form>
+      <hr className="hr" />
     </main>
   );
 }
