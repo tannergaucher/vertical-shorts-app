@@ -37,7 +37,9 @@ export default function PostDelete() {
       <h1>Are you sure that you want to delete this post?</h1>
       <h2>{post.title}</h2>
       <Form method="post">
-        <button type="submit">Delete</button>
+        <button type="submit" className="btn btn-primary">
+          Delete
+        </button>
         <input type="hidden" name="postSlug" value={post.slug} />
       </Form>
     </main>
