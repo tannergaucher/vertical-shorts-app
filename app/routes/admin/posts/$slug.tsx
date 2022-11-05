@@ -85,7 +85,7 @@ export default function PostSlug() {
           ></textarea>
         </label>
 
-        <br />
+        <hr className="hr" />
 
         <button
           type="submit"
@@ -97,10 +97,15 @@ export default function PostSlug() {
       </Form>
 
       <Link to={`/admin/posts/delete/${post.slug}`}>
-        <button className="btn" style={{ width: `100%` }}>
+        <button
+          className="btn"
+          style={{ width: `100%`, marginBlockStart: `var(--space-lg)` }}
+        >
           Delete
         </button>
       </Link>
+
+      <hr className="hr" />
     </main>
   );
 }
