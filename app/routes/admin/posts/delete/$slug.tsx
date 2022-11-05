@@ -1,5 +1,5 @@
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { useLoaderData, Form } from "@remix-run/react";
 
@@ -26,7 +26,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   await deletePost(postSlug);
 
-  return json;
+  return redirect("/admin/posts");
 };
 
 export default function PostDelete() {

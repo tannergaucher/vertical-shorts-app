@@ -99,7 +99,7 @@ export default function PostSlug() {
       <Link to={`/admin/posts/delete/${post.slug}`}>
         <button
           className="btn"
-          style={{ width: `100%`, marginBlockStart: `var(--space-lg)` }}
+          style={{ width: `100%`, marginBlockStart: `var(--space-md)` }}
         >
           Delete
         </button>

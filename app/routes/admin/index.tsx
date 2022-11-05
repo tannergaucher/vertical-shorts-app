@@ -19,7 +19,7 @@ export default function Posts() {
   const { publishedPosts, draftPosts } = useLoaderData<LoaderData>();
   return (
     <main>
-      <Link to="new">
+      <Link to="posts/new">
         <h2 style={{ marginTop: `var(--space-xl)` }}>New Post</h2>
       </Link>
       <hr className="hr" />
