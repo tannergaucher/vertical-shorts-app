@@ -56,13 +56,24 @@ export async function upsertPost(
   });
 }
 
-export async function publishPost(post: Pick<Post, "slug" | "published">) {
+export async function publishPost(postSlug: string) {
   return prisma.post.update({
     where: {
-      slug: post.slug,
+      slug: postSlug,
     },
     data: {
-      published: post.published,
+      published: true,
+    },
+  });
+}
+
+export async function setToDraft(postSlug: string) {
+  return prisma.post.update({
+    where: {
+      slug: postSlug,
+    },
+    data: {
+      published: false,
     },
   });
 }

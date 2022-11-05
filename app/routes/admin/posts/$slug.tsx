@@ -48,64 +48,67 @@ export default function PostSlug() {
   return (
     <main>
       <h1>{post.title}</h1>
-      <Form method="post">
-        <label>
-          Title
-          <br />
-          <input
-            name="title"
-            type="text"
-            defaultValue={post.title}
-            className="input"
-            style={{ width: `calc(100% - var(--space-md))` }}
-          />
-        </label>
-
-        <label>
-          Slug
-          <br />
-          <input
-            name="slug"
-            type="text"
-            defaultValue={post.slug}
-            className="input"
-            style={{ width: `calc(100% - var(--space-md))` }}
-          />
-        </label>
-
-        <label>
-          Markdown
-          <br />
-          <textarea
-            id="markdown"
-            name="markdown"
-            defaultValue={post.markdown}
-            className="textarea"
-            style={{ width: `calc(100% - var(--space-md))`, height: `75vh` }}
-          ></textarea>
-        </label>
-
-        <hr className="hr" />
-
-        <button
-          type="submit"
-          className="btn btn-primary"
-          style={{ width: `100%` }}
-        >
-          Preview
-        </button>
-      </Form>
-
-      <Link to={`/admin/posts/delete/${post.slug}`}>
-        <button
-          className="btn"
-          style={{ width: `100%`, marginBlockStart: `var(--space-md)` }}
-        >
-          Delete
-        </button>
-      </Link>
-
-      <hr className="hr" />
+      <fieldset>
+        <legend>Edit Post</legend>
+        <Form method="post">
+          <label>
+            Title
+            <input
+              name="title"
+              type="text"
+              defaultValue={post.title}
+              style={{ width: "100%" }}
+            />
+          </label>
+          <hr />
+          <label>
+            Slug
+            <input
+              name="slug"
+              type="text"
+              defaultValue={post.slug}
+              style={{ width: "100%" }}
+            />
+          </label>
+          <hr />
+          <label>
+            Markdown
+            <br />
+            <textarea
+              id="markdown"
+              name="markdown"
+              defaultValue={post.markdown}
+              style={{ width: "100%", height: "20rem" }}
+            ></textarea>
+          </label>
+          <hr />
+          <button type="submit" style={{ width: `100%`, textAlign: `left` }}>
+            Preview Post
+          </button>
+        </Form>
+      </fieldset>
+      <hr />
+      {post.published ? (
+        <>
+          <fieldset>
+            <Link to={`/admin/posts/set-to-draft/${post.slug}`}>
+              <button style={{ width: `100%`, textAlign: `left` }}>
+                Set to Draft
+              </button>
+            </Link>
+          </fieldset>
+          <hr />
+        </>
+      ) : null}
+      <fieldset>
+        <legend>Ready to let go?</legend>
+        <Link to={`/admin/posts/delete/${post.slug}`}>
+          <button style={{ width: `100%`, textAlign: `left` }}>
+            Delete This Post
+          </button>
+        </Link>
+      </fieldset>
+      <hr />
     </main>
   );
 }
