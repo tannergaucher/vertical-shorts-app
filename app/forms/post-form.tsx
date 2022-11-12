@@ -31,7 +31,6 @@ export function PostForm(props: {
           style={{ width: "100%" }}
         />
       </label>
-
       <label>
         Slug{" "}
         {errors?.slug ? <em className="warning-text">{errors.slug}</em> : null}
@@ -42,7 +41,6 @@ export function PostForm(props: {
           style={{ width: "100%" }}
         />
       </label>
-
       <label>
         Markdown{" "}
         {errors?.markdown ? (
