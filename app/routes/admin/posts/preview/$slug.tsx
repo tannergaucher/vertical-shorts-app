@@ -63,7 +63,6 @@ export default function ProjectSlugPreview() {
           Edit
         </button>
       </fieldset>
-      <hr className="hr" />
     </main>
   );
 }

@@ -1,5 +1,6 @@
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
 import {
   Link,
   Links,
@@ -10,7 +11,22 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
+import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: "icon",
+      href: "/favicon.png",
+      type: "image/png",
+    },
+    {
+      rel: "stylesheet",
+      href: styles,
+    },
+  ];
+};
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -31,17 +47,15 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="padding">
+      <body>
         <nav>
           <Link to="/">
             <em>
-              <h1 style={{ marginTop: `var(--space-xl)` }}>
-                Content Publisher
-              </h1>
+              <h1>Content Publisher</h1>
             </em>
           </Link>
         </nav>
-        <hr className="hr" />
+        <hr />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

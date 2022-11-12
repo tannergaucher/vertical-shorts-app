@@ -1,11 +1,12 @@
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { marked } from "marked";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData, Form, Link } from "@remix-run/react";
+import { useLoaderData, Link } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import type { Post } from "~/models/post.server";
 import { getPost, upsertPost } from "~/models/post.server";
+import { PostForm } from "~/forms/post-form";
 
 type LoaderData = { post: Post; html: string };
 
@@ -50,47 +51,13 @@ export default function PostSlug() {
       <h1>{post.title}</h1>
       <fieldset>
         <legend>Edit Post</legend>
-        <Form method="post">
-          <label>
-            Title
-            <input
-              name="title"
-              type="text"
-              defaultValue={post.title}
-              style={{ width: "100%" }}
-            />
-          </label>
-          <hr />
-          <label>
-            Slug
-            <input
-              name="slug"
-              type="text"
-              defaultValue={post.slug}
-              style={{ width: "100%" }}
-            />
-          </label>
-          <hr />
-          <label>
-            Markdown
-            <br />
-            <textarea
-              id="markdown"
-              name="markdown"
-              defaultValue={post.markdown}
-              style={{ width: "100%", height: "20rem" }}
-            ></textarea>
-          </label>
-          <hr />
-          <button type="submit" style={{ width: `100%`, textAlign: `left` }}>
-            Preview Post
-          </button>
-        </Form>
+        <PostForm post={post} submitText="Preview Post" />
       </fieldset>
       <hr />
       {post.published ? (
         <>
           <fieldset>
+            <legend>This post is published</legend>
             <Link to={`/admin/posts/set-to-draft/${post.slug}`}>
               <button style={{ width: `100%`, textAlign: `left` }}>
                 Set to Draft
@@ -108,7 +75,6 @@ export default function PostSlug() {
           </button>
         </Link>
       </fieldset>
-      <hr />
     </main>
   );
 }

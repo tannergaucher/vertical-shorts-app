@@ -1,23 +1,6 @@
-import type { LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import styles from "semantic-styles/index.css";
-
 import { getPublishedPosts } from "~/models/post.server";
-
-export const links: LinksFunction = () => {
-  return [
-    {
-      rel: "icon",
-      href: "/favicon.png",
-      type: "image/png",
-    },
-    {
-      rel: "stylesheet",
-      href: styles,
-    },
-  ];
-};
 
 type LoaderData = {
   posts: Awaited<ReturnType<typeof getPublishedPosts>>;
