@@ -19,10 +19,6 @@ export default function Posts() {
   const { publishedPosts, draftPosts } = useLoaderData<LoaderData>();
   return (
     <main>
-      <Link to="posts/new">
-        <h2 style={{ marginTop: `var(--space-xl)` }}>New Post</h2>
-      </Link>
-      <hr className="hr" />
       <h2>Published Posts</h2>
       <ul>
         {publishedPosts.map((post) => (
@@ -31,7 +27,6 @@ export default function Posts() {
           </li>
         ))}
       </ul>
-      <hr className="hr" />
       <h2>Draft Posts</h2>
       <ul>
         {draftPosts.map((post) => (
@@ -40,6 +35,10 @@ export default function Posts() {
           </li>
         ))}
       </ul>
+      <br />
+      <Link to="posts/new">
+        <h2 style={{ marginTop: `var(--space-xl)` }}>New Post</h2>
+      </Link>
     </main>
   );
 }

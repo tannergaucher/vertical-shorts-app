@@ -42,7 +42,7 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function App() {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en">
       <head>
         <Meta />
         <Links />
@@ -50,10 +50,19 @@ export default function App() {
       <body>
         <nav>
           <Link to="/">
-            <em>
-              <h1>Content Publisher</h1>
-            </em>
+            <h1>Mushroom Log</h1>
           </Link>
+          <ul>
+            <li>
+              <Link to="/posts">Posts</Link>
+            </li>
+            <li>
+              <Link to="/projects">Projects</Link>
+            </li>
+            <li>
+              <Link to="/admin">Admin</Link>
+            </li>
+          </ul>
         </nav>
         <hr />
         <Outlet />

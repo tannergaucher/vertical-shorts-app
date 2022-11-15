@@ -1,21 +1,34 @@
+@font-face {
+  font-family: "Roboto Mono";
+  src: url("../fonts/Roboto_Mono/RobotoMono-Italic-VariableFont_wght.ttf");
+}
+
+body {
+  font-family: "Roboto Mono";
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #000;
-    color: #fff;
-  }
-
-  a {
-    color: #fff;
+    color: palevioletred;
   }
 
   input,
   button,
-  textarea {
+  textarea,
+  fieldset,
+  hr {
     background-color: #000;
-    color: #fff;
+    color: palevioletred;
+    border-color: palevioletred;
   }
-}
 
-.warning-text {
-  color: palevioletred;
+  a:hover {
+    color: palevioletred;
+  }
+
+  button:hover {
+    background-color: palevioletred;
+    color: #000;
+  }
 }
