@@ -1,15 +1,18 @@
 @font-face {
   font-family: "Roboto Mono";
-  src: url("../fonts/Roboto_Mono/RobotoMono-Italic-VariableFont_wght.ttf");
+  src: url("../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf");
 }
 
-body {
+body,
+button,
+input,
+textarea {
   font-family: "Roboto Mono";
 }
 
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: #000;
+    background-color: darkblue;
     color: palevioletred;
   }
 
@@ -18,7 +21,7 @@ body {
   textarea,
   fieldset,
   hr {
-    background-color: #000;
+    background-color: darkblue;
     color: palevioletred;
     border-color: palevioletred;
   }
@@ -29,6 +32,6 @@ body {
 
   button:hover {
     background-color: palevioletred;
-    color: #000;
+    color: darkblue;
   }
 }

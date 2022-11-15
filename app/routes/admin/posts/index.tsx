@@ -27,7 +27,6 @@ export default function Posts() {
           </li>
         ))}
       </ul>
-
       <h2>Draft Posts</h2>
       <ul>
         {draftPosts.map((post) => (
@@ -36,7 +35,6 @@ export default function Posts() {
           </li>
         ))}
       </ul>
-      <br />
       <Link to="new">
         <h2>New Post</h2>
       </Link>

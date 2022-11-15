@@ -17,12 +17,12 @@ export default function Index() {
 
   return (
     <main>
-      <h1>Posts</h1>
+      <h2>Posts</h2>
       <ul>
         {posts.map((post) => (
           <li key={post.slug}>
             <Link to={`posts/${post.slug}`}>
-              <h2>{post.title}</h2>
+              <h3>{post.title}</h3>
             </Link>
           </li>
         ))}

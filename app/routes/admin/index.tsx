@@ -35,9 +35,8 @@ export default function Posts() {
           </li>
         ))}
       </ul>
-      <br />
       <Link to="posts/new">
-        <h2 style={{ marginTop: `var(--space-xl)` }}>New Post</h2>
+        <h2>New Post</h2>
       </Link>
     </main>
   );
