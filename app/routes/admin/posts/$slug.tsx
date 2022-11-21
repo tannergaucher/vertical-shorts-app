@@ -6,9 +6,11 @@ import invariant from "tiny-invariant";
 
 import type { Post } from "~/models/post.server";
 import { getPost, upsertPost } from "~/models/post.server";
+import type { Project } from "~/models/project.server";
+import { getProjects } from "~/models/project.server";
 import { PostForm } from "~/forms/post-form";
 
-type LoaderData = { post: Post; html: string };
+type LoaderData = { post: Post; html: string; projects: Project[] };
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.slug, `params.slug is required`);
@@ -16,9 +18,11 @@ export const loader: LoaderFunction = async ({ params }) => {
   const post = await getPost(params.slug);
   invariant(post, `Post not found: ${params.slug}`);
 
+  const projects = await getProjects();
+
   const html = marked(post.markdown);
 
-  return json<LoaderData>({ post, html });
+  return json<LoaderData>({ post, html, projects });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -27,6 +31,7 @@ export const action: ActionFunction = async ({ request }) => {
   const title = formData.get("title");
   const slug = formData.get("slug");
   const markdown = formData.get("markdown");
+  const projectSlug = formData.get("projectSlug");
 
   invariant(typeof title === "string", "title must be a string");
 
@@ -38,20 +43,21 @@ export const action: ActionFunction = async ({ request }) => {
     title,
     slug,
     markdown,
+    projectSlug: projectSlug ? projectSlug.toString() : null,
   });
 
   return redirect(`admin/posts/preview/${slug}`);
 };
 
-export default function PostSlug() {
-  const { post } = useLoaderData<LoaderData>();
+export default function Page() {
+  const { post, projects } = useLoaderData<LoaderData>();
 
   return (
     <main>
       <h1>{post.title}</h1>
       <fieldset>
         <legend>Edit Post</legend>
-        <PostForm post={post} submitText="Preview Post" />
+        <PostForm post={post} submitText="Preview Post" projects={projects} />
       </fieldset>
       <hr />
       {post.published ? (

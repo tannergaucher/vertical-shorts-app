@@ -32,7 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect(`/admin/posts`);
 };
 
-export default function ProjectSlugPreview() {
+export default function Page() {
   const { post, html } = useLoaderData<LoaderData>();
 
   const navigate = useNavigate();

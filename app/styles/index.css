@@ -1,13 +1,24 @@
 @font-face {
-  font-family: "Roboto Mono";
-  src: url("../fonts/Roboto_Mono/RobotoMono-VariableFont_wght.ttf");
+  font-family: "Noto Serif";
+  src: url("../fonts/NotoSerifSC-Medium.otf");
 }
 
 body,
 button,
 input,
-textarea {
-  font-family: "Roboto Mono";
+textarea,
+select {
+  font-family: "Noto Serif";
+}
+
+button,
+select {
+  width: 100%;
+  text-align: left;
+}
+
+image {
+  width: -webkit-fill-available;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,14 +31,19 @@ textarea {
   button,
   textarea,
   fieldset,
+  select,
   hr {
     background-color: darkblue;
     color: palevioletred;
     border-color: palevioletred;
   }
 
+  a {
+    color: dodgerblue;
+  }
+
   a:hover {
-    color: palevioletred;
+    color: papayawhip;
   }
 
   button:hover {

@@ -28,7 +28,7 @@ export async function getProject(slug: string) {
 }
 
 export async function createProject(
-  project: Pick<Project, "title" | "plantedAt" | "slug" | "markdown">
+  project: Pick<Project, "title" | "slug" | "markdown">
 ) {
   return prisma.project.create({ data: project });
 }
@@ -44,15 +44,43 @@ export async function updateProject(
   });
 }
 
-export async function publishProject(
-  project: Pick<Project, "published" | "slug">
-) {
+export async function publishProject(projectSlug: string) {
   return prisma.project.update({
+    where: {
+      slug: projectSlug,
+    },
+    data: {
+      published: true,
+    },
+  });
+}
+
+export async function setToDraft(projectSlug: string) {
+  return prisma.project.update({
+    where: {
+      slug: projectSlug,
+    },
+    data: {
+      published: false,
+    },
+  });
+}
+
+export async function upsertProject(
+  project: Pick<Project, "slug" | "title" | "markdown">
+) {
+  return prisma.project.upsert({
     where: {
       slug: project.slug,
     },
-    data: {
-      published: project.published,
+    create: {
+      slug: project.slug,
+      title: project.title,
+      markdown: project.markdown,
+    },
+    update: {
+      title: project.title,
+      markdown: project.markdown,
     },
   });
 }

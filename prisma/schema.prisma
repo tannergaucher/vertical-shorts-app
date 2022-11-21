@@ -44,10 +44,9 @@ model Post {
 }
 
 model Project {
-  slug      String   @id
+  slug      String  @id
   title     String
-  plantedAt DateTime
   markdown  String
-  published Boolean  @default(false)
+  published Boolean @default(false)
   posts     Post[]
 }

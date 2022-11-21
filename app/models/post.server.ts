@@ -28,9 +28,15 @@ export async function getPost(slug: string) {
 }
 
 export async function createPost(
-  post: Pick<Post, "slug" | "title" | "markdown">
+  post: Pick<Post, "slug" | "title" | "markdown">,
+  projectSlug?: string
 ) {
-  return prisma.post.create({ data: post });
+  return prisma.post.create({
+    data: {
+      ...post,
+      projectSlug,
+    },
+  });
 }
 
 export async function deletePost(slug: string) {
@@ -38,7 +44,7 @@ export async function deletePost(slug: string) {
 }
 
 export async function upsertPost(
-  post: Pick<Post, "slug" | "title" | "markdown">
+  post: Pick<Post, "slug" | "title" | "markdown" | "projectSlug">
 ) {
   return prisma.post.upsert({
     where: {
