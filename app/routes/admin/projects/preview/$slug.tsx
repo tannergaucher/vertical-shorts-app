@@ -30,7 +30,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   await publishProject(slug);
 
-  return redirect(`/admin/projects`);
+  return redirect(`/admin`);
 };
 
 export default function Page() {

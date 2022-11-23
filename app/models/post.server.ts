@@ -28,7 +28,7 @@ export async function getPost(slug: string) {
 }
 
 export async function createPost(
-  post: Pick<Post, "slug" | "title" | "markdown">,
+  post: Pick<Post, "slug" | "title" | "markdown" | "projectSlug">,
   projectSlug?: string
 ) {
   return prisma.post.create({

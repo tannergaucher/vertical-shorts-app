@@ -45,8 +45,9 @@ export const action: ActionFunction = async ({ request }) => {
   invariant(typeof title === "string", "title must be a string");
   invariant(typeof slug === "string", "slug must be a string");
   invariant(typeof markdown === "string", "markdown must be a string");
+  invariant(typeof projectSlug === "string", "projectSlug must be a string");
 
-  await createPost({ title, slug, markdown });
+  await createPost({ title, slug, markdown, projectSlug });
 
   return redirect(`/admin/posts/preview/${slug}`);
 };

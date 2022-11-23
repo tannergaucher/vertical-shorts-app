@@ -21,6 +21,8 @@ export function PostForm(props: {
 }) {
   const { post, errors, projects } = props;
 
+  console.log(post, "_post");
+
   return (
     <Form method="post">
       <label>
@@ -50,7 +52,7 @@ export function PostForm(props: {
         {errors?.projectSlug ? (
           <em className="warning-text">{errors.projectSlug}</em>
         ) : null}
-        <select name="projectSlug">
+        <select name="projectSlug" defaultValue={post?.projectSlug ?? ""}>
           <option value="">None</option>
           {projects?.map((project) => (
             <option key={project.slug} value={project.slug}>

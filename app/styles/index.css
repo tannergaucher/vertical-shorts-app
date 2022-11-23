@@ -9,6 +9,7 @@ input,
 textarea,
 select {
   font-family: "Noto Serif";
+  font-size: x-large;
 }
 
 button,
