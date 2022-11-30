@@ -52,19 +52,7 @@ export default function App() {
           <Link to="/">
             <h1>Mushroom Log</h1>
           </Link>
-          <ul>
-            <li>
-              <Link to="/posts">Posts</Link>
-            </li>
-            <li>
-              <Link to="/projects">Projects</Link>
-            </li>
-            <li>
-              <Link to="/admin">Admin</Link>
-            </li>
-          </ul>
         </nav>
-        <hr />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

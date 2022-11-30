@@ -8,7 +8,7 @@ export type PostActionData =
       title: null | string;
       slug: null | string;
       markdown: null | string;
-      projectSlug: null | string;
+      projectSlug?: string;
       projects?: Project[];
     }
   | undefined;

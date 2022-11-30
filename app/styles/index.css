@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "Noto Serif";
-  src: url("../fonts/NotoSerifSC-Medium.otf");
+  font-family: "Cormorant";
+  src: url("../fonts/Cormorant/Cormorant-VariableFont_wght.ttf");
 }
 
 body,
@@ -8,8 +8,8 @@ button,
 input,
 textarea,
 select {
-  font-family: "Noto Serif";
-  font-size: x-large;
+  font-family: "Cormorant";
+  font-size: xx-large;
 }
 
 button,
@@ -18,14 +18,25 @@ select {
   text-align: left;
 }
 
+dialog {
+  width: auto;
+  margin: 8px;
+}
+
 image {
   width: -webkit-fill-available;
 }
 
+nav {
+  position: sticky;
+  top: 0;
+  /* opacity: 0.7; */
+}
+
 @media (prefers-color-scheme: dark) {
   body {
-    background-color: darkblue;
-    color: palevioletred;
+    background-color: black;
+    color: papayawhip;
   }
 
   input,
@@ -33,22 +44,27 @@ image {
   textarea,
   fieldset,
   select,
+  dialog,
   hr {
-    background-color: darkblue;
-    color: palevioletred;
-    border-color: palevioletred;
+    background-color: black;
+    color: papayawhip;
+    border-color: papayawhip;
   }
 
   a {
-    color: dodgerblue;
+    color: papayawhip;
   }
 
   a:hover {
-    color: papayawhip;
+    color: palevioletred;
   }
 
   button:hover {
     background-color: palevioletred;
-    color: darkblue;
+    color: dodgerblue;
+  }
+
+  dialog::backdrop {
+    background: red;
   }
 }

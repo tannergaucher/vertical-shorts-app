@@ -35,7 +35,6 @@ export const action: ActionFunction = async ({ request }) => {
     title: title ? null : "is required",
     slug: slug ? null : "is required",
     markdown: markdown ? null : "is required",
-    projectSlug: projectSlug ? null : "is required",
   };
   const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
   if (hasErrors) {
