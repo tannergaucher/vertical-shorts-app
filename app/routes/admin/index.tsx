@@ -1,79 +1,55 @@
+import { LoaderArgs, redirect } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
-import { getPublishedPosts, getDraftPosts } from "~/models/post.server";
-import {
-  getPublishedProjects,
-  getDraftProjects,
-} from "~/models/project.server";
+import { getContents } from "~/models/content.server";
+import { Routes } from "~/routes";
+import { getUser } from "~/session.server";
 
 type LoaderData = {
-  publishedPosts: Awaited<ReturnType<typeof getPublishedPosts>>;
-  draftPosts: Awaited<ReturnType<typeof getDraftPosts>>;
-  publishedProjects: Awaited<ReturnType<typeof getPublishedProjects>>;
-  draftProjects: Awaited<ReturnType<typeof getDraftProjects>>;
+  contents?: Awaited<ReturnType<typeof getContents>>;
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderArgs) => {
+  const user = await getUser(request);
+
+  console.log(user, "_user");
+
+  if (!user?.id) {
+    return redirect(Routes.Login);
+  }
+
+  if (!user.currentProjectId) {
+    return redirect(Routes.AdminCreateProject);
+  }
+
   return json<LoaderData>({
-    publishedPosts: await getPublishedPosts(),
-    draftPosts: await getDraftPosts(),
-    publishedProjects: await getPublishedProjects(),
-    draftProjects: await getDraftProjects(),
+    contents: await getContents({
+      projectId: user.currentProjectId,
+    }),
   });
 };
 
 export default function Page() {
-  const { publishedPosts, draftPosts, publishedProjects, draftProjects } =
-    useLoaderData<LoaderData>();
+  const { contents } = useLoaderData<LoaderData>();
+
+  console.log(contents, "contents");
+
   return (
     <main>
-      <h2>Published Posts</h2>
+      <h2>Content</h2>
       <ul>
-        {publishedPosts.map((post) => (
-          <li key={post.slug}>
-            <Link to={`posts/${post.slug}`}>{post.title}</Link>
+        {contents?.map((content) => (
+          <li key={content.slug}>
+            <Link to={Routes.AdminContentPreview(content.slug)}>{`${
+              content.published
+                ? `${content.title}`
+                : `Draft - ${content.title}`
+            }`}</Link>
           </li>
         ))}
       </ul>
-      <h2>Draft Posts</h2>
-      <ul>
-        {draftPosts.map((post) => (
-          <li key={post.slug}>
-            <Link to={`posts/${post.slug}`}>{post.title}</Link>
-          </li>
-        ))}
-      </ul>
-      <fieldset>
-        <legend>Create a new post?</legend>
-        <Link to="posts/new">
-          <button>New Post</button>
-        </Link>
-      </fieldset>
-      <hr />
-      <h2>Published Projects</h2>
-      <ul>
-        {publishedProjects.map((project) => (
-          <li key={project.slug}>
-            <Link to={`projects/${project.slug}`}>{project.title}</Link>
-          </li>
-        ))}
-      </ul>
-      <h2>Draft Projects</h2>
-      <ul>
-        {draftProjects.map((project) => (
-          <li key={project.slug}>
-            <Link to={`projects/${project.slug}`}>{project.title}</Link>
-          </li>
-        ))}
-      </ul>
-      <fieldset>
-        <legend>Create a new project?</legend>
-        <Link to="projects/new">
-          <button>New Project</button>
-        </Link>
-      </fieldset>
-      <hr />
+      <Link to={Routes.AdminContentTitle}>Create Content</Link>
     </main>
   );
 }

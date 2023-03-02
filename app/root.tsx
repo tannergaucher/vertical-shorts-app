@@ -1,8 +1,8 @@
+import { Link } from "@remix-run/react";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import {
-  Link,
   Links,
   LiveReload,
   Meta,
@@ -13,6 +13,8 @@ import {
 
 import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
+
+const SITE_TITLE = "Vertical Publisher";
 
 export const links: LinksFunction = () => {
   return [
@@ -50,7 +52,7 @@ export default function App() {
       <body>
         <nav>
           <Link to="/">
-            <h1>Mushroom Log</h1>
+            <em>{SITE_TITLE}</em>
           </Link>
         </nav>
         <Outlet />

@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+generator cloudClient {
+  provider = "prisma-client-js"
+  output   = "../cloud-functions/upload-youtube-video/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String                @id @default(cuid())
+  email                String                @unique
+  password             Password?
+  projects             Project[]
+  currentProjectId     String?
+  facebookCredentials  FacebookCredentials?
+  instagramCredentials InstagramCredentials?
+  tikTokCredentials    TikTokCredentials?
+  youtubeCredentials   YoutubeCredentials?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+}
+
+model Password {
+  hash   String
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model YoutubeCredentials {
+  id           String   @id @default(cuid())
+  clientId     String
+  clientSecret String
+  accessToken  String
+  refreshToken String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  channelId    String
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model InstagramCredentials {
+  id          String   @id @default(cuid())
+  accessToken String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  username    String
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TikTokCredentials {
+  id          String   @id @default(cuid())
+  clientKey   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  accessToken String
+  openId      String
+  username    String
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model FacebookCredentials {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pageId    String
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// the primary key of Content should be a composite key of projectId and slug
+
+model Content {
+  slug          String         @unique
+  title         String
+  description   String?
+  markdown      String?
+  thumbnail     String?
+  video         String?
+  tags          String[]
+  published     Boolean?       @default(false)
+  createdAt     DateTime?      @default(now())
+  updatedAt     DateTime?      @updatedAt
+  projectId     String
+  project       Project        @relation(fields: [projectId], references: [id])
+  tikTokPost    TikTokPost?
+  instagramPost InstagramPost?
+  facebookPost  FacebookPost?
+
+  @@id([projectId, slug])
+}
+
+model Project {
+  id        String    @id @default(cuid())
+  title     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  content   Content[]
+}
+
+model YoutubeShortPost {
+  gcsVideoUrl String
+  postSlug    String @unique
+}
+
+model TikTokPost {
+  gcsVideoUrl      String
+  postSlug         String  @unique
+  content          Content @relation(fields: [contentProjectId, contentSlug], references: [projectId, slug])
+  contentProjectId String
+  contentSlug      String
+
+  @@unique([contentProjectId, contentSlug])
+}
+
+model InstagramPost {
+  gcsVideoUrl      String
+  postSlug         String  @unique
+  caption          String
+  content          Content @relation(fields: [contentProjectId, contentSlug], references: [projectId, slug])
+  contentProjectId String
+  contentSlug      String
+
+  @@unique([contentProjectId, contentSlug])
+}
+
+model FacebookPost {
+  gcsVideoUrl      String
+  postSlug         String  @unique
+  content          Content @relation(fields: [contentProjectId, contentSlug], references: [projectId, slug])
+  contentProjectId String
+  contentSlug      String
+
+  @@unique([contentProjectId, contentSlug])
+}

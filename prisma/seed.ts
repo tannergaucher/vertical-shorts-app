@@ -24,66 +24,36 @@ async function seed() {
     },
   });
 
-  await prisma.note.create({
+  const project = await prisma.project.create({
     data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
+      id: "hr-123",
+      title: "Home Rice",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      user: {
+        connect: {
+          id: user.id,
+        },
+      },
     },
   });
 
-  await prisma.note.create({
+  const content = await prisma.content.create({
     data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
+      slug: "tteokbokki-in-spicy-rose-sauce-dong-won",
+      title: "Tteokbokki in Spicy Rose Sauce - Dong Won",
+      description: "Sweet, spicy, tasty, convenient",
+      tags: ["dong won", "tteokbokki", "korean food"],
+      published: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      project: {
+        connect: {
+          id: project.id,
+        },
+      },
     },
   });
-
-  // const posts = [
-  //   {
-  //     slug: "my-first-post",
-  //     title: "My First Post",
-  //     markdown: `
-  // # This is my first post
-
-  // Isn't it great?
-  //     `.trim(),
-  //   },
-  //   {
-  //     slug: "90s-mixtape",
-  //     title: "A Mixtape I Made Just For You",
-  //     markdown: `
-  // # 90s Mixtape
-
-  // - I wish (Skee-Lo)
-  // - This Is How We Do It (Montell Jordan)
-  // - Everlong (Foo Fighters)
-  // - Ms. Jackson (Outkast)
-  // - Interstate Love Song (Stone Temple Pilots)
-  // - Killing Me Softly With His Song (Fugees, Ms. Lauryn Hill)
-  // - Just a Friend (Biz Markie)
-  // - The Man Who Sold The World (Nirvana)
-  // - Semi-Charmed Life (Third Eye Blind)
-  // - ...Baby One More Time (Britney Spears)
-  // - Better Man (Pearl Jam)
-  // - It's All Coming Back to Me Now (Céline Dion)
-  // - This Kiss (Faith Hill)
-  // - Fly Away (Lenny Kravits)
-  // - Scar Tissue (Red Hot Chili Peppers)
-  // - Santa Monica (Everclear)
-  // - C'mon N' Ride it (Quad City DJ's)
-  //     `.trim(),
-  //   },
-  // ];
-
-  // for (const post of posts) {
-  //   await prisma.post.upsert({
-  //     where: { slug: post.slug },
-  //     update: post,
-  //     create: post,
-  //   });
-  // }
 
   console.log(`Database has been seeded. 🌱`);
 }

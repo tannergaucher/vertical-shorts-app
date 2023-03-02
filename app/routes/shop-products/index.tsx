@@ -10,7 +10,7 @@ type LoaderData = {
 export const loader = async () => {
   //  initiate stripe API
 
-  const stripeAPI = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  const stripeAPI = new Stripe(process.env.STRIPE_SECRET_KEY ?? "", {
     apiVersion: "2022-11-15",
   });
 

@@ -5,6 +5,22 @@ import { RemixServer } from "@remix-run/react";
 import isbot from "isbot";
 import { renderToPipeableStream } from "react-dom/server";
 
+import { Storage } from "@google-cloud/storage";
+import { PubSub } from "@google-cloud/pubsub";
+export * as functions from "@google-cloud/functions-framework";
+
+const projectId = "homerice";
+
+export const storage = new Storage({
+  keyFilename: "./service-account.json",
+  projectId,
+});
+
+export const pubsub = new PubSub({
+  projectId,
+  keyFilename: "./service-account.json",
+});
+
 const ABORT_DELAY = 5000;
 
 export default function handleRequest(

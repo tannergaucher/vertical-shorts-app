@@ -1,6 +1,10 @@
 @font-face {
-  font-family: "Cormorant";
-  src: url("../fonts/Cormorant/Cormorant-VariableFont_wght.ttf");
+  font-family: "Noto Serif KR";
+  src: url("../fonts/Noto_Serif_KR/NotoSerifKR-Regular.otf");
+}
+
+:root {
+  --container: 800px;
 }
 
 body,
@@ -8,8 +12,8 @@ button,
 input,
 textarea,
 select {
-  font-family: "Cormorant";
-  font-size: xx-large;
+  font-family: "Noto Serif KR", serif;
+  font-size: larger;
 }
 
 button,
@@ -30,7 +34,7 @@ image {
 nav {
   position: sticky;
   top: 0;
-  /* opacity: 0.7; */
+  background-color: white;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,6 +49,7 @@ nav {
   fieldset,
   select,
   dialog,
+  nav,
   hr {
     background-color: black;
     color: papayawhip;
