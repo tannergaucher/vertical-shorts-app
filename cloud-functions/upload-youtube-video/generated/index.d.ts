@@ -39,14 +39,15 @@ export type Password = {
  */
 export type YoutubeCredentials = {
   id: string
-  clientId: string
-  clientSecret: string
-  accessToken: string
-  refreshToken: string
+  clientId: string | null
+  clientSecret: string | null
+  accessToken: string | null
+  refreshToken: string | null
   createdAt: Date
   updatedAt: Date
-  channelId: string
+  channelId: string | null
   userId: string
+  projectId: string
 }
 
 /**
@@ -3063,6 +3064,7 @@ export namespace Prisma {
     updatedAt: Date | null
     channelId: string | null
     userId: string | null
+    projectId: string | null
   }
 
   export type YoutubeCredentialsMaxAggregateOutputType = {
@@ -3075,6 +3077,7 @@ export namespace Prisma {
     updatedAt: Date | null
     channelId: string | null
     userId: string | null
+    projectId: string | null
   }
 
   export type YoutubeCredentialsCountAggregateOutputType = {
@@ -3087,6 +3090,7 @@ export namespace Prisma {
     updatedAt: number
     channelId: number
     userId: number
+    projectId: number
     _all: number
   }
 
@@ -3101,6 +3105,7 @@ export namespace Prisma {
     updatedAt?: true
     channelId?: true
     userId?: true
+    projectId?: true
   }
 
   export type YoutubeCredentialsMaxAggregateInputType = {
@@ -3113,6 +3118,7 @@ export namespace Prisma {
     updatedAt?: true
     channelId?: true
     userId?: true
+    projectId?: true
   }
 
   export type YoutubeCredentialsCountAggregateInputType = {
@@ -3125,6 +3131,7 @@ export namespace Prisma {
     updatedAt?: true
     channelId?: true
     userId?: true
+    projectId?: true
     _all?: true
   }
 
@@ -3208,14 +3215,15 @@ export namespace Prisma {
 
   export type YoutubeCredentialsGroupByOutputType = {
     id: string
-    clientId: string
-    clientSecret: string
-    accessToken: string
-    refreshToken: string
+    clientId: string | null
+    clientSecret: string | null
+    accessToken: string | null
+    refreshToken: string | null
     createdAt: Date
     updatedAt: Date
-    channelId: string
+    channelId: string | null
     userId: string
+    projectId: string
     _count: YoutubeCredentialsCountAggregateOutputType | null
     _min: YoutubeCredentialsMinAggregateOutputType | null
     _max: YoutubeCredentialsMaxAggregateOutputType | null
@@ -3246,10 +3254,13 @@ export namespace Prisma {
     channelId?: boolean
     userId?: boolean
     user?: boolean | UserArgs
+    projectId?: boolean
+    project?: boolean | ProjectArgs
   }
 
   export type YoutubeCredentialsInclude = {
     user?: boolean | UserArgs
+    project?: boolean | ProjectArgs
   }
 
   export type YoutubeCredentialsGetPayload<
@@ -3263,12 +3274,14 @@ export namespace Prisma {
     ?'include' extends U
     ? YoutubeCredentials  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
+        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof YoutubeCredentials ? YoutubeCredentials[P] : never
+        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof YoutubeCredentials ? YoutubeCredentials[P] : never
   } 
     : YoutubeCredentials
   : YoutubeCredentials
@@ -3644,6 +3657,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
     user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
+
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -7966,12 +7981,14 @@ export namespace Prisma {
     userId?: boolean
     user?: boolean | UserArgs
     content?: boolean | ContentFindManyArgs
+    youtubeCredentials?: boolean | YoutubeCredentialsArgs
     _count?: boolean | ProjectCountOutputTypeArgs
   }
 
   export type ProjectInclude = {
     user?: boolean | UserArgs
     content?: boolean | ContentFindManyArgs
+    youtubeCredentials?: boolean | YoutubeCredentialsArgs
     _count?: boolean | ProjectCountOutputTypeArgs
   }
 
@@ -7988,6 +8005,7 @@ export namespace Prisma {
     [P in TrueKeys<S['include']>]:
         P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :
         P extends 'content' ? Array < ContentGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
+        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
         P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
@@ -7995,6 +8013,7 @@ export namespace Prisma {
     [P in TrueKeys<S['select']>]:
         P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :
         P extends 'content' ? Array < ContentGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
+        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
         P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Project ? Project[P] : never
   } 
     : Project
@@ -8373,6 +8392,8 @@ export namespace Prisma {
     user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
 
     content<T extends ContentFindManyArgs = {}>(args?: Subset<T, ContentFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Content>| Null>, PrismaPromise<Array<ContentGetPayload<T>>| Null>>;
+
+    youtubeCredentials<T extends YoutubeCredentialsArgs = {}>(args?: Subset<T, YoutubeCredentialsArgs>): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials | Null>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -12496,7 +12517,8 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     channelId: 'channelId',
-    userId: 'userId'
+    userId: 'userId',
+    projectId: 'projectId'
   };
 
   export type YoutubeCredentialsScalarFieldEnum = (typeof YoutubeCredentialsScalarFieldEnum)[keyof typeof YoutubeCredentialsScalarFieldEnum]
@@ -12613,15 +12635,17 @@ export namespace Prisma {
     OR?: Enumerable<YoutubeCredentialsWhereInput>
     NOT?: Enumerable<YoutubeCredentialsWhereInput>
     id?: StringFilter | string
-    clientId?: StringFilter | string
-    clientSecret?: StringFilter | string
-    accessToken?: StringFilter | string
-    refreshToken?: StringFilter | string
+    clientId?: StringNullableFilter | string | null
+    clientSecret?: StringNullableFilter | string | null
+    accessToken?: StringNullableFilter | string | null
+    refreshToken?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    channelId?: StringFilter | string
+    channelId?: StringNullableFilter | string | null
     userId?: StringFilter | string
     user?: XOR<UserRelationFilter, UserWhereInput>
+    projectId?: StringFilter | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
   export type YoutubeCredentialsOrderByWithRelationInput = {
@@ -12635,11 +12659,14 @@ export namespace Prisma {
     channelId?: SortOrder
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
+    projectId?: SortOrder
+    project?: ProjectOrderByWithRelationInput
   }
 
   export type YoutubeCredentialsWhereUniqueInput = {
     id?: string
     userId?: string
+    projectId?: string
   }
 
   export type YoutubeCredentialsOrderByWithAggregationInput = {
@@ -12652,6 +12679,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
+    projectId?: SortOrder
     _count?: YoutubeCredentialsCountOrderByAggregateInput
     _max?: YoutubeCredentialsMaxOrderByAggregateInput
     _min?: YoutubeCredentialsMinOrderByAggregateInput
@@ -12662,14 +12690,15 @@ export namespace Prisma {
     OR?: Enumerable<YoutubeCredentialsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<YoutubeCredentialsScalarWhereWithAggregatesInput>
     id?: StringWithAggregatesFilter | string
-    clientId?: StringWithAggregatesFilter | string
-    clientSecret?: StringWithAggregatesFilter | string
-    accessToken?: StringWithAggregatesFilter | string
-    refreshToken?: StringWithAggregatesFilter | string
+    clientId?: StringNullableWithAggregatesFilter | string | null
+    clientSecret?: StringNullableWithAggregatesFilter | string | null
+    accessToken?: StringNullableWithAggregatesFilter | string | null
+    refreshToken?: StringNullableWithAggregatesFilter | string | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
-    channelId?: StringWithAggregatesFilter | string
+    channelId?: StringNullableWithAggregatesFilter | string | null
     userId?: StringWithAggregatesFilter | string
+    projectId?: StringWithAggregatesFilter | string
   }
 
   export type InstagramCredentialsWhereInput = {
@@ -12921,6 +12950,7 @@ export namespace Prisma {
     userId?: StringFilter | string
     user?: XOR<UserRelationFilter, UserWhereInput>
     content?: ContentListRelationFilter
+    youtubeCredentials?: XOR<YoutubeCredentialsRelationFilter, YoutubeCredentialsWhereInput> | null
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -12931,6 +12961,7 @@ export namespace Prisma {
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
     content?: ContentOrderByRelationAggregateInput
+    youtubeCredentials?: YoutubeCredentialsOrderByWithRelationInput
   }
 
   export type ProjectWhereUniqueInput = {
@@ -13244,85 +13275,91 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCreateInput = {
     id?: string
-    clientId: string
-    clientSecret: string
-    accessToken: string
-    refreshToken: string
+    clientId?: string | null
+    clientSecret?: string | null
+    accessToken?: string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    channelId: string
+    channelId?: string | null
     user: UserCreateNestedOneWithoutYoutubeCredentialsInput
+    project: ProjectCreateNestedOneWithoutYoutubeCredentialsInput
   }
 
   export type YoutubeCredentialsUncheckedCreateInput = {
     id?: string
-    clientId: string
-    clientSecret: string
-    accessToken: string
-    refreshToken: string
+    clientId?: string | null
+    clientSecret?: string | null
+    accessToken?: string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    channelId: string
+    channelId?: string | null
     userId: string
+    projectId: string
   }
 
   export type YoutubeCredentialsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    clientSecret?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    refreshToken?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
   }
 
   export type YoutubeCredentialsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    clientSecret?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    refreshToken?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type YoutubeCredentialsCreateManyInput = {
     id?: string
-    clientId: string
-    clientSecret: string
-    accessToken: string
-    refreshToken: string
+    clientId?: string | null
+    clientSecret?: string | null
+    accessToken?: string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    channelId: string
+    channelId?: string | null
     userId: string
+    projectId: string
   }
 
   export type YoutubeCredentialsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    clientSecret?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    refreshToken?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type YoutubeCredentialsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    clientSecret?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    refreshToken?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type InstagramCredentialsCreateInput = {
@@ -13634,6 +13671,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -13643,6 +13681,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId: string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -13652,6 +13691,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -13661,6 +13701,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -14033,6 +14074,11 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
+  export type ProjectRelationFilter = {
+    is?: ProjectWhereInput
+    isNot?: ProjectWhereInput
+  }
+
   export type YoutubeCredentialsCountOrderByAggregateInput = {
     id?: SortOrder
     clientId?: SortOrder
@@ -14043,6 +14089,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type YoutubeCredentialsMaxOrderByAggregateInput = {
@@ -14055,6 +14102,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type YoutubeCredentialsMinOrderByAggregateInput = {
@@ -14067,6 +14115,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type InstagramCredentialsCountOrderByAggregateInput = {
@@ -14175,11 +14224,6 @@ export namespace Prisma {
     gt?: Date | string
     gte?: Date | string
     not?: NestedDateTimeNullableFilter | Date | string | null
-  }
-
-  export type ProjectRelationFilter = {
-    is?: ProjectWhereInput
-    isNot?: ProjectWhereInput
   }
 
   export type TikTokPostRelationFilter = {
@@ -14633,12 +14677,26 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type ProjectCreateNestedOneWithoutYoutubeCredentialsInput = {
+    create?: XOR<ProjectCreateWithoutYoutubeCredentialsInput, ProjectUncheckedCreateWithoutYoutubeCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutYoutubeCredentialsInput
+    connect?: ProjectWhereUniqueInput
+  }
+
   export type UserUpdateOneRequiredWithoutYoutubeCredentialsNestedInput = {
     create?: XOR<UserCreateWithoutYoutubeCredentialsInput, UserUncheckedCreateWithoutYoutubeCredentialsInput>
     connectOrCreate?: UserCreateOrConnectWithoutYoutubeCredentialsInput
     upsert?: UserUpsertWithoutYoutubeCredentialsInput
     connect?: UserWhereUniqueInput
     update?: XOR<UserUpdateWithoutYoutubeCredentialsInput, UserUncheckedUpdateWithoutYoutubeCredentialsInput>
+  }
+
+  export type ProjectUpdateOneRequiredWithoutYoutubeCredentialsNestedInput = {
+    create?: XOR<ProjectCreateWithoutYoutubeCredentialsInput, ProjectUncheckedCreateWithoutYoutubeCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutYoutubeCredentialsInput
+    upsert?: ProjectUpsertWithoutYoutubeCredentialsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<ProjectUpdateWithoutYoutubeCredentialsInput, ProjectUncheckedUpdateWithoutYoutubeCredentialsInput>
   }
 
   export type UserCreateNestedOneWithoutInstagramCredentialsInput = {
@@ -14823,11 +14881,23 @@ export namespace Prisma {
     connect?: Enumerable<ContentWhereUniqueInput>
   }
 
+  export type YoutubeCredentialsCreateNestedOneWithoutProjectInput = {
+    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
+    connect?: YoutubeCredentialsWhereUniqueInput
+  }
+
   export type ContentUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<Enumerable<ContentCreateWithoutProjectInput>, Enumerable<ContentUncheckedCreateWithoutProjectInput>>
     connectOrCreate?: Enumerable<ContentCreateOrConnectWithoutProjectInput>
     createMany?: ContentCreateManyProjectInputEnvelope
     connect?: Enumerable<ContentWhereUniqueInput>
+  }
+
+  export type YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput = {
+    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
+    connect?: YoutubeCredentialsWhereUniqueInput
   }
 
   export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
@@ -14852,6 +14922,16 @@ export namespace Prisma {
     deleteMany?: Enumerable<ContentScalarWhereInput>
   }
 
+  export type YoutubeCredentialsUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: YoutubeCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: YoutubeCredentialsWhereUniqueInput
+    update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
   export type ContentUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<Enumerable<ContentCreateWithoutProjectInput>, Enumerable<ContentUncheckedCreateWithoutProjectInput>>
     connectOrCreate?: Enumerable<ContentCreateOrConnectWithoutProjectInput>
@@ -14864,6 +14944,16 @@ export namespace Prisma {
     update?: Enumerable<ContentUpdateWithWhereUniqueWithoutProjectInput>
     updateMany?: Enumerable<ContentUpdateManyWithWhereWithoutProjectInput>
     deleteMany?: Enumerable<ContentScalarWhereInput>
+  }
+
+  export type YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: YoutubeCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: YoutubeCredentialsWhereUniqueInput
+    update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
   }
 
   export type ContentCreateNestedOneWithoutTikTokPostInput = {
@@ -15074,6 +15164,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     content?: ContentCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -15082,6 +15173,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -15161,24 +15253,26 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCreateWithoutUserInput = {
     id?: string
-    clientId: string
-    clientSecret: string
-    accessToken: string
-    refreshToken: string
+    clientId?: string | null
+    clientSecret?: string | null
+    accessToken?: string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    channelId: string
+    channelId?: string | null
+    project: ProjectCreateNestedOneWithoutYoutubeCredentialsInput
   }
 
   export type YoutubeCredentialsUncheckedCreateWithoutUserInput = {
     id?: string
-    clientId: string
-    clientSecret: string
-    accessToken: string
-    refreshToken: string
+    clientId?: string | null
+    clientSecret?: string | null
+    accessToken?: string | null
+    refreshToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    channelId: string
+    channelId?: string | null
+    projectId: string
   }
 
   export type YoutubeCredentialsCreateOrConnectWithoutUserInput = {
@@ -15298,24 +15392,26 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    clientSecret?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    refreshToken?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    project?: ProjectUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
   }
 
   export type YoutubeCredentialsUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: StringFieldUpdateOperationsInput | string
-    clientSecret?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    refreshToken?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserCreateWithoutPasswordInput = {
@@ -15411,6 +15507,29 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutYoutubeCredentialsInput, UserUncheckedCreateWithoutYoutubeCredentialsInput>
   }
 
+  export type ProjectCreateWithoutYoutubeCredentialsInput = {
+    id?: string
+    title: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    content?: ContentCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutYoutubeCredentialsInput = {
+    id?: string
+    title: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutYoutubeCredentialsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutYoutubeCredentialsInput, ProjectUncheckedCreateWithoutYoutubeCredentialsInput>
+  }
+
   export type UserUpsertWithoutYoutubeCredentialsInput = {
     update: XOR<UserUpdateWithoutYoutubeCredentialsInput, UserUncheckedUpdateWithoutYoutubeCredentialsInput>
     create: XOR<UserCreateWithoutYoutubeCredentialsInput, UserUncheckedCreateWithoutYoutubeCredentialsInput>
@@ -15440,6 +15559,29 @@ export namespace Prisma {
     tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ProjectUpsertWithoutYoutubeCredentialsInput = {
+    update: XOR<ProjectUpdateWithoutYoutubeCredentialsInput, ProjectUncheckedUpdateWithoutYoutubeCredentialsInput>
+    create: XOR<ProjectCreateWithoutYoutubeCredentialsInput, ProjectUncheckedCreateWithoutYoutubeCredentialsInput>
+  }
+
+  export type ProjectUpdateWithoutYoutubeCredentialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    content?: ContentUpdateManyWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutYoutubeCredentialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserCreateWithoutInstagramCredentialsInput = {
@@ -15634,6 +15776,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutContentInput = {
@@ -15642,6 +15785,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutContentInput = {
@@ -15707,6 +15851,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutContentInput = {
@@ -15715,6 +15860,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type TikTokPostUpsertWithoutContentInput = {
@@ -15837,6 +15983,35 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type YoutubeCredentialsCreateWithoutProjectInput = {
+    id?: string
+    clientId?: string | null
+    clientSecret?: string | null
+    accessToken?: string | null
+    refreshToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    user: UserCreateNestedOneWithoutYoutubeCredentialsInput
+  }
+
+  export type YoutubeCredentialsUncheckedCreateWithoutProjectInput = {
+    id?: string
+    clientId?: string | null
+    clientSecret?: string | null
+    accessToken?: string | null
+    refreshToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    userId: string
+  }
+
+  export type YoutubeCredentialsCreateOrConnectWithoutProjectInput = {
+    where: YoutubeCredentialsWhereUniqueInput
+    create: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
   export type UserUpsertWithoutProjectsInput = {
     update: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
     create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
@@ -15899,6 +16074,35 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter | Date | string | null
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
+  }
+
+  export type YoutubeCredentialsUpsertWithoutProjectInput = {
+    update: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
+    create: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type YoutubeCredentialsUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    user?: UserUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
+  }
+
+  export type YoutubeCredentialsUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientId?: NullableStringFieldUpdateOperationsInput | string | null
+    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ContentCreateWithoutTikTokPostInput = {
@@ -16136,6 +16340,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: ContentUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -16144,6 +16349,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutProjectsInput = {

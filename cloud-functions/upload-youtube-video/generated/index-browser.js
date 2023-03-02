@@ -199,7 +199,8 @@ exports.Prisma.YoutubeCredentialsScalarFieldEnum = makeEnum({
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   channelId: 'channelId',
-  userId: 'userId'
+  userId: 'userId',
+  projectId: 'projectId'
 });
 
 exports.Prisma.YoutubeShortPostScalarFieldEnum = makeEnum({

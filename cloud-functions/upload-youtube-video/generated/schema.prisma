@@ -34,15 +34,17 @@ model Password {
 
 model YoutubeCredentials {
   id           String   @id @default(cuid())
-  clientId     String
-  clientSecret String
-  accessToken  String
-  refreshToken String
+  clientId     String?
+  clientSecret String?
+  accessToken  String?
+  refreshToken String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
-  channelId    String
+  channelId    String?
   userId       String   @unique
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId    String   @unique
+  project      Project  @relation(fields: [projectId], references: [id])
 }
 
 model InstagramCredentials {
@@ -76,8 +78,6 @@ model FacebookCredentials {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-// the primary key of Content should be a composite key of projectId and slug
-
 model Content {
   slug          String         @unique
   title         String
@@ -99,13 +99,14 @@ model Content {
 }
 
 model Project {
-  id        String    @id @default(cuid())
-  title     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  content   Content[]
+  id                 String              @id @default(cuid())
+  title              String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  userId             String
+  user               User                @relation(fields: [userId], references: [id])
+  content            Content[]
+  youtubeCredentials YoutubeCredentials?
 }
 
 model YoutubeShortPost {
