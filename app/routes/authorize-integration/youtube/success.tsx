@@ -30,10 +30,12 @@ export const loader = async ({ request }: LoaderArgs) => {
   const oauth2Client = new google.auth.OAuth2(
     process.env.YOUTUBE_CLIENT_ID,
     process.env.YOUTUBE_CLIENT_SECRET,
-    "http://localhost:3000/authorize-integration/youtube/success"
+    process.env.YOUTUBE_REDIRECT_URI
   );
 
   const { tokens } = await oauth2Client.getToken(authorizationCode);
+
+  console.log(tokens, "tokens");
 
   oauth2Client.setCredentials(tokens);
 
@@ -44,6 +46,7 @@ export const loader = async ({ request }: LoaderArgs) => {
       },
       create: {
         accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
         user: {
           connect: {
             id: user.id,
@@ -57,35 +60,36 @@ export const loader = async ({ request }: LoaderArgs) => {
       },
       update: {
         accessToken: tokens.access_token,
+        refreshToken: tokens.refresh_token,
       },
     });
   }
 
-  oauth2Client.on("tokens", async (tokens) => {
-    if (tokens.refresh_token && user.currentProjectId) {
-      await prisma.youtubeCredentials.upsert({
-        where: {
-          projectId: user.currentProjectId,
-        },
-        create: {
-          refreshToken: tokens.refresh_token,
-          user: {
-            connect: {
-              id: user.id,
-            },
-          },
-          project: {
-            connect: {
-              id: user.currentProjectId,
-            },
-          },
-        },
-        update: {
-          refreshToken: tokens.refresh_token,
-        },
-      });
-    }
-  });
+  // oauth2Client.on("tokens", async (tokens) => {
+  //   if (tokens.refresh_token && user.currentProjectId) {
+  //     await prisma.youtubeCredentials.upsert({
+  //       where: {
+  //         projectId: user.currentProjectId,
+  //       },
+  //       create: {
+  //         refreshToken: tokens.refresh_token,
+  //         user: {
+  //           connect: {
+  //             id: user.id,
+  //           },
+  //         },
+  //         project: {
+  //           connect: {
+  //             id: user.currentProjectId,
+  //           },
+  //         },
+  //       },
+  //       update: {
+  //         refreshToken: tokens.refresh_token,
+  //       },
+  //     });
+  //   }
+  // });
 
   return null;
 };
