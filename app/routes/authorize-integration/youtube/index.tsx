@@ -12,7 +12,7 @@ export const action = async ({ request }: ActionArgs) => {
   const oauth2Client = new google.auth.OAuth2(
     process.env.YOUTUBE_CLIENT_ID,
     process.env.YOUTUBE_CLIENT_SECRET,
-    "http://localhost:3000/authorize-integration/youtube/success"
+    process.env.YOUTUBE_REDIRECT_URI
   );
 
   const scopes = ["https://www.googleapis.com/auth/youtube.upload"];
