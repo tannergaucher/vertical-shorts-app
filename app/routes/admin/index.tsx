@@ -33,9 +33,7 @@ export default function Page() {
 
   return (
     <main>
-      <div className="card">
-        <h2>Content</h2>
-      </div>
+      <h2>Content</h2>
       <ul>
         {contents?.map((content) => (
           <li key={content.slug}>
