@@ -1,5 +1,6 @@
-import { LoaderArgs, redirect } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { LoaderArgs } from "@remix-run/node";
+import type { LinksFunction } from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
 import { getContents } from "~/models/content.server";
@@ -37,7 +38,9 @@ export default function Page() {
 
   return (
     <main>
-      <h2>Content</h2>
+      <div className="card">
+        <h2>Content</h2>
+      </div>
       <ul>
         {contents?.map((content) => (
           <li key={content.slug}>
