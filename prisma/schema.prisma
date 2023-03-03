@@ -2,7 +2,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator cloudClient {
+generator cloudYoutubeClient {
   provider = "prisma-client-js"
   output   = "../cloud-functions/upload-youtube-video/generated"
 }
