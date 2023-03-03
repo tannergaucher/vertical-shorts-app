@@ -13,6 +13,17 @@ export async function getContent(params: { slug: string; projectId: string }) {
         slug,
       },
     },
+    include: {
+      project: {
+        include: {
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+    },
   });
 }
 

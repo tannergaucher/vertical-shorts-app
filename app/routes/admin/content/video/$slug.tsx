@@ -41,6 +41,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     projectId,
   });
 
+  console.log("loadercontent", content);
+
   return json({ content });
 };
 
@@ -103,7 +105,10 @@ export default function Page() {
     <main>
       <h1>{content.title}</h1>
       {content.thumbnail ? (
-        <img src={content.thumbnail} alt={content.title} />
+        <img
+          src={`https://storage.googleapis.com/${content.projectId}/${content.thumbnail}`}
+          alt={content.title}
+        />
       ) : null}
       <h2>Upload Video</h2>
       <Form method="post" encType="multipart/form-data">
