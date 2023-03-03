@@ -39,8 +39,6 @@ export type Password = {
  */
 export type YoutubeCredentials = {
   id: string
-  clientId: string | null
-  clientSecret: string | null
   accessToken: string | null
   refreshToken: string | null
   createdAt: Date
@@ -3056,8 +3054,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsMinAggregateOutputType = {
     id: string | null
-    clientId: string | null
-    clientSecret: string | null
     accessToken: string | null
     refreshToken: string | null
     createdAt: Date | null
@@ -3069,8 +3065,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsMaxAggregateOutputType = {
     id: string | null
-    clientId: string | null
-    clientSecret: string | null
     accessToken: string | null
     refreshToken: string | null
     createdAt: Date | null
@@ -3082,8 +3076,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCountAggregateOutputType = {
     id: number
-    clientId: number
-    clientSecret: number
     accessToken: number
     refreshToken: number
     createdAt: number
@@ -3097,8 +3089,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsMinAggregateInputType = {
     id?: true
-    clientId?: true
-    clientSecret?: true
     accessToken?: true
     refreshToken?: true
     createdAt?: true
@@ -3110,8 +3100,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsMaxAggregateInputType = {
     id?: true
-    clientId?: true
-    clientSecret?: true
     accessToken?: true
     refreshToken?: true
     createdAt?: true
@@ -3123,8 +3111,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCountAggregateInputType = {
     id?: true
-    clientId?: true
-    clientSecret?: true
     accessToken?: true
     refreshToken?: true
     createdAt?: true
@@ -3215,8 +3201,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsGroupByOutputType = {
     id: string
-    clientId: string | null
-    clientSecret: string | null
     accessToken: string | null
     refreshToken: string | null
     createdAt: Date
@@ -3245,8 +3229,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsSelect = {
     id?: boolean
-    clientId?: boolean
-    clientSecret?: boolean
     accessToken?: boolean
     refreshToken?: boolean
     createdAt?: boolean
@@ -12510,8 +12492,6 @@ export namespace Prisma {
 
   export const YoutubeCredentialsScalarFieldEnum: {
     id: 'id',
-    clientId: 'clientId',
-    clientSecret: 'clientSecret',
     accessToken: 'accessToken',
     refreshToken: 'refreshToken',
     createdAt: 'createdAt',
@@ -12635,8 +12615,6 @@ export namespace Prisma {
     OR?: Enumerable<YoutubeCredentialsWhereInput>
     NOT?: Enumerable<YoutubeCredentialsWhereInput>
     id?: StringFilter | string
-    clientId?: StringNullableFilter | string | null
-    clientSecret?: StringNullableFilter | string | null
     accessToken?: StringNullableFilter | string | null
     refreshToken?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
@@ -12650,8 +12628,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsOrderByWithRelationInput = {
     id?: SortOrder
-    clientId?: SortOrder
-    clientSecret?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     createdAt?: SortOrder
@@ -12671,8 +12647,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsOrderByWithAggregationInput = {
     id?: SortOrder
-    clientId?: SortOrder
-    clientSecret?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     createdAt?: SortOrder
@@ -12690,8 +12664,6 @@ export namespace Prisma {
     OR?: Enumerable<YoutubeCredentialsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<YoutubeCredentialsScalarWhereWithAggregatesInput>
     id?: StringWithAggregatesFilter | string
-    clientId?: StringNullableWithAggregatesFilter | string | null
-    clientSecret?: StringNullableWithAggregatesFilter | string | null
     accessToken?: StringNullableWithAggregatesFilter | string | null
     refreshToken?: StringNullableWithAggregatesFilter | string | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
@@ -13275,8 +13247,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCreateInput = {
     id?: string
-    clientId?: string | null
-    clientSecret?: string | null
     accessToken?: string | null
     refreshToken?: string | null
     createdAt?: Date | string
@@ -13288,8 +13258,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUncheckedCreateInput = {
     id?: string
-    clientId?: string | null
-    clientSecret?: string | null
     accessToken?: string | null
     refreshToken?: string | null
     createdAt?: Date | string
@@ -13301,8 +13269,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13314,8 +13280,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13327,8 +13291,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCreateManyInput = {
     id?: string
-    clientId?: string | null
-    clientSecret?: string | null
     accessToken?: string | null
     refreshToken?: string | null
     createdAt?: Date | string
@@ -13340,8 +13302,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13351,8 +13311,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -14081,8 +14039,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCountOrderByAggregateInput = {
     id?: SortOrder
-    clientId?: SortOrder
-    clientSecret?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     createdAt?: SortOrder
@@ -14094,8 +14050,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsMaxOrderByAggregateInput = {
     id?: SortOrder
-    clientId?: SortOrder
-    clientSecret?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     createdAt?: SortOrder
@@ -14107,8 +14061,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsMinOrderByAggregateInput = {
     id?: SortOrder
-    clientId?: SortOrder
-    clientSecret?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     createdAt?: SortOrder
@@ -15253,8 +15205,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCreateWithoutUserInput = {
     id?: string
-    clientId?: string | null
-    clientSecret?: string | null
     accessToken?: string | null
     refreshToken?: string | null
     createdAt?: Date | string
@@ -15265,8 +15215,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUncheckedCreateWithoutUserInput = {
     id?: string
-    clientId?: string | null
-    clientSecret?: string | null
     accessToken?: string | null
     refreshToken?: string | null
     createdAt?: Date | string
@@ -15392,8 +15340,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15404,8 +15350,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15985,8 +15929,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsCreateWithoutProjectInput = {
     id?: string
-    clientId?: string | null
-    clientSecret?: string | null
     accessToken?: string | null
     refreshToken?: string | null
     createdAt?: Date | string
@@ -15997,8 +15939,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUncheckedCreateWithoutProjectInput = {
     id?: string
-    clientId?: string | null
-    clientSecret?: string | null
     accessToken?: string | null
     refreshToken?: string | null
     createdAt?: Date | string
@@ -16083,8 +16023,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16095,8 +16033,6 @@ export namespace Prisma {
 
   export type YoutubeCredentialsUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientId?: NullableStringFieldUpdateOperationsInput | string | null
-    clientSecret?: NullableStringFieldUpdateOperationsInput | string | null
     accessToken?: NullableStringFieldUpdateOperationsInput | string | null
     refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

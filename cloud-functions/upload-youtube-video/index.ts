@@ -1,13 +1,13 @@
 import * as functions from "@google-cloud/functions-framework";
 import * as fs from "fs";
 import { google } from "googleapis";
-import * as Storage from "@google-cloud/storage";
+import { Storage } from "@google-cloud/storage";
 
 import { PrismaClient } from "./generated";
 
 const prisma = new PrismaClient();
 
-const storage = new Storage.Storage();
+const storage = new Storage();
 
 functions.cloudEvent("upload-youtube-video", async (cloudEvent) => {
   await uploadYoutubeVideo({
@@ -61,6 +61,7 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
         id: content.project.user.id,
       },
       select: {
+        id: true,
         youtubeCredentials: {
           select: {
             accessToken: true,
@@ -81,19 +82,17 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       throw new Error("MISSING_YOUTUBE_CREDENTIALS");
     }
 
-    const VIDEO_FILE_PATH = `${content.slug}-yt-short.mp4`;
+    const videoFilePath = `${content.slug}-yt-short.mp4`;
 
     // get video from gcs bucket
-    storage
-      .bucket(content.project.user.id)
-      .file(VIDEO_FILE_PATH)
-      .createReadStream()
-      .pipe(fs.createWriteStream(VIDEO_FILE_PATH))
-      .on("finish", () => {
-        console.log("finished downloading video");
-      });
+    const video = await getVideostreamFromGCS({
+      storage,
+      bucket: user.id,
+      videoFilePath,
+    });
 
-    // authenticate with youtube
+    console.log(video, "video");
+
     const oauth2Client = new google.auth.OAuth2(
       process.env.YOUTUBE_CLIENT_ID,
       process.env.YOUTUBE_CLIENT_SECRET,
@@ -105,7 +104,6 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       refresh_token: user.youtubeCredentials.refreshToken,
     });
 
-    // upload video to youtube
     const youtube = google.youtube({
       version: "v3",
       auth: oauth2Client,
@@ -125,7 +123,7 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
           },
         },
         media: {
-          body: fs.createReadStream(VIDEO_FILE_PATH),
+          body: fs.createReadStream(videoFilePath),
         },
       },
       {
@@ -138,6 +136,31 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_UPLOADING_YOUTUBE_VIDEO");
+  }
+}
+
+async function getVideostreamFromGCS(params: {
+  storage: Storage;
+  bucket: string;
+  videoFilePath: string;
+}) {
+  try {
+    const videostream = storage
+      .bucket(params.bucket)
+      .file(params.videoFilePath)
+      .createReadStream()
+      .pipe(fs.createWriteStream(params.videoFilePath))
+      .on("finish", () => {
+        console.log("finished downloading video");
+      });
+
+    return {
+      videostream,
+      videoFilePath: params.videoFilePath,
+    };
+  } catch (error) {
+    console.log(error, "error");
+    throw new Error("ERROR_DOWNLOADING_VIDEO");
   }
 }
 

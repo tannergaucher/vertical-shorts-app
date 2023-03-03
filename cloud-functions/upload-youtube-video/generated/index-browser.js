@@ -192,8 +192,6 @@ exports.Prisma.UserScalarFieldEnum = makeEnum({
 
 exports.Prisma.YoutubeCredentialsScalarFieldEnum = makeEnum({
   id: 'id',
-  clientId: 'clientId',
-  clientSecret: 'clientSecret',
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
   createdAt: 'createdAt',
