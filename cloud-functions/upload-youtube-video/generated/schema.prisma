@@ -34,8 +34,6 @@ model Password {
 
 model YoutubeCredentials {
   id           String   @id @default(cuid())
-  clientId     String?
-  clientSecret String?
   accessToken  String?
   refreshToken String?
   createdAt    DateTime @default(now())

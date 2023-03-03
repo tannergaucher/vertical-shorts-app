@@ -16,10 +16,14 @@ select {
   font-size: larger;
 }
 
+input {
+  width: calc(100% - 8px);
+  margin-block-end: 8px;
+}
+
 button,
 select {
   width: 100%;
-  text-align: left;
 }
 
 dialog {
