@@ -41,8 +41,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     projectId,
   });
 
-  console.log("loadercontent", content);
-
   return json({ content });
 };
 
