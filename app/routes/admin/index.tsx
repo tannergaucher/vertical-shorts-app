@@ -1,5 +1,4 @@
 import type { LoaderArgs } from "@remix-run/node";
-import type { LinksFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
@@ -13,8 +12,6 @@ type LoaderData = {
 
 export const loader = async ({ request }: LoaderArgs) => {
   const user = await getUser(request);
-
-  console.log(user, "_user");
 
   if (!user?.id) {
     return redirect(Routes.Login);
@@ -33,8 +30,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Page() {
   const { contents } = useLoaderData<LoaderData>();
-
-  console.log(contents, "contents");
 
   return (
     <main>
