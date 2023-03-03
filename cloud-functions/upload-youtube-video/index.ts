@@ -56,17 +56,6 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       throw new Error("NO_CONTENT");
     }
 
-    const VIDEO_FILE_PATH = `${content.slug}-yt-short.mp4`;
-
-    storage
-      .bucket(content.project.user.id)
-      .file(VIDEO_FILE_PATH)
-      .createReadStream()
-      .pipe(fs.createWriteStream(VIDEO_FILE_PATH))
-      .on("finish", () => {
-        console.log("finished downloading video");
-      });
-
     const user = await prisma.user.findUnique({
       where: {
         id: content.project.user.id,
@@ -85,15 +74,26 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       throw new Error("NO_USER");
     }
 
-    if (!user.youtubeCredentials?.accessToken) {
-      throw new Error("NO_YOUTUBE_ACCESS_TOKEN");
+    if (
+      !user.youtubeCredentials?.accessToken ||
+      !user.youtubeCredentials?.refreshToken
+    ) {
+      throw new Error("MISSING_YOUTUBE_CREDENTIALS");
     }
 
-    if (!user.youtubeCredentials?.refreshToken) {
-      throw new Error("NO_YOUTUBE_REFRESH_TOKEN");
-    }
+    const VIDEO_FILE_PATH = `${content.slug}-yt-short.mp4`;
 
-    // use service account to upload video
+    // get video from gcs bucket
+    storage
+      .bucket(content.project.user.id)
+      .file(VIDEO_FILE_PATH)
+      .createReadStream()
+      .pipe(fs.createWriteStream(VIDEO_FILE_PATH))
+      .on("finish", () => {
+        console.log("finished downloading video");
+      });
+
+    // authenticate with youtube
     const oauth2Client = new google.auth.OAuth2(
       process.env.YOUTUBE_CLIENT_ID,
       process.env.YOUTUBE_CLIENT_SECRET,
@@ -105,6 +105,7 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       refresh_token: user.youtubeCredentials.refreshToken,
     });
 
+    // upload video to youtube
     const youtube = google.youtube({
       version: "v3",
       auth: oauth2Client,
@@ -127,10 +128,7 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
           body: fs.createReadStream(VIDEO_FILE_PATH),
         },
       },
-
       {
-        // Use the `onUploadProgress` event from Axios to track the
-        // number of bytes uploaded to this point.
         onUploadProgress: (evt) => {
           const progress = (evt.bytesRead / evt.contentLength) * 100;
           console.log(`${Math.round(progress)}% complete`);
