@@ -87,17 +87,6 @@ export const action: ActionFunction = async ({ request }) => {
     thumbnail: `${slug}_thumbnail.jpg`,
   });
 
-  // const dataBuffer = Buffer.from(
-  //   JSON.stringify({
-  //     slug,
-  //     projectId: user.currentProjectId,
-  //   })
-  // );
-
-  // await pubsub
-  //   .topic("update-content-thumbnail")
-  //   .publishMessage({ data: dataBuffer });
-
   return redirect(Routes.AdminContenVideo(slug));
 };
 

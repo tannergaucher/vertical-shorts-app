@@ -4,7 +4,6 @@ import { redirect } from "@remix-run/node";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import { pubsub } from "~/entry.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -27,14 +26,6 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
     slug,
   });
-
-  // const dataBuffer = Buffer.from(
-  //   JSON.stringify({ slug, projectId: user.currentProjectId })
-  // );
-
-  // await pubsub.topic("update-content-title").publishMessage({
-  //   data: dataBuffer,
-  // });
 
   return redirect(Routes.AdminContentThumbnail(slug));
 };
