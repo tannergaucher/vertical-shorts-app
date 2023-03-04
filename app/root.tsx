@@ -13,8 +13,7 @@ import {
 
 import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
-
-const SITE_TITLE = "Vertical Publisher";
+import { Routes } from "./routes";
 
 export const links: LinksFunction = () => {
   return [
@@ -51,9 +50,20 @@ export default function App() {
       </head>
       <body>
         <nav>
-          <Link to="/">
-            <em>{SITE_TITLE}</em>
-          </Link>
+          <h1
+            style={{ textOrientation: "upright", writingMode: "vertical-rl" }}
+          >
+            <Link to="/">
+              <b>VERTICAL</b>
+            </Link>
+          </h1>
+          <h2>
+            <Link to={Routes.AdminContentTitle}>Publish</Link>
+          </h2>
+
+          <h2>
+            <Link to="/admin">Admin</Link>
+          </h2>
         </nav>
         <Outlet />
         <ScrollRestoration />

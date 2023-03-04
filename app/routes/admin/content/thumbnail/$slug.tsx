@@ -8,14 +8,14 @@ import {
   unstable_createFileUploadHandler,
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
+import type { Storage } from "@google-cloud/storage";
 
 import invariant from "tiny-invariant";
 
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
-import { storage } from "~/entry.server";
-import type { Storage } from "@google-cloud/storage";
+import { pubsub, storage } from "~/entry.server";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -87,7 +87,11 @@ export const action: ActionFunction = async ({ request }) => {
     thumbnail: `${slug}_thumbnail.jpg`,
   });
 
-  // publish processVideoContent message
+  // publish message
+
+  await pubsub
+    .topic("content-updated")
+    .publishJSON({ slug, projectId: user.currentProjectId });
 
   return redirect(Routes.AdminContenVideo(slug));
 };

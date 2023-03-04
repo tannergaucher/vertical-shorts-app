@@ -1,6 +1,6 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 
 import { getContents } from "~/models/content.server";
 import { Routes } from "~/routes";
@@ -33,24 +33,17 @@ export default function Page() {
 
   return (
     <main>
-      <fieldset>
-        <Form>
-          <label htmlFor="currentProject">Current Project</label>
-          <br />
-          <select
-            id="currentProject"
-            name="currentProject"
-            style={{
-              width: "100%",
-            }}
-          >
-            {/* projects from db */}
-            <option value="1">Project 1</option>
-            <option value="2">Project 2</option>
-            <option value="3">Project 3</option>
-          </select>
-        </Form>
-      </fieldset>
+      <ul>
+        {contents?.map((content) => (
+          <li key={content.slug}>
+            <Link to={Routes.AdminContentPreview(content.slug)}>{`${
+              content.published
+                ? `${content.title}`
+                : `Draft - ${content.title}`
+            }`}</Link>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }

@@ -35,7 +35,6 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   return (
     <main>
-      <h1>Create Content</h1>
       <Form method="post">
         <label htmlFor="">
           Title
