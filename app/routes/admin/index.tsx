@@ -87,7 +87,11 @@ export default function Page() {
             }}
           >
             {user?.projects.map((project) => (
-              <option key={project.id} value={project.id}>
+              <option
+                key={project.id}
+                value={project.id}
+                selected={project.id === user.currentProjectId}
+              >
                 {project.title}
               </option>
             ))}
