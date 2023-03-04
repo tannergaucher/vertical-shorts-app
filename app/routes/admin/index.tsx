@@ -15,6 +15,12 @@ enum IntegrationType {
   Twitter = "Twitter",
 }
 
+interface IntegrationDetails {
+  channelName?: string;
+  type: IntegrationType;
+  live?: boolean;
+}
+
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
   user?: Awaited<ReturnType<typeof getUser>>;
@@ -207,12 +213,6 @@ function IntegrationsGrid({
       </section>
     </div>
   );
-}
-
-interface IntegrationDetails {
-  channelName?: string;
-  type: IntegrationType;
-  live?: boolean;
 }
 
 function Integration({ channelName, type, live }: IntegrationDetails) {
