@@ -34,7 +34,6 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect(Routes.AdminCreateProject);
   }
 
-  // todo auth with youtube and get channel details
   return json<LoaderData>({
     user,
     contents: await getContents({
@@ -42,6 +41,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     }),
     youtube: {
       type: IntegrationType.Youtube,
+      // TODO: get channel details from youtube
       channelName: "Todo Channel",
       live: true,
     },

@@ -67,3 +67,7 @@ nav {
     background: red;
   }
 }
+
+fieldset:disabled {
+  opacity: 0.5;
+}

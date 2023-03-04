@@ -7,7 +7,7 @@ import {
   unstable_createMemoryUploadHandler,
   unstable_createFileUploadHandler,
 } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import type { Storage } from "@google-cloud/storage";
 
 import invariant from "tiny-invariant";
@@ -90,7 +90,7 @@ export const action: ActionFunction = async ({ request }) => {
   // publish message
 
   await pubsub
-    .topic("content-updated")
+    .topic("update-content-thumbnail")
     .publishJSON({ slug, projectId: user.currentProjectId });
 
   return redirect(Routes.AdminContenVideo(slug));
@@ -99,17 +99,21 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
+  const transition = useTransition();
+
   return (
     <main>
       <h1>{content.title}</h1>
       <h2>Upload Thubmnail</h2>
-      <Form method="post" encType="multipart/form-data">
-        <label>
-          <input type="file" name="thumbnail" required />
-        </label>
-        <input type="hidden" name="slug" value={content.slug} />
-        <button type="submit">Next</button>
-      </Form>
+      <fieldset disabled={transition.state === "loading"}>
+        <Form method="post" encType="multipart/form-data">
+          <label>
+            <input type="file" name="thumbnail" required />
+          </label>
+          <input type="hidden" name="slug" value={content.slug} />
+          <button type="submit">Next</button>
+        </Form>
+      </fieldset>
     </main>
   );
 }
