@@ -18,6 +18,9 @@ type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
   user?: Awaited<ReturnType<typeof getUser>>;
   youtube?: IntegrationDetails;
+  tiktok?: IntegrationDetails;
+  instagram?: IntegrationDetails;
+  facebook?: IntegrationDetails;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -39,7 +42,23 @@ export const loader = async ({ request }: LoaderArgs) => {
     }),
     youtube: {
       type: IntegrationType.Youtube,
-      channelName: "Test Channel",
+      channelName: "Todo Channel",
+      live: true,
+    },
+    tiktok: {
+      type: IntegrationType.TikTok,
+      channelName: "Todo Channel",
+      live: false,
+    },
+    instagram: {
+      type: IntegrationType.Instagram,
+      channelName: "Todo Channel",
+      live: false,
+    },
+    facebook: {
+      type: IntegrationType.Facebook,
+      channelName: "Todo Channel",
+      live: false,
     },
   });
 };
@@ -67,7 +86,8 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { user, youtube } = useLoaderData<LoaderData>();
+  const { user, youtube, tiktok, instagram, facebook } =
+    useLoaderData<LoaderData>();
 
   const submit = useSubmit();
 
@@ -109,7 +129,12 @@ export default function Page() {
           </select>
         </Form>
       </fieldset>
-      <IntegrationsGrid youtube={youtube} />
+      <IntegrationsGrid
+        youtube={youtube}
+        tiktok={tiktok}
+        instagram={instagram}
+        facebook={facebook}
+      />
     </main>
   );
 }
