@@ -7,9 +7,17 @@ import { getContents } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
+enum IntegrationType {
+  Youtube = "YouTube",
+  TikTok = "TikTok",
+  Instagram = "Instagram",
+  Facebook = "Facebook",
+}
+
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
   user?: Awaited<ReturnType<typeof getUser>>;
+  youtube?: IntegrationDetails;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -23,20 +31,23 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect(Routes.AdminCreateProject);
   }
 
+  // todo auth with youtube and get channel details
   return json<LoaderData>({
     user,
     contents: await getContents({
       projectId: user.currentProjectId,
     }),
+    youtube: {
+      type: IntegrationType.Youtube,
+      channelName: "Test Channel",
+    },
   });
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log("_submit");
   const formData = await request.formData();
-  // console.log(formData, "_formData");
-  const currentProjectId = formData.get("currentProjectId");
 
+  const currentProjectId = formData.get("currentProjectId");
   const userId = formData.get("userId");
 
   if (!currentProjectId || !userId) {
@@ -56,7 +67,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { user } = useLoaderData<LoaderData>();
+  const { user, youtube } = useLoaderData<LoaderData>();
 
   const submit = useSubmit();
 
@@ -98,6 +109,77 @@ export default function Page() {
           </select>
         </Form>
       </fieldset>
+      <IntegrationsGrid youtube={youtube} />
     </main>
+  );
+}
+
+function IntegrationsGrid({
+  youtube,
+  tiktok,
+  instagram,
+  facebook,
+}: {
+  youtube?: IntegrationDetails;
+  tiktok?: IntegrationDetails;
+  instagram?: IntegrationDetails;
+  facebook?: IntegrationDetails;
+}) {
+  return (
+    <div>
+      <h2>Integrations:</h2>
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+        }}
+      >
+        {youtube ? (
+          <Integration
+            channelName={youtube.channelName}
+            type={youtube.type}
+            live={youtube.live}
+          />
+        ) : null}
+        {tiktok ? (
+          <Integration
+            channelName={tiktok.channelName}
+            type={tiktok.type}
+            live={tiktok.live}
+          />
+        ) : null}
+        {instagram ? (
+          <Integration
+            channelName={instagram.channelName}
+            type={instagram.type}
+            live={instagram.live}
+          />
+        ) : null}
+        {facebook ? (
+          <Integration
+            channelName={facebook.channelName}
+            type={facebook.type}
+            live={facebook.live}
+          />
+        ) : null}
+      </section>
+    </div>
+  );
+}
+
+interface IntegrationDetails {
+  channelName?: string;
+  type: IntegrationType;
+  live?: boolean;
+}
+
+function Integration({ channelName, type, live }: IntegrationDetails) {
+  return (
+    <div>
+      <h3>{live ? type : `${type} - Coming Soon`}</h3>
+      <ul>
+        <li>{channelName}</li>
+      </ul>
+    </div>
   );
 }
