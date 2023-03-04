@@ -2,10 +2,10 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import {
   json,
   redirect,
-  unstable_parseMultipartFormData,
   unstable_composeUploadHandlers,
   unstable_createMemoryUploadHandler,
   unstable_createFileUploadHandler,
+  unstable_parseMultipartFormData,
 } from "@remix-run/node";
 import { Form, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -13,7 +13,7 @@ import { storage } from "~/entry.server";
 
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
-import { uploadGcsFile } from "~/routes/admin/content/thumbnail/$slug";
+import { uploadGcsFile } from "~/utils/gcs";
 import { Routes } from "~/routes";
 import { pubsub } from "~/entry.server";
 

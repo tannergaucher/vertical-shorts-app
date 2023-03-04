@@ -8,7 +8,6 @@ import {
   unstable_createFileUploadHandler,
 } from "@remix-run/node";
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
-import type { Storage } from "@google-cloud/storage";
 
 import invariant from "tiny-invariant";
 
@@ -16,6 +15,7 @@ import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { pubsub, storage } from "~/entry.server";
+import { uploadGcsFile } from "~/utils/gcs";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -87,11 +87,16 @@ export const action: ActionFunction = async ({ request }) => {
     thumbnail: `${slug}_thumbnail.jpg`,
   });
 
-  // publish message
+  // const dataBuffer = Buffer.from(
+  //   JSON.stringify({
+  //     slug,
+  //     projectId: user.currentProjectId,
+  //   })
+  // );
 
-  await pubsub
-    .topic("update-content-thumbnail")
-    .publishJSON({ slug, projectId: user.currentProjectId });
+  // await pubsub
+  //   .topic("update-content-thumbnail")
+  //   .publishMessage({ data: dataBuffer });
 
   return redirect(Routes.AdminContenVideo(slug));
 };
@@ -116,27 +121,4 @@ export default function Page() {
       </fieldset>
     </main>
   );
-}
-
-export async function uploadGcsFile(params: {
-  storage: Storage;
-  bucket: string;
-  filePath: string;
-  destFileName: string;
-}) {
-  try {
-    const { bucket, filePath, destFileName, storage } = params;
-
-    const options = {
-      destination: destFileName,
-      public: true,
-    };
-
-    await storage.bucket(bucket).upload(filePath, options);
-
-    console.log(`${destFileName} uploaded to ${bucket}`);
-  } catch (error) {
-    console.error(error);
-    throw new Error("Error uploading thumbnail to GCS");
-  }
 }

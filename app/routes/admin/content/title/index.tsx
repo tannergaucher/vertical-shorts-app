@@ -28,13 +28,13 @@ export const action: ActionFunction = async ({ request }) => {
     slug,
   });
 
-  const dataBuffer = Buffer.from(
-    JSON.stringify({ slug, projectId: user.currentProjectId })
-  );
+  // const dataBuffer = Buffer.from(
+  //   JSON.stringify({ slug, projectId: user.currentProjectId })
+  // );
 
-  await pubsub.topic("update-content-title").publishMessage({
-    data: dataBuffer,
-  });
+  // await pubsub.topic("update-content-title").publishMessage({
+  //   data: dataBuffer,
+  // });
 
   return redirect(Routes.AdminContentThumbnail(slug));
 };
