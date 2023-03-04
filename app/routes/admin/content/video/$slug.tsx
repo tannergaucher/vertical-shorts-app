@@ -89,7 +89,7 @@ export const action: ActionFunction = async ({ request }) => {
     video: videoFile,
   });
 
-  pubsub.topic("process-content-video").publishMessage({
+  pubsub.topic("process-content").publishMessage({
     json: { slug, projectId: user.currentProjectId },
   });
 
