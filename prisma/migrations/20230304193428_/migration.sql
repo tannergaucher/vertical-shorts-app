@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "IntegrationType" AS ENUM ('YOUTUBE', 'INSTAGRAM', 'TIKTOK', 'FACEBOOK', 'TWITTER');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" STRING NOT NULL,
@@ -18,14 +21,13 @@ CREATE TABLE "Password" (
 -- CreateTable
 CREATE TABLE "YoutubeCredentials" (
     "id" STRING NOT NULL,
-    "clientId" STRING NOT NULL,
-    "clientSecret" STRING NOT NULL,
-    "accessToken" STRING NOT NULL,
-    "refreshToken" STRING NOT NULL,
+    "accessToken" STRING,
+    "refreshToken" STRING,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "channelId" STRING NOT NULL,
+    "channelId" STRING,
     "userId" STRING NOT NULL,
+    "projectId" STRING NOT NULL,
 
     CONSTRAINT "YoutubeCredentials_pkey" PRIMARY KEY ("id")
 );
@@ -72,6 +74,7 @@ CREATE TABLE "Content" (
     "slug" STRING NOT NULL,
     "title" STRING NOT NULL,
     "description" STRING,
+    "markdown" STRING,
     "thumbnail" STRING,
     "video" STRING,
     "tags" STRING[],
@@ -79,9 +82,8 @@ CREATE TABLE "Content" (
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "projectId" STRING NOT NULL,
-    "tikTokPostPostSlug" STRING,
-    "instagramPostPostSlug" STRING,
-    "facebookPostPostSlug" STRING
+
+    CONSTRAINT "Content_pkey" PRIMARY KEY ("projectId","slug")
 );
 
 -- CreateTable
@@ -96,28 +98,18 @@ CREATE TABLE "Project" (
 );
 
 -- CreateTable
-CREATE TABLE "YoutubeShortPost" (
-    "gcsVideoUrl" STRING NOT NULL,
-    "postSlug" STRING NOT NULL
-);
+CREATE TABLE "Channel" (
+    "id" STRING NOT NULL,
+    "name" STRING NOT NULL,
+    "views" INT4,
+    "subscribers" INT4,
+    "thumbnail" STRING,
+    "integration" "IntegrationType" NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "projectId" STRING NOT NULL,
 
--- CreateTable
-CREATE TABLE "TikTokPost" (
-    "gcsVideoUrl" STRING NOT NULL,
-    "postSlug" STRING NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "InstagramPost" (
-    "gcsVideoUrl" STRING NOT NULL,
-    "postSlug" STRING NOT NULL,
-    "caption" STRING NOT NULL
-);
-
--- CreateTable
-CREATE TABLE "FacebookPost" (
-    "gcsVideoUrl" STRING NOT NULL,
-    "postSlug" STRING NOT NULL
+    CONSTRAINT "Channel_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -128,6 +120,9 @@ CREATE UNIQUE INDEX "Password_userId_key" ON "Password"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "YoutubeCredentials_userId_key" ON "YoutubeCredentials"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "YoutubeCredentials_projectId_key" ON "YoutubeCredentials"("projectId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "InstagramCredentials_userId_key" ON "InstagramCredentials"("userId");
@@ -142,25 +137,19 @@ CREATE UNIQUE INDEX "FacebookCredentials_userId_key" ON "FacebookCredentials"("u
 CREATE UNIQUE INDEX "Content_slug_key" ON "Content"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Content_projectId_key" ON "Content"("projectId");
+CREATE UNIQUE INDEX "Channel_projectId_key" ON "Channel"("projectId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "YoutubeShortPost_postSlug_key" ON "YoutubeShortPost"("postSlug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "TikTokPost_postSlug_key" ON "TikTokPost"("postSlug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "InstagramPost_postSlug_key" ON "InstagramPost"("postSlug");
-
--- CreateIndex
-CREATE UNIQUE INDEX "FacebookPost_postSlug_key" ON "FacebookPost"("postSlug");
+CREATE UNIQUE INDEX "Channel_projectId_integration_key" ON "Channel"("projectId", "integration");
 
 -- AddForeignKey
 ALTER TABLE "Password" ADD CONSTRAINT "Password_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "YoutubeCredentials" ADD CONSTRAINT "YoutubeCredentials_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "YoutubeCredentials" ADD CONSTRAINT "YoutubeCredentials_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "InstagramCredentials" ADD CONSTRAINT "InstagramCredentials_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -175,13 +164,7 @@ ALTER TABLE "FacebookCredentials" ADD CONSTRAINT "FacebookCredentials_userId_fke
 ALTER TABLE "Content" ADD CONSTRAINT "Content_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Content" ADD CONSTRAINT "Content_tikTokPostPostSlug_fkey" FOREIGN KEY ("tikTokPostPostSlug") REFERENCES "TikTokPost"("postSlug") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Content" ADD CONSTRAINT "Content_instagramPostPostSlug_fkey" FOREIGN KEY ("instagramPostPostSlug") REFERENCES "InstagramPost"("postSlug") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Content" ADD CONSTRAINT "Content_facebookPostPostSlug_fkey" FOREIGN KEY ("facebookPostPostSlug") REFERENCES "FacebookPost"("postSlug") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Project" ADD CONSTRAINT "Project_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Channel" ADD CONSTRAINT "Channel_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

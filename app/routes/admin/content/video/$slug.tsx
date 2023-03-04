@@ -101,7 +101,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>{content.title}</h1>
+      <h1>Create Post: {content.title}</h1>
       {content.thumbnail ? (
         <img
           src={`https://storage.googleapis.com/${content.projectId}/${content.thumbnail}`}

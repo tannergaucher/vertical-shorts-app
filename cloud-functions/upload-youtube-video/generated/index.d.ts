@@ -119,47 +119,38 @@ export type Project = {
 }
 
 /**
- * Model YoutubeShortPost
+ * Model Channel
  * 
  */
-export type YoutubeShortPost = {
-  gcsVideoUrl: string
-  postSlug: string
+export type Channel = {
+  id: string
+  name: string
+  views: number | null
+  subscribers: number | null
+  thumbnail: string | null
+  integration: IntegrationType
+  createdAt: Date
+  updatedAt: Date
+  projectId: string
 }
 
-/**
- * Model TikTokPost
- * 
- */
-export type TikTokPost = {
-  gcsVideoUrl: string
-  postSlug: string
-  contentProjectId: string
-  contentSlug: string
-}
 
 /**
- * Model InstagramPost
- * 
+ * Enums
  */
-export type InstagramPost = {
-  gcsVideoUrl: string
-  postSlug: string
-  caption: string
-  contentProjectId: string
-  contentSlug: string
-}
 
-/**
- * Model FacebookPost
- * 
- */
-export type FacebookPost = {
-  gcsVideoUrl: string
-  postSlug: string
-  contentProjectId: string
-  contentSlug: string
-}
+// Based on
+// https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
+
+export const IntegrationType: {
+  YOUTUBE: 'YOUTUBE',
+  INSTAGRAM: 'INSTAGRAM',
+  TIKTOK: 'TIKTOK',
+  FACEBOOK: 'FACEBOOK',
+  TWITTER: 'TWITTER'
+};
+
+export type IntegrationType = (typeof IntegrationType)[keyof typeof IntegrationType]
 
 
 /**
@@ -383,44 +374,14 @@ export class PrismaClient<
   get project(): Prisma.ProjectDelegate<GlobalReject>;
 
   /**
-   * `prisma.youtubeShortPost`: Exposes CRUD operations for the **YoutubeShortPost** model.
+   * `prisma.channel`: Exposes CRUD operations for the **Channel** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more YoutubeShortPosts
-    * const youtubeShortPosts = await prisma.youtubeShortPost.findMany()
+    * // Fetch zero or more Channels
+    * const channels = await prisma.channel.findMany()
     * ```
     */
-  get youtubeShortPost(): Prisma.YoutubeShortPostDelegate<GlobalReject>;
-
-  /**
-   * `prisma.tikTokPost`: Exposes CRUD operations for the **TikTokPost** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more TikTokPosts
-    * const tikTokPosts = await prisma.tikTokPost.findMany()
-    * ```
-    */
-  get tikTokPost(): Prisma.TikTokPostDelegate<GlobalReject>;
-
-  /**
-   * `prisma.instagramPost`: Exposes CRUD operations for the **InstagramPost** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more InstagramPosts
-    * const instagramPosts = await prisma.instagramPost.findMany()
-    * ```
-    */
-  get instagramPost(): Prisma.InstagramPostDelegate<GlobalReject>;
-
-  /**
-   * `prisma.facebookPost`: Exposes CRUD operations for the **FacebookPost** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more FacebookPosts
-    * const facebookPosts = await prisma.facebookPost.findMany()
-    * ```
-    */
-  get facebookPost(): Prisma.FacebookPostDelegate<GlobalReject>;
+  get channel(): Prisma.ChannelDelegate<GlobalReject>;
 }
 
 export namespace Prisma {
@@ -917,10 +878,7 @@ export namespace Prisma {
     FacebookCredentials: 'FacebookCredentials',
     Content: 'Content',
     Project: 'Project',
-    YoutubeShortPost: 'YoutubeShortPost',
-    TikTokPost: 'TikTokPost',
-    InstagramPost: 'InstagramPost',
-    FacebookPost: 'FacebookPost'
+    Channel: 'Channel'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1135,10 +1093,12 @@ export namespace Prisma {
 
   export type ProjectCountOutputType = {
     content: number
+    channels: number
   }
 
   export type ProjectCountOutputTypeSelect = {
     content?: boolean
+    channels?: boolean
   }
 
   export type ProjectCountOutputTypeGetPayload<
@@ -7019,16 +6979,10 @@ export namespace Prisma {
     updatedAt?: boolean
     projectId?: boolean
     project?: boolean | ProjectArgs
-    tikTokPost?: boolean | TikTokPostArgs
-    instagramPost?: boolean | InstagramPostArgs
-    facebookPost?: boolean | FacebookPostArgs
   }
 
   export type ContentInclude = {
     project?: boolean | ProjectArgs
-    tikTokPost?: boolean | TikTokPostArgs
-    instagramPost?: boolean | InstagramPostArgs
-    facebookPost?: boolean | FacebookPostArgs
   }
 
   export type ContentGetPayload<
@@ -7042,18 +6996,12 @@ export namespace Prisma {
     ?'include' extends U
     ? Content  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :
-        P extends 'tikTokPost' ? TikTokPostGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
-        P extends 'instagramPost' ? InstagramPostGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
-        P extends 'facebookPost' ? FacebookPostGetPayload<Exclude<S['include'], undefined | null>[P]> | null :  never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :
-        P extends 'tikTokPost' ? TikTokPostGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
-        P extends 'instagramPost' ? InstagramPostGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
-        P extends 'facebookPost' ? FacebookPostGetPayload<Exclude<S['select'], undefined | null>[P]> | null :  P extends keyof Content ? Content[P] : never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Content ? Content[P] : never
   } 
     : Content
   : Content
@@ -7429,12 +7377,6 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
     project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
-
-    tikTokPost<T extends TikTokPostArgs = {}>(args?: Subset<T, TikTokPostArgs>): CheckSelect<T, Prisma__TikTokPostClient<TikTokPost | Null>, Prisma__TikTokPostClient<TikTokPostGetPayload<T> | Null>>;
-
-    instagramPost<T extends InstagramPostArgs = {}>(args?: Subset<T, InstagramPostArgs>): CheckSelect<T, Prisma__InstagramPostClient<InstagramPost | Null>, Prisma__InstagramPostClient<InstagramPostGetPayload<T> | Null>>;
-
-    facebookPost<T extends FacebookPostArgs = {}>(args?: Subset<T, FacebookPostArgs>): CheckSelect<T, Prisma__FacebookPostClient<FacebookPost | Null>, Prisma__FacebookPostClient<FacebookPostGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -7964,6 +7906,7 @@ export namespace Prisma {
     user?: boolean | UserArgs
     content?: boolean | ContentFindManyArgs
     youtubeCredentials?: boolean | YoutubeCredentialsArgs
+    channels?: boolean | ChannelFindManyArgs
     _count?: boolean | ProjectCountOutputTypeArgs
   }
 
@@ -7971,6 +7914,7 @@ export namespace Prisma {
     user?: boolean | UserArgs
     content?: boolean | ContentFindManyArgs
     youtubeCredentials?: boolean | YoutubeCredentialsArgs
+    channels?: boolean | ChannelFindManyArgs
     _count?: boolean | ProjectCountOutputTypeArgs
   }
 
@@ -7988,6 +7932,7 @@ export namespace Prisma {
         P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :
         P extends 'content' ? Array < ContentGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
         P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'channels' ? Array < ChannelGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
         P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
@@ -7996,6 +7941,7 @@ export namespace Prisma {
         P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :
         P extends 'content' ? Array < ContentGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
         P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'channels' ? Array < ChannelGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
         P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Project ? Project[P] : never
   } 
     : Project
@@ -8377,6 +8323,8 @@ export namespace Prisma {
 
     youtubeCredentials<T extends YoutubeCredentialsArgs = {}>(args?: Subset<T, YoutubeCredentialsArgs>): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials | Null>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | Null>>;
 
+    channels<T extends ChannelFindManyArgs = {}>(args?: Subset<T, ChannelFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Channel>| Null>, PrismaPromise<Array<ChannelGetPayload<T>>| Null>>;
+
     private get _document();
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -8732,1162 +8680,388 @@ export namespace Prisma {
 
 
   /**
-   * Model YoutubeShortPost
+   * Model Channel
    */
 
 
-  export type AggregateYoutubeShortPost = {
-    _count: YoutubeShortPostCountAggregateOutputType | null
-    _min: YoutubeShortPostMinAggregateOutputType | null
-    _max: YoutubeShortPostMaxAggregateOutputType | null
+  export type AggregateChannel = {
+    _count: ChannelCountAggregateOutputType | null
+    _avg: ChannelAvgAggregateOutputType | null
+    _sum: ChannelSumAggregateOutputType | null
+    _min: ChannelMinAggregateOutputType | null
+    _max: ChannelMaxAggregateOutputType | null
   }
 
-  export type YoutubeShortPostMinAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
+  export type ChannelAvgAggregateOutputType = {
+    views: number | null
+    subscribers: number | null
   }
 
-  export type YoutubeShortPostMaxAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
+  export type ChannelSumAggregateOutputType = {
+    views: number | null
+    subscribers: number | null
   }
 
-  export type YoutubeShortPostCountAggregateOutputType = {
-    gcsVideoUrl: number
-    postSlug: number
+  export type ChannelMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    views: number | null
+    subscribers: number | null
+    thumbnail: string | null
+    integration: IntegrationType | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    projectId: string | null
+  }
+
+  export type ChannelMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    views: number | null
+    subscribers: number | null
+    thumbnail: string | null
+    integration: IntegrationType | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    projectId: string | null
+  }
+
+  export type ChannelCountAggregateOutputType = {
+    id: number
+    name: number
+    views: number
+    subscribers: number
+    thumbnail: number
+    integration: number
+    createdAt: number
+    updatedAt: number
+    projectId: number
     _all: number
   }
 
 
-  export type YoutubeShortPostMinAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
+  export type ChannelAvgAggregateInputType = {
+    views?: true
+    subscribers?: true
   }
 
-  export type YoutubeShortPostMaxAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
+  export type ChannelSumAggregateInputType = {
+    views?: true
+    subscribers?: true
   }
 
-  export type YoutubeShortPostCountAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
+  export type ChannelMinAggregateInputType = {
+    id?: true
+    name?: true
+    views?: true
+    subscribers?: true
+    thumbnail?: true
+    integration?: true
+    createdAt?: true
+    updatedAt?: true
+    projectId?: true
+  }
+
+  export type ChannelMaxAggregateInputType = {
+    id?: true
+    name?: true
+    views?: true
+    subscribers?: true
+    thumbnail?: true
+    integration?: true
+    createdAt?: true
+    updatedAt?: true
+    projectId?: true
+  }
+
+  export type ChannelCountAggregateInputType = {
+    id?: true
+    name?: true
+    views?: true
+    subscribers?: true
+    thumbnail?: true
+    integration?: true
+    createdAt?: true
+    updatedAt?: true
+    projectId?: true
     _all?: true
   }
 
-  export type YoutubeShortPostAggregateArgs = {
+  export type ChannelAggregateArgs = {
     /**
-     * Filter which YoutubeShortPost to aggregate.
+     * Filter which Channel to aggregate.
      * 
     **/
-    where?: YoutubeShortPostWhereInput
+    where?: ChannelWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of YoutubeShortPosts to fetch.
+     * Determine the order of Channels to fetch.
      * 
     **/
-    orderBy?: Enumerable<YoutubeShortPostOrderByWithRelationInput>
+    orderBy?: Enumerable<ChannelOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      * 
     **/
-    cursor?: YoutubeShortPostWhereUniqueInput
+    cursor?: ChannelWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` YoutubeShortPosts from the position of the cursor.
+     * Take `±n` Channels from the position of the cursor.
      * 
     **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` YoutubeShortPosts.
+     * Skip the first `n` Channels.
      * 
     **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned YoutubeShortPosts
+     * Count returned Channels
     **/
-    _count?: true | YoutubeShortPostCountAggregateInputType
+    _count?: true | ChannelCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to find the minimum value
+     * Select which fields to average
     **/
-    _min?: YoutubeShortPostMinAggregateInputType
+    _avg?: ChannelAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Select which fields to find the maximum value
+     * Select which fields to sum
     **/
-    _max?: YoutubeShortPostMaxAggregateInputType
-  }
-
-  export type GetYoutubeShortPostAggregateType<T extends YoutubeShortPostAggregateArgs> = {
-        [P in keyof T & keyof AggregateYoutubeShortPost]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateYoutubeShortPost[P]>
-      : GetScalarType<T[P], AggregateYoutubeShortPost[P]>
-  }
-
-
-
-
-  export type YoutubeShortPostGroupByArgs = {
-    where?: YoutubeShortPostWhereInput
-    orderBy?: Enumerable<YoutubeShortPostOrderByWithAggregationInput>
-    by: Array<YoutubeShortPostScalarFieldEnum>
-    having?: YoutubeShortPostScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: YoutubeShortPostCountAggregateInputType | true
-    _min?: YoutubeShortPostMinAggregateInputType
-    _max?: YoutubeShortPostMaxAggregateInputType
-  }
-
-
-  export type YoutubeShortPostGroupByOutputType = {
-    gcsVideoUrl: string
-    postSlug: string
-    _count: YoutubeShortPostCountAggregateOutputType | null
-    _min: YoutubeShortPostMinAggregateOutputType | null
-    _max: YoutubeShortPostMaxAggregateOutputType | null
-  }
-
-  type GetYoutubeShortPostGroupByPayload<T extends YoutubeShortPostGroupByArgs> = PrismaPromise<
-    Array<
-      PickArray<YoutubeShortPostGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof YoutubeShortPostGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], YoutubeShortPostGroupByOutputType[P]>
-            : GetScalarType<T[P], YoutubeShortPostGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type YoutubeShortPostSelect = {
-    gcsVideoUrl?: boolean
-    postSlug?: boolean
-  }
-
-  export type YoutubeShortPostGetPayload<
-    S extends boolean | null | undefined | YoutubeShortPostArgs,
-    U = keyof S
-      > = S extends true
-        ? YoutubeShortPost
-    : S extends undefined
-    ? never
-    : S extends YoutubeShortPostArgs | YoutubeShortPostFindManyArgs
-    ?'include' extends U
-    ? YoutubeShortPost 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]:
-    P extends keyof YoutubeShortPost ? YoutubeShortPost[P] : never
-  } 
-    : YoutubeShortPost
-  : YoutubeShortPost
-
-
-  type YoutubeShortPostCountArgs = Merge<
-    Omit<YoutubeShortPostFindManyArgs, 'select' | 'include'> & {
-      select?: YoutubeShortPostCountAggregateInputType | true
-    }
-  >
-
-  export interface YoutubeShortPostDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-    /**
-     * Find zero or one YoutubeShortPost that matches the filter.
-     * @param {YoutubeShortPostFindUniqueArgs} args - Arguments to find a YoutubeShortPost
-     * @example
-     * // Get one YoutubeShortPost
-     * const youtubeShortPost = await prisma.youtubeShortPost.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends YoutubeShortPostFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, YoutubeShortPostFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'YoutubeShortPost'> extends True ? CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>> : CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost | null, null>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T> | null, null>>
-
-    /**
-     * Find the first YoutubeShortPost that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeShortPostFindFirstArgs} args - Arguments to find a YoutubeShortPost
-     * @example
-     * // Get one YoutubeShortPost
-     * const youtubeShortPost = await prisma.youtubeShortPost.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends YoutubeShortPostFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, YoutubeShortPostFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'YoutubeShortPost'> extends True ? CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>> : CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost | null, null>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T> | null, null>>
-
-    /**
-     * Find zero or more YoutubeShortPosts that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeShortPostFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all YoutubeShortPosts
-     * const youtubeShortPosts = await prisma.youtubeShortPost.findMany()
-     * 
-     * // Get first 10 YoutubeShortPosts
-     * const youtubeShortPosts = await prisma.youtubeShortPost.findMany({ take: 10 })
-     * 
-     * // Only select the `gcsVideoUrl`
-     * const youtubeShortPostWithGcsVideoUrlOnly = await prisma.youtubeShortPost.findMany({ select: { gcsVideoUrl: true } })
-     * 
-    **/
-    findMany<T extends YoutubeShortPostFindManyArgs>(
-      args?: SelectSubset<T, YoutubeShortPostFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<YoutubeShortPost>>, PrismaPromise<Array<YoutubeShortPostGetPayload<T>>>>
-
-    /**
-     * Create a YoutubeShortPost.
-     * @param {YoutubeShortPostCreateArgs} args - Arguments to create a YoutubeShortPost.
-     * @example
-     * // Create one YoutubeShortPost
-     * const YoutubeShortPost = await prisma.youtubeShortPost.create({
-     *   data: {
-     *     // ... data to create a YoutubeShortPost
-     *   }
-     * })
-     * 
-    **/
-    create<T extends YoutubeShortPostCreateArgs>(
-      args: SelectSubset<T, YoutubeShortPostCreateArgs>
-    ): CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>>
-
-    /**
-     * Create many YoutubeShortPosts.
-     *     @param {YoutubeShortPostCreateManyArgs} args - Arguments to create many YoutubeShortPosts.
-     *     @example
-     *     // Create many YoutubeShortPosts
-     *     const youtubeShortPost = await prisma.youtubeShortPost.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends YoutubeShortPostCreateManyArgs>(
-      args?: SelectSubset<T, YoutubeShortPostCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a YoutubeShortPost.
-     * @param {YoutubeShortPostDeleteArgs} args - Arguments to delete one YoutubeShortPost.
-     * @example
-     * // Delete one YoutubeShortPost
-     * const YoutubeShortPost = await prisma.youtubeShortPost.delete({
-     *   where: {
-     *     // ... filter to delete one YoutubeShortPost
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends YoutubeShortPostDeleteArgs>(
-      args: SelectSubset<T, YoutubeShortPostDeleteArgs>
-    ): CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>>
-
-    /**
-     * Update one YoutubeShortPost.
-     * @param {YoutubeShortPostUpdateArgs} args - Arguments to update one YoutubeShortPost.
-     * @example
-     * // Update one YoutubeShortPost
-     * const youtubeShortPost = await prisma.youtubeShortPost.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends YoutubeShortPostUpdateArgs>(
-      args: SelectSubset<T, YoutubeShortPostUpdateArgs>
-    ): CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>>
-
-    /**
-     * Delete zero or more YoutubeShortPosts.
-     * @param {YoutubeShortPostDeleteManyArgs} args - Arguments to filter YoutubeShortPosts to delete.
-     * @example
-     * // Delete a few YoutubeShortPosts
-     * const { count } = await prisma.youtubeShortPost.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends YoutubeShortPostDeleteManyArgs>(
-      args?: SelectSubset<T, YoutubeShortPostDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more YoutubeShortPosts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeShortPostUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many YoutubeShortPosts
-     * const youtubeShortPost = await prisma.youtubeShortPost.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends YoutubeShortPostUpdateManyArgs>(
-      args: SelectSubset<T, YoutubeShortPostUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one YoutubeShortPost.
-     * @param {YoutubeShortPostUpsertArgs} args - Arguments to update or create a YoutubeShortPost.
-     * @example
-     * // Update or create a YoutubeShortPost
-     * const youtubeShortPost = await prisma.youtubeShortPost.upsert({
-     *   create: {
-     *     // ... data to create a YoutubeShortPost
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the YoutubeShortPost we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends YoutubeShortPostUpsertArgs>(
-      args: SelectSubset<T, YoutubeShortPostUpsertArgs>
-    ): CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>>
-
-    /**
-     * Find one YoutubeShortPost that matches the filter or throw
-     * `NotFoundError` if no matches were found.
-     * @param {YoutubeShortPostFindUniqueOrThrowArgs} args - Arguments to find a YoutubeShortPost
-     * @example
-     * // Get one YoutubeShortPost
-     * const youtubeShortPost = await prisma.youtubeShortPost.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends YoutubeShortPostFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, YoutubeShortPostFindUniqueOrThrowArgs>
-    ): CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>>
-
-    /**
-     * Find the first YoutubeShortPost that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeShortPostFindFirstOrThrowArgs} args - Arguments to find a YoutubeShortPost
-     * @example
-     * // Get one YoutubeShortPost
-     * const youtubeShortPost = await prisma.youtubeShortPost.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends YoutubeShortPostFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, YoutubeShortPostFindFirstOrThrowArgs>
-    ): CheckSelect<T, Prisma__YoutubeShortPostClient<YoutubeShortPost>, Prisma__YoutubeShortPostClient<YoutubeShortPostGetPayload<T>>>
-
-    /**
-     * Count the number of YoutubeShortPosts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeShortPostCountArgs} args - Arguments to filter YoutubeShortPosts to count.
-     * @example
-     * // Count the number of YoutubeShortPosts
-     * const count = await prisma.youtubeShortPost.count({
-     *   where: {
-     *     // ... the filter for the YoutubeShortPosts we want to count
-     *   }
-     * })
-    **/
-    count<T extends YoutubeShortPostCountArgs>(
-      args?: Subset<T, YoutubeShortPostCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], YoutubeShortPostCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a YoutubeShortPost.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeShortPostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends YoutubeShortPostAggregateArgs>(args: Subset<T, YoutubeShortPostAggregateArgs>): PrismaPromise<GetYoutubeShortPostAggregateType<T>>
-
-    /**
-     * Group by YoutubeShortPost.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeShortPostGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends YoutubeShortPostGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: YoutubeShortPostGroupByArgs['orderBy'] }
-        : { orderBy?: YoutubeShortPostGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, YoutubeShortPostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetYoutubeShortPostGroupByPayload<T> : PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for YoutubeShortPost.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__YoutubeShortPostClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * YoutubeShortPost base type for findUnique actions
-   */
-  export type YoutubeShortPostFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-    /**
-     * Filter, which YoutubeShortPost to fetch.
-     * 
-    **/
-    where: YoutubeShortPostWhereUniqueInput
-  }
-
-  /**
-   * YoutubeShortPost: findUnique
-   */
-  export interface YoutubeShortPostFindUniqueArgs extends YoutubeShortPostFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * YoutubeShortPost base type for findFirst actions
-   */
-  export type YoutubeShortPostFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-    /**
-     * Filter, which YoutubeShortPost to fetch.
-     * 
-    **/
-    where?: YoutubeShortPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of YoutubeShortPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<YoutubeShortPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for YoutubeShortPosts.
-     * 
-    **/
-    cursor?: YoutubeShortPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` YoutubeShortPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` YoutubeShortPosts.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of YoutubeShortPosts.
-     * 
-    **/
-    distinct?: Enumerable<YoutubeShortPostScalarFieldEnum>
-  }
-
-  /**
-   * YoutubeShortPost: findFirst
-   */
-  export interface YoutubeShortPostFindFirstArgs extends YoutubeShortPostFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * YoutubeShortPost findMany
-   */
-  export type YoutubeShortPostFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-    /**
-     * Filter, which YoutubeShortPosts to fetch.
-     * 
-    **/
-    where?: YoutubeShortPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of YoutubeShortPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<YoutubeShortPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing YoutubeShortPosts.
-     * 
-    **/
-    cursor?: YoutubeShortPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` YoutubeShortPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` YoutubeShortPosts.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<YoutubeShortPostScalarFieldEnum>
-  }
-
-
-  /**
-   * YoutubeShortPost create
-   */
-  export type YoutubeShortPostCreateArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-    /**
-     * The data needed to create a YoutubeShortPost.
-     * 
-    **/
-    data: XOR<YoutubeShortPostCreateInput, YoutubeShortPostUncheckedCreateInput>
-  }
-
-
-  /**
-   * YoutubeShortPost createMany
-   */
-  export type YoutubeShortPostCreateManyArgs = {
-    /**
-     * The data used to create many YoutubeShortPosts.
-     * 
-    **/
-    data: Enumerable<YoutubeShortPostCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * YoutubeShortPost update
-   */
-  export type YoutubeShortPostUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-    /**
-     * The data needed to update a YoutubeShortPost.
-     * 
-    **/
-    data: XOR<YoutubeShortPostUpdateInput, YoutubeShortPostUncheckedUpdateInput>
-    /**
-     * Choose, which YoutubeShortPost to update.
-     * 
-    **/
-    where: YoutubeShortPostWhereUniqueInput
-  }
-
-
-  /**
-   * YoutubeShortPost updateMany
-   */
-  export type YoutubeShortPostUpdateManyArgs = {
-    /**
-     * The data used to update YoutubeShortPosts.
-     * 
-    **/
-    data: XOR<YoutubeShortPostUpdateManyMutationInput, YoutubeShortPostUncheckedUpdateManyInput>
-    /**
-     * Filter which YoutubeShortPosts to update
-     * 
-    **/
-    where?: YoutubeShortPostWhereInput
-  }
-
-
-  /**
-   * YoutubeShortPost upsert
-   */
-  export type YoutubeShortPostUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-    /**
-     * The filter to search for the YoutubeShortPost to update in case it exists.
-     * 
-    **/
-    where: YoutubeShortPostWhereUniqueInput
-    /**
-     * In case the YoutubeShortPost found by the `where` argument doesn't exist, create a new YoutubeShortPost with this data.
-     * 
-    **/
-    create: XOR<YoutubeShortPostCreateInput, YoutubeShortPostUncheckedCreateInput>
-    /**
-     * In case the YoutubeShortPost was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<YoutubeShortPostUpdateInput, YoutubeShortPostUncheckedUpdateInput>
-  }
-
-
-  /**
-   * YoutubeShortPost delete
-   */
-  export type YoutubeShortPostDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-    /**
-     * Filter which YoutubeShortPost to delete.
-     * 
-    **/
-    where: YoutubeShortPostWhereUniqueInput
-  }
-
-
-  /**
-   * YoutubeShortPost deleteMany
-   */
-  export type YoutubeShortPostDeleteManyArgs = {
-    /**
-     * Filter which YoutubeShortPosts to delete
-     * 
-    **/
-    where?: YoutubeShortPostWhereInput
-  }
-
-
-  /**
-   * YoutubeShortPost: findUniqueOrThrow
-   */
-  export type YoutubeShortPostFindUniqueOrThrowArgs = YoutubeShortPostFindUniqueArgsBase
-      
-
-  /**
-   * YoutubeShortPost: findFirstOrThrow
-   */
-  export type YoutubeShortPostFindFirstOrThrowArgs = YoutubeShortPostFindFirstArgsBase
-      
-
-  /**
-   * YoutubeShortPost without action
-   */
-  export type YoutubeShortPostArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeShortPost
-     * 
-    **/
-    select?: YoutubeShortPostSelect | null
-  }
-
-
-
-  /**
-   * Model TikTokPost
-   */
-
-
-  export type AggregateTikTokPost = {
-    _count: TikTokPostCountAggregateOutputType | null
-    _min: TikTokPostMinAggregateOutputType | null
-    _max: TikTokPostMaxAggregateOutputType | null
-  }
-
-  export type TikTokPostMinAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
-    contentProjectId: string | null
-    contentSlug: string | null
-  }
-
-  export type TikTokPostMaxAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
-    contentProjectId: string | null
-    contentSlug: string | null
-  }
-
-  export type TikTokPostCountAggregateOutputType = {
-    gcsVideoUrl: number
-    postSlug: number
-    contentProjectId: number
-    contentSlug: number
-    _all: number
-  }
-
-
-  export type TikTokPostMinAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    contentProjectId?: true
-    contentSlug?: true
-  }
-
-  export type TikTokPostMaxAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    contentProjectId?: true
-    contentSlug?: true
-  }
-
-  export type TikTokPostCountAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    contentProjectId?: true
-    contentSlug?: true
-    _all?: true
-  }
-
-  export type TikTokPostAggregateArgs = {
-    /**
-     * Filter which TikTokPost to aggregate.
-     * 
-    **/
-    where?: TikTokPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TikTokPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<TikTokPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: TikTokPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TikTokPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TikTokPosts.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned TikTokPosts
-    **/
-    _count?: true | TikTokPostCountAggregateInputType
+    _sum?: ChannelSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: TikTokPostMinAggregateInputType
+    _min?: ChannelMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: TikTokPostMaxAggregateInputType
+    _max?: ChannelMaxAggregateInputType
   }
 
-  export type GetTikTokPostAggregateType<T extends TikTokPostAggregateArgs> = {
-        [P in keyof T & keyof AggregateTikTokPost]: P extends '_count' | 'count'
+  export type GetChannelAggregateType<T extends ChannelAggregateArgs> = {
+        [P in keyof T & keyof AggregateChannel]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateTikTokPost[P]>
-      : GetScalarType<T[P], AggregateTikTokPost[P]>
+        : GetScalarType<T[P], AggregateChannel[P]>
+      : GetScalarType<T[P], AggregateChannel[P]>
   }
 
 
 
 
-  export type TikTokPostGroupByArgs = {
-    where?: TikTokPostWhereInput
-    orderBy?: Enumerable<TikTokPostOrderByWithAggregationInput>
-    by: Array<TikTokPostScalarFieldEnum>
-    having?: TikTokPostScalarWhereWithAggregatesInput
+  export type ChannelGroupByArgs = {
+    where?: ChannelWhereInput
+    orderBy?: Enumerable<ChannelOrderByWithAggregationInput>
+    by: Array<ChannelScalarFieldEnum>
+    having?: ChannelScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: TikTokPostCountAggregateInputType | true
-    _min?: TikTokPostMinAggregateInputType
-    _max?: TikTokPostMaxAggregateInputType
+    _count?: ChannelCountAggregateInputType | true
+    _avg?: ChannelAvgAggregateInputType
+    _sum?: ChannelSumAggregateInputType
+    _min?: ChannelMinAggregateInputType
+    _max?: ChannelMaxAggregateInputType
   }
 
 
-  export type TikTokPostGroupByOutputType = {
-    gcsVideoUrl: string
-    postSlug: string
-    contentProjectId: string
-    contentSlug: string
-    _count: TikTokPostCountAggregateOutputType | null
-    _min: TikTokPostMinAggregateOutputType | null
-    _max: TikTokPostMaxAggregateOutputType | null
+  export type ChannelGroupByOutputType = {
+    id: string
+    name: string
+    views: number | null
+    subscribers: number | null
+    thumbnail: string | null
+    integration: IntegrationType
+    createdAt: Date
+    updatedAt: Date
+    projectId: string
+    _count: ChannelCountAggregateOutputType | null
+    _avg: ChannelAvgAggregateOutputType | null
+    _sum: ChannelSumAggregateOutputType | null
+    _min: ChannelMinAggregateOutputType | null
+    _max: ChannelMaxAggregateOutputType | null
   }
 
-  type GetTikTokPostGroupByPayload<T extends TikTokPostGroupByArgs> = PrismaPromise<
+  type GetChannelGroupByPayload<T extends ChannelGroupByArgs> = PrismaPromise<
     Array<
-      PickArray<TikTokPostGroupByOutputType, T['by']> &
+      PickArray<ChannelGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof TikTokPostGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof ChannelGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], TikTokPostGroupByOutputType[P]>
-            : GetScalarType<T[P], TikTokPostGroupByOutputType[P]>
+              : GetScalarType<T[P], ChannelGroupByOutputType[P]>
+            : GetScalarType<T[P], ChannelGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type TikTokPostSelect = {
-    gcsVideoUrl?: boolean
-    postSlug?: boolean
-    content?: boolean | ContentArgs
-    contentProjectId?: boolean
-    contentSlug?: boolean
+  export type ChannelSelect = {
+    id?: boolean
+    name?: boolean
+    views?: boolean
+    subscribers?: boolean
+    thumbnail?: boolean
+    integration?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    projectId?: boolean
+    project?: boolean | ProjectArgs
   }
 
-  export type TikTokPostInclude = {
-    content?: boolean | ContentArgs
+  export type ChannelInclude = {
+    project?: boolean | ProjectArgs
   }
 
-  export type TikTokPostGetPayload<
-    S extends boolean | null | undefined | TikTokPostArgs,
+  export type ChannelGetPayload<
+    S extends boolean | null | undefined | ChannelArgs,
     U = keyof S
       > = S extends true
-        ? TikTokPost
+        ? Channel
     : S extends undefined
     ? never
-    : S extends TikTokPostArgs | TikTokPostFindManyArgs
+    : S extends ChannelArgs | ChannelFindManyArgs
     ?'include' extends U
-    ? TikTokPost  & {
+    ? Channel  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'content' ? ContentGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'content' ? ContentGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof TikTokPost ? TikTokPost[P] : never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Channel ? Channel[P] : never
   } 
-    : TikTokPost
-  : TikTokPost
+    : Channel
+  : Channel
 
 
-  type TikTokPostCountArgs = Merge<
-    Omit<TikTokPostFindManyArgs, 'select' | 'include'> & {
-      select?: TikTokPostCountAggregateInputType | true
+  type ChannelCountArgs = Merge<
+    Omit<ChannelFindManyArgs, 'select' | 'include'> & {
+      select?: ChannelCountAggregateInputType | true
     }
   >
 
-  export interface TikTokPostDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+  export interface ChannelDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
     /**
-     * Find zero or one TikTokPost that matches the filter.
-     * @param {TikTokPostFindUniqueArgs} args - Arguments to find a TikTokPost
+     * Find zero or one Channel that matches the filter.
+     * @param {ChannelFindUniqueArgs} args - Arguments to find a Channel
      * @example
-     * // Get one TikTokPost
-     * const tikTokPost = await prisma.tikTokPost.findUnique({
+     * // Get one Channel
+     * const channel = await prisma.channel.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUnique<T extends TikTokPostFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, TikTokPostFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TikTokPost'> extends True ? CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>> : CheckSelect<T, Prisma__TikTokPostClient<TikTokPost | null, null>, Prisma__TikTokPostClient<TikTokPostGetPayload<T> | null, null>>
+    findUnique<T extends ChannelFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, ChannelFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Channel'> extends True ? CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>> : CheckSelect<T, Prisma__ChannelClient<Channel | null, null>, Prisma__ChannelClient<ChannelGetPayload<T> | null, null>>
 
     /**
-     * Find the first TikTokPost that matches the filter.
+     * Find the first Channel that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokPostFindFirstArgs} args - Arguments to find a TikTokPost
+     * @param {ChannelFindFirstArgs} args - Arguments to find a Channel
      * @example
-     * // Get one TikTokPost
-     * const tikTokPost = await prisma.tikTokPost.findFirst({
+     * // Get one Channel
+     * const channel = await prisma.channel.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirst<T extends TikTokPostFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, TikTokPostFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TikTokPost'> extends True ? CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>> : CheckSelect<T, Prisma__TikTokPostClient<TikTokPost | null, null>, Prisma__TikTokPostClient<TikTokPostGetPayload<T> | null, null>>
+    findFirst<T extends ChannelFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, ChannelFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Channel'> extends True ? CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>> : CheckSelect<T, Prisma__ChannelClient<Channel | null, null>, Prisma__ChannelClient<ChannelGetPayload<T> | null, null>>
 
     /**
-     * Find zero or more TikTokPosts that matches the filter.
+     * Find zero or more Channels that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokPostFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @param {ChannelFindManyArgs=} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all TikTokPosts
-     * const tikTokPosts = await prisma.tikTokPost.findMany()
+     * // Get all Channels
+     * const channels = await prisma.channel.findMany()
      * 
-     * // Get first 10 TikTokPosts
-     * const tikTokPosts = await prisma.tikTokPost.findMany({ take: 10 })
+     * // Get first 10 Channels
+     * const channels = await prisma.channel.findMany({ take: 10 })
      * 
-     * // Only select the `gcsVideoUrl`
-     * const tikTokPostWithGcsVideoUrlOnly = await prisma.tikTokPost.findMany({ select: { gcsVideoUrl: true } })
+     * // Only select the `id`
+     * const channelWithIdOnly = await prisma.channel.findMany({ select: { id: true } })
      * 
     **/
-    findMany<T extends TikTokPostFindManyArgs>(
-      args?: SelectSubset<T, TikTokPostFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<TikTokPost>>, PrismaPromise<Array<TikTokPostGetPayload<T>>>>
+    findMany<T extends ChannelFindManyArgs>(
+      args?: SelectSubset<T, ChannelFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<Channel>>, PrismaPromise<Array<ChannelGetPayload<T>>>>
 
     /**
-     * Create a TikTokPost.
-     * @param {TikTokPostCreateArgs} args - Arguments to create a TikTokPost.
+     * Create a Channel.
+     * @param {ChannelCreateArgs} args - Arguments to create a Channel.
      * @example
-     * // Create one TikTokPost
-     * const TikTokPost = await prisma.tikTokPost.create({
+     * // Create one Channel
+     * const Channel = await prisma.channel.create({
      *   data: {
-     *     // ... data to create a TikTokPost
+     *     // ... data to create a Channel
      *   }
      * })
      * 
     **/
-    create<T extends TikTokPostCreateArgs>(
-      args: SelectSubset<T, TikTokPostCreateArgs>
-    ): CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>>
+    create<T extends ChannelCreateArgs>(
+      args: SelectSubset<T, ChannelCreateArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
-     * Create many TikTokPosts.
-     *     @param {TikTokPostCreateManyArgs} args - Arguments to create many TikTokPosts.
+     * Create many Channels.
+     *     @param {ChannelCreateManyArgs} args - Arguments to create many Channels.
      *     @example
-     *     // Create many TikTokPosts
-     *     const tikTokPost = await prisma.tikTokPost.createMany({
+     *     // Create many Channels
+     *     const channel = await prisma.channel.createMany({
      *       data: {
      *         // ... provide data here
      *       }
      *     })
      *     
     **/
-    createMany<T extends TikTokPostCreateManyArgs>(
-      args?: SelectSubset<T, TikTokPostCreateManyArgs>
+    createMany<T extends ChannelCreateManyArgs>(
+      args?: SelectSubset<T, ChannelCreateManyArgs>
     ): PrismaPromise<BatchPayload>
 
     /**
-     * Delete a TikTokPost.
-     * @param {TikTokPostDeleteArgs} args - Arguments to delete one TikTokPost.
+     * Delete a Channel.
+     * @param {ChannelDeleteArgs} args - Arguments to delete one Channel.
      * @example
-     * // Delete one TikTokPost
-     * const TikTokPost = await prisma.tikTokPost.delete({
+     * // Delete one Channel
+     * const Channel = await prisma.channel.delete({
      *   where: {
-     *     // ... filter to delete one TikTokPost
+     *     // ... filter to delete one Channel
      *   }
      * })
      * 
     **/
-    delete<T extends TikTokPostDeleteArgs>(
-      args: SelectSubset<T, TikTokPostDeleteArgs>
-    ): CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>>
+    delete<T extends ChannelDeleteArgs>(
+      args: SelectSubset<T, ChannelDeleteArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
-     * Update one TikTokPost.
-     * @param {TikTokPostUpdateArgs} args - Arguments to update one TikTokPost.
+     * Update one Channel.
+     * @param {ChannelUpdateArgs} args - Arguments to update one Channel.
      * @example
-     * // Update one TikTokPost
-     * const tikTokPost = await prisma.tikTokPost.update({
+     * // Update one Channel
+     * const channel = await prisma.channel.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -9897,34 +9071,34 @@ export namespace Prisma {
      * })
      * 
     **/
-    update<T extends TikTokPostUpdateArgs>(
-      args: SelectSubset<T, TikTokPostUpdateArgs>
-    ): CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>>
+    update<T extends ChannelUpdateArgs>(
+      args: SelectSubset<T, ChannelUpdateArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
-     * Delete zero or more TikTokPosts.
-     * @param {TikTokPostDeleteManyArgs} args - Arguments to filter TikTokPosts to delete.
+     * Delete zero or more Channels.
+     * @param {ChannelDeleteManyArgs} args - Arguments to filter Channels to delete.
      * @example
-     * // Delete a few TikTokPosts
-     * const { count } = await prisma.tikTokPost.deleteMany({
+     * // Delete a few Channels
+     * const { count } = await prisma.channel.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
     **/
-    deleteMany<T extends TikTokPostDeleteManyArgs>(
-      args?: SelectSubset<T, TikTokPostDeleteManyArgs>
+    deleteMany<T extends ChannelDeleteManyArgs>(
+      args?: SelectSubset<T, ChannelDeleteManyArgs>
     ): PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more TikTokPosts.
+     * Update zero or more Channels.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokPostUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {ChannelUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many TikTokPosts
-     * const tikTokPost = await prisma.tikTokPost.updateMany({
+     * // Update many Channels
+     * const channel = await prisma.channel.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -9934,93 +9108,93 @@ export namespace Prisma {
      * })
      * 
     **/
-    updateMany<T extends TikTokPostUpdateManyArgs>(
-      args: SelectSubset<T, TikTokPostUpdateManyArgs>
+    updateMany<T extends ChannelUpdateManyArgs>(
+      args: SelectSubset<T, ChannelUpdateManyArgs>
     ): PrismaPromise<BatchPayload>
 
     /**
-     * Create or update one TikTokPost.
-     * @param {TikTokPostUpsertArgs} args - Arguments to update or create a TikTokPost.
+     * Create or update one Channel.
+     * @param {ChannelUpsertArgs} args - Arguments to update or create a Channel.
      * @example
-     * // Update or create a TikTokPost
-     * const tikTokPost = await prisma.tikTokPost.upsert({
+     * // Update or create a Channel
+     * const channel = await prisma.channel.upsert({
      *   create: {
-     *     // ... data to create a TikTokPost
+     *     // ... data to create a Channel
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the TikTokPost we want to update
+     *     // ... the filter for the Channel we want to update
      *   }
      * })
     **/
-    upsert<T extends TikTokPostUpsertArgs>(
-      args: SelectSubset<T, TikTokPostUpsertArgs>
-    ): CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>>
+    upsert<T extends ChannelUpsertArgs>(
+      args: SelectSubset<T, ChannelUpsertArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
-     * Find one TikTokPost that matches the filter or throw
+     * Find one Channel that matches the filter or throw
      * `NotFoundError` if no matches were found.
-     * @param {TikTokPostFindUniqueOrThrowArgs} args - Arguments to find a TikTokPost
+     * @param {ChannelFindUniqueOrThrowArgs} args - Arguments to find a Channel
      * @example
-     * // Get one TikTokPost
-     * const tikTokPost = await prisma.tikTokPost.findUniqueOrThrow({
+     * // Get one Channel
+     * const channel = await prisma.channel.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findUniqueOrThrow<T extends TikTokPostFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, TikTokPostFindUniqueOrThrowArgs>
-    ): CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>>
+    findUniqueOrThrow<T extends ChannelFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, ChannelFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
-     * Find the first TikTokPost that matches the filter or
+     * Find the first Channel that matches the filter or
      * throw `NotFoundError` if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokPostFindFirstOrThrowArgs} args - Arguments to find a TikTokPost
+     * @param {ChannelFindFirstOrThrowArgs} args - Arguments to find a Channel
      * @example
-     * // Get one TikTokPost
-     * const tikTokPost = await prisma.tikTokPost.findFirstOrThrow({
+     * // Get one Channel
+     * const channel = await prisma.channel.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
     **/
-    findFirstOrThrow<T extends TikTokPostFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, TikTokPostFindFirstOrThrowArgs>
-    ): CheckSelect<T, Prisma__TikTokPostClient<TikTokPost>, Prisma__TikTokPostClient<TikTokPostGetPayload<T>>>
+    findFirstOrThrow<T extends ChannelFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ChannelFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
-     * Count the number of TikTokPosts.
+     * Count the number of Channels.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokPostCountArgs} args - Arguments to filter TikTokPosts to count.
+     * @param {ChannelCountArgs} args - Arguments to filter Channels to count.
      * @example
-     * // Count the number of TikTokPosts
-     * const count = await prisma.tikTokPost.count({
+     * // Count the number of Channels
+     * const count = await prisma.channel.count({
      *   where: {
-     *     // ... the filter for the TikTokPosts we want to count
+     *     // ... the filter for the Channels we want to count
      *   }
      * })
     **/
-    count<T extends TikTokPostCountArgs>(
-      args?: Subset<T, TikTokPostCountArgs>,
+    count<T extends ChannelCountArgs>(
+      args?: Subset<T, ChannelCountArgs>,
     ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], TikTokPostCountAggregateOutputType>
+          : GetScalarType<T['select'], ChannelCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a TikTokPost.
+     * Allows you to perform aggregations operations on a Channel.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokPostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {ChannelAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -10040,13 +9214,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends TikTokPostAggregateArgs>(args: Subset<T, TikTokPostAggregateArgs>): PrismaPromise<GetTikTokPostAggregateType<T>>
+    aggregate<T extends ChannelAggregateArgs>(args: Subset<T, ChannelAggregateArgs>): PrismaPromise<GetChannelAggregateType<T>>
 
     /**
-     * Group by TikTokPost.
+     * Group by Channel.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokPostGroupByArgs} args - Group by arguments.
+     * @param {ChannelGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -10061,14 +9235,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends TikTokPostGroupByArgs,
+      T extends ChannelGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: TikTokPostGroupByArgs['orderBy'] }
-        : { orderBy?: TikTokPostGroupByArgs['orderBy'] },
+        ? { orderBy: ChannelGroupByArgs['orderBy'] }
+        : { orderBy?: ChannelGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends TupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -10117,17 +9291,17 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TikTokPostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTikTokPostGroupByPayload<T> : PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ChannelGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChannelGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for TikTokPost.
+   * The delegate class that acts as a "Promise-like" for Channel.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__TikTokPostClient<T, Null = never> implements PrismaPromise<T> {
+  export class Prisma__ChannelClient<T, Null = never> implements PrismaPromise<T> {
     [prisma]: true;
     private readonly _dmmf;
     private readonly _fetcher;
@@ -10144,7 +9318,7 @@ export namespace Prisma {
     constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    content<T extends ContentArgs = {}>(args?: Subset<T, ContentArgs>): CheckSelect<T, Prisma__ContentClient<Content | Null>, Prisma__ContentClient<ContentGetPayload<T> | Null>>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -10174,30 +9348,30 @@ export namespace Prisma {
   // Custom InputTypes
 
   /**
-   * TikTokPost base type for findUnique actions
+   * Channel base type for findUnique actions
    */
-  export type TikTokPostFindUniqueArgsBase = {
+  export type ChannelFindUniqueArgsBase = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
+    include?: ChannelInclude | null
     /**
-     * Filter, which TikTokPost to fetch.
+     * Filter, which Channel to fetch.
      * 
     **/
-    where: TikTokPostWhereUniqueInput
+    where: ChannelWhereUniqueInput
   }
 
   /**
-   * TikTokPost: findUnique
+   * Channel: findUnique
    */
-  export interface TikTokPostFindUniqueArgs extends TikTokPostFindUniqueArgsBase {
+  export interface ChannelFindUniqueArgs extends ChannelFindUniqueArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
@@ -10207,65 +9381,65 @@ export namespace Prisma {
       
 
   /**
-   * TikTokPost base type for findFirst actions
+   * Channel base type for findFirst actions
    */
-  export type TikTokPostFindFirstArgsBase = {
+  export type ChannelFindFirstArgsBase = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
+    include?: ChannelInclude | null
     /**
-     * Filter, which TikTokPost to fetch.
+     * Filter, which Channel to fetch.
      * 
     **/
-    where?: TikTokPostWhereInput
+    where?: ChannelWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TikTokPosts to fetch.
+     * Determine the order of Channels to fetch.
      * 
     **/
-    orderBy?: Enumerable<TikTokPostOrderByWithRelationInput>
+    orderBy?: Enumerable<ChannelOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for TikTokPosts.
+     * Sets the position for searching for Channels.
      * 
     **/
-    cursor?: TikTokPostWhereUniqueInput
+    cursor?: ChannelWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TikTokPosts from the position of the cursor.
+     * Take `±n` Channels from the position of the cursor.
      * 
     **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TikTokPosts.
+     * Skip the first `n` Channels.
      * 
     **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of TikTokPosts.
+     * Filter by unique combinations of Channels.
      * 
     **/
-    distinct?: Enumerable<TikTokPostScalarFieldEnum>
+    distinct?: Enumerable<ChannelScalarFieldEnum>
   }
 
   /**
-   * TikTokPost: findFirst
+   * Channel: findFirst
    */
-  export interface TikTokPostFindFirstArgs extends TikTokPostFindFirstArgsBase {
+  export interface ChannelFindFirstArgs extends ChannelFindFirstArgsBase {
    /**
     * Throw an Error if query returns no results
     * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
@@ -10275,2069 +9449,227 @@ export namespace Prisma {
       
 
   /**
-   * TikTokPost findMany
+   * Channel findMany
    */
-  export type TikTokPostFindManyArgs = {
+  export type ChannelFindManyArgs = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
+    include?: ChannelInclude | null
     /**
-     * Filter, which TikTokPosts to fetch.
+     * Filter, which Channels to fetch.
      * 
     **/
-    where?: TikTokPostWhereInput
+    where?: ChannelWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of TikTokPosts to fetch.
+     * Determine the order of Channels to fetch.
      * 
     **/
-    orderBy?: Enumerable<TikTokPostOrderByWithRelationInput>
+    orderBy?: Enumerable<ChannelOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing TikTokPosts.
+     * Sets the position for listing Channels.
      * 
     **/
-    cursor?: TikTokPostWhereUniqueInput
+    cursor?: ChannelWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` TikTokPosts from the position of the cursor.
+     * Take `±n` Channels from the position of the cursor.
      * 
     **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` TikTokPosts.
+     * Skip the first `n` Channels.
      * 
     **/
     skip?: number
-    distinct?: Enumerable<TikTokPostScalarFieldEnum>
+    distinct?: Enumerable<ChannelScalarFieldEnum>
   }
 
 
   /**
-   * TikTokPost create
+   * Channel create
    */
-  export type TikTokPostCreateArgs = {
+  export type ChannelCreateArgs = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
+    include?: ChannelInclude | null
     /**
-     * The data needed to create a TikTokPost.
+     * The data needed to create a Channel.
      * 
     **/
-    data: XOR<TikTokPostCreateInput, TikTokPostUncheckedCreateInput>
+    data: XOR<ChannelCreateInput, ChannelUncheckedCreateInput>
   }
 
 
   /**
-   * TikTokPost createMany
+   * Channel createMany
    */
-  export type TikTokPostCreateManyArgs = {
+  export type ChannelCreateManyArgs = {
     /**
-     * The data used to create many TikTokPosts.
+     * The data used to create many Channels.
      * 
     **/
-    data: Enumerable<TikTokPostCreateManyInput>
+    data: Enumerable<ChannelCreateManyInput>
     skipDuplicates?: boolean
   }
 
 
   /**
-   * TikTokPost update
+   * Channel update
    */
-  export type TikTokPostUpdateArgs = {
+  export type ChannelUpdateArgs = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
+    include?: ChannelInclude | null
     /**
-     * The data needed to update a TikTokPost.
+     * The data needed to update a Channel.
      * 
     **/
-    data: XOR<TikTokPostUpdateInput, TikTokPostUncheckedUpdateInput>
+    data: XOR<ChannelUpdateInput, ChannelUncheckedUpdateInput>
     /**
-     * Choose, which TikTokPost to update.
+     * Choose, which Channel to update.
      * 
     **/
-    where: TikTokPostWhereUniqueInput
+    where: ChannelWhereUniqueInput
   }
 
 
   /**
-   * TikTokPost updateMany
+   * Channel updateMany
    */
-  export type TikTokPostUpdateManyArgs = {
+  export type ChannelUpdateManyArgs = {
     /**
-     * The data used to update TikTokPosts.
+     * The data used to update Channels.
      * 
     **/
-    data: XOR<TikTokPostUpdateManyMutationInput, TikTokPostUncheckedUpdateManyInput>
+    data: XOR<ChannelUpdateManyMutationInput, ChannelUncheckedUpdateManyInput>
     /**
-     * Filter which TikTokPosts to update
+     * Filter which Channels to update
      * 
     **/
-    where?: TikTokPostWhereInput
+    where?: ChannelWhereInput
   }
 
 
   /**
-   * TikTokPost upsert
+   * Channel upsert
    */
-  export type TikTokPostUpsertArgs = {
+  export type ChannelUpsertArgs = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
+    include?: ChannelInclude | null
     /**
-     * The filter to search for the TikTokPost to update in case it exists.
+     * The filter to search for the Channel to update in case it exists.
      * 
     **/
-    where: TikTokPostWhereUniqueInput
+    where: ChannelWhereUniqueInput
     /**
-     * In case the TikTokPost found by the `where` argument doesn't exist, create a new TikTokPost with this data.
+     * In case the Channel found by the `where` argument doesn't exist, create a new Channel with this data.
      * 
     **/
-    create: XOR<TikTokPostCreateInput, TikTokPostUncheckedCreateInput>
+    create: XOR<ChannelCreateInput, ChannelUncheckedCreateInput>
     /**
-     * In case the TikTokPost was found with the provided `where` argument, update it with this data.
+     * In case the Channel was found with the provided `where` argument, update it with this data.
      * 
     **/
-    update: XOR<TikTokPostUpdateInput, TikTokPostUncheckedUpdateInput>
+    update: XOR<ChannelUpdateInput, ChannelUncheckedUpdateInput>
   }
 
 
   /**
-   * TikTokPost delete
+   * Channel delete
    */
-  export type TikTokPostDeleteArgs = {
+  export type ChannelDeleteArgs = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
+    include?: ChannelInclude | null
     /**
-     * Filter which TikTokPost to delete.
+     * Filter which Channel to delete.
      * 
     **/
-    where: TikTokPostWhereUniqueInput
+    where: ChannelWhereUniqueInput
   }
 
 
   /**
-   * TikTokPost deleteMany
+   * Channel deleteMany
    */
-  export type TikTokPostDeleteManyArgs = {
+  export type ChannelDeleteManyArgs = {
     /**
-     * Filter which TikTokPosts to delete
+     * Filter which Channels to delete
      * 
     **/
-    where?: TikTokPostWhereInput
+    where?: ChannelWhereInput
   }
 
 
   /**
-   * TikTokPost: findUniqueOrThrow
+   * Channel: findUniqueOrThrow
    */
-  export type TikTokPostFindUniqueOrThrowArgs = TikTokPostFindUniqueArgsBase
+  export type ChannelFindUniqueOrThrowArgs = ChannelFindUniqueArgsBase
       
 
   /**
-   * TikTokPost: findFirstOrThrow
+   * Channel: findFirstOrThrow
    */
-  export type TikTokPostFindFirstOrThrowArgs = TikTokPostFindFirstArgsBase
+  export type ChannelFindFirstOrThrowArgs = ChannelFindFirstArgsBase
       
 
   /**
-   * TikTokPost without action
+   * Channel without action
    */
-  export type TikTokPostArgs = {
+  export type ChannelArgs = {
     /**
-     * Select specific fields to fetch from the TikTokPost
+     * Select specific fields to fetch from the Channel
      * 
     **/
-    select?: TikTokPostSelect | null
+    select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
      * 
     **/
-    include?: TikTokPostInclude | null
-  }
-
-
-
-  /**
-   * Model InstagramPost
-   */
-
-
-  export type AggregateInstagramPost = {
-    _count: InstagramPostCountAggregateOutputType | null
-    _min: InstagramPostMinAggregateOutputType | null
-    _max: InstagramPostMaxAggregateOutputType | null
-  }
-
-  export type InstagramPostMinAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
-    caption: string | null
-    contentProjectId: string | null
-    contentSlug: string | null
-  }
-
-  export type InstagramPostMaxAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
-    caption: string | null
-    contentProjectId: string | null
-    contentSlug: string | null
-  }
-
-  export type InstagramPostCountAggregateOutputType = {
-    gcsVideoUrl: number
-    postSlug: number
-    caption: number
-    contentProjectId: number
-    contentSlug: number
-    _all: number
-  }
-
-
-  export type InstagramPostMinAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    caption?: true
-    contentProjectId?: true
-    contentSlug?: true
-  }
-
-  export type InstagramPostMaxAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    caption?: true
-    contentProjectId?: true
-    contentSlug?: true
-  }
-
-  export type InstagramPostCountAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    caption?: true
-    contentProjectId?: true
-    contentSlug?: true
-    _all?: true
-  }
-
-  export type InstagramPostAggregateArgs = {
-    /**
-     * Filter which InstagramPost to aggregate.
-     * 
-    **/
-    where?: InstagramPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of InstagramPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<InstagramPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: InstagramPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` InstagramPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` InstagramPosts.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned InstagramPosts
-    **/
-    _count?: true | InstagramPostCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: InstagramPostMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: InstagramPostMaxAggregateInputType
-  }
-
-  export type GetInstagramPostAggregateType<T extends InstagramPostAggregateArgs> = {
-        [P in keyof T & keyof AggregateInstagramPost]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateInstagramPost[P]>
-      : GetScalarType<T[P], AggregateInstagramPost[P]>
-  }
-
-
-
-
-  export type InstagramPostGroupByArgs = {
-    where?: InstagramPostWhereInput
-    orderBy?: Enumerable<InstagramPostOrderByWithAggregationInput>
-    by: Array<InstagramPostScalarFieldEnum>
-    having?: InstagramPostScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: InstagramPostCountAggregateInputType | true
-    _min?: InstagramPostMinAggregateInputType
-    _max?: InstagramPostMaxAggregateInputType
-  }
-
-
-  export type InstagramPostGroupByOutputType = {
-    gcsVideoUrl: string
-    postSlug: string
-    caption: string
-    contentProjectId: string
-    contentSlug: string
-    _count: InstagramPostCountAggregateOutputType | null
-    _min: InstagramPostMinAggregateOutputType | null
-    _max: InstagramPostMaxAggregateOutputType | null
-  }
-
-  type GetInstagramPostGroupByPayload<T extends InstagramPostGroupByArgs> = PrismaPromise<
-    Array<
-      PickArray<InstagramPostGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof InstagramPostGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], InstagramPostGroupByOutputType[P]>
-            : GetScalarType<T[P], InstagramPostGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type InstagramPostSelect = {
-    gcsVideoUrl?: boolean
-    postSlug?: boolean
-    caption?: boolean
-    content?: boolean | ContentArgs
-    contentProjectId?: boolean
-    contentSlug?: boolean
-  }
-
-  export type InstagramPostInclude = {
-    content?: boolean | ContentArgs
-  }
-
-  export type InstagramPostGetPayload<
-    S extends boolean | null | undefined | InstagramPostArgs,
-    U = keyof S
-      > = S extends true
-        ? InstagramPost
-    : S extends undefined
-    ? never
-    : S extends InstagramPostArgs | InstagramPostFindManyArgs
-    ?'include' extends U
-    ? InstagramPost  & {
-    [P in TrueKeys<S['include']>]:
-        P extends 'content' ? ContentGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]:
-        P extends 'content' ? ContentGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof InstagramPost ? InstagramPost[P] : never
-  } 
-    : InstagramPost
-  : InstagramPost
-
-
-  type InstagramPostCountArgs = Merge<
-    Omit<InstagramPostFindManyArgs, 'select' | 'include'> & {
-      select?: InstagramPostCountAggregateInputType | true
-    }
-  >
-
-  export interface InstagramPostDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-    /**
-     * Find zero or one InstagramPost that matches the filter.
-     * @param {InstagramPostFindUniqueArgs} args - Arguments to find a InstagramPost
-     * @example
-     * // Get one InstagramPost
-     * const instagramPost = await prisma.instagramPost.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends InstagramPostFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, InstagramPostFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'InstagramPost'> extends True ? CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>> : CheckSelect<T, Prisma__InstagramPostClient<InstagramPost | null, null>, Prisma__InstagramPostClient<InstagramPostGetPayload<T> | null, null>>
-
-    /**
-     * Find the first InstagramPost that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramPostFindFirstArgs} args - Arguments to find a InstagramPost
-     * @example
-     * // Get one InstagramPost
-     * const instagramPost = await prisma.instagramPost.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends InstagramPostFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, InstagramPostFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'InstagramPost'> extends True ? CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>> : CheckSelect<T, Prisma__InstagramPostClient<InstagramPost | null, null>, Prisma__InstagramPostClient<InstagramPostGetPayload<T> | null, null>>
-
-    /**
-     * Find zero or more InstagramPosts that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramPostFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all InstagramPosts
-     * const instagramPosts = await prisma.instagramPost.findMany()
-     * 
-     * // Get first 10 InstagramPosts
-     * const instagramPosts = await prisma.instagramPost.findMany({ take: 10 })
-     * 
-     * // Only select the `gcsVideoUrl`
-     * const instagramPostWithGcsVideoUrlOnly = await prisma.instagramPost.findMany({ select: { gcsVideoUrl: true } })
-     * 
-    **/
-    findMany<T extends InstagramPostFindManyArgs>(
-      args?: SelectSubset<T, InstagramPostFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<InstagramPost>>, PrismaPromise<Array<InstagramPostGetPayload<T>>>>
-
-    /**
-     * Create a InstagramPost.
-     * @param {InstagramPostCreateArgs} args - Arguments to create a InstagramPost.
-     * @example
-     * // Create one InstagramPost
-     * const InstagramPost = await prisma.instagramPost.create({
-     *   data: {
-     *     // ... data to create a InstagramPost
-     *   }
-     * })
-     * 
-    **/
-    create<T extends InstagramPostCreateArgs>(
-      args: SelectSubset<T, InstagramPostCreateArgs>
-    ): CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>>
-
-    /**
-     * Create many InstagramPosts.
-     *     @param {InstagramPostCreateManyArgs} args - Arguments to create many InstagramPosts.
-     *     @example
-     *     // Create many InstagramPosts
-     *     const instagramPost = await prisma.instagramPost.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends InstagramPostCreateManyArgs>(
-      args?: SelectSubset<T, InstagramPostCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a InstagramPost.
-     * @param {InstagramPostDeleteArgs} args - Arguments to delete one InstagramPost.
-     * @example
-     * // Delete one InstagramPost
-     * const InstagramPost = await prisma.instagramPost.delete({
-     *   where: {
-     *     // ... filter to delete one InstagramPost
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends InstagramPostDeleteArgs>(
-      args: SelectSubset<T, InstagramPostDeleteArgs>
-    ): CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>>
-
-    /**
-     * Update one InstagramPost.
-     * @param {InstagramPostUpdateArgs} args - Arguments to update one InstagramPost.
-     * @example
-     * // Update one InstagramPost
-     * const instagramPost = await prisma.instagramPost.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends InstagramPostUpdateArgs>(
-      args: SelectSubset<T, InstagramPostUpdateArgs>
-    ): CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>>
-
-    /**
-     * Delete zero or more InstagramPosts.
-     * @param {InstagramPostDeleteManyArgs} args - Arguments to filter InstagramPosts to delete.
-     * @example
-     * // Delete a few InstagramPosts
-     * const { count } = await prisma.instagramPost.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends InstagramPostDeleteManyArgs>(
-      args?: SelectSubset<T, InstagramPostDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more InstagramPosts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramPostUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many InstagramPosts
-     * const instagramPost = await prisma.instagramPost.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends InstagramPostUpdateManyArgs>(
-      args: SelectSubset<T, InstagramPostUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one InstagramPost.
-     * @param {InstagramPostUpsertArgs} args - Arguments to update or create a InstagramPost.
-     * @example
-     * // Update or create a InstagramPost
-     * const instagramPost = await prisma.instagramPost.upsert({
-     *   create: {
-     *     // ... data to create a InstagramPost
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the InstagramPost we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends InstagramPostUpsertArgs>(
-      args: SelectSubset<T, InstagramPostUpsertArgs>
-    ): CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>>
-
-    /**
-     * Find one InstagramPost that matches the filter or throw
-     * `NotFoundError` if no matches were found.
-     * @param {InstagramPostFindUniqueOrThrowArgs} args - Arguments to find a InstagramPost
-     * @example
-     * // Get one InstagramPost
-     * const instagramPost = await prisma.instagramPost.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends InstagramPostFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, InstagramPostFindUniqueOrThrowArgs>
-    ): CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>>
-
-    /**
-     * Find the first InstagramPost that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramPostFindFirstOrThrowArgs} args - Arguments to find a InstagramPost
-     * @example
-     * // Get one InstagramPost
-     * const instagramPost = await prisma.instagramPost.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends InstagramPostFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, InstagramPostFindFirstOrThrowArgs>
-    ): CheckSelect<T, Prisma__InstagramPostClient<InstagramPost>, Prisma__InstagramPostClient<InstagramPostGetPayload<T>>>
-
-    /**
-     * Count the number of InstagramPosts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramPostCountArgs} args - Arguments to filter InstagramPosts to count.
-     * @example
-     * // Count the number of InstagramPosts
-     * const count = await prisma.instagramPost.count({
-     *   where: {
-     *     // ... the filter for the InstagramPosts we want to count
-     *   }
-     * })
-    **/
-    count<T extends InstagramPostCountArgs>(
-      args?: Subset<T, InstagramPostCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], InstagramPostCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a InstagramPost.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramPostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends InstagramPostAggregateArgs>(args: Subset<T, InstagramPostAggregateArgs>): PrismaPromise<GetInstagramPostAggregateType<T>>
-
-    /**
-     * Group by InstagramPost.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramPostGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends InstagramPostGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: InstagramPostGroupByArgs['orderBy'] }
-        : { orderBy?: InstagramPostGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, InstagramPostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInstagramPostGroupByPayload<T> : PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for InstagramPost.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__InstagramPostClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    content<T extends ContentArgs = {}>(args?: Subset<T, ContentArgs>): CheckSelect<T, Prisma__ContentClient<Content | Null>, Prisma__ContentClient<ContentGetPayload<T> | Null>>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * InstagramPost base type for findUnique actions
-   */
-  export type InstagramPostFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-    /**
-     * Filter, which InstagramPost to fetch.
-     * 
-    **/
-    where: InstagramPostWhereUniqueInput
-  }
-
-  /**
-   * InstagramPost: findUnique
-   */
-  export interface InstagramPostFindUniqueArgs extends InstagramPostFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * InstagramPost base type for findFirst actions
-   */
-  export type InstagramPostFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-    /**
-     * Filter, which InstagramPost to fetch.
-     * 
-    **/
-    where?: InstagramPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of InstagramPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<InstagramPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for InstagramPosts.
-     * 
-    **/
-    cursor?: InstagramPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` InstagramPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` InstagramPosts.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of InstagramPosts.
-     * 
-    **/
-    distinct?: Enumerable<InstagramPostScalarFieldEnum>
-  }
-
-  /**
-   * InstagramPost: findFirst
-   */
-  export interface InstagramPostFindFirstArgs extends InstagramPostFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * InstagramPost findMany
-   */
-  export type InstagramPostFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-    /**
-     * Filter, which InstagramPosts to fetch.
-     * 
-    **/
-    where?: InstagramPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of InstagramPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<InstagramPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing InstagramPosts.
-     * 
-    **/
-    cursor?: InstagramPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` InstagramPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` InstagramPosts.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<InstagramPostScalarFieldEnum>
-  }
-
-
-  /**
-   * InstagramPost create
-   */
-  export type InstagramPostCreateArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-    /**
-     * The data needed to create a InstagramPost.
-     * 
-    **/
-    data: XOR<InstagramPostCreateInput, InstagramPostUncheckedCreateInput>
-  }
-
-
-  /**
-   * InstagramPost createMany
-   */
-  export type InstagramPostCreateManyArgs = {
-    /**
-     * The data used to create many InstagramPosts.
-     * 
-    **/
-    data: Enumerable<InstagramPostCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * InstagramPost update
-   */
-  export type InstagramPostUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-    /**
-     * The data needed to update a InstagramPost.
-     * 
-    **/
-    data: XOR<InstagramPostUpdateInput, InstagramPostUncheckedUpdateInput>
-    /**
-     * Choose, which InstagramPost to update.
-     * 
-    **/
-    where: InstagramPostWhereUniqueInput
-  }
-
-
-  /**
-   * InstagramPost updateMany
-   */
-  export type InstagramPostUpdateManyArgs = {
-    /**
-     * The data used to update InstagramPosts.
-     * 
-    **/
-    data: XOR<InstagramPostUpdateManyMutationInput, InstagramPostUncheckedUpdateManyInput>
-    /**
-     * Filter which InstagramPosts to update
-     * 
-    **/
-    where?: InstagramPostWhereInput
-  }
-
-
-  /**
-   * InstagramPost upsert
-   */
-  export type InstagramPostUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-    /**
-     * The filter to search for the InstagramPost to update in case it exists.
-     * 
-    **/
-    where: InstagramPostWhereUniqueInput
-    /**
-     * In case the InstagramPost found by the `where` argument doesn't exist, create a new InstagramPost with this data.
-     * 
-    **/
-    create: XOR<InstagramPostCreateInput, InstagramPostUncheckedCreateInput>
-    /**
-     * In case the InstagramPost was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<InstagramPostUpdateInput, InstagramPostUncheckedUpdateInput>
-  }
-
-
-  /**
-   * InstagramPost delete
-   */
-  export type InstagramPostDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-    /**
-     * Filter which InstagramPost to delete.
-     * 
-    **/
-    where: InstagramPostWhereUniqueInput
-  }
-
-
-  /**
-   * InstagramPost deleteMany
-   */
-  export type InstagramPostDeleteManyArgs = {
-    /**
-     * Filter which InstagramPosts to delete
-     * 
-    **/
-    where?: InstagramPostWhereInput
-  }
-
-
-  /**
-   * InstagramPost: findUniqueOrThrow
-   */
-  export type InstagramPostFindUniqueOrThrowArgs = InstagramPostFindUniqueArgsBase
-      
-
-  /**
-   * InstagramPost: findFirstOrThrow
-   */
-  export type InstagramPostFindFirstOrThrowArgs = InstagramPostFindFirstArgsBase
-      
-
-  /**
-   * InstagramPost without action
-   */
-  export type InstagramPostArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramPost
-     * 
-    **/
-    select?: InstagramPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: InstagramPostInclude | null
-  }
-
-
-
-  /**
-   * Model FacebookPost
-   */
-
-
-  export type AggregateFacebookPost = {
-    _count: FacebookPostCountAggregateOutputType | null
-    _min: FacebookPostMinAggregateOutputType | null
-    _max: FacebookPostMaxAggregateOutputType | null
-  }
-
-  export type FacebookPostMinAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
-    contentProjectId: string | null
-    contentSlug: string | null
-  }
-
-  export type FacebookPostMaxAggregateOutputType = {
-    gcsVideoUrl: string | null
-    postSlug: string | null
-    contentProjectId: string | null
-    contentSlug: string | null
-  }
-
-  export type FacebookPostCountAggregateOutputType = {
-    gcsVideoUrl: number
-    postSlug: number
-    contentProjectId: number
-    contentSlug: number
-    _all: number
-  }
-
-
-  export type FacebookPostMinAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    contentProjectId?: true
-    contentSlug?: true
-  }
-
-  export type FacebookPostMaxAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    contentProjectId?: true
-    contentSlug?: true
-  }
-
-  export type FacebookPostCountAggregateInputType = {
-    gcsVideoUrl?: true
-    postSlug?: true
-    contentProjectId?: true
-    contentSlug?: true
-    _all?: true
-  }
-
-  export type FacebookPostAggregateArgs = {
-    /**
-     * Filter which FacebookPost to aggregate.
-     * 
-    **/
-    where?: FacebookPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of FacebookPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<FacebookPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     * 
-    **/
-    cursor?: FacebookPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` FacebookPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` FacebookPosts.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned FacebookPosts
-    **/
-    _count?: true | FacebookPostCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: FacebookPostMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: FacebookPostMaxAggregateInputType
-  }
-
-  export type GetFacebookPostAggregateType<T extends FacebookPostAggregateArgs> = {
-        [P in keyof T & keyof AggregateFacebookPost]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateFacebookPost[P]>
-      : GetScalarType<T[P], AggregateFacebookPost[P]>
-  }
-
-
-
-
-  export type FacebookPostGroupByArgs = {
-    where?: FacebookPostWhereInput
-    orderBy?: Enumerable<FacebookPostOrderByWithAggregationInput>
-    by: Array<FacebookPostScalarFieldEnum>
-    having?: FacebookPostScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: FacebookPostCountAggregateInputType | true
-    _min?: FacebookPostMinAggregateInputType
-    _max?: FacebookPostMaxAggregateInputType
-  }
-
-
-  export type FacebookPostGroupByOutputType = {
-    gcsVideoUrl: string
-    postSlug: string
-    contentProjectId: string
-    contentSlug: string
-    _count: FacebookPostCountAggregateOutputType | null
-    _min: FacebookPostMinAggregateOutputType | null
-    _max: FacebookPostMaxAggregateOutputType | null
-  }
-
-  type GetFacebookPostGroupByPayload<T extends FacebookPostGroupByArgs> = PrismaPromise<
-    Array<
-      PickArray<FacebookPostGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof FacebookPostGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], FacebookPostGroupByOutputType[P]>
-            : GetScalarType<T[P], FacebookPostGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type FacebookPostSelect = {
-    gcsVideoUrl?: boolean
-    postSlug?: boolean
-    content?: boolean | ContentArgs
-    contentProjectId?: boolean
-    contentSlug?: boolean
-  }
-
-  export type FacebookPostInclude = {
-    content?: boolean | ContentArgs
-  }
-
-  export type FacebookPostGetPayload<
-    S extends boolean | null | undefined | FacebookPostArgs,
-    U = keyof S
-      > = S extends true
-        ? FacebookPost
-    : S extends undefined
-    ? never
-    : S extends FacebookPostArgs | FacebookPostFindManyArgs
-    ?'include' extends U
-    ? FacebookPost  & {
-    [P in TrueKeys<S['include']>]:
-        P extends 'content' ? ContentGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
-  } 
-    : 'select' extends U
-    ? {
-    [P in TrueKeys<S['select']>]:
-        P extends 'content' ? ContentGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof FacebookPost ? FacebookPost[P] : never
-  } 
-    : FacebookPost
-  : FacebookPost
-
-
-  type FacebookPostCountArgs = Merge<
-    Omit<FacebookPostFindManyArgs, 'select' | 'include'> & {
-      select?: FacebookPostCountAggregateInputType | true
-    }
-  >
-
-  export interface FacebookPostDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-    /**
-     * Find zero or one FacebookPost that matches the filter.
-     * @param {FacebookPostFindUniqueArgs} args - Arguments to find a FacebookPost
-     * @example
-     * // Get one FacebookPost
-     * const facebookPost = await prisma.facebookPost.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUnique<T extends FacebookPostFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args: SelectSubset<T, FacebookPostFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'FacebookPost'> extends True ? CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>> : CheckSelect<T, Prisma__FacebookPostClient<FacebookPost | null, null>, Prisma__FacebookPostClient<FacebookPostGetPayload<T> | null, null>>
-
-    /**
-     * Find the first FacebookPost that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookPostFindFirstArgs} args - Arguments to find a FacebookPost
-     * @example
-     * // Get one FacebookPost
-     * const facebookPost = await prisma.facebookPost.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirst<T extends FacebookPostFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
-      args?: SelectSubset<T, FacebookPostFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'FacebookPost'> extends True ? CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>> : CheckSelect<T, Prisma__FacebookPostClient<FacebookPost | null, null>, Prisma__FacebookPostClient<FacebookPostGetPayload<T> | null, null>>
-
-    /**
-     * Find zero or more FacebookPosts that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookPostFindManyArgs=} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all FacebookPosts
-     * const facebookPosts = await prisma.facebookPost.findMany()
-     * 
-     * // Get first 10 FacebookPosts
-     * const facebookPosts = await prisma.facebookPost.findMany({ take: 10 })
-     * 
-     * // Only select the `gcsVideoUrl`
-     * const facebookPostWithGcsVideoUrlOnly = await prisma.facebookPost.findMany({ select: { gcsVideoUrl: true } })
-     * 
-    **/
-    findMany<T extends FacebookPostFindManyArgs>(
-      args?: SelectSubset<T, FacebookPostFindManyArgs>
-    ): CheckSelect<T, PrismaPromise<Array<FacebookPost>>, PrismaPromise<Array<FacebookPostGetPayload<T>>>>
-
-    /**
-     * Create a FacebookPost.
-     * @param {FacebookPostCreateArgs} args - Arguments to create a FacebookPost.
-     * @example
-     * // Create one FacebookPost
-     * const FacebookPost = await prisma.facebookPost.create({
-     *   data: {
-     *     // ... data to create a FacebookPost
-     *   }
-     * })
-     * 
-    **/
-    create<T extends FacebookPostCreateArgs>(
-      args: SelectSubset<T, FacebookPostCreateArgs>
-    ): CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>>
-
-    /**
-     * Create many FacebookPosts.
-     *     @param {FacebookPostCreateManyArgs} args - Arguments to create many FacebookPosts.
-     *     @example
-     *     // Create many FacebookPosts
-     *     const facebookPost = await prisma.facebookPost.createMany({
-     *       data: {
-     *         // ... provide data here
-     *       }
-     *     })
-     *     
-    **/
-    createMany<T extends FacebookPostCreateManyArgs>(
-      args?: SelectSubset<T, FacebookPostCreateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a FacebookPost.
-     * @param {FacebookPostDeleteArgs} args - Arguments to delete one FacebookPost.
-     * @example
-     * // Delete one FacebookPost
-     * const FacebookPost = await prisma.facebookPost.delete({
-     *   where: {
-     *     // ... filter to delete one FacebookPost
-     *   }
-     * })
-     * 
-    **/
-    delete<T extends FacebookPostDeleteArgs>(
-      args: SelectSubset<T, FacebookPostDeleteArgs>
-    ): CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>>
-
-    /**
-     * Update one FacebookPost.
-     * @param {FacebookPostUpdateArgs} args - Arguments to update one FacebookPost.
-     * @example
-     * // Update one FacebookPost
-     * const facebookPost = await prisma.facebookPost.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    update<T extends FacebookPostUpdateArgs>(
-      args: SelectSubset<T, FacebookPostUpdateArgs>
-    ): CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>>
-
-    /**
-     * Delete zero or more FacebookPosts.
-     * @param {FacebookPostDeleteManyArgs} args - Arguments to filter FacebookPosts to delete.
-     * @example
-     * // Delete a few FacebookPosts
-     * const { count } = await prisma.facebookPost.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-    **/
-    deleteMany<T extends FacebookPostDeleteManyArgs>(
-      args?: SelectSubset<T, FacebookPostDeleteManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more FacebookPosts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookPostUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many FacebookPosts
-     * const facebookPost = await prisma.facebookPost.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-    **/
-    updateMany<T extends FacebookPostUpdateManyArgs>(
-      args: SelectSubset<T, FacebookPostUpdateManyArgs>
-    ): PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one FacebookPost.
-     * @param {FacebookPostUpsertArgs} args - Arguments to update or create a FacebookPost.
-     * @example
-     * // Update or create a FacebookPost
-     * const facebookPost = await prisma.facebookPost.upsert({
-     *   create: {
-     *     // ... data to create a FacebookPost
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the FacebookPost we want to update
-     *   }
-     * })
-    **/
-    upsert<T extends FacebookPostUpsertArgs>(
-      args: SelectSubset<T, FacebookPostUpsertArgs>
-    ): CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>>
-
-    /**
-     * Find one FacebookPost that matches the filter or throw
-     * `NotFoundError` if no matches were found.
-     * @param {FacebookPostFindUniqueOrThrowArgs} args - Arguments to find a FacebookPost
-     * @example
-     * // Get one FacebookPost
-     * const facebookPost = await prisma.facebookPost.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends FacebookPostFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, FacebookPostFindUniqueOrThrowArgs>
-    ): CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>>
-
-    /**
-     * Find the first FacebookPost that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookPostFindFirstOrThrowArgs} args - Arguments to find a FacebookPost
-     * @example
-     * // Get one FacebookPost
-     * const facebookPost = await prisma.facebookPost.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends FacebookPostFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, FacebookPostFindFirstOrThrowArgs>
-    ): CheckSelect<T, Prisma__FacebookPostClient<FacebookPost>, Prisma__FacebookPostClient<FacebookPostGetPayload<T>>>
-
-    /**
-     * Count the number of FacebookPosts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookPostCountArgs} args - Arguments to filter FacebookPosts to count.
-     * @example
-     * // Count the number of FacebookPosts
-     * const count = await prisma.facebookPost.count({
-     *   where: {
-     *     // ... the filter for the FacebookPosts we want to count
-     *   }
-     * })
-    **/
-    count<T extends FacebookPostCountArgs>(
-      args?: Subset<T, FacebookPostCountArgs>,
-    ): PrismaPromise<
-      T extends _Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], FacebookPostCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a FacebookPost.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookPostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends FacebookPostAggregateArgs>(args: Subset<T, FacebookPostAggregateArgs>): PrismaPromise<GetFacebookPostAggregateType<T>>
-
-    /**
-     * Group by FacebookPost.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookPostGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends FacebookPostGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: FacebookPostGroupByArgs['orderBy'] }
-        : { orderBy?: FacebookPostGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends TupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, FacebookPostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFacebookPostGroupByPayload<T> : PrismaPromise<InputErrors>
-
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for FacebookPost.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export class Prisma__FacebookPostClient<T, Null = never> implements PrismaPromise<T> {
-    [prisma]: true;
-    private readonly _dmmf;
-    private readonly _fetcher;
-    private readonly _queryType;
-    private readonly _rootField;
-    private readonly _clientMethod;
-    private readonly _args;
-    private readonly _dataPath;
-    private readonly _errorFormat;
-    private readonly _measurePerformance?;
-    private _isList;
-    private _callsite;
-    private _requestPromise?;
-    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
-    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
-
-    content<T extends ContentArgs = {}>(args?: Subset<T, ContentArgs>): CheckSelect<T, Prisma__ContentClient<Content | Null>, Prisma__ContentClient<ContentGetPayload<T> | Null>>;
-
-    private get _document();
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
-  }
-
-
-
-  // Custom InputTypes
-
-  /**
-   * FacebookPost base type for findUnique actions
-   */
-  export type FacebookPostFindUniqueArgsBase = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
-    /**
-     * Filter, which FacebookPost to fetch.
-     * 
-    **/
-    where: FacebookPostWhereUniqueInput
-  }
-
-  /**
-   * FacebookPost: findUnique
-   */
-  export interface FacebookPostFindUniqueArgs extends FacebookPostFindUniqueArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * FacebookPost base type for findFirst actions
-   */
-  export type FacebookPostFindFirstArgsBase = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
-    /**
-     * Filter, which FacebookPost to fetch.
-     * 
-    **/
-    where?: FacebookPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of FacebookPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<FacebookPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for FacebookPosts.
-     * 
-    **/
-    cursor?: FacebookPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` FacebookPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` FacebookPosts.
-     * 
-    **/
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of FacebookPosts.
-     * 
-    **/
-    distinct?: Enumerable<FacebookPostScalarFieldEnum>
-  }
-
-  /**
-   * FacebookPost: findFirst
-   */
-  export interface FacebookPostFindFirstArgs extends FacebookPostFindFirstArgsBase {
-   /**
-    * Throw an Error if query returns no results
-    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
-    */
-    rejectOnNotFound?: RejectOnNotFound
-  }
-      
-
-  /**
-   * FacebookPost findMany
-   */
-  export type FacebookPostFindManyArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
-    /**
-     * Filter, which FacebookPosts to fetch.
-     * 
-    **/
-    where?: FacebookPostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of FacebookPosts to fetch.
-     * 
-    **/
-    orderBy?: Enumerable<FacebookPostOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing FacebookPosts.
-     * 
-    **/
-    cursor?: FacebookPostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` FacebookPosts from the position of the cursor.
-     * 
-    **/
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` FacebookPosts.
-     * 
-    **/
-    skip?: number
-    distinct?: Enumerable<FacebookPostScalarFieldEnum>
-  }
-
-
-  /**
-   * FacebookPost create
-   */
-  export type FacebookPostCreateArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
-    /**
-     * The data needed to create a FacebookPost.
-     * 
-    **/
-    data: XOR<FacebookPostCreateInput, FacebookPostUncheckedCreateInput>
-  }
-
-
-  /**
-   * FacebookPost createMany
-   */
-  export type FacebookPostCreateManyArgs = {
-    /**
-     * The data used to create many FacebookPosts.
-     * 
-    **/
-    data: Enumerable<FacebookPostCreateManyInput>
-    skipDuplicates?: boolean
-  }
-
-
-  /**
-   * FacebookPost update
-   */
-  export type FacebookPostUpdateArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
-    /**
-     * The data needed to update a FacebookPost.
-     * 
-    **/
-    data: XOR<FacebookPostUpdateInput, FacebookPostUncheckedUpdateInput>
-    /**
-     * Choose, which FacebookPost to update.
-     * 
-    **/
-    where: FacebookPostWhereUniqueInput
-  }
-
-
-  /**
-   * FacebookPost updateMany
-   */
-  export type FacebookPostUpdateManyArgs = {
-    /**
-     * The data used to update FacebookPosts.
-     * 
-    **/
-    data: XOR<FacebookPostUpdateManyMutationInput, FacebookPostUncheckedUpdateManyInput>
-    /**
-     * Filter which FacebookPosts to update
-     * 
-    **/
-    where?: FacebookPostWhereInput
-  }
-
-
-  /**
-   * FacebookPost upsert
-   */
-  export type FacebookPostUpsertArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
-    /**
-     * The filter to search for the FacebookPost to update in case it exists.
-     * 
-    **/
-    where: FacebookPostWhereUniqueInput
-    /**
-     * In case the FacebookPost found by the `where` argument doesn't exist, create a new FacebookPost with this data.
-     * 
-    **/
-    create: XOR<FacebookPostCreateInput, FacebookPostUncheckedCreateInput>
-    /**
-     * In case the FacebookPost was found with the provided `where` argument, update it with this data.
-     * 
-    **/
-    update: XOR<FacebookPostUpdateInput, FacebookPostUncheckedUpdateInput>
-  }
-
-
-  /**
-   * FacebookPost delete
-   */
-  export type FacebookPostDeleteArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
-    /**
-     * Filter which FacebookPost to delete.
-     * 
-    **/
-    where: FacebookPostWhereUniqueInput
-  }
-
-
-  /**
-   * FacebookPost deleteMany
-   */
-  export type FacebookPostDeleteManyArgs = {
-    /**
-     * Filter which FacebookPosts to delete
-     * 
-    **/
-    where?: FacebookPostWhereInput
-  }
-
-
-  /**
-   * FacebookPost: findUniqueOrThrow
-   */
-  export type FacebookPostFindUniqueOrThrowArgs = FacebookPostFindUniqueArgsBase
-      
-
-  /**
-   * FacebookPost: findFirstOrThrow
-   */
-  export type FacebookPostFindFirstOrThrowArgs = FacebookPostFindFirstArgsBase
-      
-
-  /**
-   * FacebookPost without action
-   */
-  export type FacebookPostArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookPost
-     * 
-    **/
-    select?: FacebookPostSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     * 
-    **/
-    include?: FacebookPostInclude | null
+    include?: ChannelInclude | null
   }
 
 
@@ -12348,6 +9680,21 @@ export namespace Prisma {
 
   // Based on
   // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
+
+  export const ChannelScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    views: 'views',
+    subscribers: 'subscribers',
+    thumbnail: 'thumbnail',
+    integration: 'integration',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    projectId: 'projectId'
+  };
+
+  export type ChannelScalarFieldEnum = (typeof ChannelScalarFieldEnum)[keyof typeof ChannelScalarFieldEnum]
+
 
   export const ContentScalarFieldEnum: {
     slug: 'slug',
@@ -12377,16 +9724,6 @@ export namespace Prisma {
   export type FacebookCredentialsScalarFieldEnum = (typeof FacebookCredentialsScalarFieldEnum)[keyof typeof FacebookCredentialsScalarFieldEnum]
 
 
-  export const FacebookPostScalarFieldEnum: {
-    gcsVideoUrl: 'gcsVideoUrl',
-    postSlug: 'postSlug',
-    contentProjectId: 'contentProjectId',
-    contentSlug: 'contentSlug'
-  };
-
-  export type FacebookPostScalarFieldEnum = (typeof FacebookPostScalarFieldEnum)[keyof typeof FacebookPostScalarFieldEnum]
-
-
   export const InstagramCredentialsScalarFieldEnum: {
     id: 'id',
     accessToken: 'accessToken',
@@ -12397,17 +9734,6 @@ export namespace Prisma {
   };
 
   export type InstagramCredentialsScalarFieldEnum = (typeof InstagramCredentialsScalarFieldEnum)[keyof typeof InstagramCredentialsScalarFieldEnum]
-
-
-  export const InstagramPostScalarFieldEnum: {
-    gcsVideoUrl: 'gcsVideoUrl',
-    postSlug: 'postSlug',
-    caption: 'caption',
-    contentProjectId: 'contentProjectId',
-    contentSlug: 'contentSlug'
-  };
-
-  export type InstagramPostScalarFieldEnum = (typeof InstagramPostScalarFieldEnum)[keyof typeof InstagramPostScalarFieldEnum]
 
 
   export const PasswordScalarFieldEnum: {
@@ -12459,16 +9785,6 @@ export namespace Prisma {
   export type TikTokCredentialsScalarFieldEnum = (typeof TikTokCredentialsScalarFieldEnum)[keyof typeof TikTokCredentialsScalarFieldEnum]
 
 
-  export const TikTokPostScalarFieldEnum: {
-    gcsVideoUrl: 'gcsVideoUrl',
-    postSlug: 'postSlug',
-    contentProjectId: 'contentProjectId',
-    contentSlug: 'contentSlug'
-  };
-
-  export type TikTokPostScalarFieldEnum = (typeof TikTokPostScalarFieldEnum)[keyof typeof TikTokPostScalarFieldEnum]
-
-
   export const TransactionIsolationLevel: {
     ReadUncommitted: 'ReadUncommitted',
     ReadCommitted: 'ReadCommitted',
@@ -12502,14 +9818,6 @@ export namespace Prisma {
   };
 
   export type YoutubeCredentialsScalarFieldEnum = (typeof YoutubeCredentialsScalarFieldEnum)[keyof typeof YoutubeCredentialsScalarFieldEnum]
-
-
-  export const YoutubeShortPostScalarFieldEnum: {
-    gcsVideoUrl: 'gcsVideoUrl',
-    postSlug: 'postSlug'
-  };
-
-  export type YoutubeShortPostScalarFieldEnum = (typeof YoutubeShortPostScalarFieldEnum)[keyof typeof YoutubeShortPostScalarFieldEnum]
 
 
   /**
@@ -12849,9 +10157,6 @@ export namespace Prisma {
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
-    tikTokPost?: XOR<TikTokPostRelationFilter, TikTokPostWhereInput> | null
-    instagramPost?: XOR<InstagramPostRelationFilter, InstagramPostWhereInput> | null
-    facebookPost?: XOR<FacebookPostRelationFilter, FacebookPostWhereInput> | null
   }
 
   export type ContentOrderByWithRelationInput = {
@@ -12867,9 +10172,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
     projectId?: SortOrder
     project?: ProjectOrderByWithRelationInput
-    tikTokPost?: TikTokPostOrderByWithRelationInput
-    instagramPost?: InstagramPostOrderByWithRelationInput
-    facebookPost?: FacebookPostOrderByWithRelationInput
   }
 
   export type ContentWhereUniqueInput = {
@@ -12923,6 +10225,7 @@ export namespace Prisma {
     user?: XOR<UserRelationFilter, UserWhereInput>
     content?: ContentListRelationFilter
     youtubeCredentials?: XOR<YoutubeCredentialsRelationFilter, YoutubeCredentialsWhereInput> | null
+    channels?: ChannelListRelationFilter
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -12934,6 +10237,7 @@ export namespace Prisma {
     user?: UserOrderByWithRelationInput
     content?: ContentOrderByRelationAggregateInput
     youtubeCredentials?: YoutubeCredentialsOrderByWithRelationInput
+    channels?: ChannelOrderByRelationAggregateInput
   }
 
   export type ProjectWhereUniqueInput = {
@@ -12962,173 +10266,71 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter | string
   }
 
-  export type YoutubeShortPostWhereInput = {
-    AND?: Enumerable<YoutubeShortPostWhereInput>
-    OR?: Enumerable<YoutubeShortPostWhereInput>
-    NOT?: Enumerable<YoutubeShortPostWhereInput>
-    gcsVideoUrl?: StringFilter | string
-    postSlug?: StringFilter | string
+  export type ChannelWhereInput = {
+    AND?: Enumerable<ChannelWhereInput>
+    OR?: Enumerable<ChannelWhereInput>
+    NOT?: Enumerable<ChannelWhereInput>
+    id?: StringFilter | string
+    name?: StringFilter | string
+    views?: IntNullableFilter | number | null
+    subscribers?: IntNullableFilter | number | null
+    thumbnail?: StringNullableFilter | string | null
+    integration?: EnumIntegrationTypeFilter | IntegrationType
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    projectId?: StringFilter | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
-  export type YoutubeShortPostOrderByWithRelationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
+  export type ChannelOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    views?: SortOrder
+    subscribers?: SortOrder
+    thumbnail?: SortOrder
+    integration?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+    project?: ProjectOrderByWithRelationInput
   }
 
-  export type YoutubeShortPostWhereUniqueInput = {
-    postSlug?: string
+  export type ChannelWhereUniqueInput = {
+    id?: string
+    projectId?: string
+    projectId_integration?: ChannelProjectIdIntegrationCompoundUniqueInput
   }
 
-  export type YoutubeShortPostOrderByWithAggregationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    _count?: YoutubeShortPostCountOrderByAggregateInput
-    _max?: YoutubeShortPostMaxOrderByAggregateInput
-    _min?: YoutubeShortPostMinOrderByAggregateInput
+  export type ChannelOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    views?: SortOrder
+    subscribers?: SortOrder
+    thumbnail?: SortOrder
+    integration?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+    _count?: ChannelCountOrderByAggregateInput
+    _avg?: ChannelAvgOrderByAggregateInput
+    _max?: ChannelMaxOrderByAggregateInput
+    _min?: ChannelMinOrderByAggregateInput
+    _sum?: ChannelSumOrderByAggregateInput
   }
 
-  export type YoutubeShortPostScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<YoutubeShortPostScalarWhereWithAggregatesInput>
-    OR?: Enumerable<YoutubeShortPostScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<YoutubeShortPostScalarWhereWithAggregatesInput>
-    gcsVideoUrl?: StringWithAggregatesFilter | string
-    postSlug?: StringWithAggregatesFilter | string
-  }
-
-  export type TikTokPostWhereInput = {
-    AND?: Enumerable<TikTokPostWhereInput>
-    OR?: Enumerable<TikTokPostWhereInput>
-    NOT?: Enumerable<TikTokPostWhereInput>
-    gcsVideoUrl?: StringFilter | string
-    postSlug?: StringFilter | string
-    content?: XOR<ContentRelationFilter, ContentWhereInput>
-    contentProjectId?: StringFilter | string
-    contentSlug?: StringFilter | string
-  }
-
-  export type TikTokPostOrderByWithRelationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    content?: ContentOrderByWithRelationInput
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type TikTokPostWhereUniqueInput = {
-    postSlug?: string
-    contentProjectId_contentSlug?: TikTokPostContentProjectIdContentSlugCompoundUniqueInput
-  }
-
-  export type TikTokPostOrderByWithAggregationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-    _count?: TikTokPostCountOrderByAggregateInput
-    _max?: TikTokPostMaxOrderByAggregateInput
-    _min?: TikTokPostMinOrderByAggregateInput
-  }
-
-  export type TikTokPostScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<TikTokPostScalarWhereWithAggregatesInput>
-    OR?: Enumerable<TikTokPostScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<TikTokPostScalarWhereWithAggregatesInput>
-    gcsVideoUrl?: StringWithAggregatesFilter | string
-    postSlug?: StringWithAggregatesFilter | string
-    contentProjectId?: StringWithAggregatesFilter | string
-    contentSlug?: StringWithAggregatesFilter | string
-  }
-
-  export type InstagramPostWhereInput = {
-    AND?: Enumerable<InstagramPostWhereInput>
-    OR?: Enumerable<InstagramPostWhereInput>
-    NOT?: Enumerable<InstagramPostWhereInput>
-    gcsVideoUrl?: StringFilter | string
-    postSlug?: StringFilter | string
-    caption?: StringFilter | string
-    content?: XOR<ContentRelationFilter, ContentWhereInput>
-    contentProjectId?: StringFilter | string
-    contentSlug?: StringFilter | string
-  }
-
-  export type InstagramPostOrderByWithRelationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    caption?: SortOrder
-    content?: ContentOrderByWithRelationInput
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type InstagramPostWhereUniqueInput = {
-    postSlug?: string
-    contentProjectId_contentSlug?: InstagramPostContentProjectIdContentSlugCompoundUniqueInput
-  }
-
-  export type InstagramPostOrderByWithAggregationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    caption?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-    _count?: InstagramPostCountOrderByAggregateInput
-    _max?: InstagramPostMaxOrderByAggregateInput
-    _min?: InstagramPostMinOrderByAggregateInput
-  }
-
-  export type InstagramPostScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<InstagramPostScalarWhereWithAggregatesInput>
-    OR?: Enumerable<InstagramPostScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<InstagramPostScalarWhereWithAggregatesInput>
-    gcsVideoUrl?: StringWithAggregatesFilter | string
-    postSlug?: StringWithAggregatesFilter | string
-    caption?: StringWithAggregatesFilter | string
-    contentProjectId?: StringWithAggregatesFilter | string
-    contentSlug?: StringWithAggregatesFilter | string
-  }
-
-  export type FacebookPostWhereInput = {
-    AND?: Enumerable<FacebookPostWhereInput>
-    OR?: Enumerable<FacebookPostWhereInput>
-    NOT?: Enumerable<FacebookPostWhereInput>
-    gcsVideoUrl?: StringFilter | string
-    postSlug?: StringFilter | string
-    content?: XOR<ContentRelationFilter, ContentWhereInput>
-    contentProjectId?: StringFilter | string
-    contentSlug?: StringFilter | string
-  }
-
-  export type FacebookPostOrderByWithRelationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    content?: ContentOrderByWithRelationInput
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type FacebookPostWhereUniqueInput = {
-    postSlug?: string
-    contentProjectId_contentSlug?: FacebookPostContentProjectIdContentSlugCompoundUniqueInput
-  }
-
-  export type FacebookPostOrderByWithAggregationInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-    _count?: FacebookPostCountOrderByAggregateInput
-    _max?: FacebookPostMaxOrderByAggregateInput
-    _min?: FacebookPostMinOrderByAggregateInput
-  }
-
-  export type FacebookPostScalarWhereWithAggregatesInput = {
-    AND?: Enumerable<FacebookPostScalarWhereWithAggregatesInput>
-    OR?: Enumerable<FacebookPostScalarWhereWithAggregatesInput>
-    NOT?: Enumerable<FacebookPostScalarWhereWithAggregatesInput>
-    gcsVideoUrl?: StringWithAggregatesFilter | string
-    postSlug?: StringWithAggregatesFilter | string
-    contentProjectId?: StringWithAggregatesFilter | string
-    contentSlug?: StringWithAggregatesFilter | string
+  export type ChannelScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<ChannelScalarWhereWithAggregatesInput>
+    OR?: Enumerable<ChannelScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<ChannelScalarWhereWithAggregatesInput>
+    id?: StringWithAggregatesFilter | string
+    name?: StringWithAggregatesFilter | string
+    views?: IntNullableWithAggregatesFilter | number | null
+    subscribers?: IntNullableWithAggregatesFilter | number | null
+    thumbnail?: StringNullableWithAggregatesFilter | string | null
+    integration?: EnumIntegrationTypeWithAggregatesFilter | IntegrationType
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+    projectId?: StringWithAggregatesFilter | string
   }
 
   export type UserCreateInput = {
@@ -13525,9 +10727,6 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     project: ProjectCreateNestedOneWithoutContentInput
-    tikTokPost?: TikTokPostCreateNestedOneWithoutContentInput
-    instagramPost?: InstagramPostCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostCreateNestedOneWithoutContentInput
   }
 
   export type ContentUncheckedCreateInput = {
@@ -13542,9 +10741,6 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     projectId: string
-    tikTokPost?: TikTokPostUncheckedCreateNestedOneWithoutContentInput
-    instagramPost?: InstagramPostUncheckedCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostUncheckedCreateNestedOneWithoutContentInput
   }
 
   export type ContentUpdateInput = {
@@ -13559,9 +10755,6 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     project?: ProjectUpdateOneRequiredWithoutContentNestedInput
-    tikTokPost?: TikTokPostUpdateOneWithoutContentNestedInput
-    instagramPost?: InstagramPostUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUpdateOneWithoutContentNestedInput
   }
 
   export type ContentUncheckedUpdateInput = {
@@ -13576,9 +10769,6 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: StringFieldUpdateOperationsInput | string
-    tikTokPost?: TikTokPostUncheckedUpdateOneWithoutContentNestedInput
-    instagramPost?: InstagramPostUncheckedUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUncheckedUpdateOneWithoutContentNestedInput
   }
 
   export type ContentCreateManyInput = {
@@ -13630,6 +10820,7 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -13640,6 +10831,7 @@ export namespace Prisma {
     userId: string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -13650,6 +10842,7 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -13660,6 +10853,7 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -13685,181 +10879,87 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type YoutubeShortPostCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
+  export type ChannelCreateInput = {
+    id?: string
+    name: string
+    views?: number | null
+    subscribers?: number | null
+    thumbnail?: string | null
+    integration: IntegrationType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutChannelsInput
   }
 
-  export type YoutubeShortPostUncheckedCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
+  export type ChannelUncheckedCreateInput = {
+    id?: string
+    name: string
+    views?: number | null
+    subscribers?: number | null
+    thumbnail?: string | null
+    integration: IntegrationType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
   }
 
-  export type YoutubeShortPostUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
+  export type ChannelUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    views?: NullableIntFieldUpdateOperationsInput | number | null
+    subscribers?: NullableIntFieldUpdateOperationsInput | number | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutChannelsNestedInput
   }
 
-  export type YoutubeShortPostUncheckedUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
+  export type ChannelUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    views?: NullableIntFieldUpdateOperationsInput | number | null
+    subscribers?: NullableIntFieldUpdateOperationsInput | number | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type YoutubeShortPostCreateManyInput = {
-    gcsVideoUrl: string
-    postSlug: string
+  export type ChannelCreateManyInput = {
+    id?: string
+    name: string
+    views?: number | null
+    subscribers?: number | null
+    thumbnail?: string | null
+    integration: IntegrationType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
   }
 
-  export type YoutubeShortPostUpdateManyMutationInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
+  export type ChannelUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    views?: NullableIntFieldUpdateOperationsInput | number | null
+    subscribers?: NullableIntFieldUpdateOperationsInput | number | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type YoutubeShortPostUncheckedUpdateManyInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TikTokPostCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    content: ContentCreateNestedOneWithoutTikTokPostInput
-  }
-
-  export type TikTokPostUncheckedCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    contentProjectId: string
-    contentSlug: string
-  }
-
-  export type TikTokPostUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    content?: ContentUpdateOneRequiredWithoutTikTokPostNestedInput
-  }
-
-  export type TikTokPostUncheckedUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    contentProjectId?: StringFieldUpdateOperationsInput | string
-    contentSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TikTokPostCreateManyInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    contentProjectId: string
-    contentSlug: string
-  }
-
-  export type TikTokPostUpdateManyMutationInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TikTokPostUncheckedUpdateManyInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    contentProjectId?: StringFieldUpdateOperationsInput | string
-    contentSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type InstagramPostCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    caption: string
-    content: ContentCreateNestedOneWithoutInstagramPostInput
-  }
-
-  export type InstagramPostUncheckedCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    caption: string
-    contentProjectId: string
-    contentSlug: string
-  }
-
-  export type InstagramPostUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    caption?: StringFieldUpdateOperationsInput | string
-    content?: ContentUpdateOneRequiredWithoutInstagramPostNestedInput
-  }
-
-  export type InstagramPostUncheckedUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    caption?: StringFieldUpdateOperationsInput | string
-    contentProjectId?: StringFieldUpdateOperationsInput | string
-    contentSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type InstagramPostCreateManyInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    caption: string
-    contentProjectId: string
-    contentSlug: string
-  }
-
-  export type InstagramPostUpdateManyMutationInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    caption?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type InstagramPostUncheckedUpdateManyInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    caption?: StringFieldUpdateOperationsInput | string
-    contentProjectId?: StringFieldUpdateOperationsInput | string
-    contentSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FacebookPostCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    content: ContentCreateNestedOneWithoutFacebookPostInput
-  }
-
-  export type FacebookPostUncheckedCreateInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    contentProjectId: string
-    contentSlug: string
-  }
-
-  export type FacebookPostUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    content?: ContentUpdateOneRequiredWithoutFacebookPostNestedInput
-  }
-
-  export type FacebookPostUncheckedUpdateInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    contentProjectId?: StringFieldUpdateOperationsInput | string
-    contentSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FacebookPostCreateManyInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    contentProjectId: string
-    contentSlug: string
-  }
-
-  export type FacebookPostUpdateManyMutationInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FacebookPostUncheckedUpdateManyInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    contentProjectId?: StringFieldUpdateOperationsInput | string
-    contentSlug?: StringFieldUpdateOperationsInput | string
+  export type ChannelUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    views?: NullableIntFieldUpdateOperationsInput | number | null
+    subscribers?: NullableIntFieldUpdateOperationsInput | number | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type StringFilter = {
@@ -14178,21 +11278,6 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter | Date | string | null
   }
 
-  export type TikTokPostRelationFilter = {
-    is?: TikTokPostWhereInput | null
-    isNot?: TikTokPostWhereInput | null
-  }
-
-  export type InstagramPostRelationFilter = {
-    is?: InstagramPostWhereInput | null
-    isNot?: InstagramPostWhereInput | null
-  }
-
-  export type FacebookPostRelationFilter = {
-    is?: FacebookPostWhereInput | null
-    isNot?: FacebookPostWhereInput | null
-  }
-
   export type ContentProjectIdSlugCompoundUniqueInput = {
     projectId: string
     slug: string
@@ -14266,7 +11351,17 @@ export namespace Prisma {
     none?: ContentWhereInput
   }
 
+  export type ChannelListRelationFilter = {
+    every?: ChannelWhereInput
+    some?: ChannelWhereInput
+    none?: ChannelWhereInput
+  }
+
   export type ContentOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ChannelOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -14294,105 +11389,99 @@ export namespace Prisma {
     userId?: SortOrder
   }
 
-  export type YoutubeShortPostCountOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
+  export type IntNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableFilter | number | null
   }
 
-  export type YoutubeShortPostMaxOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
+  export type EnumIntegrationTypeFilter = {
+    equals?: IntegrationType
+    in?: Enumerable<IntegrationType>
+    notIn?: Enumerable<IntegrationType>
+    not?: NestedEnumIntegrationTypeFilter | IntegrationType
   }
 
-  export type YoutubeShortPostMinOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
+  export type ChannelProjectIdIntegrationCompoundUniqueInput = {
+    projectId: string
+    integration: IntegrationType
   }
 
-  export type ContentRelationFilter = {
-    is?: ContentWhereInput
-    isNot?: ContentWhereInput
+  export type ChannelCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    views?: SortOrder
+    subscribers?: SortOrder
+    thumbnail?: SortOrder
+    integration?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
   }
 
-  export type TikTokPostContentProjectIdContentSlugCompoundUniqueInput = {
-    contentProjectId: string
-    contentSlug: string
+  export type ChannelAvgOrderByAggregateInput = {
+    views?: SortOrder
+    subscribers?: SortOrder
   }
 
-  export type TikTokPostCountOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
+  export type ChannelMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    views?: SortOrder
+    subscribers?: SortOrder
+    thumbnail?: SortOrder
+    integration?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
   }
 
-  export type TikTokPostMaxOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
+  export type ChannelMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    views?: SortOrder
+    subscribers?: SortOrder
+    thumbnail?: SortOrder
+    integration?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
   }
 
-  export type TikTokPostMinOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
+  export type ChannelSumOrderByAggregateInput = {
+    views?: SortOrder
+    subscribers?: SortOrder
   }
 
-  export type InstagramPostContentProjectIdContentSlugCompoundUniqueInput = {
-    contentProjectId: string
-    contentSlug: string
+  export type IntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
   }
 
-  export type InstagramPostCountOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    caption?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type InstagramPostMaxOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    caption?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type InstagramPostMinOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    caption?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type FacebookPostContentProjectIdContentSlugCompoundUniqueInput = {
-    contentProjectId: string
-    contentSlug: string
-  }
-
-  export type FacebookPostCountOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type FacebookPostMaxOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
-  }
-
-  export type FacebookPostMinOrderByAggregateInput = {
-    gcsVideoUrl?: SortOrder
-    postSlug?: SortOrder
-    contentProjectId?: SortOrder
-    contentSlug?: SortOrder
+  export type EnumIntegrationTypeWithAggregatesFilter = {
+    equals?: IntegrationType
+    in?: Enumerable<IntegrationType>
+    notIn?: Enumerable<IntegrationType>
+    not?: NestedEnumIntegrationTypeWithAggregatesFilter | IntegrationType
+    _count?: NestedIntFilter
+    _min?: NestedEnumIntegrationTypeFilter
+    _max?: NestedEnumIntegrationTypeFilter
   }
 
   export type PasswordCreateNestedOneWithoutUserInput = {
@@ -14703,42 +11792,6 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
-  export type TikTokPostCreateNestedOneWithoutContentInput = {
-    create?: XOR<TikTokPostCreateWithoutContentInput, TikTokPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: TikTokPostCreateOrConnectWithoutContentInput
-    connect?: TikTokPostWhereUniqueInput
-  }
-
-  export type InstagramPostCreateNestedOneWithoutContentInput = {
-    create?: XOR<InstagramPostCreateWithoutContentInput, InstagramPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: InstagramPostCreateOrConnectWithoutContentInput
-    connect?: InstagramPostWhereUniqueInput
-  }
-
-  export type FacebookPostCreateNestedOneWithoutContentInput = {
-    create?: XOR<FacebookPostCreateWithoutContentInput, FacebookPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: FacebookPostCreateOrConnectWithoutContentInput
-    connect?: FacebookPostWhereUniqueInput
-  }
-
-  export type TikTokPostUncheckedCreateNestedOneWithoutContentInput = {
-    create?: XOR<TikTokPostCreateWithoutContentInput, TikTokPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: TikTokPostCreateOrConnectWithoutContentInput
-    connect?: TikTokPostWhereUniqueInput
-  }
-
-  export type InstagramPostUncheckedCreateNestedOneWithoutContentInput = {
-    create?: XOR<InstagramPostCreateWithoutContentInput, InstagramPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: InstagramPostCreateOrConnectWithoutContentInput
-    connect?: InstagramPostWhereUniqueInput
-  }
-
-  export type FacebookPostUncheckedCreateNestedOneWithoutContentInput = {
-    create?: XOR<FacebookPostCreateWithoutContentInput, FacebookPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: FacebookPostCreateOrConnectWithoutContentInput
-    connect?: FacebookPostWhereUniqueInput
-  }
-
   export type ContentUpdatetagsInput = {
     set?: Enumerable<string>
     push?: string | Enumerable<string>
@@ -14760,66 +11813,6 @@ export namespace Prisma {
     update?: XOR<ProjectUpdateWithoutContentInput, ProjectUncheckedUpdateWithoutContentInput>
   }
 
-  export type TikTokPostUpdateOneWithoutContentNestedInput = {
-    create?: XOR<TikTokPostCreateWithoutContentInput, TikTokPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: TikTokPostCreateOrConnectWithoutContentInput
-    upsert?: TikTokPostUpsertWithoutContentInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: TikTokPostWhereUniqueInput
-    update?: XOR<TikTokPostUpdateWithoutContentInput, TikTokPostUncheckedUpdateWithoutContentInput>
-  }
-
-  export type InstagramPostUpdateOneWithoutContentNestedInput = {
-    create?: XOR<InstagramPostCreateWithoutContentInput, InstagramPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: InstagramPostCreateOrConnectWithoutContentInput
-    upsert?: InstagramPostUpsertWithoutContentInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: InstagramPostWhereUniqueInput
-    update?: XOR<InstagramPostUpdateWithoutContentInput, InstagramPostUncheckedUpdateWithoutContentInput>
-  }
-
-  export type FacebookPostUpdateOneWithoutContentNestedInput = {
-    create?: XOR<FacebookPostCreateWithoutContentInput, FacebookPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: FacebookPostCreateOrConnectWithoutContentInput
-    upsert?: FacebookPostUpsertWithoutContentInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: FacebookPostWhereUniqueInput
-    update?: XOR<FacebookPostUpdateWithoutContentInput, FacebookPostUncheckedUpdateWithoutContentInput>
-  }
-
-  export type TikTokPostUncheckedUpdateOneWithoutContentNestedInput = {
-    create?: XOR<TikTokPostCreateWithoutContentInput, TikTokPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: TikTokPostCreateOrConnectWithoutContentInput
-    upsert?: TikTokPostUpsertWithoutContentInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: TikTokPostWhereUniqueInput
-    update?: XOR<TikTokPostUpdateWithoutContentInput, TikTokPostUncheckedUpdateWithoutContentInput>
-  }
-
-  export type InstagramPostUncheckedUpdateOneWithoutContentNestedInput = {
-    create?: XOR<InstagramPostCreateWithoutContentInput, InstagramPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: InstagramPostCreateOrConnectWithoutContentInput
-    upsert?: InstagramPostUpsertWithoutContentInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: InstagramPostWhereUniqueInput
-    update?: XOR<InstagramPostUpdateWithoutContentInput, InstagramPostUncheckedUpdateWithoutContentInput>
-  }
-
-  export type FacebookPostUncheckedUpdateOneWithoutContentNestedInput = {
-    create?: XOR<FacebookPostCreateWithoutContentInput, FacebookPostUncheckedCreateWithoutContentInput>
-    connectOrCreate?: FacebookPostCreateOrConnectWithoutContentInput
-    upsert?: FacebookPostUpsertWithoutContentInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: FacebookPostWhereUniqueInput
-    update?: XOR<FacebookPostUpdateWithoutContentInput, FacebookPostUncheckedUpdateWithoutContentInput>
-  }
-
   export type UserCreateNestedOneWithoutProjectsInput = {
     create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
     connectOrCreate?: UserCreateOrConnectWithoutProjectsInput
@@ -14839,6 +11832,13 @@ export namespace Prisma {
     connect?: YoutubeCredentialsWhereUniqueInput
   }
 
+  export type ChannelCreateNestedManyWithoutProjectInput = {
+    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
+    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
+    createMany?: ChannelCreateManyProjectInputEnvelope
+    connect?: Enumerable<ChannelWhereUniqueInput>
+  }
+
   export type ContentUncheckedCreateNestedManyWithoutProjectInput = {
     create?: XOR<Enumerable<ContentCreateWithoutProjectInput>, Enumerable<ContentUncheckedCreateWithoutProjectInput>>
     connectOrCreate?: Enumerable<ContentCreateOrConnectWithoutProjectInput>
@@ -14850,6 +11850,13 @@ export namespace Prisma {
     create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
     connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
     connect?: YoutubeCredentialsWhereUniqueInput
+  }
+
+  export type ChannelUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
+    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
+    createMany?: ChannelCreateManyProjectInputEnvelope
+    connect?: Enumerable<ChannelWhereUniqueInput>
   }
 
   export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
@@ -14884,6 +11891,20 @@ export namespace Prisma {
     update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
   }
 
+  export type ChannelUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
+    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
+    upsert?: Enumerable<ChannelUpsertWithWhereUniqueWithoutProjectInput>
+    createMany?: ChannelCreateManyProjectInputEnvelope
+    set?: Enumerable<ChannelWhereUniqueInput>
+    disconnect?: Enumerable<ChannelWhereUniqueInput>
+    delete?: Enumerable<ChannelWhereUniqueInput>
+    connect?: Enumerable<ChannelWhereUniqueInput>
+    update?: Enumerable<ChannelUpdateWithWhereUniqueWithoutProjectInput>
+    updateMany?: Enumerable<ChannelUpdateManyWithWhereWithoutProjectInput>
+    deleteMany?: Enumerable<ChannelScalarWhereInput>
+  }
+
   export type ContentUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<Enumerable<ContentCreateWithoutProjectInput>, Enumerable<ContentUncheckedCreateWithoutProjectInput>>
     connectOrCreate?: Enumerable<ContentCreateOrConnectWithoutProjectInput>
@@ -14908,46 +11929,44 @@ export namespace Prisma {
     update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
   }
 
-  export type ContentCreateNestedOneWithoutTikTokPostInput = {
-    create?: XOR<ContentCreateWithoutTikTokPostInput, ContentUncheckedCreateWithoutTikTokPostInput>
-    connectOrCreate?: ContentCreateOrConnectWithoutTikTokPostInput
-    connect?: ContentWhereUniqueInput
+  export type ChannelUncheckedUpdateManyWithoutProjectNestedInput = {
+    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
+    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
+    upsert?: Enumerable<ChannelUpsertWithWhereUniqueWithoutProjectInput>
+    createMany?: ChannelCreateManyProjectInputEnvelope
+    set?: Enumerable<ChannelWhereUniqueInput>
+    disconnect?: Enumerable<ChannelWhereUniqueInput>
+    delete?: Enumerable<ChannelWhereUniqueInput>
+    connect?: Enumerable<ChannelWhereUniqueInput>
+    update?: Enumerable<ChannelUpdateWithWhereUniqueWithoutProjectInput>
+    updateMany?: Enumerable<ChannelUpdateManyWithWhereWithoutProjectInput>
+    deleteMany?: Enumerable<ChannelScalarWhereInput>
   }
 
-  export type ContentUpdateOneRequiredWithoutTikTokPostNestedInput = {
-    create?: XOR<ContentCreateWithoutTikTokPostInput, ContentUncheckedCreateWithoutTikTokPostInput>
-    connectOrCreate?: ContentCreateOrConnectWithoutTikTokPostInput
-    upsert?: ContentUpsertWithoutTikTokPostInput
-    connect?: ContentWhereUniqueInput
-    update?: XOR<ContentUpdateWithoutTikTokPostInput, ContentUncheckedUpdateWithoutTikTokPostInput>
+  export type ProjectCreateNestedOneWithoutChannelsInput = {
+    create?: XOR<ProjectCreateWithoutChannelsInput, ProjectUncheckedCreateWithoutChannelsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutChannelsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type ContentCreateNestedOneWithoutInstagramPostInput = {
-    create?: XOR<ContentCreateWithoutInstagramPostInput, ContentUncheckedCreateWithoutInstagramPostInput>
-    connectOrCreate?: ContentCreateOrConnectWithoutInstagramPostInput
-    connect?: ContentWhereUniqueInput
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
-  export type ContentUpdateOneRequiredWithoutInstagramPostNestedInput = {
-    create?: XOR<ContentCreateWithoutInstagramPostInput, ContentUncheckedCreateWithoutInstagramPostInput>
-    connectOrCreate?: ContentCreateOrConnectWithoutInstagramPostInput
-    upsert?: ContentUpsertWithoutInstagramPostInput
-    connect?: ContentWhereUniqueInput
-    update?: XOR<ContentUpdateWithoutInstagramPostInput, ContentUncheckedUpdateWithoutInstagramPostInput>
+  export type EnumIntegrationTypeFieldUpdateOperationsInput = {
+    set?: IntegrationType
   }
 
-  export type ContentCreateNestedOneWithoutFacebookPostInput = {
-    create?: XOR<ContentCreateWithoutFacebookPostInput, ContentUncheckedCreateWithoutFacebookPostInput>
-    connectOrCreate?: ContentCreateOrConnectWithoutFacebookPostInput
-    connect?: ContentWhereUniqueInput
-  }
-
-  export type ContentUpdateOneRequiredWithoutFacebookPostNestedInput = {
-    create?: XOR<ContentCreateWithoutFacebookPostInput, ContentUncheckedCreateWithoutFacebookPostInput>
-    connectOrCreate?: ContentCreateOrConnectWithoutFacebookPostInput
-    upsert?: ContentUpsertWithoutFacebookPostInput
-    connect?: ContentWhereUniqueInput
-    update?: XOR<ContentUpdateWithoutFacebookPostInput, ContentUncheckedUpdateWithoutFacebookPostInput>
+  export type ProjectUpdateOneRequiredWithoutChannelsNestedInput = {
+    create?: XOR<ProjectCreateWithoutChannelsInput, ProjectUncheckedCreateWithoutChannelsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutChannelsInput
+    upsert?: ProjectUpsertWithoutChannelsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<ProjectUpdateWithoutChannelsInput, ProjectUncheckedUpdateWithoutChannelsInput>
   }
 
   export type NestedStringFilter = {
@@ -15097,6 +12116,50 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter
   }
 
+  export type NestedEnumIntegrationTypeFilter = {
+    equals?: IntegrationType
+    in?: Enumerable<IntegrationType>
+    notIn?: Enumerable<IntegrationType>
+    not?: NestedEnumIntegrationTypeFilter | IntegrationType
+  }
+
+  export type NestedIntNullableWithAggregatesFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntNullableWithAggregatesFilter | number | null
+    _count?: NestedIntNullableFilter
+    _avg?: NestedFloatNullableFilter
+    _sum?: NestedIntNullableFilter
+    _min?: NestedIntNullableFilter
+    _max?: NestedIntNullableFilter
+  }
+
+  export type NestedFloatNullableFilter = {
+    equals?: number | null
+    in?: Enumerable<number> | null
+    notIn?: Enumerable<number> | null
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatNullableFilter | number | null
+  }
+
+  export type NestedEnumIntegrationTypeWithAggregatesFilter = {
+    equals?: IntegrationType
+    in?: Enumerable<IntegrationType>
+    notIn?: Enumerable<IntegrationType>
+    not?: NestedEnumIntegrationTypeWithAggregatesFilter | IntegrationType
+    _count?: NestedIntFilter
+    _min?: NestedEnumIntegrationTypeFilter
+    _max?: NestedEnumIntegrationTypeFilter
+  }
+
   export type PasswordCreateWithoutUserInput = {
     hash: string
   }
@@ -15117,6 +12180,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     content?: ContentCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -15126,6 +12190,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -15458,6 +12523,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutYoutubeCredentialsInput = {
@@ -15467,6 +12533,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId: string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutYoutubeCredentialsInput = {
@@ -15517,6 +12584,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutYoutubeCredentialsInput = {
@@ -15526,6 +12594,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserCreateWithoutInstagramCredentialsInput = {
@@ -15721,6 +12790,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
     youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutContentInput = {
@@ -15730,58 +12800,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId: string
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutContentInput = {
     where: ProjectWhereUniqueInput
     create: XOR<ProjectCreateWithoutContentInput, ProjectUncheckedCreateWithoutContentInput>
-  }
-
-  export type TikTokPostCreateWithoutContentInput = {
-    gcsVideoUrl: string
-    postSlug: string
-  }
-
-  export type TikTokPostUncheckedCreateWithoutContentInput = {
-    gcsVideoUrl: string
-    postSlug: string
-  }
-
-  export type TikTokPostCreateOrConnectWithoutContentInput = {
-    where: TikTokPostWhereUniqueInput
-    create: XOR<TikTokPostCreateWithoutContentInput, TikTokPostUncheckedCreateWithoutContentInput>
-  }
-
-  export type InstagramPostCreateWithoutContentInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    caption: string
-  }
-
-  export type InstagramPostUncheckedCreateWithoutContentInput = {
-    gcsVideoUrl: string
-    postSlug: string
-    caption: string
-  }
-
-  export type InstagramPostCreateOrConnectWithoutContentInput = {
-    where: InstagramPostWhereUniqueInput
-    create: XOR<InstagramPostCreateWithoutContentInput, InstagramPostUncheckedCreateWithoutContentInput>
-  }
-
-  export type FacebookPostCreateWithoutContentInput = {
-    gcsVideoUrl: string
-    postSlug: string
-  }
-
-  export type FacebookPostUncheckedCreateWithoutContentInput = {
-    gcsVideoUrl: string
-    postSlug: string
-  }
-
-  export type FacebookPostCreateOrConnectWithoutContentInput = {
-    where: FacebookPostWhereUniqueInput
-    create: XOR<FacebookPostCreateWithoutContentInput, FacebookPostUncheckedCreateWithoutContentInput>
   }
 
   export type ProjectUpsertWithoutContentInput = {
@@ -15796,6 +12820,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutContentInput = {
@@ -15805,53 +12830,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
-  }
-
-  export type TikTokPostUpsertWithoutContentInput = {
-    update: XOR<TikTokPostUpdateWithoutContentInput, TikTokPostUncheckedUpdateWithoutContentInput>
-    create: XOR<TikTokPostCreateWithoutContentInput, TikTokPostUncheckedCreateWithoutContentInput>
-  }
-
-  export type TikTokPostUpdateWithoutContentInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TikTokPostUncheckedUpdateWithoutContentInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type InstagramPostUpsertWithoutContentInput = {
-    update: XOR<InstagramPostUpdateWithoutContentInput, InstagramPostUncheckedUpdateWithoutContentInput>
-    create: XOR<InstagramPostCreateWithoutContentInput, InstagramPostUncheckedCreateWithoutContentInput>
-  }
-
-  export type InstagramPostUpdateWithoutContentInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    caption?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type InstagramPostUncheckedUpdateWithoutContentInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-    caption?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FacebookPostUpsertWithoutContentInput = {
-    update: XOR<FacebookPostUpdateWithoutContentInput, FacebookPostUncheckedUpdateWithoutContentInput>
-    create: XOR<FacebookPostCreateWithoutContentInput, FacebookPostUncheckedCreateWithoutContentInput>
-  }
-
-  export type FacebookPostUpdateWithoutContentInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FacebookPostUncheckedUpdateWithoutContentInput = {
-    gcsVideoUrl?: StringFieldUpdateOperationsInput | string
-    postSlug?: StringFieldUpdateOperationsInput | string
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type UserCreateWithoutProjectsInput = {
@@ -15896,9 +12875,6 @@ export namespace Prisma {
     published?: boolean | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    tikTokPost?: TikTokPostCreateNestedOneWithoutContentInput
-    instagramPost?: InstagramPostCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostCreateNestedOneWithoutContentInput
   }
 
   export type ContentUncheckedCreateWithoutProjectInput = {
@@ -15912,9 +12888,6 @@ export namespace Prisma {
     published?: boolean | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
-    tikTokPost?: TikTokPostUncheckedCreateNestedOneWithoutContentInput
-    instagramPost?: InstagramPostUncheckedCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostUncheckedCreateNestedOneWithoutContentInput
   }
 
   export type ContentCreateOrConnectWithoutProjectInput = {
@@ -15950,6 +12923,38 @@ export namespace Prisma {
   export type YoutubeCredentialsCreateOrConnectWithoutProjectInput = {
     where: YoutubeCredentialsWhereUniqueInput
     create: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ChannelCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    views?: number | null
+    subscribers?: number | null
+    thumbnail?: string | null
+    integration: IntegrationType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChannelUncheckedCreateWithoutProjectInput = {
+    id?: string
+    name: string
+    views?: number | null
+    subscribers?: number | null
+    thumbnail?: string | null
+    integration: IntegrationType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ChannelCreateOrConnectWithoutProjectInput = {
+    where: ChannelWhereUniqueInput
+    create: XOR<ChannelCreateWithoutProjectInput, ChannelUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ChannelCreateManyProjectInputEnvelope = {
+    data: Enumerable<ChannelCreateManyProjectInput>
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutProjectsInput = {
@@ -16041,226 +13046,85 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
   }
 
-  export type ContentCreateWithoutTikTokPostInput = {
-    slug: string
+  export type ChannelUpsertWithWhereUniqueWithoutProjectInput = {
+    where: ChannelWhereUniqueInput
+    update: XOR<ChannelUpdateWithoutProjectInput, ChannelUncheckedUpdateWithoutProjectInput>
+    create: XOR<ChannelCreateWithoutProjectInput, ChannelUncheckedCreateWithoutProjectInput>
+  }
+
+  export type ChannelUpdateWithWhereUniqueWithoutProjectInput = {
+    where: ChannelWhereUniqueInput
+    data: XOR<ChannelUpdateWithoutProjectInput, ChannelUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type ChannelUpdateManyWithWhereWithoutProjectInput = {
+    where: ChannelScalarWhereInput
+    data: XOR<ChannelUpdateManyMutationInput, ChannelUncheckedUpdateManyWithoutChannelsInput>
+  }
+
+  export type ChannelScalarWhereInput = {
+    AND?: Enumerable<ChannelScalarWhereInput>
+    OR?: Enumerable<ChannelScalarWhereInput>
+    NOT?: Enumerable<ChannelScalarWhereInput>
+    id?: StringFilter | string
+    name?: StringFilter | string
+    views?: IntNullableFilter | number | null
+    subscribers?: IntNullableFilter | number | null
+    thumbnail?: StringNullableFilter | string | null
+    integration?: EnumIntegrationTypeFilter | IntegrationType
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    projectId?: StringFilter | string
+  }
+
+  export type ProjectCreateWithoutChannelsInput = {
+    id?: string
     title: string
-    description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
-    tags?: ContentCreatetagsInput | Enumerable<string>
-    published?: boolean | null
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    project: ProjectCreateNestedOneWithoutContentInput
-    instagramPost?: InstagramPostCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostCreateNestedOneWithoutContentInput
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    content?: ContentCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
   }
 
-  export type ContentUncheckedCreateWithoutTikTokPostInput = {
-    slug: string
+  export type ProjectUncheckedCreateWithoutChannelsInput = {
+    id?: string
     title: string
-    description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
-    tags?: ContentCreatetagsInput | Enumerable<string>
-    published?: boolean | null
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    projectId: string
-    instagramPost?: InstagramPostUncheckedCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostUncheckedCreateNestedOneWithoutContentInput
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
-  export type ContentCreateOrConnectWithoutTikTokPostInput = {
-    where: ContentWhereUniqueInput
-    create: XOR<ContentCreateWithoutTikTokPostInput, ContentUncheckedCreateWithoutTikTokPostInput>
+  export type ProjectCreateOrConnectWithoutChannelsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutChannelsInput, ProjectUncheckedCreateWithoutChannelsInput>
   }
 
-  export type ContentUpsertWithoutTikTokPostInput = {
-    update: XOR<ContentUpdateWithoutTikTokPostInput, ContentUncheckedUpdateWithoutTikTokPostInput>
-    create: XOR<ContentCreateWithoutTikTokPostInput, ContentUncheckedCreateWithoutTikTokPostInput>
+  export type ProjectUpsertWithoutChannelsInput = {
+    update: XOR<ProjectUpdateWithoutChannelsInput, ProjectUncheckedUpdateWithoutChannelsInput>
+    create: XOR<ProjectCreateWithoutChannelsInput, ProjectUncheckedCreateWithoutChannelsInput>
   }
 
-  export type ContentUpdateWithoutTikTokPostInput = {
-    slug?: StringFieldUpdateOperationsInput | string
+  export type ProjectUpdateWithoutChannelsInput = {
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ContentUpdatetagsInput | Enumerable<string>
-    published?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    project?: ProjectUpdateOneRequiredWithoutContentNestedInput
-    instagramPost?: InstagramPostUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUpdateOneWithoutContentNestedInput
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    content?: ContentUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
   }
 
-  export type ContentUncheckedUpdateWithoutTikTokPostInput = {
-    slug?: StringFieldUpdateOperationsInput | string
+  export type ProjectUncheckedUpdateWithoutChannelsInput = {
+    id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ContentUpdatetagsInput | Enumerable<string>
-    published?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    projectId?: StringFieldUpdateOperationsInput | string
-    instagramPost?: InstagramPostUncheckedUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUncheckedUpdateOneWithoutContentNestedInput
-  }
-
-  export type ContentCreateWithoutInstagramPostInput = {
-    slug: string
-    title: string
-    description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
-    tags?: ContentCreatetagsInput | Enumerable<string>
-    published?: boolean | null
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    project: ProjectCreateNestedOneWithoutContentInput
-    tikTokPost?: TikTokPostCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostCreateNestedOneWithoutContentInput
-  }
-
-  export type ContentUncheckedCreateWithoutInstagramPostInput = {
-    slug: string
-    title: string
-    description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
-    tags?: ContentCreatetagsInput | Enumerable<string>
-    published?: boolean | null
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    projectId: string
-    tikTokPost?: TikTokPostUncheckedCreateNestedOneWithoutContentInput
-    facebookPost?: FacebookPostUncheckedCreateNestedOneWithoutContentInput
-  }
-
-  export type ContentCreateOrConnectWithoutInstagramPostInput = {
-    where: ContentWhereUniqueInput
-    create: XOR<ContentCreateWithoutInstagramPostInput, ContentUncheckedCreateWithoutInstagramPostInput>
-  }
-
-  export type ContentUpsertWithoutInstagramPostInput = {
-    update: XOR<ContentUpdateWithoutInstagramPostInput, ContentUncheckedUpdateWithoutInstagramPostInput>
-    create: XOR<ContentCreateWithoutInstagramPostInput, ContentUncheckedCreateWithoutInstagramPostInput>
-  }
-
-  export type ContentUpdateWithoutInstagramPostInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ContentUpdatetagsInput | Enumerable<string>
-    published?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    project?: ProjectUpdateOneRequiredWithoutContentNestedInput
-    tikTokPost?: TikTokPostUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUpdateOneWithoutContentNestedInput
-  }
-
-  export type ContentUncheckedUpdateWithoutInstagramPostInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ContentUpdatetagsInput | Enumerable<string>
-    published?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    projectId?: StringFieldUpdateOperationsInput | string
-    tikTokPost?: TikTokPostUncheckedUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUncheckedUpdateOneWithoutContentNestedInput
-  }
-
-  export type ContentCreateWithoutFacebookPostInput = {
-    slug: string
-    title: string
-    description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
-    tags?: ContentCreatetagsInput | Enumerable<string>
-    published?: boolean | null
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    project: ProjectCreateNestedOneWithoutContentInput
-    tikTokPost?: TikTokPostCreateNestedOneWithoutContentInput
-    instagramPost?: InstagramPostCreateNestedOneWithoutContentInput
-  }
-
-  export type ContentUncheckedCreateWithoutFacebookPostInput = {
-    slug: string
-    title: string
-    description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
-    tags?: ContentCreatetagsInput | Enumerable<string>
-    published?: boolean | null
-    createdAt?: Date | string | null
-    updatedAt?: Date | string | null
-    projectId: string
-    tikTokPost?: TikTokPostUncheckedCreateNestedOneWithoutContentInput
-    instagramPost?: InstagramPostUncheckedCreateNestedOneWithoutContentInput
-  }
-
-  export type ContentCreateOrConnectWithoutFacebookPostInput = {
-    where: ContentWhereUniqueInput
-    create: XOR<ContentCreateWithoutFacebookPostInput, ContentUncheckedCreateWithoutFacebookPostInput>
-  }
-
-  export type ContentUpsertWithoutFacebookPostInput = {
-    update: XOR<ContentUpdateWithoutFacebookPostInput, ContentUncheckedUpdateWithoutFacebookPostInput>
-    create: XOR<ContentCreateWithoutFacebookPostInput, ContentUncheckedCreateWithoutFacebookPostInput>
-  }
-
-  export type ContentUpdateWithoutFacebookPostInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ContentUpdatetagsInput | Enumerable<string>
-    published?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    project?: ProjectUpdateOneRequiredWithoutContentNestedInput
-    tikTokPost?: TikTokPostUpdateOneWithoutContentNestedInput
-    instagramPost?: InstagramPostUpdateOneWithoutContentNestedInput
-  }
-
-  export type ContentUncheckedUpdateWithoutFacebookPostInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
-    tags?: ContentUpdatetagsInput | Enumerable<string>
-    published?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    projectId?: StringFieldUpdateOperationsInput | string
-    tikTokPost?: TikTokPostUncheckedUpdateOneWithoutContentNestedInput
-    instagramPost?: InstagramPostUncheckedUpdateOneWithoutContentNestedInput
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyUserInput = {
@@ -16277,6 +13141,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: ContentUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -16286,6 +13151,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutProjectsInput = {
@@ -16308,6 +13174,17 @@ export namespace Prisma {
     updatedAt?: Date | string | null
   }
 
+  export type ChannelCreateManyProjectInput = {
+    id?: string
+    name: string
+    views?: number | null
+    subscribers?: number | null
+    thumbnail?: string | null
+    integration: IntegrationType
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type ContentUpdateWithoutProjectInput = {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
@@ -16319,9 +13196,6 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    tikTokPost?: TikTokPostUpdateOneWithoutContentNestedInput
-    instagramPost?: InstagramPostUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUpdateOneWithoutContentNestedInput
   }
 
   export type ContentUncheckedUpdateWithoutProjectInput = {
@@ -16335,9 +13209,6 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    tikTokPost?: TikTokPostUncheckedUpdateOneWithoutContentNestedInput
-    instagramPost?: InstagramPostUncheckedUpdateOneWithoutContentNestedInput
-    facebookPost?: FacebookPostUncheckedUpdateOneWithoutContentNestedInput
   }
 
   export type ContentUncheckedUpdateManyWithoutContentInput = {
@@ -16351,6 +13222,39 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type ChannelUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    views?: NullableIntFieldUpdateOperationsInput | number | null
+    subscribers?: NullableIntFieldUpdateOperationsInput | number | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    views?: NullableIntFieldUpdateOperationsInput | number | null
+    subscribers?: NullableIntFieldUpdateOperationsInput | number | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelUncheckedUpdateManyWithoutChannelsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    views?: NullableIntFieldUpdateOperationsInput | number | null
+    subscribers?: NullableIntFieldUpdateOperationsInput | number | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

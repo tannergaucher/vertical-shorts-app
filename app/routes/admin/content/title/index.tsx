@@ -35,10 +35,11 @@ export default function Page() {
 
   return (
     <main>
+      <h1>Create Post:</h1>
       <fieldset disabled={transition.state === "loading"}>
         <Form method="post">
           <label>
-            Title
+            Post Title
             <br />
             <input
               type="text"

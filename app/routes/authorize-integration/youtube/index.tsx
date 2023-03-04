@@ -3,11 +3,11 @@ import type { ActionArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { google } from "googleapis";
 
-import { getUserId } from "~/session.server";
-import { prisma } from "~/db.server";
+// import { getUserId } from "~/session.server";
+// import { prisma } from "~/db.server";
 
 export const action = async ({ request }: ActionArgs) => {
-  const userId = await getUserId(request);
+  // const userId = await getUserId(request);
 
   const oauth2Client = new google.auth.OAuth2(
     process.env.YOUTUBE_CLIENT_ID,
@@ -15,7 +15,10 @@ export const action = async ({ request }: ActionArgs) => {
     process.env.YOUTUBE_REDIRECT_URI
   );
 
-  const scopes = ["https://www.googleapis.com/auth/youtube.upload"];
+  const scopes = [
+    "https://www.googleapis.com/auth/youtube.upload",
+    "https://www.googleapis.com/auth/youtube.readonly",
+  ];
 
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",

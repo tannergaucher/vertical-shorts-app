@@ -88,6 +88,18 @@ Prisma.NullTypes = {
 // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 function makeEnum(x) { return x; }
 
+exports.Prisma.ChannelScalarFieldEnum = makeEnum({
+  id: 'id',
+  name: 'name',
+  views: 'views',
+  subscribers: 'subscribers',
+  thumbnail: 'thumbnail',
+  integration: 'integration',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  projectId: 'projectId'
+});
+
 exports.Prisma.ContentScalarFieldEnum = makeEnum({
   slug: 'slug',
   title: 'title',
@@ -110,13 +122,6 @@ exports.Prisma.FacebookCredentialsScalarFieldEnum = makeEnum({
   userId: 'userId'
 });
 
-exports.Prisma.FacebookPostScalarFieldEnum = makeEnum({
-  gcsVideoUrl: 'gcsVideoUrl',
-  postSlug: 'postSlug',
-  contentProjectId: 'contentProjectId',
-  contentSlug: 'contentSlug'
-});
-
 exports.Prisma.InstagramCredentialsScalarFieldEnum = makeEnum({
   id: 'id',
   accessToken: 'accessToken',
@@ -124,14 +129,6 @@ exports.Prisma.InstagramCredentialsScalarFieldEnum = makeEnum({
   updatedAt: 'updatedAt',
   username: 'username',
   userId: 'userId'
-});
-
-exports.Prisma.InstagramPostScalarFieldEnum = makeEnum({
-  gcsVideoUrl: 'gcsVideoUrl',
-  postSlug: 'postSlug',
-  caption: 'caption',
-  contentProjectId: 'contentProjectId',
-  contentSlug: 'contentSlug'
 });
 
 exports.Prisma.PasswordScalarFieldEnum = makeEnum({
@@ -168,13 +165,6 @@ exports.Prisma.TikTokCredentialsScalarFieldEnum = makeEnum({
   userId: 'userId'
 });
 
-exports.Prisma.TikTokPostScalarFieldEnum = makeEnum({
-  gcsVideoUrl: 'gcsVideoUrl',
-  postSlug: 'postSlug',
-  contentProjectId: 'contentProjectId',
-  contentSlug: 'contentSlug'
-});
-
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
   ReadCommitted: 'ReadCommitted',
@@ -200,12 +190,13 @@ exports.Prisma.YoutubeCredentialsScalarFieldEnum = makeEnum({
   userId: 'userId',
   projectId: 'projectId'
 });
-
-exports.Prisma.YoutubeShortPostScalarFieldEnum = makeEnum({
-  gcsVideoUrl: 'gcsVideoUrl',
-  postSlug: 'postSlug'
+exports.IntegrationType = makeEnum({
+  YOUTUBE: 'YOUTUBE',
+  INSTAGRAM: 'INSTAGRAM',
+  TIKTOK: 'TIKTOK',
+  FACEBOOK: 'FACEBOOK',
+  TWITTER: 'TWITTER'
 });
-
 
 exports.Prisma.ModelName = makeEnum({
   User: 'User',
@@ -216,10 +207,7 @@ exports.Prisma.ModelName = makeEnum({
   FacebookCredentials: 'FacebookCredentials',
   Content: 'Content',
   Project: 'Project',
-  YoutubeShortPost: 'YoutubeShortPost',
-  TikTokPost: 'TikTokPost',
-  InstagramPost: 'InstagramPost',
-  FacebookPost: 'FacebookPost'
+  Channel: 'Channel'
 });
 
 /**

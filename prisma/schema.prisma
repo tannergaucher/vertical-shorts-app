@@ -77,21 +77,18 @@ model FacebookCredentials {
 }
 
 model Content {
-  slug          String         @unique
-  title         String
-  description   String?
-  markdown      String?
-  thumbnail     String?
-  video         String?
-  tags          String[]
-  published     Boolean?       @default(false)
-  createdAt     DateTime?      @default(now())
-  updatedAt     DateTime?      @updatedAt
-  projectId     String
-  project       Project        @relation(fields: [projectId], references: [id])
-  tikTokPost    TikTokPost?
-  instagramPost InstagramPost?
-  facebookPost  FacebookPost?
+  slug        String    @unique
+  title       String
+  description String?
+  markdown    String?
+  thumbnail   String?
+  video       String?
+  tags        String[]
+  published   Boolean?  @default(false)
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @updatedAt
+  projectId   String
+  project     Project   @relation(fields: [projectId], references: [id])
 
   @@id([projectId, slug])
 }
@@ -105,40 +102,28 @@ model Project {
   user               User                @relation(fields: [userId], references: [id])
   content            Content[]
   youtubeCredentials YoutubeCredentials?
+  channels           Channel[]
 }
 
-model YoutubeShortPost {
-  gcsVideoUrl String
-  postSlug    String @unique
+enum IntegrationType {
+  YOUTUBE
+  INSTAGRAM
+  TIKTOK
+  FACEBOOK
+  TWITTER
 }
 
-model TikTokPost {
-  gcsVideoUrl      String
-  postSlug         String  @unique
-  content          Content @relation(fields: [contentProjectId, contentSlug], references: [projectId, slug])
-  contentProjectId String
-  contentSlug      String
+model Channel {
+  id          String          @id @default(cuid())
+  name        String
+  views       Int?
+  subscribers Int?
+  thumbnail   String?
+  integration IntegrationType
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  projectId   String          @unique
+  project     Project         @relation(fields: [projectId], references: [id])
 
-  @@unique([contentProjectId, contentSlug])
-}
-
-model InstagramPost {
-  gcsVideoUrl      String
-  postSlug         String  @unique
-  caption          String
-  content          Content @relation(fields: [contentProjectId, contentSlug], references: [projectId, slug])
-  contentProjectId String
-  contentSlug      String
-
-  @@unique([contentProjectId, contentSlug])
-}
-
-model FacebookPost {
-  gcsVideoUrl      String
-  postSlug         String  @unique
-  content          Content @relation(fields: [contentProjectId, contentSlug], references: [projectId, slug])
-  contentProjectId String
-  contentSlug      String
-
-  @@unique([contentProjectId, contentSlug])
+  @@unique([projectId, integration])
 }

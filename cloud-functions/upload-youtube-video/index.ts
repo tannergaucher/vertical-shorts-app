@@ -1,6 +1,7 @@
 import * as functions from "@google-cloud/functions-framework";
 import * as fs from "fs";
 import { Storage } from "@google-cloud/storage";
+import { google } from "googleapis";
 
 import { PrismaClient } from "./generated";
 
@@ -95,46 +96,46 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       videoFilePath,
     });
 
-    // const oauth2Client = new google.auth.OAuth2(
-    //   process.env.YOUTUBE_CLIENT_ID,
-    //   process.env.YOUTUBE_CLIENT_SECRET,
-    //   process.env.YOUTUBE_REDIRECT_URL
-    // );
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.YOUTUBE_CLIENT_ID,
+      process.env.YOUTUBE_CLIENT_SECRET,
+      process.env.YOUTUBE_REDIRECT_URL
+    );
 
-    // oauth2Client.setCredentials({
-    //   access_token: user.youtubeCredentials.accessToken,
-    //   refresh_token: user.youtubeCredentials.refreshToken,
-    // });
+    oauth2Client.setCredentials({
+      access_token: user.youtubeCredentials.accessToken,
+      refresh_token: user.youtubeCredentials.refreshToken,
+    });
 
-    // const youtube = google.youtube({
-    //   version: "v3",
-    //   auth: oauth2Client,
-    // });
+    const youtube = google.youtube({
+      version: "v3",
+      auth: oauth2Client,
+    });
 
-    // await youtube.videos.insert(
-    //   {
-    //     part: ["snippet", "status"],
-    //     requestBody: {
-    //       snippet: {
-    //         title: content.title,
-    //         description: content.description,
-    //         tags: content.tags,
-    //       },
-    //       status: {
-    //         privacyStatus: "private",
-    //       },
-    //     },
-    //     media: {
-    //       body: fs.createReadStream(videoFilePath),
-    //     },
-    //   },
-    //   {
-    //     onUploadProgress: (evt) => {
-    //       const progress = (evt.bytesRead / evt.contentLength) * 100;
-    //       console.log(`${Math.round(progress)}% complete`);
-    //     },
-    //   }
-    // );
+    await youtube.videos.insert(
+      {
+        part: ["snippet", "status"],
+        requestBody: {
+          snippet: {
+            title: content.title,
+            description: content.description,
+            tags: content.tags,
+          },
+          status: {
+            privacyStatus: "private",
+          },
+        },
+        media: {
+          body: fs.createReadStream(videoFilePath),
+        },
+      },
+      {
+        onUploadProgress: (evt) => {
+          const progress = (evt.bytesRead / evt.contentLength) * 100;
+          console.log(`${Math.round(progress)}% complete`);
+        },
+      }
+    );
 
     // remove video from local file system
     fs.unlinkSync(videoFilePath);

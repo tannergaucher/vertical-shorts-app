@@ -74,15 +74,6 @@ export default function App() {
           </h2>
           <ul>
             <li>
-              <h2
-                style={{
-                  textTransform: "uppercase",
-                }}
-              >
-                <Link to="/admin">{`${currentProject?.title}`}</Link>
-              </h2>
-            </li>
-            <li>
               <h2>
                 <Link to={Routes.AdminContentTitle}>
                   <span
@@ -90,9 +81,18 @@ export default function App() {
                       textTransform: "uppercase",
                     }}
                   >
-                    Post
+                    Publish
                   </span>
                 </Link>
+              </h2>
+            </li>
+            <li>
+              <h2
+                style={{
+                  textTransform: "uppercase",
+                }}
+              >
+                <Link to="/admin">{`${currentProject?.title}`}</Link>
               </h2>
             </li>
           </ul>

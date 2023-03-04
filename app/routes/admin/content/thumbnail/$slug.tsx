@@ -14,7 +14,7 @@ import invariant from "tiny-invariant";
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
-import { pubsub, storage } from "~/entry.server";
+import { storage } from "~/entry.server";
 import { uploadGcsFile } from "~/utils/gcs";
 
 type LoaderData = {
@@ -97,7 +97,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>{content.title}</h1>
+      <h1>Create Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
       <fieldset disabled={transition.state === "loading"}>
         <Form method="post" encType="multipart/form-data">

@@ -1,10 +1,11 @@
 import { Form } from "@remix-run/react";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
-import { getUser } from "~/session.server";
 import { redirect } from "@remix-run/node";
-import { prisma } from "~/db.server";
 import invariant from "tiny-invariant";
+
 import { Routes } from "~/routes";
+import { prisma } from "~/db.server";
+import { getUser } from "~/session.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
@@ -44,18 +45,37 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return redirect(Routes.AdminContentTitle);
+  return redirect(Routes.Admin);
 };
 
 export default function Page() {
   return (
     <main>
-      <h1>Create project</h1>
-      <Form method="post">
-        <label htmlFor="name">Project Name</label>
-        <input type="text" id="name" name="name" />
-        <button type="submit">Create Project</button>
-      </Form>
+      <h1>Admin</h1>
+      <fieldset>
+        <legend>Create a New Project</legend>
+        <Form method="post">
+          <label htmlFor="name">Project Name</label>
+          <br />
+          <input
+            type="text"
+            id="name"
+            name="name"
+            style={{
+              width: "calc(100% - 8px)",
+            }}
+          />
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              marginBlockStart: "16px",
+            }}
+          >
+            Create Project
+          </button>
+        </Form>
+      </fieldset>
     </main>
   );
 }

@@ -1,34 +1,25 @@
 import type { LoaderArgs, ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
-import { Form, useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, useLoaderData, useSubmit, Link } from "@remix-run/react";
 import { prisma } from "~/db.server";
+import { IntegrationType } from "@prisma/client";
+import compact from "lodash/compact";
 
 import { getContents } from "~/models/content.server";
+
+import type { Channel } from "~/models/chanel.server";
+import { getChannel } from "~/models/chanel.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-
-enum IntegrationType {
-  Youtube = "YouTube",
-  TikTok = "TikTok",
-  Instagram = "Instagram",
-  Facebook = "Facebook",
-  Twitter = "Twitter",
-}
-
-interface IntegrationDetails {
-  channelName?: string;
-  type: IntegrationType;
-  live?: boolean;
-}
 
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
   user?: Awaited<ReturnType<typeof getUser>>;
-  youtube?: IntegrationDetails;
-  tiktok?: IntegrationDetails;
-  instagram?: IntegrationDetails;
-  facebook?: IntegrationDetails;
-  twitter?: IntegrationDetails;
+  youtube?: Awaited<ReturnType<typeof getChannel>>;
+  tiktok?: Awaited<ReturnType<typeof getChannel>>;
+  instagram?: Awaited<ReturnType<typeof getChannel>>;
+  facebook?: Awaited<ReturnType<typeof getChannel>>;
+  twitter?: Awaited<ReturnType<typeof getChannel>>;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -47,31 +38,26 @@ export const loader = async ({ request }: LoaderArgs) => {
     contents: await getContents({
       projectId: user.currentProjectId,
     }),
-    youtube: {
-      type: IntegrationType.Youtube,
-      channelName: "Todo Title",
-      live: true,
-    },
-    tiktok: {
-      type: IntegrationType.TikTok,
-      channelName: "Todo Title",
-      live: false,
-    },
-    instagram: {
-      type: IntegrationType.Instagram,
-      channelName: "Todo Title",
-      live: false,
-    },
-    facebook: {
-      type: IntegrationType.Facebook,
-      channelName: "Todo Channel",
-      live: false,
-    },
-    twitter: {
-      type: IntegrationType.Twitter,
-      channelName: "Todo Channel",
-      live: false,
-    },
+    youtube: await getChannel({
+      projectId: user.currentProjectId,
+      integration: IntegrationType.YOUTUBE,
+    }),
+    tiktok: await getChannel({
+      projectId: user.currentProjectId,
+      integration: IntegrationType.TIKTOK,
+    }),
+    instagram: await getChannel({
+      projectId: user.currentProjectId,
+      integration: IntegrationType.INSTAGRAM,
+    }),
+    facebook: await getChannel({
+      projectId: user.currentProjectId,
+      integration: IntegrationType.FACEBOOK,
+    }),
+    twitter: await getChannel({
+      projectId: user.currentProjectId,
+      integration: IntegrationType.TWITTER,
+    }),
   });
 };
 
@@ -79,6 +65,7 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
 
   const currentProjectId = formData.get("currentProjectId");
+
   const userId = formData.get("userId");
 
   if (!currentProjectId || !userId) {
@@ -107,6 +94,10 @@ export default function Page() {
 
   return (
     <main>
+      <h1>Admin</h1>
+      <Link to={Routes.AdminCreateProject}>
+        <h2>Create New Project</h2>
+      </Link>
       <fieldset>
         <Form method="post">
           <label htmlFor="currentProjectId">Current Project</label>
@@ -142,30 +133,90 @@ export default function Page() {
           </select>
         </Form>
       </fieldset>
-      <IntegrationsGrid
-        youtube={youtube}
-        tiktok={tiktok}
-        instagram={instagram}
-        facebook={facebook}
-        twitter={twitter}
+      <ChannelsGrid
+        channels={compact([
+          youtube
+            ? {
+                id: youtube.id,
+                integration: IntegrationType.YOUTUBE,
+                name: youtube.name,
+                views: youtube.views || 0,
+                subscribers: youtube.subscribers || 0,
+              }
+            : {
+                integration: IntegrationType.YOUTUBE,
+                text: "Add Youtube Channel",
+                href: Routes.AuthorizeYoutube,
+              },
+          tiktok
+            ? {
+                id: tiktok.id,
+                integration: IntegrationType.TIKTOK,
+                name: tiktok.name,
+                views: tiktok.views || 0,
+                subscribers: tiktok.subscribers || 0,
+              }
+            : {
+                integration: IntegrationType.TIKTOK,
+                text: "Add TikTok Channel",
+                href: Routes.AuthorizeTikTok,
+              },
+          instagram
+            ? {
+                id: instagram.id,
+                integration: IntegrationType.INSTAGRAM,
+                name: instagram.name,
+                views: instagram.views || 0,
+                subscribers: instagram.subscribers || 0,
+              }
+            : {
+                integration: IntegrationType.INSTAGRAM,
+                text: "Add Instagram Channel",
+                href: Routes.AuthorizeInstagram,
+              },
+          facebook
+            ? {
+                id: "Todo Id",
+                integration: IntegrationType.FACEBOOK,
+                name: "Todo Title",
+                views: 0,
+                subscribers: 0,
+              }
+            : {
+                integration: IntegrationType.FACEBOOK,
+                text: "Add Facebook Channel",
+                href: Routes.AuthorizeFacebook,
+              },
+          twitter
+            ? {
+                id: "Todo Id",
+                integration: IntegrationType.TWITTER,
+                name: "Todo Title",
+                views: 0,
+                subscribers: 0,
+              }
+            : {
+                integration: IntegrationType.TWITTER,
+                text: "Add Twitter Channel",
+                href: Routes.AuthorizeTwitter,
+              },
+        ])}
       />
     </main>
   );
 }
 
-function IntegrationsGrid({
-  youtube,
-  tiktok,
-  instagram,
-  facebook,
-  twitter,
-}: {
-  youtube?: IntegrationDetails;
-  tiktok?: IntegrationDetails;
-  instagram?: IntegrationDetails;
-  facebook?: IntegrationDetails;
-  twitter?: IntegrationDetails;
-}) {
+type ChannelGridItem =
+  | Pick<Channel, "name" | "integration" | "views" | "subscribers" | "id">
+  | {
+      integration: IntegrationType;
+      text: string;
+      href?: string;
+    };
+
+function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
+  console.log(channels, "_channels");
+
   return (
     <div>
       <h2>Channels:</h2>
@@ -175,53 +226,26 @@ function IntegrationsGrid({
           gridTemplateColumns: "repeat(4, 1fr)",
         }}
       >
-        {youtube ? (
-          <Integration
-            channelName={youtube.channelName}
-            type={youtube.type}
-            live={youtube.live}
-          />
-        ) : null}
-        {tiktok ? (
-          <Integration
-            channelName={tiktok.channelName}
-            type={tiktok.type}
-            live={tiktok.live}
-          />
-        ) : null}
-        {instagram ? (
-          <Integration
-            channelName={instagram.channelName}
-            type={instagram.type}
-            live={instagram.live}
-          />
-        ) : null}
-        {facebook ? (
-          <Integration
-            channelName={facebook.channelName}
-            type={facebook.type}
-            live={facebook.live}
-          />
-        ) : null}
-        {twitter ? (
-          <Integration
-            channelName={twitter.channelName}
-            type={twitter.type}
-            live={twitter.live}
-          />
-        ) : null}
+        {channels?.map((channel) => (
+          <ChannelItem key={channel.integration} channel={channel} />
+        ))}
       </section>
     </div>
   );
 }
 
-function Integration({ channelName, type, live }: IntegrationDetails) {
-  return (
+function ChannelItem({ channel }: { channel: ChannelGridItem }) {
+  return "href" in channel ? (
+    <Link to={channel.href ?? ""}>
+      <h2>ADD {channel.integration}</h2>
+    </Link>
+  ) : "name" in channel ? (
     <div>
-      <h3>{live ? type : `${type} - Coming Soon`}</h3>
+      <h3>{channel.name}</h3>
       <ul>
-        <li>{channelName}</li>
+        <li>{`${channel.views} views`}</li>
+        <li>{`${channel.subscribers} subscribers`}</li>
       </ul>
     </div>
-  );
+  ) : null;
 }

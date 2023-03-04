@@ -25,12 +25,6 @@ image {
   width: -webkit-fill-available;
 }
 
-nav {
-  position: sticky;
-  top: 0;
-  background-color: white;
-}
-
 @media (prefers-color-scheme: dark) {
   body {
     background-color: black;
