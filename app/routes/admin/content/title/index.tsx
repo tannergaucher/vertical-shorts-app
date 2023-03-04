@@ -40,9 +40,25 @@ export default function Page() {
           <label>
             Title
             <br />
-            <input type="text" name="title" required />
+            <input
+              type="text"
+              name="title"
+              required
+              style={{
+                width: `calc(100% - 8px)`,
+                marginBlockStart: `8px`,
+              }}
+            />
           </label>
-          <button type="submit">Next</button>
+          <button
+            type="submit"
+            style={{
+              width: `100%`,
+              marginBlockStart: `16px`,
+            }}
+          >
+            Next
+          </button>
         </Form>
       </fieldset>
     </main>

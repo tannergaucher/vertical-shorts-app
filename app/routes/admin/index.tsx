@@ -12,6 +12,7 @@ enum IntegrationType {
   TikTok = "TikTok",
   Instagram = "Instagram",
   Facebook = "Facebook",
+  Twitter = "Twitter",
 }
 
 type LoaderData = {
@@ -21,6 +22,7 @@ type LoaderData = {
   tiktok?: IntegrationDetails;
   instagram?: IntegrationDetails;
   facebook?: IntegrationDetails;
+  twitter?: IntegrationDetails;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -41,22 +43,26 @@ export const loader = async ({ request }: LoaderArgs) => {
     }),
     youtube: {
       type: IntegrationType.Youtube,
-      // TODO: get channel details from youtube
-      channelName: "Todo Channel",
+      channelName: "Todo Title",
       live: true,
     },
     tiktok: {
       type: IntegrationType.TikTok,
-      channelName: "Todo Channel",
+      channelName: "Todo Title",
       live: false,
     },
     instagram: {
       type: IntegrationType.Instagram,
-      channelName: "Todo Channel",
+      channelName: "Todo Title",
       live: false,
     },
     facebook: {
       type: IntegrationType.Facebook,
+      channelName: "Todo Channel",
+      live: false,
+    },
+    twitter: {
+      type: IntegrationType.Twitter,
       channelName: "Todo Channel",
       live: false,
     },
@@ -86,7 +92,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { user, youtube, tiktok, instagram, facebook } =
+  const { user, youtube, tiktok, instagram, facebook, twitter } =
     useLoaderData<LoaderData>();
 
   const submit = useSubmit();
@@ -104,6 +110,7 @@ export default function Page() {
             name="currentProjectId"
             style={{
               width: "100%",
+              marginBlockStart: "8px",
             }}
             onChange={(event) => {
               submit(
@@ -134,6 +141,7 @@ export default function Page() {
         tiktok={tiktok}
         instagram={instagram}
         facebook={facebook}
+        twitter={twitter}
       />
     </main>
   );
@@ -144,15 +152,17 @@ function IntegrationsGrid({
   tiktok,
   instagram,
   facebook,
+  twitter,
 }: {
   youtube?: IntegrationDetails;
   tiktok?: IntegrationDetails;
   instagram?: IntegrationDetails;
   facebook?: IntegrationDetails;
+  twitter?: IntegrationDetails;
 }) {
   return (
     <div>
-      <h2>Integrations:</h2>
+      <h2>Channels:</h2>
       <section
         style={{
           display: "grid",
@@ -185,6 +195,13 @@ function IntegrationsGrid({
             channelName={facebook.channelName}
             type={facebook.type}
             live={facebook.live}
+          />
+        ) : null}
+        {twitter ? (
+          <Integration
+            channelName={twitter.channelName}
+            type={twitter.type}
+            live={twitter.live}
           />
         ) : null}
       </section>
