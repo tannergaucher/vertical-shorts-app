@@ -10,6 +10,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 
 import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
@@ -35,6 +36,10 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+type LoaderData = {
+  user?: Awaited<ReturnType<typeof getUser>>;
+};
+
 export async function loader({ request }: LoaderArgs) {
   return json({
     user: await getUser(request),
@@ -42,6 +47,12 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function App() {
+  const { user } = useLoaderData<LoaderData>();
+
+  const currentProject = user?.projects.find(
+    (project) => project.id === user.currentProjectId
+  );
+
   return (
     <html lang="en">
       <head>
@@ -50,17 +61,22 @@ export default function App() {
       </head>
       <body>
         <nav>
-          <h1
-            style={{ textOrientation: "upright", writingMode: "vertical-rl" }}
+          <h2
+            style={{
+              textOrientation: "upright",
+              writingMode: "vertical-rl",
+              margin: 0,
+            }}
           >
             <Link to="/">
-              <b>VERTICAL</b>
+              <b>CONTENT</b>
             </Link>
-          </h1>
-          <h2>
-            <Link to={Routes.AdminContentTitle}>Publish</Link>
           </h2>
-
+          <h2>
+            <Link
+              to={Routes.AdminContentTitle}
+            >{`Publish to ${currentProject?.title}`}</Link>
+          </h2>
           <h2>
             <Link to="/admin">Admin</Link>
           </h2>

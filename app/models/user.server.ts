@@ -8,6 +8,9 @@ export type { User } from "@prisma/client";
 export async function getUserById(id: User["id"]) {
   return prisma.user.findUnique({
     where: { id },
+    include: {
+      projects: true,
+    },
   });
 }
 

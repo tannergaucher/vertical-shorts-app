@@ -1,6 +1,5 @@
 import * as functions from "@google-cloud/functions-framework";
 import * as fs from "fs";
-import { google } from "googleapis";
 import { Storage } from "@google-cloud/storage";
 
 import { PrismaClient } from "./generated";
@@ -62,6 +61,7 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       },
       select: {
         id: true,
+        currentProjectId: true,
         youtubeCredentials: {
           select: {
             accessToken: true,
@@ -75,6 +75,10 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       throw new Error("NO_USER");
     }
 
+    if (!user.currentProjectId) {
+      throw new Error("MISSING_CURRENT_PROJECT");
+    }
+
     if (
       !user.youtubeCredentials?.accessToken ||
       !user.youtubeCredentials?.refreshToken
@@ -84,55 +88,56 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
 
     const videoFilePath = `${content.slug}-yt-short.mp4`;
 
-    // get video from gcs bucket
-    const video = await getVideostreamFromGCS({
+    // download video from GCS to local file system
+    await getVideostreamFromGCS({
       storage,
-      bucket: user.id,
+      bucket: user.currentProjectId,
       videoFilePath,
     });
 
-    console.log(video, "video");
+    // const oauth2Client = new google.auth.OAuth2(
+    //   process.env.YOUTUBE_CLIENT_ID,
+    //   process.env.YOUTUBE_CLIENT_SECRET,
+    //   process.env.YOUTUBE_REDIRECT_URL
+    // );
 
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.YOUTUBE_CLIENT_ID,
-      process.env.YOUTUBE_CLIENT_SECRET,
-      process.env.YOUTUBE_REDIRECT_URL
-    );
+    // oauth2Client.setCredentials({
+    //   access_token: user.youtubeCredentials.accessToken,
+    //   refresh_token: user.youtubeCredentials.refreshToken,
+    // });
 
-    oauth2Client.setCredentials({
-      access_token: user.youtubeCredentials.accessToken,
-      refresh_token: user.youtubeCredentials.refreshToken,
-    });
+    // const youtube = google.youtube({
+    //   version: "v3",
+    //   auth: oauth2Client,
+    // });
 
-    const youtube = google.youtube({
-      version: "v3",
-      auth: oauth2Client,
-    });
+    // await youtube.videos.insert(
+    //   {
+    //     part: ["snippet", "status"],
+    //     requestBody: {
+    //       snippet: {
+    //         title: content.title,
+    //         description: content.description,
+    //         tags: content.tags,
+    //       },
+    //       status: {
+    //         privacyStatus: "private",
+    //       },
+    //     },
+    //     media: {
+    //       body: fs.createReadStream(videoFilePath),
+    //     },
+    //   },
+    //   {
+    //     onUploadProgress: (evt) => {
+    //       const progress = (evt.bytesRead / evt.contentLength) * 100;
+    //       console.log(`${Math.round(progress)}% complete`);
+    //     },
+    //   }
+    // );
 
-    await youtube.videos.insert(
-      {
-        part: ["snippet", "status"],
-        requestBody: {
-          snippet: {
-            title: content.title,
-            description: content.description,
-            tags: content.tags,
-          },
-          status: {
-            privacyStatus: "private",
-          },
-        },
-        media: {
-          body: fs.createReadStream(videoFilePath),
-        },
-      },
-      {
-        onUploadProgress: (evt) => {
-          const progress = (evt.bytesRead / evt.contentLength) * 100;
-          console.log(`${Math.round(progress)}% complete`);
-        },
-      }
-    );
+    // remove video from local file system
+    fs.unlinkSync(videoFilePath);
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_UPLOADING_YOUTUBE_VIDEO");
@@ -145,19 +150,12 @@ async function getVideostreamFromGCS(params: {
   videoFilePath: string;
 }) {
   try {
-    const videostream = storage
+    storage
       .bucket(params.bucket)
       .file(params.videoFilePath)
       .createReadStream()
       .pipe(fs.createWriteStream(params.videoFilePath))
-      .on("finish", () => {
-        console.log("finished downloading video");
-      });
-
-    return {
-      videostream,
-      videoFilePath: params.videoFilePath,
-    };
+      .on("finish", () => {});
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_DOWNLOADING_VIDEO");
