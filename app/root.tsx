@@ -69,7 +69,7 @@ export default function App() {
             }}
           >
             <Link to="/">
-              <b>CONTENT</b>
+              <b>VIDEO</b>
             </Link>
           </h2>
           <ul>
@@ -81,7 +81,7 @@ export default function App() {
                       textTransform: "uppercase",
                     }}
                   >
-                    Publish
+                    PUBLISHER
                   </span>
                 </Link>
               </h2>

@@ -35,34 +35,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   oauth2Client.setCredentials(tokens);
 
-  oauth2Client.on("tokens", async (tokens) => {
-    console.log("_tokens", tokens);
-
-    if (tokens.refresh_token && user.currentProjectId) {
-      await prisma.youtubeCredentials.upsert({
-        where: {
-          projectId: user.currentProjectId,
-        },
-        create: {
-          refreshToken: tokens.refresh_token,
-          user: {
-            connect: {
-              id: user.id,
-            },
-          },
-          project: {
-            connect: {
-              id: user.currentProjectId,
-            },
-          },
-        },
-        update: {
-          refreshToken: tokens.refresh_token,
-        },
-      });
-    }
-  });
-
   const youtube = google.youtube({
     version: "v3",
     auth: oauth2Client,
@@ -78,61 +50,71 @@ export const loader = async ({ request }: LoaderArgs) => {
   const statistics = data.items?.[0].statistics;
 
   if (tokens.access_token && user.currentProjectId) {
-    await prisma.project.update({
+    await prisma.user.update({
       where: {
-        id: user.currentProjectId,
+        id: user.id,
       },
       data: {
-        youtubeCredentials: {
-          upsert: {
-            create: {
-              accessToken: tokens.access_token,
-              refreshToken: tokens.refresh_token,
-              user: {
-                connect: {
-                  id: user.id,
+        projects: {
+          update: {
+            where: {
+              id: user.currentProjectId,
+            },
+            data: {
+              youtubeCredentials: {
+                upsert: {
+                  create: {
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                    userId: user.id,
+                  },
+                  update: {
+                    accessToken: tokens.access_token,
+                    refreshToken: tokens.refresh_token,
+                  },
+                },
+              },
+              channels: {
+                upsert: {
+                  where: {
+                    projectId_integration: {
+                      projectId: user.currentProjectId,
+                      integration: "YOUTUBE",
+                    },
+                  },
+                  create: {
+                    integration: "YOUTUBE",
+                    name: snippet?.title ?? "Untitled",
+                    views: parseInt(statistics?.viewCount ?? "0", 10),
+                    subscribers: parseInt(
+                      statistics?.subscriberCount ?? "0",
+                      10
+                    ),
+                  },
+                  update: {
+                    name: snippet?.title ?? "Untitled",
+                    views: parseInt(statistics?.viewCount ?? "0", 10),
+                    subscribers: parseInt(
+                      statistics?.subscriberCount ?? "0",
+                      10
+                    ),
+                  },
                 },
               },
             },
-            update: {
-              accessToken: tokens.access_token,
-              refreshToken: tokens.refresh_token,
-            },
           },
-        },
-        channels: {
-          upsert: [
-            {
-              where: {
-                projectId: user.currentProjectId,
-              },
-              create: {
-                integration: "YOUTUBE",
-                name: snippet?.title ?? "Untitled",
-                views: parseInt(statistics?.viewCount ?? "0"),
-                subscribers: parseInt(statistics?.subscriberCount ?? "0"),
-                thumbnail: snippet?.thumbnails?.default?.url,
-              },
-              update: {
-                name: snippet?.title ?? "Untitled",
-                views: parseInt(statistics?.viewCount ?? "0"),
-                subscribers: parseInt(statistics?.subscriberCount ?? "0"),
-                thumbnail: snippet?.thumbnails?.default?.url,
-              },
-            },
-          ],
         },
       },
     });
-  }
 
-  return null;
+    return null;
+  }
 };
 
 export default function Page() {
   return (
     <main>
-      <h1>Success</h1>
+      <h1>Success!</h1>
     </main>
   );
 }

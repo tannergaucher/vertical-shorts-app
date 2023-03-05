@@ -101,7 +101,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Create Post: {content.title}</h1>
+      <h1>Draft Post: {content.title}</h1>
       {content.thumbnail ? (
         <img
           src={`https://storage.googleapis.com/${content.projectId}/${content.thumbnail}`}
@@ -113,10 +113,15 @@ export default function Page() {
         <label>
           <span>Video</span>
           <br />
-          <input type="file" name="video" />
+          <input type="file" name="video" required style={{ width: `100%` }} />
         </label>
         <input type="hidden" name="slug" value={content.slug} />
-        <button type="submit">Next</button>
+        <button
+          type="submit"
+          style={{ width: `100%`, position: `sticky`, bottom: 0 }}
+        >
+          Next
+        </button>
       </Form>
     </main>
   );

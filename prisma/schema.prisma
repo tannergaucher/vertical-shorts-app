@@ -13,17 +13,13 @@ datasource db {
 }
 
 model User {
-  id                   String                @id @default(cuid())
-  email                String                @unique
-  password             Password?
-  projects             Project[]
-  currentProjectId     String?
-  facebookCredentials  FacebookCredentials?
-  instagramCredentials InstagramCredentials?
-  tikTokCredentials    TikTokCredentials?
-  youtubeCredentials   YoutubeCredentials?
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
+  id               String    @id @default(cuid())
+  email            String    @unique
+  password         Password?
+  projects         Project[]
+  currentProjectId String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 }
 
 model Password {
@@ -39,10 +35,11 @@ model YoutubeCredentials {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   channelId    String?
-  userId       String   @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
   projectId    String   @unique
-  project      Project  @relation(fields: [projectId], references: [id])
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
 }
 
 model InstagramCredentials {
@@ -51,8 +48,8 @@ model InstagramCredentials {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   username    String
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model TikTokCredentials {
@@ -63,8 +60,8 @@ model TikTokCredentials {
   accessToken String
   openId      String
   username    String
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId   String   @unique
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model FacebookCredentials {
@@ -72,8 +69,16 @@ model FacebookCredentials {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   pageId    String
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model TwitterCredentials {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  projectId String   @unique
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model Content {
@@ -94,15 +99,19 @@ model Content {
 }
 
 model Project {
-  id                 String              @id @default(cuid())
-  title              String
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  userId             String
-  user               User                @relation(fields: [userId], references: [id])
-  content            Content[]
-  youtubeCredentials YoutubeCredentials?
-  channels           Channel[]
+  id                   String                @id @default(cuid())
+  title                String
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  userId               String
+  user                 User                  @relation(fields: [userId], references: [id])
+  content              Content[]
+  channels             Channel[]
+  youtubeCredentials   YoutubeCredentials?
+  instagramCredentials InstagramCredentials?
+  tikTokCredentials    TikTokCredentials?
+  facebookCredentials  FacebookCredentials?
+  twitterCredentials   TwitterCredentials?
 }
 
 enum IntegrationType {

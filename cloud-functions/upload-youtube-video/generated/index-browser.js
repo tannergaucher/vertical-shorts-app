@@ -119,7 +119,7 @@ exports.Prisma.FacebookCredentialsScalarFieldEnum = makeEnum({
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   pageId: 'pageId',
-  userId: 'userId'
+  projectId: 'projectId'
 });
 
 exports.Prisma.InstagramCredentialsScalarFieldEnum = makeEnum({
@@ -128,7 +128,7 @@ exports.Prisma.InstagramCredentialsScalarFieldEnum = makeEnum({
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   username: 'username',
-  userId: 'userId'
+  projectId: 'projectId'
 });
 
 exports.Prisma.PasswordScalarFieldEnum = makeEnum({
@@ -162,7 +162,7 @@ exports.Prisma.TikTokCredentialsScalarFieldEnum = makeEnum({
   accessToken: 'accessToken',
   openId: 'openId',
   username: 'username',
-  userId: 'userId'
+  projectId: 'projectId'
 });
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
@@ -170,6 +170,13 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadCommitted: 'ReadCommitted',
   RepeatableRead: 'RepeatableRead',
   Serializable: 'Serializable'
+});
+
+exports.Prisma.TwitterCredentialsScalarFieldEnum = makeEnum({
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  projectId: 'projectId'
 });
 
 exports.Prisma.UserScalarFieldEnum = makeEnum({
@@ -205,6 +212,7 @@ exports.Prisma.ModelName = makeEnum({
   InstagramCredentials: 'InstagramCredentials',
   TikTokCredentials: 'TikTokCredentials',
   FacebookCredentials: 'FacebookCredentials',
+  TwitterCredentials: 'TwitterCredentials',
   Content: 'Content',
   Project: 'Project',
   Channel: 'Channel'

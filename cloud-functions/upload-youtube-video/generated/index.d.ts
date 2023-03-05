@@ -58,7 +58,7 @@ export type InstagramCredentials = {
   createdAt: Date
   updatedAt: Date
   username: string
-  userId: string
+  projectId: string
 }
 
 /**
@@ -73,7 +73,7 @@ export type TikTokCredentials = {
   accessToken: string
   openId: string
   username: string
-  userId: string
+  projectId: string
 }
 
 /**
@@ -85,7 +85,18 @@ export type FacebookCredentials = {
   createdAt: Date
   updatedAt: Date
   pageId: string
-  userId: string
+  projectId: string
+}
+
+/**
+ * Model TwitterCredentials
+ * 
+ */
+export type TwitterCredentials = {
+  id: string
+  createdAt: Date
+  updatedAt: Date
+  projectId: string
 }
 
 /**
@@ -352,6 +363,16 @@ export class PrismaClient<
     * ```
     */
   get facebookCredentials(): Prisma.FacebookCredentialsDelegate<GlobalReject>;
+
+  /**
+   * `prisma.twitterCredentials`: Exposes CRUD operations for the **TwitterCredentials** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more TwitterCredentials
+    * const twitterCredentials = await prisma.twitterCredentials.findMany()
+    * ```
+    */
+  get twitterCredentials(): Prisma.TwitterCredentialsDelegate<GlobalReject>;
 
   /**
    * `prisma.content`: Exposes CRUD operations for the **Content** model.
@@ -876,6 +897,7 @@ export namespace Prisma {
     InstagramCredentials: 'InstagramCredentials',
     TikTokCredentials: 'TikTokCredentials',
     FacebookCredentials: 'FacebookCredentials',
+    TwitterCredentials: 'TwitterCredentials',
     Content: 'Content',
     Project: 'Project',
     Channel: 'Channel'
@@ -1312,10 +1334,6 @@ export namespace Prisma {
     password?: boolean | PasswordArgs
     projects?: boolean | ProjectFindManyArgs
     currentProjectId?: boolean
-    facebookCredentials?: boolean | FacebookCredentialsArgs
-    instagramCredentials?: boolean | InstagramCredentialsArgs
-    tikTokCredentials?: boolean | TikTokCredentialsArgs
-    youtubeCredentials?: boolean | YoutubeCredentialsArgs
     createdAt?: boolean
     updatedAt?: boolean
     _count?: boolean | UserCountOutputTypeArgs
@@ -1324,10 +1342,6 @@ export namespace Prisma {
   export type UserInclude = {
     password?: boolean | PasswordArgs
     projects?: boolean | ProjectFindManyArgs
-    facebookCredentials?: boolean | FacebookCredentialsArgs
-    instagramCredentials?: boolean | InstagramCredentialsArgs
-    tikTokCredentials?: boolean | TikTokCredentialsArgs
-    youtubeCredentials?: boolean | YoutubeCredentialsArgs
     _count?: boolean | UserCountOutputTypeArgs
   }
 
@@ -1344,10 +1358,6 @@ export namespace Prisma {
     [P in TrueKeys<S['include']>]:
         P extends 'password' ? PasswordGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
         P extends 'projects' ? Array < ProjectGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
-        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
-        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
-        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
-        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
         P extends '_count' ? UserCountOutputTypeGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
@@ -1355,10 +1365,6 @@ export namespace Prisma {
     [P in TrueKeys<S['select']>]:
         P extends 'password' ? PasswordGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
         P extends 'projects' ? Array < ProjectGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
-        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
-        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
-        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
-        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
         P extends '_count' ? UserCountOutputTypeGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof User ? User[P] : never
   } 
     : User
@@ -1737,14 +1743,6 @@ export namespace Prisma {
     password<T extends PasswordArgs = {}>(args?: Subset<T, PasswordArgs>): CheckSelect<T, Prisma__PasswordClient<Password | Null>, Prisma__PasswordClient<PasswordGetPayload<T> | Null>>;
 
     projects<T extends ProjectFindManyArgs = {}>(args?: Subset<T, ProjectFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Project>| Null>, PrismaPromise<Array<ProjectGetPayload<T>>| Null>>;
-
-    facebookCredentials<T extends FacebookCredentialsArgs = {}>(args?: Subset<T, FacebookCredentialsArgs>): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials | Null>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | Null>>;
-
-    instagramCredentials<T extends InstagramCredentialsArgs = {}>(args?: Subset<T, InstagramCredentialsArgs>): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials | Null>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | Null>>;
-
-    tikTokCredentials<T extends TikTokCredentialsArgs = {}>(args?: Subset<T, TikTokCredentialsArgs>): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials | Null>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | Null>>;
-
-    youtubeCredentials<T extends YoutubeCredentialsArgs = {}>(args?: Subset<T, YoutubeCredentialsArgs>): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials | Null>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -3195,13 +3193,11 @@ export namespace Prisma {
     updatedAt?: boolean
     channelId?: boolean
     userId?: boolean
-    user?: boolean | UserArgs
     projectId?: boolean
     project?: boolean | ProjectArgs
   }
 
   export type YoutubeCredentialsInclude = {
-    user?: boolean | UserArgs
     project?: boolean | ProjectArgs
   }
 
@@ -3216,13 +3212,11 @@ export namespace Prisma {
     ?'include' extends U
     ? YoutubeCredentials  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :
         P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :
         P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof YoutubeCredentials ? YoutubeCredentials[P] : never
   } 
     : YoutubeCredentials
@@ -3598,8 +3592,6 @@ export namespace Prisma {
     constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
-
     project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
@@ -3973,7 +3965,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     username: string | null
-    userId: string | null
+    projectId: string | null
   }
 
   export type InstagramCredentialsMaxAggregateOutputType = {
@@ -3982,7 +3974,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     username: string | null
-    userId: string | null
+    projectId: string | null
   }
 
   export type InstagramCredentialsCountAggregateOutputType = {
@@ -3991,7 +3983,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     username: number
-    userId: number
+    projectId: number
     _all: number
   }
 
@@ -4002,7 +3994,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     username?: true
-    userId?: true
+    projectId?: true
   }
 
   export type InstagramCredentialsMaxAggregateInputType = {
@@ -4011,7 +4003,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     username?: true
-    userId?: true
+    projectId?: true
   }
 
   export type InstagramCredentialsCountAggregateInputType = {
@@ -4020,7 +4012,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     username?: true
-    userId?: true
+    projectId?: true
     _all?: true
   }
 
@@ -4108,7 +4100,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     username: string
-    userId: string
+    projectId: string
     _count: InstagramCredentialsCountAggregateOutputType | null
     _min: InstagramCredentialsMinAggregateOutputType | null
     _max: InstagramCredentialsMaxAggregateOutputType | null
@@ -4134,12 +4126,12 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     username?: boolean
-    userId?: boolean
-    user?: boolean | UserArgs
+    projectId?: boolean
+    project?: boolean | ProjectArgs
   }
 
   export type InstagramCredentialsInclude = {
-    user?: boolean | UserArgs
+    project?: boolean | ProjectArgs
   }
 
   export type InstagramCredentialsGetPayload<
@@ -4153,12 +4145,12 @@ export namespace Prisma {
     ?'include' extends U
     ? InstagramCredentials  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof InstagramCredentials ? InstagramCredentials[P] : never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof InstagramCredentials ? InstagramCredentials[P] : never
   } 
     : InstagramCredentials
   : InstagramCredentials
@@ -4533,7 +4525,7 @@ export namespace Prisma {
     constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -4908,7 +4900,7 @@ export namespace Prisma {
     accessToken: string | null
     openId: string | null
     username: string | null
-    userId: string | null
+    projectId: string | null
   }
 
   export type TikTokCredentialsMaxAggregateOutputType = {
@@ -4919,7 +4911,7 @@ export namespace Prisma {
     accessToken: string | null
     openId: string | null
     username: string | null
-    userId: string | null
+    projectId: string | null
   }
 
   export type TikTokCredentialsCountAggregateOutputType = {
@@ -4930,7 +4922,7 @@ export namespace Prisma {
     accessToken: number
     openId: number
     username: number
-    userId: number
+    projectId: number
     _all: number
   }
 
@@ -4943,7 +4935,7 @@ export namespace Prisma {
     accessToken?: true
     openId?: true
     username?: true
-    userId?: true
+    projectId?: true
   }
 
   export type TikTokCredentialsMaxAggregateInputType = {
@@ -4954,7 +4946,7 @@ export namespace Prisma {
     accessToken?: true
     openId?: true
     username?: true
-    userId?: true
+    projectId?: true
   }
 
   export type TikTokCredentialsCountAggregateInputType = {
@@ -4965,7 +4957,7 @@ export namespace Prisma {
     accessToken?: true
     openId?: true
     username?: true
-    userId?: true
+    projectId?: true
     _all?: true
   }
 
@@ -5055,7 +5047,7 @@ export namespace Prisma {
     accessToken: string
     openId: string
     username: string
-    userId: string
+    projectId: string
     _count: TikTokCredentialsCountAggregateOutputType | null
     _min: TikTokCredentialsMinAggregateOutputType | null
     _max: TikTokCredentialsMaxAggregateOutputType | null
@@ -5083,12 +5075,12 @@ export namespace Prisma {
     accessToken?: boolean
     openId?: boolean
     username?: boolean
-    userId?: boolean
-    user?: boolean | UserArgs
+    projectId?: boolean
+    project?: boolean | ProjectArgs
   }
 
   export type TikTokCredentialsInclude = {
-    user?: boolean | UserArgs
+    project?: boolean | ProjectArgs
   }
 
   export type TikTokCredentialsGetPayload<
@@ -5102,12 +5094,12 @@ export namespace Prisma {
     ?'include' extends U
     ? TikTokCredentials  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof TikTokCredentials ? TikTokCredentials[P] : never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof TikTokCredentials ? TikTokCredentials[P] : never
   } 
     : TikTokCredentials
   : TikTokCredentials
@@ -5482,7 +5474,7 @@ export namespace Prisma {
     constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -5854,7 +5846,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     pageId: string | null
-    userId: string | null
+    projectId: string | null
   }
 
   export type FacebookCredentialsMaxAggregateOutputType = {
@@ -5862,7 +5854,7 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     pageId: string | null
-    userId: string | null
+    projectId: string | null
   }
 
   export type FacebookCredentialsCountAggregateOutputType = {
@@ -5870,7 +5862,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     pageId: number
-    userId: number
+    projectId: number
     _all: number
   }
 
@@ -5880,7 +5872,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     pageId?: true
-    userId?: true
+    projectId?: true
   }
 
   export type FacebookCredentialsMaxAggregateInputType = {
@@ -5888,7 +5880,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     pageId?: true
-    userId?: true
+    projectId?: true
   }
 
   export type FacebookCredentialsCountAggregateInputType = {
@@ -5896,7 +5888,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     pageId?: true
-    userId?: true
+    projectId?: true
     _all?: true
   }
 
@@ -5983,7 +5975,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     pageId: string
-    userId: string
+    projectId: string
     _count: FacebookCredentialsCountAggregateOutputType | null
     _min: FacebookCredentialsMinAggregateOutputType | null
     _max: FacebookCredentialsMaxAggregateOutputType | null
@@ -6008,12 +6000,12 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     pageId?: boolean
-    userId?: boolean
-    user?: boolean | UserArgs
+    projectId?: boolean
+    project?: boolean | ProjectArgs
   }
 
   export type FacebookCredentialsInclude = {
-    user?: boolean | UserArgs
+    project?: boolean | ProjectArgs
   }
 
   export type FacebookCredentialsGetPayload<
@@ -6027,12 +6019,12 @@ export namespace Prisma {
     ?'include' extends U
     ? FacebookCredentials  & {
     [P in TrueKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
     ? {
     [P in TrueKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof FacebookCredentials ? FacebookCredentials[P] : never
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof FacebookCredentials ? FacebookCredentials[P] : never
   } 
     : FacebookCredentials
   : FacebookCredentials
@@ -6407,7 +6399,7 @@ export namespace Prisma {
     constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
     readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -6759,6 +6751,923 @@ export namespace Prisma {
      * 
     **/
     include?: FacebookCredentialsInclude | null
+  }
+
+
+
+  /**
+   * Model TwitterCredentials
+   */
+
+
+  export type AggregateTwitterCredentials = {
+    _count: TwitterCredentialsCountAggregateOutputType | null
+    _min: TwitterCredentialsMinAggregateOutputType | null
+    _max: TwitterCredentialsMaxAggregateOutputType | null
+  }
+
+  export type TwitterCredentialsMinAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    projectId: string | null
+  }
+
+  export type TwitterCredentialsMaxAggregateOutputType = {
+    id: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    projectId: string | null
+  }
+
+  export type TwitterCredentialsCountAggregateOutputType = {
+    id: number
+    createdAt: number
+    updatedAt: number
+    projectId: number
+    _all: number
+  }
+
+
+  export type TwitterCredentialsMinAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    projectId?: true
+  }
+
+  export type TwitterCredentialsMaxAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    projectId?: true
+  }
+
+  export type TwitterCredentialsCountAggregateInputType = {
+    id?: true
+    createdAt?: true
+    updatedAt?: true
+    projectId?: true
+    _all?: true
+  }
+
+  export type TwitterCredentialsAggregateArgs = {
+    /**
+     * Filter which TwitterCredentials to aggregate.
+     * 
+    **/
+    where?: TwitterCredentialsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TwitterCredentials to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<TwitterCredentialsOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     * 
+    **/
+    cursor?: TwitterCredentialsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TwitterCredentials from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TwitterCredentials.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned TwitterCredentials
+    **/
+    _count?: true | TwitterCredentialsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TwitterCredentialsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TwitterCredentialsMaxAggregateInputType
+  }
+
+  export type GetTwitterCredentialsAggregateType<T extends TwitterCredentialsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTwitterCredentials]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTwitterCredentials[P]>
+      : GetScalarType<T[P], AggregateTwitterCredentials[P]>
+  }
+
+
+
+
+  export type TwitterCredentialsGroupByArgs = {
+    where?: TwitterCredentialsWhereInput
+    orderBy?: Enumerable<TwitterCredentialsOrderByWithAggregationInput>
+    by: Array<TwitterCredentialsScalarFieldEnum>
+    having?: TwitterCredentialsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TwitterCredentialsCountAggregateInputType | true
+    _min?: TwitterCredentialsMinAggregateInputType
+    _max?: TwitterCredentialsMaxAggregateInputType
+  }
+
+
+  export type TwitterCredentialsGroupByOutputType = {
+    id: string
+    createdAt: Date
+    updatedAt: Date
+    projectId: string
+    _count: TwitterCredentialsCountAggregateOutputType | null
+    _min: TwitterCredentialsMinAggregateOutputType | null
+    _max: TwitterCredentialsMaxAggregateOutputType | null
+  }
+
+  type GetTwitterCredentialsGroupByPayload<T extends TwitterCredentialsGroupByArgs> = PrismaPromise<
+    Array<
+      PickArray<TwitterCredentialsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TwitterCredentialsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TwitterCredentialsGroupByOutputType[P]>
+            : GetScalarType<T[P], TwitterCredentialsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TwitterCredentialsSelect = {
+    id?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    projectId?: boolean
+    project?: boolean | ProjectArgs
+  }
+
+  export type TwitterCredentialsInclude = {
+    project?: boolean | ProjectArgs
+  }
+
+  export type TwitterCredentialsGetPayload<
+    S extends boolean | null | undefined | TwitterCredentialsArgs,
+    U = keyof S
+      > = S extends true
+        ? TwitterCredentials
+    : S extends undefined
+    ? never
+    : S extends TwitterCredentialsArgs | TwitterCredentialsFindManyArgs
+    ?'include' extends U
+    ? TwitterCredentials  & {
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
+  } 
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof TwitterCredentials ? TwitterCredentials[P] : never
+  } 
+    : TwitterCredentials
+  : TwitterCredentials
+
+
+  type TwitterCredentialsCountArgs = Merge<
+    Omit<TwitterCredentialsFindManyArgs, 'select' | 'include'> & {
+      select?: TwitterCredentialsCountAggregateInputType | true
+    }
+  >
+
+  export interface TwitterCredentialsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
+    /**
+     * Find zero or one TwitterCredentials that matches the filter.
+     * @param {TwitterCredentialsFindUniqueArgs} args - Arguments to find a TwitterCredentials
+     * @example
+     * // Get one TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUnique<T extends TwitterCredentialsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args: SelectSubset<T, TwitterCredentialsFindUniqueArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TwitterCredentials'> extends True ? CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials | null, null>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | null, null>>
+
+    /**
+     * Find the first TwitterCredentials that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsFindFirstArgs} args - Arguments to find a TwitterCredentials
+     * @example
+     * // Get one TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirst<T extends TwitterCredentialsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
+      args?: SelectSubset<T, TwitterCredentialsFindFirstArgs>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TwitterCredentials'> extends True ? CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials | null, null>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | null, null>>
+
+    /**
+     * Find zero or more TwitterCredentials that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsFindManyArgs=} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findMany()
+     * 
+     * // Get first 10 TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const twitterCredentialsWithIdOnly = await prisma.twitterCredentials.findMany({ select: { id: true } })
+     * 
+    **/
+    findMany<T extends TwitterCredentialsFindManyArgs>(
+      args?: SelectSubset<T, TwitterCredentialsFindManyArgs>
+    ): CheckSelect<T, PrismaPromise<Array<TwitterCredentials>>, PrismaPromise<Array<TwitterCredentialsGetPayload<T>>>>
+
+    /**
+     * Create a TwitterCredentials.
+     * @param {TwitterCredentialsCreateArgs} args - Arguments to create a TwitterCredentials.
+     * @example
+     * // Create one TwitterCredentials
+     * const TwitterCredentials = await prisma.twitterCredentials.create({
+     *   data: {
+     *     // ... data to create a TwitterCredentials
+     *   }
+     * })
+     * 
+    **/
+    create<T extends TwitterCredentialsCreateArgs>(
+      args: SelectSubset<T, TwitterCredentialsCreateArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Create many TwitterCredentials.
+     *     @param {TwitterCredentialsCreateManyArgs} args - Arguments to create many TwitterCredentials.
+     *     @example
+     *     // Create many TwitterCredentials
+     *     const twitterCredentials = await prisma.twitterCredentials.createMany({
+     *       data: {
+     *         // ... provide data here
+     *       }
+     *     })
+     *     
+    **/
+    createMany<T extends TwitterCredentialsCreateManyArgs>(
+      args?: SelectSubset<T, TwitterCredentialsCreateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a TwitterCredentials.
+     * @param {TwitterCredentialsDeleteArgs} args - Arguments to delete one TwitterCredentials.
+     * @example
+     * // Delete one TwitterCredentials
+     * const TwitterCredentials = await prisma.twitterCredentials.delete({
+     *   where: {
+     *     // ... filter to delete one TwitterCredentials
+     *   }
+     * })
+     * 
+    **/
+    delete<T extends TwitterCredentialsDeleteArgs>(
+      args: SelectSubset<T, TwitterCredentialsDeleteArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Update one TwitterCredentials.
+     * @param {TwitterCredentialsUpdateArgs} args - Arguments to update one TwitterCredentials.
+     * @example
+     * // Update one TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    update<T extends TwitterCredentialsUpdateArgs>(
+      args: SelectSubset<T, TwitterCredentialsUpdateArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Delete zero or more TwitterCredentials.
+     * @param {TwitterCredentialsDeleteManyArgs} args - Arguments to filter TwitterCredentials to delete.
+     * @example
+     * // Delete a few TwitterCredentials
+     * const { count } = await prisma.twitterCredentials.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+    **/
+    deleteMany<T extends TwitterCredentialsDeleteManyArgs>(
+      args?: SelectSubset<T, TwitterCredentialsDeleteManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more TwitterCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+    **/
+    updateMany<T extends TwitterCredentialsUpdateManyArgs>(
+      args: SelectSubset<T, TwitterCredentialsUpdateManyArgs>
+    ): PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one TwitterCredentials.
+     * @param {TwitterCredentialsUpsertArgs} args - Arguments to update or create a TwitterCredentials.
+     * @example
+     * // Update or create a TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.upsert({
+     *   create: {
+     *     // ... data to create a TwitterCredentials
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the TwitterCredentials we want to update
+     *   }
+     * })
+    **/
+    upsert<T extends TwitterCredentialsUpsertArgs>(
+      args: SelectSubset<T, TwitterCredentialsUpsertArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Find one TwitterCredentials that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {TwitterCredentialsFindUniqueOrThrowArgs} args - Arguments to find a TwitterCredentials
+     * @example
+     * // Get one TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends TwitterCredentialsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, TwitterCredentialsFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Find the first TwitterCredentials that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsFindFirstOrThrowArgs} args - Arguments to find a TwitterCredentials
+     * @example
+     * // Get one TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends TwitterCredentialsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, TwitterCredentialsFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Count the number of TwitterCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsCountArgs} args - Arguments to filter TwitterCredentials to count.
+     * @example
+     * // Count the number of TwitterCredentials
+     * const count = await prisma.twitterCredentials.count({
+     *   where: {
+     *     // ... the filter for the TwitterCredentials we want to count
+     *   }
+     * })
+    **/
+    count<T extends TwitterCredentialsCountArgs>(
+      args?: Subset<T, TwitterCredentialsCountArgs>,
+    ): PrismaPromise<
+      T extends _Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TwitterCredentialsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a TwitterCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TwitterCredentialsAggregateArgs>(args: Subset<T, TwitterCredentialsAggregateArgs>): PrismaPromise<GetTwitterCredentialsAggregateType<T>>
+
+    /**
+     * Group by TwitterCredentials.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TwitterCredentialsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TwitterCredentialsGroupByArgs['orderBy'] }
+        : { orderBy?: TwitterCredentialsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends TupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TwitterCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTwitterCredentialsGroupByPayload<T> : PrismaPromise<InputErrors>
+
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for TwitterCredentials.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export class Prisma__TwitterCredentialsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
+    private readonly _dmmf;
+    private readonly _fetcher;
+    private readonly _queryType;
+    private readonly _rootField;
+    private readonly _clientMethod;
+    private readonly _args;
+    private readonly _dataPath;
+    private readonly _errorFormat;
+    private readonly _measurePerformance?;
+    private _isList;
+    private _callsite;
+    private _requestPromise?;
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
+
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
+
+    private get _document();
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2>;
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): Promise<T | TResult>;
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): Promise<T>;
+  }
+
+
+
+  // Custom InputTypes
+
+  /**
+   * TwitterCredentials base type for findUnique actions
+   */
+  export type TwitterCredentialsFindUniqueArgsBase = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
+    /**
+     * Filter, which TwitterCredentials to fetch.
+     * 
+    **/
+    where: TwitterCredentialsWhereUniqueInput
+  }
+
+  /**
+   * TwitterCredentials: findUnique
+   */
+  export interface TwitterCredentialsFindUniqueArgs extends TwitterCredentialsFindUniqueArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findUniqueOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TwitterCredentials base type for findFirst actions
+   */
+  export type TwitterCredentialsFindFirstArgsBase = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
+    /**
+     * Filter, which TwitterCredentials to fetch.
+     * 
+    **/
+    where?: TwitterCredentialsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TwitterCredentials to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<TwitterCredentialsOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for TwitterCredentials.
+     * 
+    **/
+    cursor?: TwitterCredentialsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TwitterCredentials from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TwitterCredentials.
+     * 
+    **/
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of TwitterCredentials.
+     * 
+    **/
+    distinct?: Enumerable<TwitterCredentialsScalarFieldEnum>
+  }
+
+  /**
+   * TwitterCredentials: findFirst
+   */
+  export interface TwitterCredentialsFindFirstArgs extends TwitterCredentialsFindFirstArgsBase {
+   /**
+    * Throw an Error if query returns no results
+    * @deprecated since 4.0.0: use `findFirstOrThrow` method instead
+    */
+    rejectOnNotFound?: RejectOnNotFound
+  }
+      
+
+  /**
+   * TwitterCredentials findMany
+   */
+  export type TwitterCredentialsFindManyArgs = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
+    /**
+     * Filter, which TwitterCredentials to fetch.
+     * 
+    **/
+    where?: TwitterCredentialsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of TwitterCredentials to fetch.
+     * 
+    **/
+    orderBy?: Enumerable<TwitterCredentialsOrderByWithRelationInput>
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing TwitterCredentials.
+     * 
+    **/
+    cursor?: TwitterCredentialsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` TwitterCredentials from the position of the cursor.
+     * 
+    **/
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` TwitterCredentials.
+     * 
+    **/
+    skip?: number
+    distinct?: Enumerable<TwitterCredentialsScalarFieldEnum>
+  }
+
+
+  /**
+   * TwitterCredentials create
+   */
+  export type TwitterCredentialsCreateArgs = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
+    /**
+     * The data needed to create a TwitterCredentials.
+     * 
+    **/
+    data: XOR<TwitterCredentialsCreateInput, TwitterCredentialsUncheckedCreateInput>
+  }
+
+
+  /**
+   * TwitterCredentials createMany
+   */
+  export type TwitterCredentialsCreateManyArgs = {
+    /**
+     * The data used to create many TwitterCredentials.
+     * 
+    **/
+    data: Enumerable<TwitterCredentialsCreateManyInput>
+    skipDuplicates?: boolean
+  }
+
+
+  /**
+   * TwitterCredentials update
+   */
+  export type TwitterCredentialsUpdateArgs = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
+    /**
+     * The data needed to update a TwitterCredentials.
+     * 
+    **/
+    data: XOR<TwitterCredentialsUpdateInput, TwitterCredentialsUncheckedUpdateInput>
+    /**
+     * Choose, which TwitterCredentials to update.
+     * 
+    **/
+    where: TwitterCredentialsWhereUniqueInput
+  }
+
+
+  /**
+   * TwitterCredentials updateMany
+   */
+  export type TwitterCredentialsUpdateManyArgs = {
+    /**
+     * The data used to update TwitterCredentials.
+     * 
+    **/
+    data: XOR<TwitterCredentialsUpdateManyMutationInput, TwitterCredentialsUncheckedUpdateManyInput>
+    /**
+     * Filter which TwitterCredentials to update
+     * 
+    **/
+    where?: TwitterCredentialsWhereInput
+  }
+
+
+  /**
+   * TwitterCredentials upsert
+   */
+  export type TwitterCredentialsUpsertArgs = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
+    /**
+     * The filter to search for the TwitterCredentials to update in case it exists.
+     * 
+    **/
+    where: TwitterCredentialsWhereUniqueInput
+    /**
+     * In case the TwitterCredentials found by the `where` argument doesn't exist, create a new TwitterCredentials with this data.
+     * 
+    **/
+    create: XOR<TwitterCredentialsCreateInput, TwitterCredentialsUncheckedCreateInput>
+    /**
+     * In case the TwitterCredentials was found with the provided `where` argument, update it with this data.
+     * 
+    **/
+    update: XOR<TwitterCredentialsUpdateInput, TwitterCredentialsUncheckedUpdateInput>
+  }
+
+
+  /**
+   * TwitterCredentials delete
+   */
+  export type TwitterCredentialsDeleteArgs = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
+    /**
+     * Filter which TwitterCredentials to delete.
+     * 
+    **/
+    where: TwitterCredentialsWhereUniqueInput
+  }
+
+
+  /**
+   * TwitterCredentials deleteMany
+   */
+  export type TwitterCredentialsDeleteManyArgs = {
+    /**
+     * Filter which TwitterCredentials to delete
+     * 
+    **/
+    where?: TwitterCredentialsWhereInput
+  }
+
+
+  /**
+   * TwitterCredentials: findUniqueOrThrow
+   */
+  export type TwitterCredentialsFindUniqueOrThrowArgs = TwitterCredentialsFindUniqueArgsBase
+      
+
+  /**
+   * TwitterCredentials: findFirstOrThrow
+   */
+  export type TwitterCredentialsFindFirstOrThrowArgs = TwitterCredentialsFindFirstArgsBase
+      
+
+  /**
+   * TwitterCredentials without action
+   */
+  export type TwitterCredentialsArgs = {
+    /**
+     * Select specific fields to fetch from the TwitterCredentials
+     * 
+    **/
+    select?: TwitterCredentialsSelect | null
+    /**
+     * Choose, which related nodes to fetch as well.
+     * 
+    **/
+    include?: TwitterCredentialsInclude | null
   }
 
 
@@ -7905,16 +8814,24 @@ export namespace Prisma {
     userId?: boolean
     user?: boolean | UserArgs
     content?: boolean | ContentFindManyArgs
-    youtubeCredentials?: boolean | YoutubeCredentialsArgs
     channels?: boolean | ChannelFindManyArgs
+    youtubeCredentials?: boolean | YoutubeCredentialsArgs
+    instagramCredentials?: boolean | InstagramCredentialsArgs
+    tikTokCredentials?: boolean | TikTokCredentialsArgs
+    facebookCredentials?: boolean | FacebookCredentialsArgs
+    twitterCredentials?: boolean | TwitterCredentialsArgs
     _count?: boolean | ProjectCountOutputTypeArgs
   }
 
   export type ProjectInclude = {
     user?: boolean | UserArgs
     content?: boolean | ContentFindManyArgs
-    youtubeCredentials?: boolean | YoutubeCredentialsArgs
     channels?: boolean | ChannelFindManyArgs
+    youtubeCredentials?: boolean | YoutubeCredentialsArgs
+    instagramCredentials?: boolean | InstagramCredentialsArgs
+    tikTokCredentials?: boolean | TikTokCredentialsArgs
+    facebookCredentials?: boolean | FacebookCredentialsArgs
+    twitterCredentials?: boolean | TwitterCredentialsArgs
     _count?: boolean | ProjectCountOutputTypeArgs
   }
 
@@ -7931,8 +8848,12 @@ export namespace Prisma {
     [P in TrueKeys<S['include']>]:
         P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :
         P extends 'content' ? Array < ContentGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
-        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
         P extends 'channels' ? Array < ChannelGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
+        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'twitterCredentials' ? TwitterCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
         P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
     : 'select' extends U
@@ -7940,8 +8861,12 @@ export namespace Prisma {
     [P in TrueKeys<S['select']>]:
         P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :
         P extends 'content' ? Array < ContentGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
-        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
         P extends 'channels' ? Array < ChannelGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
+        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'twitterCredentials' ? TwitterCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
         P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Project ? Project[P] : never
   } 
     : Project
@@ -8321,9 +9246,17 @@ export namespace Prisma {
 
     content<T extends ContentFindManyArgs = {}>(args?: Subset<T, ContentFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Content>| Null>, PrismaPromise<Array<ContentGetPayload<T>>| Null>>;
 
+    channels<T extends ChannelFindManyArgs = {}>(args?: Subset<T, ChannelFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Channel>| Null>, PrismaPromise<Array<ChannelGetPayload<T>>| Null>>;
+
     youtubeCredentials<T extends YoutubeCredentialsArgs = {}>(args?: Subset<T, YoutubeCredentialsArgs>): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials | Null>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | Null>>;
 
-    channels<T extends ChannelFindManyArgs = {}>(args?: Subset<T, ChannelFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Channel>| Null>, PrismaPromise<Array<ChannelGetPayload<T>>| Null>>;
+    instagramCredentials<T extends InstagramCredentialsArgs = {}>(args?: Subset<T, InstagramCredentialsArgs>): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials | Null>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | Null>>;
+
+    tikTokCredentials<T extends TikTokCredentialsArgs = {}>(args?: Subset<T, TikTokCredentialsArgs>): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials | Null>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | Null>>;
+
+    facebookCredentials<T extends FacebookCredentialsArgs = {}>(args?: Subset<T, FacebookCredentialsArgs>): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials | Null>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | Null>>;
+
+    twitterCredentials<T extends TwitterCredentialsArgs = {}>(args?: Subset<T, TwitterCredentialsArgs>): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials | Null>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -9718,7 +10651,7 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     pageId: 'pageId',
-    userId: 'userId'
+    projectId: 'projectId'
   };
 
   export type FacebookCredentialsScalarFieldEnum = (typeof FacebookCredentialsScalarFieldEnum)[keyof typeof FacebookCredentialsScalarFieldEnum]
@@ -9730,7 +10663,7 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     username: 'username',
-    userId: 'userId'
+    projectId: 'projectId'
   };
 
   export type InstagramCredentialsScalarFieldEnum = (typeof InstagramCredentialsScalarFieldEnum)[keyof typeof InstagramCredentialsScalarFieldEnum]
@@ -9779,7 +10712,7 @@ export namespace Prisma {
     accessToken: 'accessToken',
     openId: 'openId',
     username: 'username',
-    userId: 'userId'
+    projectId: 'projectId'
   };
 
   export type TikTokCredentialsScalarFieldEnum = (typeof TikTokCredentialsScalarFieldEnum)[keyof typeof TikTokCredentialsScalarFieldEnum]
@@ -9793,6 +10726,16 @@ export namespace Prisma {
   };
 
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
+
+
+  export const TwitterCredentialsScalarFieldEnum: {
+    id: 'id',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    projectId: 'projectId'
+  };
+
+  export type TwitterCredentialsScalarFieldEnum = (typeof TwitterCredentialsScalarFieldEnum)[keyof typeof TwitterCredentialsScalarFieldEnum]
 
 
   export const UserScalarFieldEnum: {
@@ -9834,10 +10777,6 @@ export namespace Prisma {
     password?: XOR<PasswordRelationFilter, PasswordWhereInput> | null
     projects?: ProjectListRelationFilter
     currentProjectId?: StringNullableFilter | string | null
-    facebookCredentials?: XOR<FacebookCredentialsRelationFilter, FacebookCredentialsWhereInput> | null
-    instagramCredentials?: XOR<InstagramCredentialsRelationFilter, InstagramCredentialsWhereInput> | null
-    tikTokCredentials?: XOR<TikTokCredentialsRelationFilter, TikTokCredentialsWhereInput> | null
-    youtubeCredentials?: XOR<YoutubeCredentialsRelationFilter, YoutubeCredentialsWhereInput> | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
   }
@@ -9848,10 +10787,6 @@ export namespace Prisma {
     password?: PasswordOrderByWithRelationInput
     projects?: ProjectOrderByRelationAggregateInput
     currentProjectId?: SortOrder
-    facebookCredentials?: FacebookCredentialsOrderByWithRelationInput
-    instagramCredentials?: InstagramCredentialsOrderByWithRelationInput
-    tikTokCredentials?: TikTokCredentialsOrderByWithRelationInput
-    youtubeCredentials?: YoutubeCredentialsOrderByWithRelationInput
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -9929,7 +10864,6 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter | Date | string
     channelId?: StringNullableFilter | string | null
     userId?: StringFilter | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
     projectId?: StringFilter | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
@@ -9942,15 +10876,14 @@ export namespace Prisma {
     updatedAt?: SortOrder
     channelId?: SortOrder
     userId?: SortOrder
-    user?: UserOrderByWithRelationInput
     projectId?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
 
   export type YoutubeCredentialsWhereUniqueInput = {
     id?: string
-    userId?: string
     projectId?: string
+    projectId_userId?: YoutubeCredentialsProjectIdUserIdCompoundUniqueInput
   }
 
   export type YoutubeCredentialsOrderByWithAggregationInput = {
@@ -9990,8 +10923,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     username?: StringFilter | string
-    userId?: StringFilter | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    projectId?: StringFilter | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
   export type InstagramCredentialsOrderByWithRelationInput = {
@@ -10000,13 +10933,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
-    user?: UserOrderByWithRelationInput
+    projectId?: SortOrder
+    project?: ProjectOrderByWithRelationInput
   }
 
   export type InstagramCredentialsWhereUniqueInput = {
     id?: string
-    userId?: string
+    projectId?: string
   }
 
   export type InstagramCredentialsOrderByWithAggregationInput = {
@@ -10015,7 +10948,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
     _count?: InstagramCredentialsCountOrderByAggregateInput
     _max?: InstagramCredentialsMaxOrderByAggregateInput
     _min?: InstagramCredentialsMinOrderByAggregateInput
@@ -10030,7 +10963,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     username?: StringWithAggregatesFilter | string
-    userId?: StringWithAggregatesFilter | string
+    projectId?: StringWithAggregatesFilter | string
   }
 
   export type TikTokCredentialsWhereInput = {
@@ -10044,8 +10977,8 @@ export namespace Prisma {
     accessToken?: StringFilter | string
     openId?: StringFilter | string
     username?: StringFilter | string
-    userId?: StringFilter | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    projectId?: StringFilter | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
   export type TikTokCredentialsOrderByWithRelationInput = {
@@ -10056,13 +10989,13 @@ export namespace Prisma {
     accessToken?: SortOrder
     openId?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
-    user?: UserOrderByWithRelationInput
+    projectId?: SortOrder
+    project?: ProjectOrderByWithRelationInput
   }
 
   export type TikTokCredentialsWhereUniqueInput = {
     id?: string
-    userId?: string
+    projectId?: string
   }
 
   export type TikTokCredentialsOrderByWithAggregationInput = {
@@ -10073,7 +11006,7 @@ export namespace Prisma {
     accessToken?: SortOrder
     openId?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
     _count?: TikTokCredentialsCountOrderByAggregateInput
     _max?: TikTokCredentialsMaxOrderByAggregateInput
     _min?: TikTokCredentialsMinOrderByAggregateInput
@@ -10090,7 +11023,7 @@ export namespace Prisma {
     accessToken?: StringWithAggregatesFilter | string
     openId?: StringWithAggregatesFilter | string
     username?: StringWithAggregatesFilter | string
-    userId?: StringWithAggregatesFilter | string
+    projectId?: StringWithAggregatesFilter | string
   }
 
   export type FacebookCredentialsWhereInput = {
@@ -10101,8 +11034,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     pageId?: StringFilter | string
-    userId?: StringFilter | string
-    user?: XOR<UserRelationFilter, UserWhereInput>
+    projectId?: StringFilter | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
   export type FacebookCredentialsOrderByWithRelationInput = {
@@ -10110,13 +11043,13 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     pageId?: SortOrder
-    userId?: SortOrder
-    user?: UserOrderByWithRelationInput
+    projectId?: SortOrder
+    project?: ProjectOrderByWithRelationInput
   }
 
   export type FacebookCredentialsWhereUniqueInput = {
     id?: string
-    userId?: string
+    projectId?: string
   }
 
   export type FacebookCredentialsOrderByWithAggregationInput = {
@@ -10124,7 +11057,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     pageId?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
     _count?: FacebookCredentialsCountOrderByAggregateInput
     _max?: FacebookCredentialsMaxOrderByAggregateInput
     _min?: FacebookCredentialsMinOrderByAggregateInput
@@ -10138,7 +11071,51 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     pageId?: StringWithAggregatesFilter | string
-    userId?: StringWithAggregatesFilter | string
+    projectId?: StringWithAggregatesFilter | string
+  }
+
+  export type TwitterCredentialsWhereInput = {
+    AND?: Enumerable<TwitterCredentialsWhereInput>
+    OR?: Enumerable<TwitterCredentialsWhereInput>
+    NOT?: Enumerable<TwitterCredentialsWhereInput>
+    id?: StringFilter | string
+    createdAt?: DateTimeFilter | Date | string
+    updatedAt?: DateTimeFilter | Date | string
+    projectId?: StringFilter | string
+    project?: XOR<ProjectRelationFilter, ProjectWhereInput>
+  }
+
+  export type TwitterCredentialsOrderByWithRelationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+    project?: ProjectOrderByWithRelationInput
+  }
+
+  export type TwitterCredentialsWhereUniqueInput = {
+    id?: string
+    projectId?: string
+  }
+
+  export type TwitterCredentialsOrderByWithAggregationInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+    _count?: TwitterCredentialsCountOrderByAggregateInput
+    _max?: TwitterCredentialsMaxOrderByAggregateInput
+    _min?: TwitterCredentialsMinOrderByAggregateInput
+  }
+
+  export type TwitterCredentialsScalarWhereWithAggregatesInput = {
+    AND?: Enumerable<TwitterCredentialsScalarWhereWithAggregatesInput>
+    OR?: Enumerable<TwitterCredentialsScalarWhereWithAggregatesInput>
+    NOT?: Enumerable<TwitterCredentialsScalarWhereWithAggregatesInput>
+    id?: StringWithAggregatesFilter | string
+    createdAt?: DateTimeWithAggregatesFilter | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter | Date | string
+    projectId?: StringWithAggregatesFilter | string
   }
 
   export type ContentWhereInput = {
@@ -10224,8 +11201,12 @@ export namespace Prisma {
     userId?: StringFilter | string
     user?: XOR<UserRelationFilter, UserWhereInput>
     content?: ContentListRelationFilter
-    youtubeCredentials?: XOR<YoutubeCredentialsRelationFilter, YoutubeCredentialsWhereInput> | null
     channels?: ChannelListRelationFilter
+    youtubeCredentials?: XOR<YoutubeCredentialsRelationFilter, YoutubeCredentialsWhereInput> | null
+    instagramCredentials?: XOR<InstagramCredentialsRelationFilter, InstagramCredentialsWhereInput> | null
+    tikTokCredentials?: XOR<TikTokCredentialsRelationFilter, TikTokCredentialsWhereInput> | null
+    facebookCredentials?: XOR<FacebookCredentialsRelationFilter, FacebookCredentialsWhereInput> | null
+    twitterCredentials?: XOR<TwitterCredentialsRelationFilter, TwitterCredentialsWhereInput> | null
   }
 
   export type ProjectOrderByWithRelationInput = {
@@ -10236,8 +11217,12 @@ export namespace Prisma {
     userId?: SortOrder
     user?: UserOrderByWithRelationInput
     content?: ContentOrderByRelationAggregateInput
-    youtubeCredentials?: YoutubeCredentialsOrderByWithRelationInput
     channels?: ChannelOrderByRelationAggregateInput
+    youtubeCredentials?: YoutubeCredentialsOrderByWithRelationInput
+    instagramCredentials?: InstagramCredentialsOrderByWithRelationInput
+    tikTokCredentials?: TikTokCredentialsOrderByWithRelationInput
+    facebookCredentials?: FacebookCredentialsOrderByWithRelationInput
+    twitterCredentials?: TwitterCredentialsOrderByWithRelationInput
   }
 
   export type ProjectWhereUniqueInput = {
@@ -10339,10 +11324,6 @@ export namespace Prisma {
     password?: PasswordCreateNestedOneWithoutUserInput
     projects?: ProjectCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutUserInput
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10353,10 +11334,6 @@ export namespace Prisma {
     password?: PasswordUncheckedCreateNestedOneWithoutUserInput
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutUserInput
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -10367,10 +11344,6 @@ export namespace Prisma {
     password?: PasswordUpdateOneWithoutUserNestedInput
     projects?: ProjectUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutUserNestedInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10381,10 +11354,6 @@ export namespace Prisma {
     password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutUserNestedInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10454,7 +11423,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     channelId?: string | null
-    user: UserCreateNestedOneWithoutYoutubeCredentialsInput
+    userId: string
     project: ProjectCreateNestedOneWithoutYoutubeCredentialsInput
   }
 
@@ -10476,7 +11445,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
+    userId?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
   }
 
@@ -10509,6 +11478,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type YoutubeCredentialsUncheckedUpdateManyInput = {
@@ -10528,7 +11498,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     username: string
-    user: UserCreateNestedOneWithoutInstagramCredentialsInput
+    project: ProjectCreateNestedOneWithoutInstagramCredentialsInput
   }
 
   export type InstagramCredentialsUncheckedCreateInput = {
@@ -10537,7 +11507,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     username: string
-    userId: string
+    projectId: string
   }
 
   export type InstagramCredentialsUpdateInput = {
@@ -10546,7 +11516,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     username?: StringFieldUpdateOperationsInput | string
-    user?: UserUpdateOneRequiredWithoutInstagramCredentialsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutInstagramCredentialsNestedInput
   }
 
   export type InstagramCredentialsUncheckedUpdateInput = {
@@ -10555,7 +11525,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     username?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type InstagramCredentialsCreateManyInput = {
@@ -10564,7 +11534,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     username: string
-    userId: string
+    projectId: string
   }
 
   export type InstagramCredentialsUpdateManyMutationInput = {
@@ -10581,7 +11551,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     username?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TikTokCredentialsCreateInput = {
@@ -10592,7 +11562,7 @@ export namespace Prisma {
     accessToken: string
     openId: string
     username: string
-    user: UserCreateNestedOneWithoutTikTokCredentialsInput
+    project: ProjectCreateNestedOneWithoutTikTokCredentialsInput
   }
 
   export type TikTokCredentialsUncheckedCreateInput = {
@@ -10603,7 +11573,7 @@ export namespace Prisma {
     accessToken: string
     openId: string
     username: string
-    userId: string
+    projectId: string
   }
 
   export type TikTokCredentialsUpdateInput = {
@@ -10614,7 +11584,7 @@ export namespace Prisma {
     accessToken?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    user?: UserUpdateOneRequiredWithoutTikTokCredentialsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutTikTokCredentialsNestedInput
   }
 
   export type TikTokCredentialsUncheckedUpdateInput = {
@@ -10625,7 +11595,7 @@ export namespace Prisma {
     accessToken?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TikTokCredentialsCreateManyInput = {
@@ -10636,7 +11606,7 @@ export namespace Prisma {
     accessToken: string
     openId: string
     username: string
-    userId: string
+    projectId: string
   }
 
   export type TikTokCredentialsUpdateManyMutationInput = {
@@ -10657,7 +11627,7 @@ export namespace Prisma {
     accessToken?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
     username?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type FacebookCredentialsCreateInput = {
@@ -10665,7 +11635,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     pageId: string
-    user: UserCreateNestedOneWithoutFacebookCredentialsInput
+    project: ProjectCreateNestedOneWithoutFacebookCredentialsInput
   }
 
   export type FacebookCredentialsUncheckedCreateInput = {
@@ -10673,7 +11643,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     pageId: string
-    userId: string
+    projectId: string
   }
 
   export type FacebookCredentialsUpdateInput = {
@@ -10681,7 +11651,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pageId?: StringFieldUpdateOperationsInput | string
-    user?: UserUpdateOneRequiredWithoutFacebookCredentialsNestedInput
+    project?: ProjectUpdateOneRequiredWithoutFacebookCredentialsNestedInput
   }
 
   export type FacebookCredentialsUncheckedUpdateInput = {
@@ -10689,7 +11659,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pageId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type FacebookCredentialsCreateManyInput = {
@@ -10697,7 +11667,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     pageId: string
-    userId: string
+    projectId: string
   }
 
   export type FacebookCredentialsUpdateManyMutationInput = {
@@ -10712,7 +11682,55 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     pageId?: StringFieldUpdateOperationsInput | string
-    userId?: StringFieldUpdateOperationsInput | string
+    projectId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TwitterCredentialsCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    project: ProjectCreateNestedOneWithoutTwitterCredentialsInput
+  }
+
+  export type TwitterCredentialsUncheckedCreateInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
+  }
+
+  export type TwitterCredentialsUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    project?: ProjectUpdateOneRequiredWithoutTwitterCredentialsNestedInput
+  }
+
+  export type TwitterCredentialsUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TwitterCredentialsCreateManyInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    projectId: string
+  }
+
+  export type TwitterCredentialsUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TwitterCredentialsUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type ContentCreateInput = {
@@ -10819,8 +11837,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateInput = {
@@ -10830,8 +11852,12 @@ export namespace Prisma {
     updatedAt?: Date | string
     userId: string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUpdateInput = {
@@ -10841,8 +11867,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateInput = {
@@ -10852,8 +11882,12 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyInput = {
@@ -11003,26 +12037,6 @@ export namespace Prisma {
     not?: NestedStringNullableFilter | string | null
   }
 
-  export type FacebookCredentialsRelationFilter = {
-    is?: FacebookCredentialsWhereInput | null
-    isNot?: FacebookCredentialsWhereInput | null
-  }
-
-  export type InstagramCredentialsRelationFilter = {
-    is?: InstagramCredentialsWhereInput | null
-    isNot?: InstagramCredentialsWhereInput | null
-  }
-
-  export type TikTokCredentialsRelationFilter = {
-    is?: TikTokCredentialsWhereInput | null
-    isNot?: TikTokCredentialsWhereInput | null
-  }
-
-  export type YoutubeCredentialsRelationFilter = {
-    is?: YoutubeCredentialsWhereInput | null
-    isNot?: YoutubeCredentialsWhereInput | null
-  }
-
   export type DateTimeFilter = {
     equals?: Date | string
     in?: Enumerable<Date> | Enumerable<string>
@@ -11137,6 +12151,11 @@ export namespace Prisma {
     isNot?: ProjectWhereInput
   }
 
+  export type YoutubeCredentialsProjectIdUserIdCompoundUniqueInput = {
+    projectId: string
+    userId: string
+  }
+
   export type YoutubeCredentialsCountOrderByAggregateInput = {
     id?: SortOrder
     accessToken?: SortOrder
@@ -11176,7 +12195,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type InstagramCredentialsMaxOrderByAggregateInput = {
@@ -11185,7 +12204,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type InstagramCredentialsMinOrderByAggregateInput = {
@@ -11194,7 +12213,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type TikTokCredentialsCountOrderByAggregateInput = {
@@ -11205,7 +12224,7 @@ export namespace Prisma {
     accessToken?: SortOrder
     openId?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type TikTokCredentialsMaxOrderByAggregateInput = {
@@ -11216,7 +12235,7 @@ export namespace Prisma {
     accessToken?: SortOrder
     openId?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type TikTokCredentialsMinOrderByAggregateInput = {
@@ -11227,7 +12246,7 @@ export namespace Prisma {
     accessToken?: SortOrder
     openId?: SortOrder
     username?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type FacebookCredentialsCountOrderByAggregateInput = {
@@ -11235,7 +12254,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     pageId?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type FacebookCredentialsMaxOrderByAggregateInput = {
@@ -11243,7 +12262,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     pageId?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
   }
 
   export type FacebookCredentialsMinOrderByAggregateInput = {
@@ -11251,7 +12270,28 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     pageId?: SortOrder
-    userId?: SortOrder
+    projectId?: SortOrder
+  }
+
+  export type TwitterCredentialsCountOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+  }
+
+  export type TwitterCredentialsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+  }
+
+  export type TwitterCredentialsMinOrderByAggregateInput = {
+    id?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
   }
 
   export type StringNullableListFilter = {
@@ -11355,6 +12395,31 @@ export namespace Prisma {
     every?: ChannelWhereInput
     some?: ChannelWhereInput
     none?: ChannelWhereInput
+  }
+
+  export type YoutubeCredentialsRelationFilter = {
+    is?: YoutubeCredentialsWhereInput | null
+    isNot?: YoutubeCredentialsWhereInput | null
+  }
+
+  export type InstagramCredentialsRelationFilter = {
+    is?: InstagramCredentialsWhereInput | null
+    isNot?: InstagramCredentialsWhereInput | null
+  }
+
+  export type TikTokCredentialsRelationFilter = {
+    is?: TikTokCredentialsWhereInput | null
+    isNot?: TikTokCredentialsWhereInput | null
+  }
+
+  export type FacebookCredentialsRelationFilter = {
+    is?: FacebookCredentialsWhereInput | null
+    isNot?: FacebookCredentialsWhereInput | null
+  }
+
+  export type TwitterCredentialsRelationFilter = {
+    is?: TwitterCredentialsWhereInput | null
+    isNot?: TwitterCredentialsWhereInput | null
   }
 
   export type ContentOrderByRelationAggregateInput = {
@@ -11497,30 +12562,6 @@ export namespace Prisma {
     connect?: Enumerable<ProjectWhereUniqueInput>
   }
 
-  export type FacebookCredentialsCreateNestedOneWithoutUserInput = {
-    create?: XOR<FacebookCredentialsCreateWithoutUserInput, FacebookCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutUserInput
-    connect?: FacebookCredentialsWhereUniqueInput
-  }
-
-  export type InstagramCredentialsCreateNestedOneWithoutUserInput = {
-    create?: XOR<InstagramCredentialsCreateWithoutUserInput, InstagramCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutUserInput
-    connect?: InstagramCredentialsWhereUniqueInput
-  }
-
-  export type TikTokCredentialsCreateNestedOneWithoutUserInput = {
-    create?: XOR<TikTokCredentialsCreateWithoutUserInput, TikTokCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutUserInput
-    connect?: TikTokCredentialsWhereUniqueInput
-  }
-
-  export type YoutubeCredentialsCreateNestedOneWithoutUserInput = {
-    create?: XOR<YoutubeCredentialsCreateWithoutUserInput, YoutubeCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutUserInput
-    connect?: YoutubeCredentialsWhereUniqueInput
-  }
-
   export type PasswordUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<PasswordCreateWithoutUserInput, PasswordUncheckedCreateWithoutUserInput>
     connectOrCreate?: PasswordCreateOrConnectWithoutUserInput
@@ -11532,30 +12573,6 @@ export namespace Prisma {
     connectOrCreate?: Enumerable<ProjectCreateOrConnectWithoutUserInput>
     createMany?: ProjectCreateManyUserInputEnvelope
     connect?: Enumerable<ProjectWhereUniqueInput>
-  }
-
-  export type FacebookCredentialsUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<FacebookCredentialsCreateWithoutUserInput, FacebookCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutUserInput
-    connect?: FacebookCredentialsWhereUniqueInput
-  }
-
-  export type InstagramCredentialsUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<InstagramCredentialsCreateWithoutUserInput, InstagramCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutUserInput
-    connect?: InstagramCredentialsWhereUniqueInput
-  }
-
-  export type TikTokCredentialsUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<TikTokCredentialsCreateWithoutUserInput, TikTokCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutUserInput
-    connect?: TikTokCredentialsWhereUniqueInput
-  }
-
-  export type YoutubeCredentialsUncheckedCreateNestedOneWithoutUserInput = {
-    create?: XOR<YoutubeCredentialsCreateWithoutUserInput, YoutubeCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutUserInput
-    connect?: YoutubeCredentialsWhereUniqueInput
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -11590,46 +12607,6 @@ export namespace Prisma {
     set?: string | null
   }
 
-  export type FacebookCredentialsUpdateOneWithoutUserNestedInput = {
-    create?: XOR<FacebookCredentialsCreateWithoutUserInput, FacebookCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutUserInput
-    upsert?: FacebookCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: FacebookCredentialsWhereUniqueInput
-    update?: XOR<FacebookCredentialsUpdateWithoutUserInput, FacebookCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
-  export type InstagramCredentialsUpdateOneWithoutUserNestedInput = {
-    create?: XOR<InstagramCredentialsCreateWithoutUserInput, InstagramCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutUserInput
-    upsert?: InstagramCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: InstagramCredentialsWhereUniqueInput
-    update?: XOR<InstagramCredentialsUpdateWithoutUserInput, InstagramCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
-  export type TikTokCredentialsUpdateOneWithoutUserNestedInput = {
-    create?: XOR<TikTokCredentialsCreateWithoutUserInput, TikTokCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutUserInput
-    upsert?: TikTokCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: TikTokCredentialsWhereUniqueInput
-    update?: XOR<TikTokCredentialsUpdateWithoutUserInput, TikTokCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
-  export type YoutubeCredentialsUpdateOneWithoutUserNestedInput = {
-    create?: XOR<YoutubeCredentialsCreateWithoutUserInput, YoutubeCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutUserInput
-    upsert?: YoutubeCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: YoutubeCredentialsWhereUniqueInput
-    update?: XOR<YoutubeCredentialsUpdateWithoutUserInput, YoutubeCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -11658,46 +12635,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<ProjectScalarWhereInput>
   }
 
-  export type FacebookCredentialsUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<FacebookCredentialsCreateWithoutUserInput, FacebookCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutUserInput
-    upsert?: FacebookCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: FacebookCredentialsWhereUniqueInput
-    update?: XOR<FacebookCredentialsUpdateWithoutUserInput, FacebookCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
-  export type InstagramCredentialsUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<InstagramCredentialsCreateWithoutUserInput, InstagramCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutUserInput
-    upsert?: InstagramCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: InstagramCredentialsWhereUniqueInput
-    update?: XOR<InstagramCredentialsUpdateWithoutUserInput, InstagramCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
-  export type TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<TikTokCredentialsCreateWithoutUserInput, TikTokCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutUserInput
-    upsert?: TikTokCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: TikTokCredentialsWhereUniqueInput
-    update?: XOR<TikTokCredentialsUpdateWithoutUserInput, TikTokCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
-  export type YoutubeCredentialsUncheckedUpdateOneWithoutUserNestedInput = {
-    create?: XOR<YoutubeCredentialsCreateWithoutUserInput, YoutubeCredentialsUncheckedCreateWithoutUserInput>
-    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutUserInput
-    upsert?: YoutubeCredentialsUpsertWithoutUserInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: YoutubeCredentialsWhereUniqueInput
-    update?: XOR<YoutubeCredentialsUpdateWithoutUserInput, YoutubeCredentialsUncheckedUpdateWithoutUserInput>
-  }
-
   export type UserCreateNestedOneWithoutPasswordInput = {
     create?: XOR<UserCreateWithoutPasswordInput, UserUncheckedCreateWithoutPasswordInput>
     connectOrCreate?: UserCreateOrConnectWithoutPasswordInput
@@ -11712,24 +12649,10 @@ export namespace Prisma {
     update?: XOR<UserUpdateWithoutPasswordInput, UserUncheckedUpdateWithoutPasswordInput>
   }
 
-  export type UserCreateNestedOneWithoutYoutubeCredentialsInput = {
-    create?: XOR<UserCreateWithoutYoutubeCredentialsInput, UserUncheckedCreateWithoutYoutubeCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutYoutubeCredentialsInput
-    connect?: UserWhereUniqueInput
-  }
-
   export type ProjectCreateNestedOneWithoutYoutubeCredentialsInput = {
     create?: XOR<ProjectCreateWithoutYoutubeCredentialsInput, ProjectUncheckedCreateWithoutYoutubeCredentialsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutYoutubeCredentialsInput
     connect?: ProjectWhereUniqueInput
-  }
-
-  export type UserUpdateOneRequiredWithoutYoutubeCredentialsNestedInput = {
-    create?: XOR<UserCreateWithoutYoutubeCredentialsInput, UserUncheckedCreateWithoutYoutubeCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutYoutubeCredentialsInput
-    upsert?: UserUpsertWithoutYoutubeCredentialsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<UserUpdateWithoutYoutubeCredentialsInput, UserUncheckedUpdateWithoutYoutubeCredentialsInput>
   }
 
   export type ProjectUpdateOneRequiredWithoutYoutubeCredentialsNestedInput = {
@@ -11740,46 +12663,60 @@ export namespace Prisma {
     update?: XOR<ProjectUpdateWithoutYoutubeCredentialsInput, ProjectUncheckedUpdateWithoutYoutubeCredentialsInput>
   }
 
-  export type UserCreateNestedOneWithoutInstagramCredentialsInput = {
-    create?: XOR<UserCreateWithoutInstagramCredentialsInput, UserUncheckedCreateWithoutInstagramCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutInstagramCredentialsInput
-    connect?: UserWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutInstagramCredentialsInput = {
+    create?: XOR<ProjectCreateWithoutInstagramCredentialsInput, ProjectUncheckedCreateWithoutInstagramCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutInstagramCredentialsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutInstagramCredentialsNestedInput = {
-    create?: XOR<UserCreateWithoutInstagramCredentialsInput, UserUncheckedCreateWithoutInstagramCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutInstagramCredentialsInput
-    upsert?: UserUpsertWithoutInstagramCredentialsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<UserUpdateWithoutInstagramCredentialsInput, UserUncheckedUpdateWithoutInstagramCredentialsInput>
+  export type ProjectUpdateOneRequiredWithoutInstagramCredentialsNestedInput = {
+    create?: XOR<ProjectCreateWithoutInstagramCredentialsInput, ProjectUncheckedCreateWithoutInstagramCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutInstagramCredentialsInput
+    upsert?: ProjectUpsertWithoutInstagramCredentialsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<ProjectUpdateWithoutInstagramCredentialsInput, ProjectUncheckedUpdateWithoutInstagramCredentialsInput>
   }
 
-  export type UserCreateNestedOneWithoutTikTokCredentialsInput = {
-    create?: XOR<UserCreateWithoutTikTokCredentialsInput, UserUncheckedCreateWithoutTikTokCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTikTokCredentialsInput
-    connect?: UserWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutTikTokCredentialsInput = {
+    create?: XOR<ProjectCreateWithoutTikTokCredentialsInput, ProjectUncheckedCreateWithoutTikTokCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTikTokCredentialsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutTikTokCredentialsNestedInput = {
-    create?: XOR<UserCreateWithoutTikTokCredentialsInput, UserUncheckedCreateWithoutTikTokCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutTikTokCredentialsInput
-    upsert?: UserUpsertWithoutTikTokCredentialsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<UserUpdateWithoutTikTokCredentialsInput, UserUncheckedUpdateWithoutTikTokCredentialsInput>
+  export type ProjectUpdateOneRequiredWithoutTikTokCredentialsNestedInput = {
+    create?: XOR<ProjectCreateWithoutTikTokCredentialsInput, ProjectUncheckedCreateWithoutTikTokCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTikTokCredentialsInput
+    upsert?: ProjectUpsertWithoutTikTokCredentialsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<ProjectUpdateWithoutTikTokCredentialsInput, ProjectUncheckedUpdateWithoutTikTokCredentialsInput>
   }
 
-  export type UserCreateNestedOneWithoutFacebookCredentialsInput = {
-    create?: XOR<UserCreateWithoutFacebookCredentialsInput, UserUncheckedCreateWithoutFacebookCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutFacebookCredentialsInput
-    connect?: UserWhereUniqueInput
+  export type ProjectCreateNestedOneWithoutFacebookCredentialsInput = {
+    create?: XOR<ProjectCreateWithoutFacebookCredentialsInput, ProjectUncheckedCreateWithoutFacebookCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFacebookCredentialsInput
+    connect?: ProjectWhereUniqueInput
   }
 
-  export type UserUpdateOneRequiredWithoutFacebookCredentialsNestedInput = {
-    create?: XOR<UserCreateWithoutFacebookCredentialsInput, UserUncheckedCreateWithoutFacebookCredentialsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutFacebookCredentialsInput
-    upsert?: UserUpsertWithoutFacebookCredentialsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<UserUpdateWithoutFacebookCredentialsInput, UserUncheckedUpdateWithoutFacebookCredentialsInput>
+  export type ProjectUpdateOneRequiredWithoutFacebookCredentialsNestedInput = {
+    create?: XOR<ProjectCreateWithoutFacebookCredentialsInput, ProjectUncheckedCreateWithoutFacebookCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutFacebookCredentialsInput
+    upsert?: ProjectUpsertWithoutFacebookCredentialsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<ProjectUpdateWithoutFacebookCredentialsInput, ProjectUncheckedUpdateWithoutFacebookCredentialsInput>
+  }
+
+  export type ProjectCreateNestedOneWithoutTwitterCredentialsInput = {
+    create?: XOR<ProjectCreateWithoutTwitterCredentialsInput, ProjectUncheckedCreateWithoutTwitterCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTwitterCredentialsInput
+    connect?: ProjectWhereUniqueInput
+  }
+
+  export type ProjectUpdateOneRequiredWithoutTwitterCredentialsNestedInput = {
+    create?: XOR<ProjectCreateWithoutTwitterCredentialsInput, ProjectUncheckedCreateWithoutTwitterCredentialsInput>
+    connectOrCreate?: ProjectCreateOrConnectWithoutTwitterCredentialsInput
+    upsert?: ProjectUpsertWithoutTwitterCredentialsInput
+    connect?: ProjectWhereUniqueInput
+    update?: XOR<ProjectUpdateWithoutTwitterCredentialsInput, ProjectUncheckedUpdateWithoutTwitterCredentialsInput>
   }
 
   export type ContentCreatetagsInput = {
@@ -11826,17 +12763,41 @@ export namespace Prisma {
     connect?: Enumerable<ContentWhereUniqueInput>
   }
 
+  export type ChannelCreateNestedManyWithoutProjectInput = {
+    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
+    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
+    createMany?: ChannelCreateManyProjectInputEnvelope
+    connect?: Enumerable<ChannelWhereUniqueInput>
+  }
+
   export type YoutubeCredentialsCreateNestedOneWithoutProjectInput = {
     create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
     connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
     connect?: YoutubeCredentialsWhereUniqueInput
   }
 
-  export type ChannelCreateNestedManyWithoutProjectInput = {
-    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
-    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
-    createMany?: ChannelCreateManyProjectInputEnvelope
-    connect?: Enumerable<ChannelWhereUniqueInput>
+  export type InstagramCredentialsCreateNestedOneWithoutProjectInput = {
+    create?: XOR<InstagramCredentialsCreateWithoutProjectInput, InstagramCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutProjectInput
+    connect?: InstagramCredentialsWhereUniqueInput
+  }
+
+  export type TikTokCredentialsCreateNestedOneWithoutProjectInput = {
+    create?: XOR<TikTokCredentialsCreateWithoutProjectInput, TikTokCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutProjectInput
+    connect?: TikTokCredentialsWhereUniqueInput
+  }
+
+  export type FacebookCredentialsCreateNestedOneWithoutProjectInput = {
+    create?: XOR<FacebookCredentialsCreateWithoutProjectInput, FacebookCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutProjectInput
+    connect?: FacebookCredentialsWhereUniqueInput
+  }
+
+  export type TwitterCredentialsCreateNestedOneWithoutProjectInput = {
+    create?: XOR<TwitterCredentialsCreateWithoutProjectInput, TwitterCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TwitterCredentialsCreateOrConnectWithoutProjectInput
+    connect?: TwitterCredentialsWhereUniqueInput
   }
 
   export type ContentUncheckedCreateNestedManyWithoutProjectInput = {
@@ -11846,17 +12807,41 @@ export namespace Prisma {
     connect?: Enumerable<ContentWhereUniqueInput>
   }
 
+  export type ChannelUncheckedCreateNestedManyWithoutProjectInput = {
+    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
+    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
+    createMany?: ChannelCreateManyProjectInputEnvelope
+    connect?: Enumerable<ChannelWhereUniqueInput>
+  }
+
   export type YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput = {
     create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
     connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
     connect?: YoutubeCredentialsWhereUniqueInput
   }
 
-  export type ChannelUncheckedCreateNestedManyWithoutProjectInput = {
-    create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
-    connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
-    createMany?: ChannelCreateManyProjectInputEnvelope
-    connect?: Enumerable<ChannelWhereUniqueInput>
+  export type InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput = {
+    create?: XOR<InstagramCredentialsCreateWithoutProjectInput, InstagramCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutProjectInput
+    connect?: InstagramCredentialsWhereUniqueInput
+  }
+
+  export type TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput = {
+    create?: XOR<TikTokCredentialsCreateWithoutProjectInput, TikTokCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutProjectInput
+    connect?: TikTokCredentialsWhereUniqueInput
+  }
+
+  export type FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput = {
+    create?: XOR<FacebookCredentialsCreateWithoutProjectInput, FacebookCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutProjectInput
+    connect?: FacebookCredentialsWhereUniqueInput
+  }
+
+  export type TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput = {
+    create?: XOR<TwitterCredentialsCreateWithoutProjectInput, TwitterCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TwitterCredentialsCreateOrConnectWithoutProjectInput
+    connect?: TwitterCredentialsWhereUniqueInput
   }
 
   export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
@@ -11881,16 +12866,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<ContentScalarWhereInput>
   }
 
-  export type YoutubeCredentialsUpdateOneWithoutProjectNestedInput = {
-    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
-    upsert?: YoutubeCredentialsUpsertWithoutProjectInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: YoutubeCredentialsWhereUniqueInput
-    update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
-  }
-
   export type ChannelUpdateManyWithoutProjectNestedInput = {
     create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
     connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
@@ -11903,6 +12878,56 @@ export namespace Prisma {
     update?: Enumerable<ChannelUpdateWithWhereUniqueWithoutProjectInput>
     updateMany?: Enumerable<ChannelUpdateManyWithWhereWithoutProjectInput>
     deleteMany?: Enumerable<ChannelScalarWhereInput>
+  }
+
+  export type YoutubeCredentialsUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: YoutubeCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: YoutubeCredentialsWhereUniqueInput
+    update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type InstagramCredentialsUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<InstagramCredentialsCreateWithoutProjectInput, InstagramCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: InstagramCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: InstagramCredentialsWhereUniqueInput
+    update?: XOR<InstagramCredentialsUpdateWithoutProjectInput, InstagramCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type TikTokCredentialsUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<TikTokCredentialsCreateWithoutProjectInput, TikTokCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: TikTokCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: TikTokCredentialsWhereUniqueInput
+    update?: XOR<TikTokCredentialsUpdateWithoutProjectInput, TikTokCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type FacebookCredentialsUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<FacebookCredentialsCreateWithoutProjectInput, FacebookCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: FacebookCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: FacebookCredentialsWhereUniqueInput
+    update?: XOR<FacebookCredentialsUpdateWithoutProjectInput, FacebookCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type TwitterCredentialsUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<TwitterCredentialsCreateWithoutProjectInput, TwitterCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TwitterCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: TwitterCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: TwitterCredentialsWhereUniqueInput
+    update?: XOR<TwitterCredentialsUpdateWithoutProjectInput, TwitterCredentialsUncheckedUpdateWithoutProjectInput>
   }
 
   export type ContentUncheckedUpdateManyWithoutProjectNestedInput = {
@@ -11919,16 +12944,6 @@ export namespace Prisma {
     deleteMany?: Enumerable<ContentScalarWhereInput>
   }
 
-  export type YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput = {
-    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
-    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
-    upsert?: YoutubeCredentialsUpsertWithoutProjectInput
-    disconnect?: boolean
-    delete?: boolean
-    connect?: YoutubeCredentialsWhereUniqueInput
-    update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
-  }
-
   export type ChannelUncheckedUpdateManyWithoutProjectNestedInput = {
     create?: XOR<Enumerable<ChannelCreateWithoutProjectInput>, Enumerable<ChannelUncheckedCreateWithoutProjectInput>>
     connectOrCreate?: Enumerable<ChannelCreateOrConnectWithoutProjectInput>
@@ -11941,6 +12956,56 @@ export namespace Prisma {
     update?: Enumerable<ChannelUpdateWithWhereUniqueWithoutProjectInput>
     updateMany?: Enumerable<ChannelUpdateManyWithWhereWithoutProjectInput>
     deleteMany?: Enumerable<ChannelScalarWhereInput>
+  }
+
+  export type YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: YoutubeCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: YoutubeCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: YoutubeCredentialsWhereUniqueInput
+    update?: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<InstagramCredentialsCreateWithoutProjectInput, InstagramCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: InstagramCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: InstagramCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: InstagramCredentialsWhereUniqueInput
+    update?: XOR<InstagramCredentialsUpdateWithoutProjectInput, InstagramCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<TikTokCredentialsCreateWithoutProjectInput, TikTokCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TikTokCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: TikTokCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: TikTokCredentialsWhereUniqueInput
+    update?: XOR<TikTokCredentialsUpdateWithoutProjectInput, TikTokCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<FacebookCredentialsCreateWithoutProjectInput, FacebookCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: FacebookCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: FacebookCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: FacebookCredentialsWhereUniqueInput
+    update?: XOR<FacebookCredentialsUpdateWithoutProjectInput, FacebookCredentialsUncheckedUpdateWithoutProjectInput>
+  }
+
+  export type TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput = {
+    create?: XOR<TwitterCredentialsCreateWithoutProjectInput, TwitterCredentialsUncheckedCreateWithoutProjectInput>
+    connectOrCreate?: TwitterCredentialsCreateOrConnectWithoutProjectInput
+    upsert?: TwitterCredentialsUpsertWithoutProjectInput
+    disconnect?: boolean
+    delete?: boolean
+    connect?: TwitterCredentialsWhereUniqueInput
+    update?: XOR<TwitterCredentialsUpdateWithoutProjectInput, TwitterCredentialsUncheckedUpdateWithoutProjectInput>
   }
 
   export type ProjectCreateNestedOneWithoutChannelsInput = {
@@ -12179,8 +13244,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     content?: ContentCreateNestedManyWithoutProjectInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutUserInput = {
@@ -12189,8 +13258,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutUserInput = {
@@ -12201,96 +13274,6 @@ export namespace Prisma {
   export type ProjectCreateManyUserInputEnvelope = {
     data: Enumerable<ProjectCreateManyUserInput>
     skipDuplicates?: boolean
-  }
-
-  export type FacebookCredentialsCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    pageId: string
-  }
-
-  export type FacebookCredentialsUncheckedCreateWithoutUserInput = {
-    id?: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    pageId: string
-  }
-
-  export type FacebookCredentialsCreateOrConnectWithoutUserInput = {
-    where: FacebookCredentialsWhereUniqueInput
-    create: XOR<FacebookCredentialsCreateWithoutUserInput, FacebookCredentialsUncheckedCreateWithoutUserInput>
-  }
-
-  export type InstagramCredentialsCreateWithoutUserInput = {
-    id?: string
-    accessToken: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    username: string
-  }
-
-  export type InstagramCredentialsUncheckedCreateWithoutUserInput = {
-    id?: string
-    accessToken: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    username: string
-  }
-
-  export type InstagramCredentialsCreateOrConnectWithoutUserInput = {
-    where: InstagramCredentialsWhereUniqueInput
-    create: XOR<InstagramCredentialsCreateWithoutUserInput, InstagramCredentialsUncheckedCreateWithoutUserInput>
-  }
-
-  export type TikTokCredentialsCreateWithoutUserInput = {
-    id?: string
-    clientKey: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    accessToken: string
-    openId: string
-    username: string
-  }
-
-  export type TikTokCredentialsUncheckedCreateWithoutUserInput = {
-    id?: string
-    clientKey: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    accessToken: string
-    openId: string
-    username: string
-  }
-
-  export type TikTokCredentialsCreateOrConnectWithoutUserInput = {
-    where: TikTokCredentialsWhereUniqueInput
-    create: XOR<TikTokCredentialsCreateWithoutUserInput, TikTokCredentialsUncheckedCreateWithoutUserInput>
-  }
-
-  export type YoutubeCredentialsCreateWithoutUserInput = {
-    id?: string
-    accessToken?: string | null
-    refreshToken?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    channelId?: string | null
-    project: ProjectCreateNestedOneWithoutYoutubeCredentialsInput
-  }
-
-  export type YoutubeCredentialsUncheckedCreateWithoutUserInput = {
-    id?: string
-    accessToken?: string | null
-    refreshToken?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    channelId?: string | null
-    projectId: string
-  }
-
-  export type YoutubeCredentialsCreateOrConnectWithoutUserInput = {
-    where: YoutubeCredentialsWhereUniqueInput
-    create: XOR<YoutubeCredentialsCreateWithoutUserInput, YoutubeCredentialsUncheckedCreateWithoutUserInput>
   }
 
   export type PasswordUpsertWithoutUserInput = {
@@ -12333,105 +13316,11 @@ export namespace Prisma {
     userId?: StringFilter | string
   }
 
-  export type FacebookCredentialsUpsertWithoutUserInput = {
-    update: XOR<FacebookCredentialsUpdateWithoutUserInput, FacebookCredentialsUncheckedUpdateWithoutUserInput>
-    create: XOR<FacebookCredentialsCreateWithoutUserInput, FacebookCredentialsUncheckedCreateWithoutUserInput>
-  }
-
-  export type FacebookCredentialsUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pageId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type FacebookCredentialsUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    pageId?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type InstagramCredentialsUpsertWithoutUserInput = {
-    update: XOR<InstagramCredentialsUpdateWithoutUserInput, InstagramCredentialsUncheckedUpdateWithoutUserInput>
-    create: XOR<InstagramCredentialsCreateWithoutUserInput, InstagramCredentialsUncheckedCreateWithoutUserInput>
-  }
-
-  export type InstagramCredentialsUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type InstagramCredentialsUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TikTokCredentialsUpsertWithoutUserInput = {
-    update: XOR<TikTokCredentialsUpdateWithoutUserInput, TikTokCredentialsUncheckedUpdateWithoutUserInput>
-    create: XOR<TikTokCredentialsCreateWithoutUserInput, TikTokCredentialsUncheckedCreateWithoutUserInput>
-  }
-
-  export type TikTokCredentialsUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type TikTokCredentialsUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    accessToken?: StringFieldUpdateOperationsInput | string
-    openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
-  }
-
-  export type YoutubeCredentialsUpsertWithoutUserInput = {
-    update: XOR<YoutubeCredentialsUpdateWithoutUserInput, YoutubeCredentialsUncheckedUpdateWithoutUserInput>
-    create: XOR<YoutubeCredentialsCreateWithoutUserInput, YoutubeCredentialsUncheckedCreateWithoutUserInput>
-  }
-
-  export type YoutubeCredentialsUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    project?: ProjectUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
-  }
-
-  export type YoutubeCredentialsUncheckedUpdateWithoutUserInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    projectId?: StringFieldUpdateOperationsInput | string
-  }
-
   export type UserCreateWithoutPasswordInput = {
     id?: string
     email: string
     projects?: ProjectCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutUserInput
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12441,10 +13330,6 @@ export namespace Prisma {
     email: string
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutUserInput
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12464,10 +13349,6 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     projects?: ProjectUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutUserNestedInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12477,43 +13358,8 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutUserNestedInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UserCreateWithoutYoutubeCredentialsInput = {
-    id?: string
-    email: string
-    password?: PasswordCreateNestedOneWithoutUserInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutUserInput
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type UserUncheckedCreateWithoutYoutubeCredentialsInput = {
-    id?: string
-    email: string
-    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutUserInput
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type UserCreateOrConnectWithoutYoutubeCredentialsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutYoutubeCredentialsInput, UserUncheckedCreateWithoutYoutubeCredentialsInput>
   }
 
   export type ProjectCreateWithoutYoutubeCredentialsInput = {
@@ -12524,6 +13370,10 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutYoutubeCredentialsInput = {
@@ -12534,42 +13384,15 @@ export namespace Prisma {
     userId: string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutYoutubeCredentialsInput = {
     where: ProjectWhereUniqueInput
     create: XOR<ProjectCreateWithoutYoutubeCredentialsInput, ProjectUncheckedCreateWithoutYoutubeCredentialsInput>
-  }
-
-  export type UserUpsertWithoutYoutubeCredentialsInput = {
-    update: XOR<UserUpdateWithoutYoutubeCredentialsInput, UserUncheckedUpdateWithoutYoutubeCredentialsInput>
-    create: XOR<UserCreateWithoutYoutubeCredentialsInput, UserUncheckedCreateWithoutYoutubeCredentialsInput>
-  }
-
-  export type UserUpdateWithoutYoutubeCredentialsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUpdateOneWithoutUserNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutUserNestedInput
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UserUncheckedUpdateWithoutYoutubeCredentialsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ProjectUpsertWithoutYoutubeCredentialsInput = {
@@ -12585,6 +13408,10 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutYoutubeCredentialsInput = {
@@ -12595,192 +13422,274 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
-  export type UserCreateWithoutInstagramCredentialsInput = {
+  export type ProjectCreateWithoutInstagramCredentialsInput = {
     id?: string
-    email: string
-    password?: PasswordCreateNestedOneWithoutUserInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutUserInput
+    title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    content?: ContentCreateNestedManyWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
-  export type UserUncheckedCreateWithoutInstagramCredentialsInput = {
+  export type ProjectUncheckedCreateWithoutInstagramCredentialsInput = {
     id?: string
-    email: string
-    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutUserInput
+    title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    userId: string
+    content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
-  export type UserCreateOrConnectWithoutInstagramCredentialsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutInstagramCredentialsInput, UserUncheckedCreateWithoutInstagramCredentialsInput>
+  export type ProjectCreateOrConnectWithoutInstagramCredentialsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutInstagramCredentialsInput, ProjectUncheckedCreateWithoutInstagramCredentialsInput>
   }
 
-  export type UserUpsertWithoutInstagramCredentialsInput = {
-    update: XOR<UserUpdateWithoutInstagramCredentialsInput, UserUncheckedUpdateWithoutInstagramCredentialsInput>
-    create: XOR<UserCreateWithoutInstagramCredentialsInput, UserUncheckedCreateWithoutInstagramCredentialsInput>
+  export type ProjectUpsertWithoutInstagramCredentialsInput = {
+    update: XOR<ProjectUpdateWithoutInstagramCredentialsInput, ProjectUncheckedUpdateWithoutInstagramCredentialsInput>
+    create: XOR<ProjectCreateWithoutInstagramCredentialsInput, ProjectUncheckedCreateWithoutInstagramCredentialsInput>
   }
 
-  export type UserUpdateWithoutInstagramCredentialsInput = {
+  export type ProjectUpdateWithoutInstagramCredentialsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUpdateOneWithoutUserNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutUserNestedInput
+    title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    content?: ContentUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutInstagramCredentialsInput = {
+  export type ProjectUncheckedUpdateWithoutInstagramCredentialsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutUserNestedInput
+    title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
-  export type UserCreateWithoutTikTokCredentialsInput = {
+  export type ProjectCreateWithoutTikTokCredentialsInput = {
     id?: string
-    email: string
-    password?: PasswordCreateNestedOneWithoutUserInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutUserInput
+    title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    content?: ContentCreateNestedManyWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
-  export type UserUncheckedCreateWithoutTikTokCredentialsInput = {
+  export type ProjectUncheckedCreateWithoutTikTokCredentialsInput = {
     id?: string
-    email: string
-    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutUserInput
+    title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    userId: string
+    content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
-  export type UserCreateOrConnectWithoutTikTokCredentialsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutTikTokCredentialsInput, UserUncheckedCreateWithoutTikTokCredentialsInput>
+  export type ProjectCreateOrConnectWithoutTikTokCredentialsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutTikTokCredentialsInput, ProjectUncheckedCreateWithoutTikTokCredentialsInput>
   }
 
-  export type UserUpsertWithoutTikTokCredentialsInput = {
-    update: XOR<UserUpdateWithoutTikTokCredentialsInput, UserUncheckedUpdateWithoutTikTokCredentialsInput>
-    create: XOR<UserCreateWithoutTikTokCredentialsInput, UserUncheckedCreateWithoutTikTokCredentialsInput>
+  export type ProjectUpsertWithoutTikTokCredentialsInput = {
+    update: XOR<ProjectUpdateWithoutTikTokCredentialsInput, ProjectUncheckedUpdateWithoutTikTokCredentialsInput>
+    create: XOR<ProjectCreateWithoutTikTokCredentialsInput, ProjectUncheckedCreateWithoutTikTokCredentialsInput>
   }
 
-  export type UserUpdateWithoutTikTokCredentialsInput = {
+  export type ProjectUpdateWithoutTikTokCredentialsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUpdateOneWithoutUserNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutUserNestedInput
+    title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    content?: ContentUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutTikTokCredentialsInput = {
+  export type ProjectUncheckedUpdateWithoutTikTokCredentialsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutUserNestedInput
+    title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
-  export type UserCreateWithoutFacebookCredentialsInput = {
+  export type ProjectCreateWithoutFacebookCredentialsInput = {
     id?: string
-    email: string
-    password?: PasswordCreateNestedOneWithoutUserInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutUserInput
+    title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    content?: ContentCreateNestedManyWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
-  export type UserUncheckedCreateWithoutFacebookCredentialsInput = {
+  export type ProjectUncheckedCreateWithoutFacebookCredentialsInput = {
     id?: string
-    email: string
-    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
-    currentProjectId?: string | null
-    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutUserInput
+    title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    userId: string
+    content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
-  export type UserCreateOrConnectWithoutFacebookCredentialsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutFacebookCredentialsInput, UserUncheckedCreateWithoutFacebookCredentialsInput>
+  export type ProjectCreateOrConnectWithoutFacebookCredentialsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutFacebookCredentialsInput, ProjectUncheckedCreateWithoutFacebookCredentialsInput>
   }
 
-  export type UserUpsertWithoutFacebookCredentialsInput = {
-    update: XOR<UserUpdateWithoutFacebookCredentialsInput, UserUncheckedUpdateWithoutFacebookCredentialsInput>
-    create: XOR<UserCreateWithoutFacebookCredentialsInput, UserUncheckedCreateWithoutFacebookCredentialsInput>
+  export type ProjectUpsertWithoutFacebookCredentialsInput = {
+    update: XOR<ProjectUpdateWithoutFacebookCredentialsInput, ProjectUncheckedUpdateWithoutFacebookCredentialsInput>
+    create: XOR<ProjectCreateWithoutFacebookCredentialsInput, ProjectUncheckedCreateWithoutFacebookCredentialsInput>
   }
 
-  export type UserUpdateWithoutFacebookCredentialsInput = {
+  export type ProjectUpdateWithoutFacebookCredentialsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUpdateOneWithoutUserNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    instagramCredentials?: InstagramCredentialsUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutUserNestedInput
+    title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    content?: ContentUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutFacebookCredentialsInput = {
+  export type ProjectUncheckedUpdateWithoutFacebookCredentialsInput = {
     id?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
-    currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutUserNestedInput
+    title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+  }
+
+  export type ProjectCreateWithoutTwitterCredentialsInput = {
+    id?: string
+    title: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutProjectsInput
+    content?: ContentCreateNestedManyWithoutProjectInput
+    channels?: ChannelCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+  }
+
+  export type ProjectUncheckedCreateWithoutTwitterCredentialsInput = {
+    id?: string
+    title: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    userId: string
+    content?: ContentUncheckedCreateNestedManyWithoutProjectInput
+    channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+  }
+
+  export type ProjectCreateOrConnectWithoutTwitterCredentialsInput = {
+    where: ProjectWhereUniqueInput
+    create: XOR<ProjectCreateWithoutTwitterCredentialsInput, ProjectUncheckedCreateWithoutTwitterCredentialsInput>
+  }
+
+  export type ProjectUpsertWithoutTwitterCredentialsInput = {
+    update: XOR<ProjectUpdateWithoutTwitterCredentialsInput, ProjectUncheckedUpdateWithoutTwitterCredentialsInput>
+    create: XOR<ProjectCreateWithoutTwitterCredentialsInput, ProjectUncheckedCreateWithoutTwitterCredentialsInput>
+  }
+
+  export type ProjectUpdateWithoutTwitterCredentialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutProjectsNestedInput
+    content?: ContentUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+  }
+
+  export type ProjectUncheckedUpdateWithoutTwitterCredentialsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
+    channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectCreateWithoutContentInput = {
@@ -12789,8 +13698,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutProjectsInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutContentInput = {
@@ -12799,8 +13712,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutContentInput = {
@@ -12819,8 +13736,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutContentInput = {
@@ -12829,8 +13750,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type UserCreateWithoutProjectsInput = {
@@ -12838,10 +13763,6 @@ export namespace Prisma {
     email: string
     password?: PasswordCreateNestedOneWithoutUserInput
     currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutUserInput
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12851,10 +13772,6 @@ export namespace Prisma {
     email: string
     password?: PasswordUncheckedCreateNestedOneWithoutUserInput
     currentProjectId?: string | null
-    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutUserInput
-    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutUserInput
-    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutUserInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutUserInput
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -12900,31 +13817,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type YoutubeCredentialsCreateWithoutProjectInput = {
-    id?: string
-    accessToken?: string | null
-    refreshToken?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    channelId?: string | null
-    user: UserCreateNestedOneWithoutYoutubeCredentialsInput
-  }
-
-  export type YoutubeCredentialsUncheckedCreateWithoutProjectInput = {
-    id?: string
-    accessToken?: string | null
-    refreshToken?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    channelId?: string | null
-    userId: string
-  }
-
-  export type YoutubeCredentialsCreateOrConnectWithoutProjectInput = {
-    where: YoutubeCredentialsWhereUniqueInput
-    create: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
-  }
-
   export type ChannelCreateWithoutProjectInput = {
     id?: string
     name: string
@@ -12957,6 +13849,113 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type YoutubeCredentialsCreateWithoutProjectInput = {
+    id?: string
+    accessToken?: string | null
+    refreshToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    userId: string
+  }
+
+  export type YoutubeCredentialsUncheckedCreateWithoutProjectInput = {
+    id?: string
+    accessToken?: string | null
+    refreshToken?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    channelId?: string | null
+    userId: string
+  }
+
+  export type YoutubeCredentialsCreateOrConnectWithoutProjectInput = {
+    where: YoutubeCredentialsWhereUniqueInput
+    create: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type InstagramCredentialsCreateWithoutProjectInput = {
+    id?: string
+    accessToken: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    username: string
+  }
+
+  export type InstagramCredentialsUncheckedCreateWithoutProjectInput = {
+    id?: string
+    accessToken: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    username: string
+  }
+
+  export type InstagramCredentialsCreateOrConnectWithoutProjectInput = {
+    where: InstagramCredentialsWhereUniqueInput
+    create: XOR<InstagramCredentialsCreateWithoutProjectInput, InstagramCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type TikTokCredentialsCreateWithoutProjectInput = {
+    id?: string
+    clientKey: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accessToken: string
+    openId: string
+    username: string
+  }
+
+  export type TikTokCredentialsUncheckedCreateWithoutProjectInput = {
+    id?: string
+    clientKey: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    accessToken: string
+    openId: string
+    username: string
+  }
+
+  export type TikTokCredentialsCreateOrConnectWithoutProjectInput = {
+    where: TikTokCredentialsWhereUniqueInput
+    create: XOR<TikTokCredentialsCreateWithoutProjectInput, TikTokCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FacebookCredentialsCreateWithoutProjectInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    pageId: string
+  }
+
+  export type FacebookCredentialsUncheckedCreateWithoutProjectInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    pageId: string
+  }
+
+  export type FacebookCredentialsCreateOrConnectWithoutProjectInput = {
+    where: FacebookCredentialsWhereUniqueInput
+    create: XOR<FacebookCredentialsCreateWithoutProjectInput, FacebookCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type TwitterCredentialsCreateWithoutProjectInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TwitterCredentialsUncheckedCreateWithoutProjectInput = {
+    id?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type TwitterCredentialsCreateOrConnectWithoutProjectInput = {
+    where: TwitterCredentialsWhereUniqueInput
+    create: XOR<TwitterCredentialsCreateWithoutProjectInput, TwitterCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
   export type UserUpsertWithoutProjectsInput = {
     update: XOR<UserUpdateWithoutProjectsInput, UserUncheckedUpdateWithoutProjectsInput>
     create: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
@@ -12967,10 +13966,6 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: PasswordUpdateOneWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutUserNestedInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12980,10 +13975,6 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
-    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutUserNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutUserNestedInput
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13021,31 +14012,6 @@ export namespace Prisma {
     projectId?: StringFilter | string
   }
 
-  export type YoutubeCredentialsUpsertWithoutProjectInput = {
-    update: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
-    create: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
-  }
-
-  export type YoutubeCredentialsUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    user?: UserUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
-  }
-
-  export type YoutubeCredentialsUncheckedUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
-    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
-  }
-
   export type ChannelUpsertWithWhereUniqueWithoutProjectInput = {
     where: ChannelWhereUniqueInput
     update: XOR<ChannelUpdateWithoutProjectInput, ChannelUncheckedUpdateWithoutProjectInput>
@@ -13077,6 +14043,113 @@ export namespace Prisma {
     projectId?: StringFilter | string
   }
 
+  export type YoutubeCredentialsUpsertWithoutProjectInput = {
+    update: XOR<YoutubeCredentialsUpdateWithoutProjectInput, YoutubeCredentialsUncheckedUpdateWithoutProjectInput>
+    create: XOR<YoutubeCredentialsCreateWithoutProjectInput, YoutubeCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type YoutubeCredentialsUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type YoutubeCredentialsUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessToken?: NullableStringFieldUpdateOperationsInput | string | null
+    refreshToken?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InstagramCredentialsUpsertWithoutProjectInput = {
+    update: XOR<InstagramCredentialsUpdateWithoutProjectInput, InstagramCredentialsUncheckedUpdateWithoutProjectInput>
+    create: XOR<InstagramCredentialsCreateWithoutProjectInput, InstagramCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type InstagramCredentialsUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    username?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type InstagramCredentialsUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    username?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TikTokCredentialsUpsertWithoutProjectInput = {
+    update: XOR<TikTokCredentialsUpdateWithoutProjectInput, TikTokCredentialsUncheckedUpdateWithoutProjectInput>
+    create: XOR<TikTokCredentialsCreateWithoutProjectInput, TikTokCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type TikTokCredentialsUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientKey?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    openId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TikTokCredentialsUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clientKey?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    accessToken?: StringFieldUpdateOperationsInput | string
+    openId?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FacebookCredentialsUpsertWithoutProjectInput = {
+    update: XOR<FacebookCredentialsUpdateWithoutProjectInput, FacebookCredentialsUncheckedUpdateWithoutProjectInput>
+    create: XOR<FacebookCredentialsCreateWithoutProjectInput, FacebookCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type FacebookCredentialsUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pageId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type FacebookCredentialsUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    pageId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type TwitterCredentialsUpsertWithoutProjectInput = {
+    update: XOR<TwitterCredentialsUpdateWithoutProjectInput, TwitterCredentialsUncheckedUpdateWithoutProjectInput>
+    create: XOR<TwitterCredentialsCreateWithoutProjectInput, TwitterCredentialsUncheckedCreateWithoutProjectInput>
+  }
+
+  export type TwitterCredentialsUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TwitterCredentialsUncheckedUpdateWithoutProjectInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ProjectCreateWithoutChannelsInput = {
     id?: string
     title: string
@@ -13085,6 +14158,10 @@ export namespace Prisma {
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectUncheckedCreateWithoutChannelsInput = {
@@ -13095,6 +14172,10 @@ export namespace Prisma {
     userId: string
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    tikTokCredentials?: TikTokCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    facebookCredentials?: FacebookCredentialsUncheckedCreateNestedOneWithoutProjectInput
+    twitterCredentials?: TwitterCredentialsUncheckedCreateNestedOneWithoutProjectInput
   }
 
   export type ProjectCreateOrConnectWithoutChannelsInput = {
@@ -13115,6 +14196,10 @@ export namespace Prisma {
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutChannelsInput = {
@@ -13125,6 +14210,10 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectCreateManyUserInput = {
@@ -13140,8 +14229,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: ContentUpdateManyWithoutProjectNestedInput
-    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateWithoutUserInput = {
@@ -13150,8 +14243,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
-    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
+    youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    tikTokCredentials?: TikTokCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    facebookCredentials?: FacebookCredentialsUncheckedUpdateOneWithoutProjectNestedInput
+    twitterCredentials?: TwitterCredentialsUncheckedUpdateOneWithoutProjectNestedInput
   }
 
   export type ProjectUncheckedUpdateManyWithoutProjectsInput = {

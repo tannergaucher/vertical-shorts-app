@@ -176,11 +176,11 @@ export default function Page() {
               },
           facebook
             ? {
-                id: "Todo Id",
+                id: facebook.id,
                 integration: IntegrationType.FACEBOOK,
-                name: "Todo Title",
-                views: 0,
-                subscribers: 0,
+                name: facebook.name,
+                views: facebook.views || 0,
+                subscribers: facebook.subscribers || 0,
               }
             : {
                 integration: IntegrationType.FACEBOOK,
@@ -189,11 +189,11 @@ export default function Page() {
               },
           twitter
             ? {
-                id: "Todo Id",
+                id: twitter.id,
                 integration: IntegrationType.TWITTER,
-                name: "Todo Title",
-                views: 0,
-                subscribers: 0,
+                name: twitter.name,
+                views: twitter.views || 0,
+                subscribers: twitter.subscribers || 0,
               }
             : {
                 integration: IntegrationType.TWITTER,
@@ -235,8 +235,8 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
 }
 
 function ChannelItem({ channel }: { channel: ChannelGridItem }) {
-  return "href" in channel ? (
-    <Link to={channel.href ?? ""}>
+  return "href" in channel && channel.href ? (
+    <Link to={channel.href}>
       <h2>ADD {channel.integration}</h2>
     </Link>
   ) : "name" in channel ? (

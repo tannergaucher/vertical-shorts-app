@@ -35,7 +35,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Create Post:</h1>
+      <h1>Publish Post:</h1>
       <fieldset disabled={transition.state === "loading"}>
         <Form method="post">
           <label>

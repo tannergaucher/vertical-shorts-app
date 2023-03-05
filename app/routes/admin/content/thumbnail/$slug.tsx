@@ -97,15 +97,30 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Create Post: {content.title}</h1>
+      <h1>Draft Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
       <fieldset disabled={transition.state === "loading"}>
         <Form method="post" encType="multipart/form-data">
           <label>
-            <input type="file" name="thumbnail" required />
+            <input
+              type="file"
+              name="thumbnail"
+              required
+              style={{
+                width: "100%",
+              }}
+            />
           </label>
           <input type="hidden" name="slug" value={content.slug} />
-          <button type="submit">Next</button>
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              marginBlockStart: "8px",
+            }}
+          >
+            Next
+          </button>
         </Form>
       </fieldset>
     </main>
