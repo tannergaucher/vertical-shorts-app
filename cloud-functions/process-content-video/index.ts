@@ -2,8 +2,7 @@ import * as functions from "@google-cloud/functions-framework";
 import { PubSub } from "@google-cloud/pubsub";
 
 export const pubsub = new PubSub({
-  projectId: "homerice",
-  keyFilename: "./service-account.json",
+  servicePath: "./service-account.json",
 });
 
 functions.cloudEvent("process-content-video", async (cloudEvent) => {
@@ -33,8 +32,8 @@ export async function processContentVideo(params: {
         "upload-youtube-video",
         "upload-tiktok-video",
         "upload-instagram-video",
-        "upload-twitter-video",
         "upload-facebook-video",
+        "upload-twitter-video",
       ].map((topic) =>
         pubsub.topic(topic).publishMessage({
           json,
