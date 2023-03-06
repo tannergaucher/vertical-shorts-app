@@ -96,7 +96,7 @@ export default function Page() {
     <main>
       <h1>Admin</h1>
       <Link to={Routes.AdminCreateProject}>
-        <h2>Create New Project</h2>
+        <h2>Create Project</h2>
       </Link>
       <fieldset>
         <Form method="post">
@@ -224,6 +224,7 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
+          gridGap: "16px",
         }}
       >
         {channels?.map((channel) => (
@@ -241,7 +242,7 @@ function ChannelItem({ channel }: { channel: ChannelGridItem }) {
     </Link>
   ) : "name" in channel ? (
     <div>
-      <h3>{channel.name}</h3>
+      <h2>{channel.name}</h2>
       <ul>
         <li>{`${channel.views} views`}</li>
         <li>{`${channel.subscribers} subscribers`}</li>

@@ -109,20 +109,27 @@ export default function Page() {
         />
       ) : null}
       <h2>Upload Video</h2>
-      <Form method="post" encType="multipart/form-data">
-        <label>
-          <span>Video</span>
-          <br />
-          <input type="file" name="video" required style={{ width: `100%` }} />
-        </label>
-        <input type="hidden" name="slug" value={content.slug} />
-        <button
-          type="submit"
-          style={{ width: `100%`, position: `sticky`, bottom: 0 }}
-        >
-          Next
-        </button>
-      </Form>
+      <fieldset>
+        <Form method="post" encType="multipart/form-data">
+          <label>
+            <span>Video</span>
+            <br />
+            <input
+              type="file"
+              name="video"
+              required
+              style={{ width: `100%` }}
+            />
+          </label>
+          <input type="hidden" name="slug" value={content.slug} />
+          <button
+            type="submit"
+            style={{ width: `100%`, position: `sticky`, bottom: 0 }}
+          >
+            Next
+          </button>
+        </Form>
+      </fieldset>
     </main>
   );
 }
