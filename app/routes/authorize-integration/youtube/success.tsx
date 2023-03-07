@@ -77,13 +77,13 @@ export const loader = async ({ request }: LoaderArgs) => {
               channels: {
                 upsert: {
                   where: {
-                    projectId_integration: {
+                    projectId_channelType: {
                       projectId: user.currentProjectId,
-                      integration: "YOUTUBE",
+                      channelType: "YOUTUBE",
                     },
                   },
                   create: {
-                    integration: "YOUTUBE",
+                    channelType: "YOUTUBE",
                     name: snippet?.title ?? "Untitled",
                     views: parseInt(statistics?.viewCount ?? "0", 10),
                     subscribers: parseInt(
