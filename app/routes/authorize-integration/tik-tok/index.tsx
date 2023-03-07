@@ -5,7 +5,11 @@ export const loader = async () => {
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
 
-  const url = `https://www.tiktok.com/auth/authorize/client_key=${process.env.TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic,user.info.works,user.info.following,user.info.follower&redirect_uri=http://localhost:3000/authorize-integration/tiktok/success&state=${xsrfState}`;
+  const url = `https://www.tiktok.com/auth/authorize?client_key=${
+    process.env.TIKTOK_CLIENT_KEY
+  }&response_type=code&scope=user.info.basic&redirect_uri=${encodeURIComponent(
+    `http://localhost:3000/authorize-integration/tiktok/success`
+  )}&state=${xsrfState}`;
 
   return redirect(url);
 };
