@@ -2,9 +2,13 @@ import * as functions from "@google-cloud/functions-framework";
 import * as fs from "fs";
 import { Storage } from "@google-cloud/storage";
 import { google } from "googleapis";
+import invariant from "tiny-invariant";
 
 import { PrismaClient } from "./generated";
-import invariant from "tiny-invariant";
+import {
+  createYoutubeVideoFilename,
+  downloadGcsVideoToLocalMemory,
+} from "../../app/utils/gcs";
 
 const prisma = new PrismaClient();
 
@@ -84,7 +88,7 @@ export async function uploadYoutubeVideo(params: {
     }
 
     if (!user.currentProjectId) {
-      throw new Error("MISSING_CURRENT_PROJECT");
+      throw new Error("NO_CURRENT_PROJECT");
     }
 
     const currentProject = await prisma.project.findUnique({
@@ -96,12 +100,11 @@ export async function uploadYoutubeVideo(params: {
       },
     });
 
-    invariant(
-      currentProject?.youtubeCredentials,
-      "MISSING_YOUTUBE_CREDENTIALS"
-    );
+    invariant(currentProject?.youtubeCredentials, "NO_YOUTUBE_CREDENTIALS");
 
-    const videoFilePath = `${content.slug}-yt-short.mp4`;
+    const videoFilePath = createYoutubeVideoFilename({
+      slug: content.slug,
+    });
 
     await downloadGcsVideoToLocalMemory({
       storage,
@@ -154,24 +157,6 @@ export async function uploadYoutubeVideo(params: {
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_UPLOADING_YOUTUBE_VIDEO");
-  }
-}
-
-async function downloadGcsVideoToLocalMemory(params: {
-  storage: Storage;
-  bucket: string;
-  videoFilePath: string;
-}) {
-  try {
-    storage
-      .bucket(params.bucket)
-      .file(params.videoFilePath)
-      .createReadStream()
-      .pipe(fs.createWriteStream(params.videoFilePath))
-      .on("finish", () => {});
-  } catch (error) {
-    console.log(error, "error");
-    throw new Error("ERROR_DOWNLOADING_VIDEO");
   }
 }
 

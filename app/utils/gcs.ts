@@ -1,4 +1,5 @@
 import type { Storage } from "@google-cloud/storage";
+import fs from "fs";
 
 export function getGcsImageSrc({
   bucket,
@@ -40,5 +41,27 @@ export async function uploadGcsFile(params: {
   } catch (error) {
     console.error(error);
     throw new Error("Error uploading thumbnail to GCS");
+  }
+}
+
+export function createYoutubeVideoFilename({ slug }: { slug: string }) {
+  return `${slug}-yt-short.mp4`;
+}
+
+export async function downloadGcsVideoToLocalMemory(params: {
+  storage: Storage;
+  bucket: string;
+  videoFilePath: string;
+}) {
+  try {
+    params.storage
+      .bucket(params.bucket)
+      .file(params.videoFilePath)
+      .createReadStream()
+      .pipe(fs.createWriteStream(params.videoFilePath))
+      .on("finish", () => {});
+  } catch (error) {
+    console.log(error, "error");
+    throw new Error("ERROR_DOWNLOADING_VIDEO");
   }
 }
