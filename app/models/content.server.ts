@@ -41,11 +41,11 @@ interface UpsertContentParams {
   projectId: string;
   slug: string;
   title?: string;
+  video?: string | null;
+  thumbnail?: string | null;
   description?: string | null;
   markdown?: string | null;
   published?: boolean | null;
-  thumbnail?: string | null;
-  video?: string | null;
   tags?: string[];
 }
 
