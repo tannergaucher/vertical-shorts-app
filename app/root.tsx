@@ -49,9 +49,7 @@ export async function loader({ request }: LoaderArgs) {
 export default function App() {
   const { user } = useLoaderData<LoaderData>();
 
-  const currentProject = user?.projects.find(
-    (project) => project.id === user.currentProjectId
-  );
+  console.log("user", user);
 
   return (
     <html lang="en">
@@ -65,56 +63,75 @@ export default function App() {
             display: "flex",
           }}
         >
-          <h2
+          <Link
+            to="/"
             style={{
-              textOrientation: "upright",
-              writingMode: "vertical-rl",
-              margin: 0,
+              textDecoration: "none",
             }}
           >
-            <Link
-              to="/"
+            <div
               style={{
-                textTransform: "uppercase",
+                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
               }}
             >
-              <b>CONTENT</b>
-            </Link>
-          </h2>
-
-          <h2
+              <h2
+                style={{
+                  textOrientation: "upright",
+                  writingMode: "vertical-rl",
+                  margin: 0,
+                }}
+              >
+                <b>Vertical</b>
+              </h2>
+            </div>
+          </Link>
+          <Link
+            to="/"
             style={{
-              textOrientation: "upright",
-              writingMode: "vertical-rl",
-              margin: 0,
+              textDecoration: "none",
             }}
           >
-            <Link
-              to="/"
+            <div
               style={{
-                textTransform: "uppercase",
+                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
               }}
             >
-              <b>VERTICAL</b>
-            </Link>
-          </h2>
-
-          <h2
+              <h2
+                style={{
+                  textOrientation: "upright",
+                  writingMode: "vertical-rl",
+                  margin: 0,
+                }}
+              >
+                <b>Content</b>
+              </h2>
+            </div>
+          </Link>
+          <Link
+            to="/"
             style={{
-              textOrientation: "upright",
-              writingMode: "vertical-rl",
-              margin: 0,
+              textDecoration: "none",
             }}
           >
-            <Link
-              to="/"
+            <div
               style={{
-                textTransform: "uppercase",
+                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
               }}
             >
-              <b>PUBLISHER</b>
-            </Link>
-          </h2>
+              <h2
+                style={{
+                  textOrientation: "upright",
+                  writingMode: "vertical-rl",
+                  margin: 0,
+                }}
+              >
+                <b>Publisher</b>
+              </h2>
+            </div>
+          </Link>
         </nav>
         <Outlet />
         <ScrollRestoration />
