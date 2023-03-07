@@ -9,17 +9,13 @@ import {
   createYoutubeVideoFilename,
   downloadGcsVideoToLocalMemory,
 } from "../../app/utils/gcs";
+import { UploadVideoEvent } from "../types";
 
 const prisma = new PrismaClient();
 
 const storage = new Storage();
 
-type CloudEventData = {
-  slug: string;
-  projectId: string;
-};
-
-functions.cloudEvent<CloudEventData>(
+functions.cloudEvent<UploadVideoEvent>(
   "upload-youtube-video",
   async (cloudEvent) => {
     if (!cloudEvent?.data) {

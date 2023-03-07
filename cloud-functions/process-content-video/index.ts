@@ -1,6 +1,8 @@
 import * as functions from "@google-cloud/functions-framework";
 import { PubSub } from "@google-cloud/pubsub";
 
+import type { UploadVideoEvent } from "../types";
+
 export const pubsub = new PubSub({
   servicePath: "./service-account.json",
 });
@@ -22,7 +24,7 @@ export async function processContentVideo(params: {
 }) {
   const { slug, projectId } = params;
   try {
-    const json = {
+    const json: UploadVideoEvent = {
       slug,
       projectId,
     };
