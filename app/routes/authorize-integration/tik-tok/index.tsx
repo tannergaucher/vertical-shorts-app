@@ -1,30 +1,11 @@
 import { redirect } from "@remix-run/node";
-import { Form } from "@remix-run/react";
 
-export const action = async () => {
-  // get the user from the request
-  //
-  const xsrfState = Math.random().toString(36).substring(2);
-  const scopes = `user.info.basic`;
+export const loader = async () => {
+  const xsrfState =
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
 
-  const CLIENT_KEY = `aw236r29sk1l0dgu`;
-  const REDIRECT_URI = `homerice.app/publisher/authorize-integration/success`;
-  const TIK_TOK_BASE_URL = `https://www.tiktok.com/auth/authorize/`;
-  const AUTHORIZE_TIK_TOK_URL = `${TIK_TOK_BASE_URL}?client_key=${CLIENT_KEY}&scope=${scopes}&redirect_uri=${encodeURIComponent(
-    REDIRECT_URI
-  )}&state=${xsrfState}&response_type=code`;
+  const url = `https://www.tiktok.com/auth/authorize/client_key=${process.env.TIKTOK_CLIENT_KEY}&response_type=code&scope=user.info.basic,user.info.works,user.info.following,user.info.follower&redirect_uri=http://localhost:3000/authorize-integration/tiktok/success&state=${xsrfState}`;
 
-  const res = await fetch(AUTHORIZE_TIK_TOK_URL);
-
-  return redirect(res.url);
+  return redirect(url);
 };
-
-export default function Page() {
-  return (
-    <main>
-      <Form method="post">
-        <button type="submit">Authorize TikTok</button>
-      </Form>
-    </main>
-  );
-}
