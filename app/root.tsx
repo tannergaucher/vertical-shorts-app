@@ -68,8 +68,13 @@ export default function App() {
               margin: 0,
             }}
           >
-            <Link to="/">
-              <b>VIDEO</b>
+            <Link
+              to="/"
+              style={{
+                textTransform: "uppercase",
+              }}
+            >
+              <b>VERTICAL</b>
             </Link>
           </h2>
           <ul>
@@ -81,20 +86,18 @@ export default function App() {
                       textTransform: "uppercase",
                     }}
                   >
-                    PUBLISHER
+                    PUBLISH
                   </span>
                 </Link>
               </h2>
             </li>
-            <li>
-              <h2
-                style={{
-                  textTransform: "uppercase",
-                }}
-              >
-                <Link to="/admin">{`${currentProject?.title}`}</Link>
-              </h2>
-            </li>
+            {currentProject?.title ? (
+              <li>
+                <h2>
+                  <Link to="/admin">{`${currentProject.title}`}</Link>
+                </h2>
+              </li>
+            ) : null}
           </ul>
         </nav>
         <Outlet />

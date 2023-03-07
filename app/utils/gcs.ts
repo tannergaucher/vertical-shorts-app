@@ -1,7 +1,23 @@
 import type { Storage } from "@google-cloud/storage";
 
-export function getGcsImageSrc(bucket: string, filename: string, size: number) {
-  return `https://storage.googleapis.com/${bucket}/${filename}?${size}`;
+export function getGcsImageSrc({
+  bucket,
+  filename,
+}: {
+  bucket: string;
+  filename: string;
+}) {
+  return `https://storage.googleapis.com/${bucket}/${filename}`;
+}
+
+export function getGcsVideoSrc({
+  bucket,
+  filename,
+}: {
+  bucket: string;
+  filename: string;
+}) {
+  return `https://storage.googleapis.com/${bucket}/${filename}`;
 }
 
 export async function uploadGcsFile(params: {
