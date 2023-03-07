@@ -82,7 +82,7 @@ model TwitterCredentials {
 }
 
 model Content {
-  slug        String    @unique
+  slug        String
   title       String
   description String?
   markdown    String?
@@ -95,7 +95,7 @@ model Content {
   projectId   String
   project     Project   @relation(fields: [projectId], references: [id])
 
-  @@id([projectId, slug])
+  @@unique([projectId, slug])
 }
 
 model Project {
@@ -123,7 +123,6 @@ enum ChannelType {
 }
 
 model Channel {
-  id          String      @id @default(cuid())
   name        String
   views       Int?
   subscribers Int?
