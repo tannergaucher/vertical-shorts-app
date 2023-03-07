@@ -60,7 +60,28 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <nav>
+        <nav
+          style={{
+            display: "flex",
+          }}
+        >
+          <h2
+            style={{
+              textOrientation: "upright",
+              writingMode: "vertical-rl",
+              margin: 0,
+            }}
+          >
+            <Link
+              to="/"
+              style={{
+                textTransform: "uppercase",
+              }}
+            >
+              <b>CONTENT</b>
+            </Link>
+          </h2>
+
           <h2
             style={{
               textOrientation: "upright",
@@ -77,28 +98,23 @@ export default function App() {
               <b>VERTICAL</b>
             </Link>
           </h2>
-          <ul>
-            <li>
-              <h2>
-                <Link to={Routes.AdminContentTitle}>
-                  <span
-                    style={{
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    PUBLISH
-                  </span>
-                </Link>
-              </h2>
-            </li>
-            {currentProject?.title ? (
-              <li>
-                <h2>
-                  <Link to="/admin">{`${currentProject.title}`}</Link>
-                </h2>
-              </li>
-            ) : null}
-          </ul>
+
+          <h2
+            style={{
+              textOrientation: "upright",
+              writingMode: "vertical-rl",
+              margin: 0,
+            }}
+          >
+            <Link
+              to="/"
+              style={{
+                textTransform: "uppercase",
+              }}
+            >
+              <b>PUBLISHER</b>
+            </Link>
+          </h2>
         </nav>
         <Outlet />
         <ScrollRestoration />
