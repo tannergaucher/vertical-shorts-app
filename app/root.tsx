@@ -82,7 +82,9 @@ export default function App() {
                   margin: 0,
                 }}
               >
-                <b>Vertical</b>
+                <em>
+                  <b>Vertical</b>
+                </em>
               </h2>
             </div>
           </Link>
@@ -95,7 +97,8 @@ export default function App() {
             <div
               style={{
                 background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                // elevation of 16dp
+                boxShadow: "0px 16px 24px rgba(0, 0, 0, 0.25)",
               }}
             >
               <h2
@@ -105,7 +108,9 @@ export default function App() {
                   margin: 0,
                 }}
               >
-                <b>Content</b>
+                <em>
+                  <b>Content</b>
+                </em>
               </h2>
             </div>
           </Link>
@@ -118,7 +123,8 @@ export default function App() {
             <div
               style={{
                 background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                // elevation of 8dp
+                boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.25)",
               }}
             >
               <h2
@@ -128,7 +134,9 @@ export default function App() {
                   margin: 0,
                 }}
               >
-                <b>Publisher</b>
+                <em>
+                  <b>Pulisher</b>
+                </em>
               </h2>
             </div>
           </Link>
