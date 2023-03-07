@@ -14,7 +14,6 @@ import { useLoaderData } from "@remix-run/react";
 
 import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
-import { Routes } from "./routes";
 
 export const links: LinksFunction = () => {
   return [
