@@ -10,14 +10,26 @@ const prisma = new PrismaClient();
 
 const storage = new Storage();
 
-functions.cloudEvent("upload-youtube-video", async (cloudEvent) => {
-  await uploadYoutubeVideo({
-    slug: "cloudEvent.data.slug",
-    projectId: "cloudEvent.data.projectId",
-  });
+type CloudEventData = {
+  slug: string;
+  projectId: string;
+};
 
-  return { message: "success" };
-});
+functions.cloudEvent<CloudEventData>(
+  "upload-youtube-video",
+  async (cloudEvent) => {
+    if (!cloudEvent?.data) {
+      throw new Error("MISSING_CLOUDEVENT_DATA");
+    }
+
+    await uploadYoutubeVideo({
+      projectId: cloudEvent.data.projectId,
+      slug: cloudEvent.data.slug,
+    });
+
+    return { message: "success" };
+  }
+);
 
 export async function uploadYoutubeVideo(params: {
   slug: string;
@@ -91,11 +103,10 @@ export async function uploadYoutubeVideo(params: {
 
     const videoFilePath = `${content.slug}-yt-short.mp4`;
 
-    // download video from GCS to local file system
-    await getVideostreamFromGCS({
+    await downloadGcsVideoToLocalMemory({
       storage,
-      bucket: user.currentProjectId,
       videoFilePath,
+      bucket: user.currentProjectId,
     });
 
     const oauth2Client = new google.auth.OAuth2(
@@ -146,7 +157,7 @@ export async function uploadYoutubeVideo(params: {
   }
 }
 
-async function getVideostreamFromGCS(params: {
+async function downloadGcsVideoToLocalMemory(params: {
   storage: Storage;
   bucket: string;
   videoFilePath: string;
