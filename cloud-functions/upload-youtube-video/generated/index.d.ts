@@ -139,7 +139,7 @@ export type Channel = {
   views: number | null
   subscribers: number | null
   thumbnail: string | null
-  integration: IntegrationType
+  integration: ChannelType
   createdAt: Date
   updatedAt: Date
   projectId: string
@@ -153,7 +153,7 @@ export type Channel = {
 // Based on
 // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
-export const IntegrationType: {
+export const ChannelType: {
   YOUTUBE: 'YOUTUBE',
   INSTAGRAM: 'INSTAGRAM',
   TIKTOK: 'TIKTOK',
@@ -161,7 +161,7 @@ export const IntegrationType: {
   TWITTER: 'TWITTER'
 };
 
-export type IntegrationType = (typeof IntegrationType)[keyof typeof IntegrationType]
+export type ChannelType = (typeof ChannelType)[keyof typeof ChannelType]
 
 
 /**
@@ -9641,7 +9641,7 @@ export namespace Prisma {
     views: number | null
     subscribers: number | null
     thumbnail: string | null
-    integration: IntegrationType | null
+    integration: ChannelType | null
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
@@ -9653,7 +9653,7 @@ export namespace Prisma {
     views: number | null
     subscribers: number | null
     thumbnail: string | null
-    integration: IntegrationType | null
+    integration: ChannelType | null
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
@@ -9818,7 +9818,7 @@ export namespace Prisma {
     views: number | null
     subscribers: number | null
     thumbnail: string | null
-    integration: IntegrationType
+    integration: ChannelType
     createdAt: Date
     updatedAt: Date
     projectId: string
@@ -11260,7 +11260,7 @@ export namespace Prisma {
     views?: IntNullableFilter | number | null
     subscribers?: IntNullableFilter | number | null
     thumbnail?: StringNullableFilter | string | null
-    integration?: EnumIntegrationTypeFilter | IntegrationType
+    integration?: EnumChannelTypeFilter | ChannelType
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     projectId?: StringFilter | string
@@ -11312,7 +11312,7 @@ export namespace Prisma {
     views?: IntNullableWithAggregatesFilter | number | null
     subscribers?: IntNullableWithAggregatesFilter | number | null
     thumbnail?: StringNullableWithAggregatesFilter | string | null
-    integration?: EnumIntegrationTypeWithAggregatesFilter | IntegrationType
+    integration?: EnumChannelTypeWithAggregatesFilter | ChannelType
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     projectId?: StringWithAggregatesFilter | string
@@ -11919,7 +11919,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: IntegrationType
+    integration: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutChannelsInput
@@ -11931,7 +11931,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: IntegrationType
+    integration: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
     projectId: string
@@ -11943,7 +11943,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutChannelsNestedInput
@@ -11955,7 +11955,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
@@ -11967,7 +11967,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: IntegrationType
+    integration: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
     projectId: string
@@ -11979,7 +11979,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11990,7 +11990,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
@@ -12465,16 +12465,16 @@ export namespace Prisma {
     not?: NestedIntNullableFilter | number | null
   }
 
-  export type EnumIntegrationTypeFilter = {
-    equals?: IntegrationType
-    in?: Enumerable<IntegrationType>
-    notIn?: Enumerable<IntegrationType>
-    not?: NestedEnumIntegrationTypeFilter | IntegrationType
+  export type EnumChannelTypeFilter = {
+    equals?: ChannelType
+    in?: Enumerable<ChannelType>
+    notIn?: Enumerable<ChannelType>
+    not?: NestedEnumChannelTypeFilter | ChannelType
   }
 
   export type ChannelProjectIdIntegrationCompoundUniqueInput = {
     projectId: string
-    integration: IntegrationType
+    integration: ChannelType
   }
 
   export type ChannelCountOrderByAggregateInput = {
@@ -12539,14 +12539,14 @@ export namespace Prisma {
     _max?: NestedIntNullableFilter
   }
 
-  export type EnumIntegrationTypeWithAggregatesFilter = {
-    equals?: IntegrationType
-    in?: Enumerable<IntegrationType>
-    notIn?: Enumerable<IntegrationType>
-    not?: NestedEnumIntegrationTypeWithAggregatesFilter | IntegrationType
+  export type EnumChannelTypeWithAggregatesFilter = {
+    equals?: ChannelType
+    in?: Enumerable<ChannelType>
+    notIn?: Enumerable<ChannelType>
+    not?: NestedEnumChannelTypeWithAggregatesFilter | ChannelType
     _count?: NestedIntFilter
-    _min?: NestedEnumIntegrationTypeFilter
-    _max?: NestedEnumIntegrationTypeFilter
+    _min?: NestedEnumChannelTypeFilter
+    _max?: NestedEnumChannelTypeFilter
   }
 
   export type PasswordCreateNestedOneWithoutUserInput = {
@@ -13022,8 +13022,8 @@ export namespace Prisma {
     divide?: number
   }
 
-  export type EnumIntegrationTypeFieldUpdateOperationsInput = {
-    set?: IntegrationType
+  export type EnumChannelTypeFieldUpdateOperationsInput = {
+    set?: ChannelType
   }
 
   export type ProjectUpdateOneRequiredWithoutChannelsNestedInput = {
@@ -13181,11 +13181,11 @@ export namespace Prisma {
     _max?: NestedDateTimeNullableFilter
   }
 
-  export type NestedEnumIntegrationTypeFilter = {
-    equals?: IntegrationType
-    in?: Enumerable<IntegrationType>
-    notIn?: Enumerable<IntegrationType>
-    not?: NestedEnumIntegrationTypeFilter | IntegrationType
+  export type NestedEnumChannelTypeFilter = {
+    equals?: ChannelType
+    in?: Enumerable<ChannelType>
+    notIn?: Enumerable<ChannelType>
+    not?: NestedEnumChannelTypeFilter | ChannelType
   }
 
   export type NestedIntNullableWithAggregatesFilter = {
@@ -13215,14 +13215,14 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter | number | null
   }
 
-  export type NestedEnumIntegrationTypeWithAggregatesFilter = {
-    equals?: IntegrationType
-    in?: Enumerable<IntegrationType>
-    notIn?: Enumerable<IntegrationType>
-    not?: NestedEnumIntegrationTypeWithAggregatesFilter | IntegrationType
+  export type NestedEnumChannelTypeWithAggregatesFilter = {
+    equals?: ChannelType
+    in?: Enumerable<ChannelType>
+    notIn?: Enumerable<ChannelType>
+    not?: NestedEnumChannelTypeWithAggregatesFilter | ChannelType
     _count?: NestedIntFilter
-    _min?: NestedEnumIntegrationTypeFilter
-    _max?: NestedEnumIntegrationTypeFilter
+    _min?: NestedEnumChannelTypeFilter
+    _max?: NestedEnumChannelTypeFilter
   }
 
   export type PasswordCreateWithoutUserInput = {
@@ -13823,7 +13823,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: IntegrationType
+    integration: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13834,7 +13834,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: IntegrationType
+    integration: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14037,7 +14037,7 @@ export namespace Prisma {
     views?: IntNullableFilter | number | null
     subscribers?: IntNullableFilter | number | null
     thumbnail?: StringNullableFilter | string | null
-    integration?: EnumIntegrationTypeFilter | IntegrationType
+    integration?: EnumChannelTypeFilter | ChannelType
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     projectId?: StringFilter | string
@@ -14277,7 +14277,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: IntegrationType
+    integration: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14327,7 +14327,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14338,7 +14338,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14349,7 +14349,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumIntegrationTypeFieldUpdateOperationsInput | IntegrationType
+    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

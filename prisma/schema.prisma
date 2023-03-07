@@ -114,7 +114,7 @@ model Project {
   twitterCredentials   TwitterCredentials?
 }
 
-enum IntegrationType {
+enum ChannelType {
   YOUTUBE
   INSTAGRAM
   TIKTOK
@@ -123,16 +123,16 @@ enum IntegrationType {
 }
 
 model Channel {
-  id          String          @id @default(cuid())
+  id          String      @id @default(cuid())
   name        String
   views       Int?
   subscribers Int?
   thumbnail   String?
-  integration IntegrationType
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-  projectId   String          @unique
-  project     Project         @relation(fields: [projectId], references: [id])
+  integration ChannelType
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  projectId   String      @unique
+  project     Project     @relation(fields: [projectId], references: [id])
 
   @@unique([projectId, integration])
 }

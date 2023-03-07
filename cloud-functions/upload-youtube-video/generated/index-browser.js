@@ -197,7 +197,7 @@ exports.Prisma.YoutubeCredentialsScalarFieldEnum = makeEnum({
   userId: 'userId',
   projectId: 'projectId'
 });
-exports.IntegrationType = makeEnum({
+exports.ChannelType = makeEnum({
   YOUTUBE: 'YOUTUBE',
   INSTAGRAM: 'INSTAGRAM',
   TIKTOK: 'TIKTOK',
