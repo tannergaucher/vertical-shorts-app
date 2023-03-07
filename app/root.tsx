@@ -14,6 +14,7 @@ import { useLoaderData } from "@remix-run/react";
 
 import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
+import { Routes } from "./routes";
 
 export const links: LinksFunction = () => {
   return [
@@ -63,7 +64,7 @@ export default function App() {
           }}
         >
           <Link
-            to="/"
+            to={Routes.Admin}
             style={{
               textDecoration: "none",
             }}
@@ -96,7 +97,6 @@ export default function App() {
             <div
               style={{
                 background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                // elevation of 16dp
                 boxShadow: "0px 16px 24px rgba(0, 0, 0, 0.25)",
               }}
             >
@@ -114,7 +114,7 @@ export default function App() {
             </div>
           </Link>
           <Link
-            to="/"
+            to={Routes.AdminContentTitle}
             style={{
               textDecoration: "none",
             }}
@@ -122,7 +122,6 @@ export default function App() {
             <div
               style={{
                 background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                // elevation of 8dp
                 boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.25)",
               }}
             >
