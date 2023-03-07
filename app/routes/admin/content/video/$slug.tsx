@@ -13,7 +13,7 @@ import { storage } from "~/entry.server";
 
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
-import { uploadGcsFile } from "~/utils/gcs";
+import { uploadGcsFile, getGcsImageSrc } from "~/utils/gcs";
 import { Routes } from "~/routes";
 import { pubsub } from "~/entry.server";
 
@@ -104,7 +104,10 @@ export default function Page() {
       <h1>Draft Post: {content.title}</h1>
       {content.thumbnail ? (
         <img
-          src={`https://storage.googleapis.com/${content.projectId}/${content.thumbnail}`}
+          src={getGcsImageSrc({
+            bucket: content.projectId,
+            filename: content.thumbnail,
+          })}
           alt={content.title}
         />
       ) : null}
