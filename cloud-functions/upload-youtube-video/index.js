@@ -36,12 +36,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.uploadYoutubeVideo = void 0;
 var functions = require("@google-cloud/functions-framework");
 var fs = require("fs");
+var storage_1 = require("@google-cloud/storage");
 var googleapis_1 = require("googleapis");
 var generated_1 = require("./generated");
 var prisma = new generated_1.PrismaClient();
+var storage = new storage_1.Storage();
 functions.cloudEvent("upload-youtube-video", function (cloudEvent) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -49,21 +50,20 @@ functions.cloudEvent("upload-youtube-video", function (cloudEvent) { return __aw
                     slug: "cloudEvent.data.slug",
                     projectId: "cloudEvent.data.projectId"
                 })];
-            case 1: return [2 /*return*/, _a.sent()];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, { message: "success" }];
         }
     });
 }); });
 function uploadYoutubeVideo(params) {
-    var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var slug, projectId, content, auth, authClient, contentMp4Filename, storage, yt, error_1;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var slug, projectId, content, user, currentProject, videoFilePath, oauth2Client, youtube, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
+                    _a.trys.push([0, 6, , 7]);
                     slug = params.slug, projectId = params.projectId;
-                    _b.label = 1;
-                case 1:
-                    _b.trys.push([1, 5, , 6]);
                     return [4 /*yield*/, prisma.content.findUnique({
                             where: {
                                 projectId_slug: {
@@ -79,75 +79,125 @@ function uploadYoutubeVideo(params) {
                                 published: true,
                                 project: {
                                     select: {
+                                        id: true,
+                                        youtubeCredentials: true,
                                         user: {
                                             select: {
-                                                id: true,
-                                                youtubeCredentials: {
-                                                    select: {
-                                                        channelId: true
-                                                    }
-                                                }
+                                                id: true
                                             }
                                         }
                                     }
                                 }
                             }
                         })];
-                case 2:
-                    content = _b.sent();
+                case 1:
+                    content = _a.sent();
                     if (!content) {
                         throw new Error("NO_CONTENT");
                     }
-                    if (!((_a = content.project.user.youtubeCredentials) === null || _a === void 0 ? void 0 : _a.channelId)) {
-                        throw new Error("NO_YT_CHANNEL_ID");
+                    return [4 /*yield*/, prisma.user.findUnique({
+                            where: {
+                                id: content.project.user.id
+                            },
+                            select: {
+                                id: true,
+                                currentProjectId: true
+                            }
+                        })];
+                case 2:
+                    user = _a.sent();
+                    if (!user) {
+                        throw new Error("NO_USER");
                     }
-                    auth = new googleapis_1.google.auth.GoogleAuth({
-                        scopes: ["https://www.googleapis.com/auth/youtube.upload"]
-                    });
-                    return [4 /*yield*/, auth.getClient()];
+                    if (!user.currentProjectId) {
+                        throw new Error("MISSING_CURRENT_PROJECT");
+                    }
+                    return [4 /*yield*/, prisma.project.findUnique({
+                            where: {
+                                id: user.currentProjectId
+                            },
+                            select: {
+                                youtubeCredentials: true
+                            }
+                        })];
                 case 3:
-                    authClient = _b.sent();
-                    contentMp4Filename = "".concat(content.slug, "-yt-short.mp4");
-                    storage = new Storage();
-                    storage
-                        .bucket(content.project.user.id)
-                        .file(contentMp4Filename)
-                        .createReadStream()
-                        .pipe(fs.createWriteStream(contentMp4Filename))
-                        .on("finish", function () {
-                        console.log("finish");
+                    currentProject = _a.sent();
+                    if (!(currentProject === null || currentProject === void 0 ? void 0 : currentProject.youtubeCredentials)) {
+                        throw new Error("NO_YOUTUBE_CREDENTIALS");
+                    }
+                    videoFilePath = "".concat(content.slug, "-yt-short.mp4");
+                    // download video from GCS to local file system
+                    return [4 /*yield*/, getVideostreamFromGCS({
+                            storage: storage,
+                            bucket: user.currentProjectId,
+                            videoFilePath: videoFilePath
+                        })];
+                case 4:
+                    // download video from GCS to local file system
+                    _a.sent();
+                    oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
+                    oauth2Client.setCredentials({
+                        access_token: currentProject.youtubeCredentials.accessToken,
+                        refresh_token: currentProject.youtubeCredentials.refreshToken
                     });
-                    yt = googleapis_1.google.youtube({
+                    youtube = googleapis_1.google.youtube({
                         version: "v3",
-                        auth: authClient
+                        auth: oauth2Client
                     });
-                    return [4 /*yield*/, yt.videos.insert({
+                    return [4 /*yield*/, youtube.videos.insert({
                             part: ["snippet", "status"],
                             requestBody: {
                                 snippet: {
                                     title: content.title,
                                     description: content.description,
-                                    tags: content.tags,
-                                    channelId: content.project.user.youtubeCredentials.channelId
+                                    tags: content.tags
                                 },
                                 status: {
-                                    privacyStatus: content.published ? "public" : "private"
+                                    privacyStatus: "private"
                                 }
                             },
                             media: {
-                                body: fs.createReadStream(contentMp4Filename)
+                                body: fs.createReadStream(videoFilePath)
+                            }
+                        }, {
+                            onUploadProgress: function (evt) {
+                                var progress = (evt.bytesRead / evt.contentLength) * 100;
+                                console.log("".concat(Math.round(progress), "% complete"));
                             }
                         })];
-                case 4:
-                    _b.sent();
-                    return [3 /*break*/, 6];
                 case 5:
-                    error_1 = _b.sent();
+                    _a.sent();
+                    fs.unlinkSync(videoFilePath);
+                    return [3 /*break*/, 7];
+                case 6:
+                    error_1 = _a.sent();
                     console.log(error_1, "error");
-                    return [3 /*break*/, 6];
-                case 6: return [2 /*return*/];
+                    throw new Error("ERROR_UPLOADING_YOUTUBE_VIDEO");
+                case 7: return [2 /*return*/];
             }
         });
     });
 }
-exports.uploadYoutubeVideo = uploadYoutubeVideo;
+function getVideostreamFromGCS(params) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            try {
+                storage
+                    .bucket(params.bucket)
+                    .file(params.videoFilePath)
+                    .createReadStream()
+                    .pipe(fs.createWriteStream(params.videoFilePath))
+                    .on("finish", function () { });
+            }
+            catch (error) {
+                console.log(error, "error");
+                throw new Error("ERROR_DOWNLOADING_VIDEO");
+            }
+            return [2 /*return*/];
+        });
+    });
+}
+uploadYoutubeVideo({
+    slug: "function-test",
+    projectId: "cleo5p6rd00019gxqsgtxiej9"
+});

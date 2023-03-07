@@ -4,6 +4,7 @@ import { Storage } from "@google-cloud/storage";
 import { google } from "googleapis";
 
 import { PrismaClient } from "./generated";
+import invariant from "tiny-invariant";
 
 const prisma = new PrismaClient();
 
@@ -18,7 +19,10 @@ functions.cloudEvent("upload-youtube-video", async (cloudEvent) => {
   return { message: "success" };
 });
 
-async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
+export async function uploadYoutubeVideo(params: {
+  slug: string;
+  projectId: string;
+}) {
   try {
     const { slug, projectId } = params;
 
@@ -37,14 +41,11 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
         published: true,
         project: {
           select: {
+            id: true,
+            youtubeCredentials: true,
             user: {
               select: {
                 id: true,
-                youtubeCredentials: {
-                  select: {
-                    channelId: true,
-                  },
-                },
               },
             },
           },
@@ -63,12 +64,6 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       select: {
         id: true,
         currentProjectId: true,
-        youtubeCredentials: {
-          select: {
-            accessToken: true,
-            refreshToken: true,
-          },
-        },
       },
     });
 
@@ -80,12 +75,19 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       throw new Error("MISSING_CURRENT_PROJECT");
     }
 
-    if (
-      !user.youtubeCredentials?.accessToken ||
-      !user.youtubeCredentials?.refreshToken
-    ) {
-      throw new Error("MISSING_YOUTUBE_CREDENTIALS");
-    }
+    const currentProject = await prisma.project.findUnique({
+      where: {
+        id: user.currentProjectId,
+      },
+      select: {
+        youtubeCredentials: true,
+      },
+    });
+
+    invariant(
+      currentProject?.youtubeCredentials,
+      "MISSING_YOUTUBE_CREDENTIALS"
+    );
 
     const videoFilePath = `${content.slug}-yt-short.mp4`;
 
@@ -103,8 +105,8 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
     );
 
     oauth2Client.setCredentials({
-      access_token: user.youtubeCredentials.accessToken,
-      refresh_token: user.youtubeCredentials.refreshToken,
+      access_token: currentProject.youtubeCredentials.accessToken,
+      refresh_token: currentProject.youtubeCredentials.refreshToken,
     });
 
     const youtube = google.youtube({
@@ -137,7 +139,6 @@ async function uploadYoutubeVideo(params: { slug: string; projectId: string }) {
       }
     );
 
-    // remove video from local file system
     fs.unlinkSync(videoFilePath);
   } catch (error) {
     console.log(error, "error");
