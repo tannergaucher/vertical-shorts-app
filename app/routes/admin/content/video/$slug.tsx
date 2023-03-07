@@ -7,7 +7,7 @@ import {
   unstable_createFileUploadHandler,
   unstable_parseMultipartFormData,
 } from "@remix-run/node";
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { storage } from "~/entry.server";
 
@@ -99,6 +99,8 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
+  const transition = useTransition();
+
   return (
     <main>
       <h1>Draft Post: {content.title}</h1>
@@ -112,7 +114,8 @@ export default function Page() {
         />
       ) : null}
       <h2>Upload Video</h2>
-      <fieldset>
+
+      <fieldset disabled={transition.state === "loading"}>
         <Form method="post" encType="multipart/form-data">
           <label>
             <span>Video</span>
