@@ -4,14 +4,13 @@ import { redirect } from "@remix-run/node";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
+import invariant from "tiny-invariant";
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const title = formData.get("title");
 
-  if (!title) {
-    return new Response("Title is required", { status: 400 });
-  }
+  invariant(typeof title === "string", "title is required");
 
   const user = await getUser(request);
 
@@ -22,9 +21,9 @@ export const action: ActionFunction = async ({ request }) => {
   const slug = title.toString().trim().toLowerCase().replace(/ /g, "-");
 
   await upsertContent({
+    slug,
     title: title.toString().trim(),
     projectId: user.currentProjectId,
-    slug,
   });
 
   return redirect(Routes.AdminContentThumbnail(slug));
