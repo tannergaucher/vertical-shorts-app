@@ -139,7 +139,7 @@ export type Channel = {
   views: number | null
   subscribers: number | null
   thumbnail: string | null
-  integration: ChannelType
+  channelType: ChannelType
   createdAt: Date
   updatedAt: Date
   projectId: string
@@ -9641,7 +9641,7 @@ export namespace Prisma {
     views: number | null
     subscribers: number | null
     thumbnail: string | null
-    integration: ChannelType | null
+    channelType: ChannelType | null
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
@@ -9653,7 +9653,7 @@ export namespace Prisma {
     views: number | null
     subscribers: number | null
     thumbnail: string | null
-    integration: ChannelType | null
+    channelType: ChannelType | null
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
@@ -9665,7 +9665,7 @@ export namespace Prisma {
     views: number
     subscribers: number
     thumbnail: number
-    integration: number
+    channelType: number
     createdAt: number
     updatedAt: number
     projectId: number
@@ -9689,7 +9689,7 @@ export namespace Prisma {
     views?: true
     subscribers?: true
     thumbnail?: true
-    integration?: true
+    channelType?: true
     createdAt?: true
     updatedAt?: true
     projectId?: true
@@ -9701,7 +9701,7 @@ export namespace Prisma {
     views?: true
     subscribers?: true
     thumbnail?: true
-    integration?: true
+    channelType?: true
     createdAt?: true
     updatedAt?: true
     projectId?: true
@@ -9713,7 +9713,7 @@ export namespace Prisma {
     views?: true
     subscribers?: true
     thumbnail?: true
-    integration?: true
+    channelType?: true
     createdAt?: true
     updatedAt?: true
     projectId?: true
@@ -9818,7 +9818,7 @@ export namespace Prisma {
     views: number | null
     subscribers: number | null
     thumbnail: string | null
-    integration: ChannelType
+    channelType: ChannelType
     createdAt: Date
     updatedAt: Date
     projectId: string
@@ -9849,7 +9849,7 @@ export namespace Prisma {
     views?: boolean
     subscribers?: boolean
     thumbnail?: boolean
-    integration?: boolean
+    channelType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     projectId?: boolean
@@ -10620,7 +10620,7 @@ export namespace Prisma {
     views: 'views',
     subscribers: 'subscribers',
     thumbnail: 'thumbnail',
-    integration: 'integration',
+    channelType: 'channelType',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     projectId: 'projectId'
@@ -11260,7 +11260,7 @@ export namespace Prisma {
     views?: IntNullableFilter | number | null
     subscribers?: IntNullableFilter | number | null
     thumbnail?: StringNullableFilter | string | null
-    integration?: EnumChannelTypeFilter | ChannelType
+    channelType?: EnumChannelTypeFilter | ChannelType
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     projectId?: StringFilter | string
@@ -11273,7 +11273,7 @@ export namespace Prisma {
     views?: SortOrder
     subscribers?: SortOrder
     thumbnail?: SortOrder
-    integration?: SortOrder
+    channelType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -11283,7 +11283,7 @@ export namespace Prisma {
   export type ChannelWhereUniqueInput = {
     id?: string
     projectId?: string
-    projectId_integration?: ChannelProjectIdIntegrationCompoundUniqueInput
+    projectId_channelType?: ChannelProjectIdChannelTypeCompoundUniqueInput
   }
 
   export type ChannelOrderByWithAggregationInput = {
@@ -11292,7 +11292,7 @@ export namespace Prisma {
     views?: SortOrder
     subscribers?: SortOrder
     thumbnail?: SortOrder
-    integration?: SortOrder
+    channelType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -11312,7 +11312,7 @@ export namespace Prisma {
     views?: IntNullableWithAggregatesFilter | number | null
     subscribers?: IntNullableWithAggregatesFilter | number | null
     thumbnail?: StringNullableWithAggregatesFilter | string | null
-    integration?: EnumChannelTypeWithAggregatesFilter | ChannelType
+    channelType?: EnumChannelTypeWithAggregatesFilter | ChannelType
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     projectId?: StringWithAggregatesFilter | string
@@ -11919,7 +11919,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: ChannelType
+    channelType: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
     project: ProjectCreateNestedOneWithoutChannelsInput
@@ -11931,7 +11931,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: ChannelType
+    channelType: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
     projectId: string
@@ -11943,7 +11943,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
+    channelType?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     project?: ProjectUpdateOneRequiredWithoutChannelsNestedInput
@@ -11955,7 +11955,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
+    channelType?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
@@ -11967,7 +11967,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: ChannelType
+    channelType: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
     projectId: string
@@ -11979,7 +11979,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
+    channelType?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11990,7 +11990,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
+    channelType?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projectId?: StringFieldUpdateOperationsInput | string
@@ -12472,9 +12472,9 @@ export namespace Prisma {
     not?: NestedEnumChannelTypeFilter | ChannelType
   }
 
-  export type ChannelProjectIdIntegrationCompoundUniqueInput = {
+  export type ChannelProjectIdChannelTypeCompoundUniqueInput = {
     projectId: string
-    integration: ChannelType
+    channelType: ChannelType
   }
 
   export type ChannelCountOrderByAggregateInput = {
@@ -12483,7 +12483,7 @@ export namespace Prisma {
     views?: SortOrder
     subscribers?: SortOrder
     thumbnail?: SortOrder
-    integration?: SortOrder
+    channelType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -12500,7 +12500,7 @@ export namespace Prisma {
     views?: SortOrder
     subscribers?: SortOrder
     thumbnail?: SortOrder
-    integration?: SortOrder
+    channelType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -12512,7 +12512,7 @@ export namespace Prisma {
     views?: SortOrder
     subscribers?: SortOrder
     thumbnail?: SortOrder
-    integration?: SortOrder
+    channelType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -13823,7 +13823,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: ChannelType
+    channelType: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13834,7 +13834,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: ChannelType
+    channelType: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14037,7 +14037,7 @@ export namespace Prisma {
     views?: IntNullableFilter | number | null
     subscribers?: IntNullableFilter | number | null
     thumbnail?: StringNullableFilter | string | null
-    integration?: EnumChannelTypeFilter | ChannelType
+    channelType?: EnumChannelTypeFilter | ChannelType
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     projectId?: StringFilter | string
@@ -14277,7 +14277,7 @@ export namespace Prisma {
     views?: number | null
     subscribers?: number | null
     thumbnail?: string | null
-    integration: ChannelType
+    channelType: ChannelType
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -14327,7 +14327,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
+    channelType?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14338,7 +14338,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
+    channelType?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -14349,7 +14349,7 @@ export namespace Prisma {
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    integration?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
+    channelType?: EnumChannelTypeFieldUpdateOperationsInput | ChannelType
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -1,19 +1,19 @@
 import { prisma } from "~/db.server";
 
-import type { Channel, IntegrationType } from "@prisma/client";
+import type { Channel, ChannelType } from "@prisma/client";
 export type { Channel };
 
 export async function getChannel(params: {
   projectId: string;
-  integration: IntegrationType;
+  channelType: ChannelType;
 }) {
-  const { projectId, integration } = params;
+  const { projectId, channelType } = params;
 
   return prisma.channel.findUnique({
     where: {
-      projectId_integration: {
+      projectId_channelType: {
         projectId,
-        integration,
+        channelType,
       },
     },
     include: {

@@ -94,7 +94,7 @@ exports.Prisma.ChannelScalarFieldEnum = makeEnum({
   views: 'views',
   subscribers: 'subscribers',
   thumbnail: 'thumbnail',
-  integration: 'integration',
+  channelType: 'channelType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   projectId: 'projectId'

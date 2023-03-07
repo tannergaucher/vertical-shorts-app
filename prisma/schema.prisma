@@ -128,11 +128,11 @@ model Channel {
   views       Int?
   subscribers Int?
   thumbnail   String?
-  integration ChannelType
+  channelType ChannelType
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
   projectId   String      @unique
   project     Project     @relation(fields: [projectId], references: [id])
 
-  @@unique([projectId, integration])
+  @@unique([projectId, channelType])
 }

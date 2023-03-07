@@ -2,7 +2,7 @@ import type { LoaderArgs, ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Form, useLoaderData, useSubmit, Link } from "@remix-run/react";
 import { prisma } from "~/db.server";
-import { IntegrationType } from "@prisma/client";
+import { ChannelType } from "@prisma/client";
 import compact from "lodash/compact";
 
 import { getContents } from "~/models/content.server";
@@ -40,23 +40,23 @@ export const loader = async ({ request }: LoaderArgs) => {
     }),
     youtube: await getChannel({
       projectId: user.currentProjectId,
-      integration: IntegrationType.YOUTUBE,
+      channelType: ChannelType.YOUTUBE,
     }),
     tiktok: await getChannel({
       projectId: user.currentProjectId,
-      integration: IntegrationType.TIKTOK,
+      channelType: ChannelType.TIKTOK,
     }),
     instagram: await getChannel({
       projectId: user.currentProjectId,
-      integration: IntegrationType.INSTAGRAM,
+      channelType: ChannelType.INSTAGRAM,
     }),
     facebook: await getChannel({
       projectId: user.currentProjectId,
-      integration: IntegrationType.FACEBOOK,
+      channelType: ChannelType.FACEBOOK,
     }),
     twitter: await getChannel({
       projectId: user.currentProjectId,
-      integration: IntegrationType.TWITTER,
+      channelType: ChannelType.TWITTER,
     }),
   });
 };
@@ -141,65 +141,65 @@ export default function Page() {
           youtube
             ? {
                 id: youtube.id,
-                integration: IntegrationType.YOUTUBE,
+                channelType: ChannelType.YOUTUBE,
                 name: youtube.name,
                 views: youtube.views || 0,
                 subscribers: youtube.subscribers || 0,
               }
             : {
-                integration: IntegrationType.YOUTUBE,
+                channelType: ChannelType.YOUTUBE,
                 text: "Add Youtube Channel",
                 href: Routes.AuthorizeYoutube,
               },
           tiktok
             ? {
                 id: tiktok.id,
-                integration: IntegrationType.TIKTOK,
+                channelType: ChannelType.TIKTOK,
                 name: tiktok.name,
                 views: tiktok.views || 0,
                 subscribers: tiktok.subscribers || 0,
               }
             : {
-                integration: IntegrationType.TIKTOK,
+                channelType: ChannelType.TIKTOK,
                 text: "Add TikTok Channel",
                 href: Routes.AuthorizeTikTok,
               },
           instagram
             ? {
                 id: instagram.id,
-                integration: IntegrationType.INSTAGRAM,
+                channelType: ChannelType.INSTAGRAM,
                 name: instagram.name,
                 views: instagram.views || 0,
                 subscribers: instagram.subscribers || 0,
               }
             : {
-                integration: IntegrationType.INSTAGRAM,
+                channelType: ChannelType.INSTAGRAM,
                 text: "Add Instagram Channel",
                 href: Routes.AuthorizeInstagram,
               },
           facebook
             ? {
                 id: facebook.id,
-                integration: IntegrationType.FACEBOOK,
+                channelType: ChannelType.FACEBOOK,
                 name: facebook.name,
                 views: facebook.views || 0,
                 subscribers: facebook.subscribers || 0,
               }
             : {
-                integration: IntegrationType.FACEBOOK,
+                channelType: ChannelType.FACEBOOK,
                 text: "Add Facebook Channel",
                 href: Routes.AuthorizeFacebook,
               },
           twitter
             ? {
                 id: twitter.id,
-                integration: IntegrationType.TWITTER,
+                channelType: ChannelType.TWITTER,
                 name: twitter.name,
                 views: twitter.views || 0,
                 subscribers: twitter.subscribers || 0,
               }
             : {
-                integration: IntegrationType.TWITTER,
+                channelType: ChannelType.TWITTER,
                 text: "Add Twitter Channel",
                 href: Routes.AuthorizeTwitter,
               },
@@ -210,16 +210,14 @@ export default function Page() {
 }
 
 type ChannelGridItem =
-  | Pick<Channel, "name" | "integration" | "views" | "subscribers" | "id">
+  | Pick<Channel, "name" | "channelType" | "views" | "subscribers" | "id">
   | {
-      integration: IntegrationType;
+      channelType: ChannelType;
       text: string;
       href?: string;
     };
 
 function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
-  console.log(channels, "_channels");
-
   return (
     <div>
       <h2>Channels:</h2>
@@ -231,7 +229,7 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
         }}
       >
         {channels?.map((channel) => (
-          <ChannelItem key={channel.integration} channel={channel} />
+          <ChannelItem key={channel.channelType} channel={channel} />
         ))}
       </section>
     </div>
@@ -241,7 +239,7 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
 function ChannelItem({ channel }: { channel: ChannelGridItem }) {
   return "href" in channel && channel.href ? (
     <Link to={channel.href}>
-      <h2>ADD {channel.integration}</h2>
+      <h2>ADD {channel.channelType}</h2>
     </Link>
   ) : "name" in channel ? (
     <div>
