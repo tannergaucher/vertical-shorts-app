@@ -89,7 +89,6 @@ Prisma.NullTypes = {
 function makeEnum(x) { return x; }
 
 exports.Prisma.ChannelScalarFieldEnum = makeEnum({
-  id: 'id',
   name: 'name',
   views: 'views',
   subscribers: 'subscribers',

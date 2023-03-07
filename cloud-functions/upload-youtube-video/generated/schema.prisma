@@ -123,7 +123,6 @@ enum ChannelType {
 }
 
 model Channel {
-  id          String      @id @default(cuid())
   name        String
   views       Int?
   subscribers Int?

@@ -134,7 +134,6 @@ export type Project = {
  * 
  */
 export type Channel = {
-  id: string
   name: string
   views: number | null
   subscribers: number | null
@@ -9636,7 +9635,6 @@ export namespace Prisma {
   }
 
   export type ChannelMinAggregateOutputType = {
-    id: string | null
     name: string | null
     views: number | null
     subscribers: number | null
@@ -9648,7 +9646,6 @@ export namespace Prisma {
   }
 
   export type ChannelMaxAggregateOutputType = {
-    id: string | null
     name: string | null
     views: number | null
     subscribers: number | null
@@ -9660,7 +9657,6 @@ export namespace Prisma {
   }
 
   export type ChannelCountAggregateOutputType = {
-    id: number
     name: number
     views: number
     subscribers: number
@@ -9684,7 +9680,6 @@ export namespace Prisma {
   }
 
   export type ChannelMinAggregateInputType = {
-    id?: true
     name?: true
     views?: true
     subscribers?: true
@@ -9696,7 +9691,6 @@ export namespace Prisma {
   }
 
   export type ChannelMaxAggregateInputType = {
-    id?: true
     name?: true
     views?: true
     subscribers?: true
@@ -9708,7 +9702,6 @@ export namespace Prisma {
   }
 
   export type ChannelCountAggregateInputType = {
-    id?: true
     name?: true
     views?: true
     subscribers?: true
@@ -9813,7 +9806,6 @@ export namespace Prisma {
 
 
   export type ChannelGroupByOutputType = {
-    id: string
     name: string
     views: number | null
     subscribers: number | null
@@ -9844,7 +9836,6 @@ export namespace Prisma {
 
 
   export type ChannelSelect = {
-    id?: boolean
     name?: boolean
     views?: boolean
     subscribers?: boolean
@@ -9933,8 +9924,8 @@ export namespace Prisma {
      * // Get first 10 Channels
      * const channels = await prisma.channel.findMany({ take: 10 })
      * 
-     * // Only select the `id`
-     * const channelWithIdOnly = await prisma.channel.findMany({ select: { id: true } })
+     * // Only select the `name`
+     * const channelWithNameOnly = await prisma.channel.findMany({ select: { name: true } })
      * 
     **/
     findMany<T extends ChannelFindManyArgs>(
@@ -10615,7 +10606,6 @@ export namespace Prisma {
   // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
   export const ChannelScalarFieldEnum: {
-    id: 'id',
     name: 'name',
     views: 'views',
     subscribers: 'subscribers',
@@ -11255,7 +11245,6 @@ export namespace Prisma {
     AND?: Enumerable<ChannelWhereInput>
     OR?: Enumerable<ChannelWhereInput>
     NOT?: Enumerable<ChannelWhereInput>
-    id?: StringFilter | string
     name?: StringFilter | string
     views?: IntNullableFilter | number | null
     subscribers?: IntNullableFilter | number | null
@@ -11268,7 +11257,6 @@ export namespace Prisma {
   }
 
   export type ChannelOrderByWithRelationInput = {
-    id?: SortOrder
     name?: SortOrder
     views?: SortOrder
     subscribers?: SortOrder
@@ -11281,13 +11269,11 @@ export namespace Prisma {
   }
 
   export type ChannelWhereUniqueInput = {
-    id?: string
     projectId?: string
     projectId_channelType?: ChannelProjectIdChannelTypeCompoundUniqueInput
   }
 
   export type ChannelOrderByWithAggregationInput = {
-    id?: SortOrder
     name?: SortOrder
     views?: SortOrder
     subscribers?: SortOrder
@@ -11307,7 +11293,6 @@ export namespace Prisma {
     AND?: Enumerable<ChannelScalarWhereWithAggregatesInput>
     OR?: Enumerable<ChannelScalarWhereWithAggregatesInput>
     NOT?: Enumerable<ChannelScalarWhereWithAggregatesInput>
-    id?: StringWithAggregatesFilter | string
     name?: StringWithAggregatesFilter | string
     views?: IntNullableWithAggregatesFilter | number | null
     subscribers?: IntNullableWithAggregatesFilter | number | null
@@ -11914,7 +11899,6 @@ export namespace Prisma {
   }
 
   export type ChannelCreateInput = {
-    id?: string
     name: string
     views?: number | null
     subscribers?: number | null
@@ -11926,7 +11910,6 @@ export namespace Prisma {
   }
 
   export type ChannelUncheckedCreateInput = {
-    id?: string
     name: string
     views?: number | null
     subscribers?: number | null
@@ -11938,7 +11921,6 @@ export namespace Prisma {
   }
 
   export type ChannelUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11950,7 +11932,6 @@ export namespace Prisma {
   }
 
   export type ChannelUncheckedUpdateInput = {
-    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11962,7 +11943,6 @@ export namespace Prisma {
   }
 
   export type ChannelCreateManyInput = {
-    id?: string
     name: string
     views?: number | null
     subscribers?: number | null
@@ -11974,7 +11954,6 @@ export namespace Prisma {
   }
 
   export type ChannelUpdateManyMutationInput = {
-    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
@@ -11985,7 +11964,6 @@ export namespace Prisma {
   }
 
   export type ChannelUncheckedUpdateManyInput = {
-    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
@@ -12478,7 +12456,6 @@ export namespace Prisma {
   }
 
   export type ChannelCountOrderByAggregateInput = {
-    id?: SortOrder
     name?: SortOrder
     views?: SortOrder
     subscribers?: SortOrder
@@ -12495,7 +12472,6 @@ export namespace Prisma {
   }
 
   export type ChannelMaxOrderByAggregateInput = {
-    id?: SortOrder
     name?: SortOrder
     views?: SortOrder
     subscribers?: SortOrder
@@ -12507,7 +12483,6 @@ export namespace Prisma {
   }
 
   export type ChannelMinOrderByAggregateInput = {
-    id?: SortOrder
     name?: SortOrder
     views?: SortOrder
     subscribers?: SortOrder
@@ -13818,7 +13793,6 @@ export namespace Prisma {
   }
 
   export type ChannelCreateWithoutProjectInput = {
-    id?: string
     name: string
     views?: number | null
     subscribers?: number | null
@@ -13829,7 +13803,6 @@ export namespace Prisma {
   }
 
   export type ChannelUncheckedCreateWithoutProjectInput = {
-    id?: string
     name: string
     views?: number | null
     subscribers?: number | null
@@ -14032,7 +14005,6 @@ export namespace Prisma {
     AND?: Enumerable<ChannelScalarWhereInput>
     OR?: Enumerable<ChannelScalarWhereInput>
     NOT?: Enumerable<ChannelScalarWhereInput>
-    id?: StringFilter | string
     name?: StringFilter | string
     views?: IntNullableFilter | number | null
     subscribers?: IntNullableFilter | number | null
@@ -14272,7 +14244,6 @@ export namespace Prisma {
   }
 
   export type ChannelCreateManyProjectInput = {
-    id?: string
     name: string
     views?: number | null
     subscribers?: number | null
@@ -14322,7 +14293,6 @@ export namespace Prisma {
   }
 
   export type ChannelUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
@@ -14333,7 +14303,6 @@ export namespace Prisma {
   }
 
   export type ChannelUncheckedUpdateWithoutProjectInput = {
-    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
@@ -14344,7 +14313,6 @@ export namespace Prisma {
   }
 
   export type ChannelUncheckedUpdateManyWithoutChannelsInput = {
-    id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     views?: NullableIntFieldUpdateOperationsInput | number | null
     subscribers?: NullableIntFieldUpdateOperationsInput | number | null
