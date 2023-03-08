@@ -1,4 +1,4 @@
-import { Form } from "@remix-run/react";
+import { Form, useTransition } from "@remix-run/react";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -49,32 +49,40 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
+  const transition = useTransition();
+
   return (
     <main>
       <h1>Admin</h1>
       <fieldset>
         <legend>Create a New Project</legend>
-        <Form method="post">
-          <label htmlFor="name">Project Name</label>
-          <br />
-          <input
-            type="text"
-            id="name"
-            name="name"
-            style={{
-              width: "calc(100% - 8px)",
-            }}
-          />
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              marginBlockStart: "16px",
-            }}
-          >
-            Create Project
-          </button>
-        </Form>
+        <fieldset
+          disabled={
+            transition.state === "loading" || transition.state === "submitting"
+          }
+        >
+          <Form method="post">
+            <label htmlFor="name">Project Name</label>
+            <br />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              style={{
+                width: "calc(100% - 8px)",
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                marginBlockStart: "16px",
+              }}
+            >
+              Create Project
+            </button>
+          </Form>
+        </fieldset>
       </fieldset>
     </main>
   );

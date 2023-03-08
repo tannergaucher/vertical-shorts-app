@@ -99,7 +99,11 @@ export default function Page() {
     <main>
       <h1>Draft Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
-      <fieldset disabled={transition.state === "loading"}>
+      <fieldset
+        disabled={
+          transition.state === "loading" || transition.state === "submitting"
+        }
+      >
         <Form method="post" encType="multipart/form-data">
           <label>
             <input

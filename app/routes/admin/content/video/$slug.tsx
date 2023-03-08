@@ -114,7 +114,11 @@ export default function Page() {
         />
       ) : null}
       <h2>Upload Video</h2>
-      <fieldset disabled={transition.state === "loading"}>
+      <fieldset
+        disabled={
+          transition.state === "loading" || transition.state === "submitting"
+        }
+      >
         <Form method="post" encType="multipart/form-data">
           <label>
             <span>Video</span>

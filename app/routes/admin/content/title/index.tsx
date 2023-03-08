@@ -35,7 +35,11 @@ export default function Page() {
   return (
     <main>
       <h1>Publish Post:</h1>
-      <fieldset disabled={transition.state === "loading"}>
+      <fieldset
+        disabled={
+          transition.state === "loading" || transition.state === "submitting"
+        }
+      >
         <Form method="post">
           <label>
             Post Title
