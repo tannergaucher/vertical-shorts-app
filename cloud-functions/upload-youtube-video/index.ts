@@ -9,7 +9,7 @@ import {
   createYoutubeVideoFilename,
   downloadGcsVideoToLocalMemory,
 } from "../../app/utils/gcs";
-import { UploadVideoEvent } from "../types";
+import type { UploadVideoEvent } from "../types";
 
 const prisma = new PrismaClient();
 
@@ -98,13 +98,11 @@ export async function uploadYoutubeVideo(params: {
 
     invariant(currentProject?.youtubeCredentials, "NO_YOUTUBE_CREDENTIALS");
 
-    const videoFilePath = createYoutubeVideoFilename({
-      slug: content.slug,
-    });
+    const videoFilePath = `${content.slug}.mp4`;
 
     await downloadGcsVideoToLocalMemory({
       storage,
-      videoFilePath,
+      slug: content.slug,
       bucket: user.currentProjectId,
     });
 
@@ -149,7 +147,7 @@ export async function uploadYoutubeVideo(params: {
       }
     );
 
-    fs.unlinkSync(videoFilePath);
+    // fs.unlinkSync(videoFilePath);
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_UPLOADING_YOUTUBE_VIDEO");
@@ -157,6 +155,6 @@ export async function uploadYoutubeVideo(params: {
 }
 
 uploadYoutubeVideo({
-  slug: "function-test",
-  projectId: "cleo5p6rd00019gxqsgtxiej9",
+  slug: "my-tites",
+  projectId: "clexq3lrp00029gfixvc8jcdz",
 });
