@@ -123,7 +123,7 @@ export async function uploadYoutubeVideo(params: {
 
     youtube.videos.insert(
       {
-        part: ["snippet", "contentDetails", "status"],
+        part: ["snippet", "status"],
         requestBody: {
           snippet: {
             title: content.title,
