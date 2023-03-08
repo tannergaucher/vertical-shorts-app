@@ -33,32 +33,40 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
-  const imageSrc = getGcsImageSrc({
-    bucket: content.projectId,
-    filename: content.thumbnail || "",
-  });
+  const imageSrc = content.thumbnail
+    ? getGcsImageSrc({
+        bucket: content.projectId,
+        file: content.thumbnail,
+      })
+    : null;
 
-  const videoSrc = getGcsVideoSrc({
-    bucket: content.projectId,
-    filename: content.video || "",
-  });
+  const videoSrc = content.video
+    ? getGcsVideoSrc({
+        bucket: content.projectId,
+        file: content.video,
+      })
+    : null;
 
   return (
     <main>
       <h1>{content.title}</h1>
       <div style={{ display: `grid`, gridTemplateColumns: `1fr 1fr` }}>
-        <video
-          src={videoSrc}
-          controls
-          style={{ width: `100%` }}
-          autoPlay
-          muted
-        />
-        <img
-          src={imageSrc}
-          alt="foo"
-          style={{ width: `100%`, position: `sticky`, top: `0` }}
-        />
+        {videoSrc ? (
+          <video
+            src={videoSrc}
+            controls
+            style={{ width: `100%` }}
+            autoPlay
+            muted
+          />
+        ) : null}
+        {imageSrc ? (
+          <img
+            src={imageSrc}
+            alt={content.title}
+            style={{ width: `100%`, position: `sticky`, top: `0` }}
+          />
+        ) : null}
       </div>
     </main>
   );
