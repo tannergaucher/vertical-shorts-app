@@ -3,69 +3,68 @@ import fs from "fs";
 
 export function getGcsImageSrc({
   bucket,
-  filename,
+  file,
 }: {
   bucket: string;
-  filename: string;
+  file: string;
 }) {
-  return `https://storage.googleapis.com/${bucket}/${filename}`;
+  return `https://storage.googleapis.com/${bucket}/${file}`;
 }
 
 export function getGcsVideoSrc({
   bucket,
-  filename,
+  file,
 }: {
   bucket: string;
-  filename: string;
+  file: string;
 }) {
-  return `https://storage.googleapis.com/${bucket}/${filename}`;
+  return `https://storage.googleapis.com/${bucket}/${file}`;
 }
 
 export async function uploadGcsFile(params: {
   storage: Storage;
   bucket: string;
-  filePath: string;
-  destFileName: string;
+  file: string;
+  path: string;
 }) {
   try {
-    const { bucket, filePath, destFileName, storage } = params;
+    const { bucket, file, path, storage } = params;
 
     const options = {
-      destination: destFileName,
+      destination: file,
       public: true,
     };
 
-    await storage.bucket(bucket).upload(filePath, options);
+    await storage.bucket(bucket).upload(path, options);
 
-    console.log(`${destFileName} uploaded to ${bucket}`);
+    console.log(`${file} uploaded to ${bucket}`);
   } catch (error) {
     console.error(error);
     throw new Error("Error uploading thumbnail to GCS");
   }
 }
 
-export function createYoutubeVideoFilename({ slug }: { slug: string }) {
-  return `${slug}-yt-short.mp4`;
+export function createYoutubeVideoFilename({ file }: { file: string }) {
+  return `${file}-yt-short.mp4`;
 }
 
-export async function downloadGcsVideoToLocalMemory(params: {
+export async function downloadGcsFileToMemory(params: {
   storage: Storage;
   bucket: string;
-  slug: string;
+  file: string;
+  path: string;
 }) {
   try {
-    const path = `${params.slug}.mp4`;
+    const { storage, bucket, file, path } = params;
 
-    params.storage
-      .bucket(params.bucket)
-      .file(`${params.slug}.mp4`)
+    storage
+      .bucket(bucket)
+      .file(file)
       .createReadStream()
       .pipe(fs.createWriteStream(path))
       .on("finish", () => {
-        return path;
+        console.log(`Downloaded ${file} to ${path}`);
       });
-
-    return `${params.slug}.mp4`;
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_DOWNLOADING_VIDEO");
