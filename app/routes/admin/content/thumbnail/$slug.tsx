@@ -77,8 +77,8 @@ export const action: ActionFunction = async ({ request }) => {
   await uploadGcsFile({
     storage,
     bucket: user.currentProjectId,
-    filePath: thumbnail.filepath,
-    destFileName: `${slug}_thumbnail.jpg`,
+    file: thumbnail.filepath,
+    path: `${slug}_thumbnail.jpg`,
   });
 
   await upsertContent({
