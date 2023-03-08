@@ -51,15 +51,21 @@ export function createYoutubeVideoFilename({ slug }: { slug: string }) {
 export async function downloadGcsVideoToLocalMemory(params: {
   storage: Storage;
   bucket: string;
-  videoFilePath: string;
+  slug: string;
 }) {
   try {
+    const path = `${params.slug}.mp4`;
+
     params.storage
       .bucket(params.bucket)
-      .file(params.videoFilePath)
+      .file(`${params.slug}.mp4`)
       .createReadStream()
-      .pipe(fs.createWriteStream(params.videoFilePath))
-      .on("finish", () => {});
+      .pipe(fs.createWriteStream(path))
+      .on("finish", () => {
+        return path;
+      });
+
+    return `${params.slug}.mp4`;
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_DOWNLOADING_VIDEO");
