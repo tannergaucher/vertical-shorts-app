@@ -5,10 +5,7 @@ import { google } from "googleapis";
 import invariant from "tiny-invariant";
 
 import { PrismaClient } from "./generated";
-import {
-  createYoutubeVideoFilename,
-  downloadGcsVideoToLocalMemory,
-} from "../../app/utils/gcs";
+import { downloadGcsVideoToLocalMemory } from "../../app/utils/gcs";
 import type { UploadVideoEvent } from "../types";
 
 const prisma = new PrismaClient();
@@ -122,9 +119,11 @@ export async function uploadYoutubeVideo(params: {
       auth: oauth2Client,
     });
 
-    await youtube.videos.insert(
+    const bodyStream = fs.createReadStream(videoFilePath);
+
+    youtube.videos.insert(
       {
-        part: ["snippet", "status"],
+        part: ["snippet", "contentDetails", "status"],
         requestBody: {
           snippet: {
             title: content.title,
@@ -136,7 +135,8 @@ export async function uploadYoutubeVideo(params: {
           },
         },
         media: {
-          body: fs.createReadStream(videoFilePath),
+          mimeType: "video/mp4",
+          body: bodyStream,
         },
       },
       {
