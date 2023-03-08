@@ -5,8 +5,8 @@ import { google } from "googleapis";
 import invariant from "tiny-invariant";
 
 import { PrismaClient } from "./generated";
-import { downloadGcsVideoToLocalMemory } from "../../app/utils/gcs";
-import type { UploadVideoEvent } from "../types";
+import { downloadGcsFileToMemory } from "../../app/utils/gcs";
+import type { UploadVideoEvent } from "../event-types";
 
 const prisma = new PrismaClient();
 
@@ -28,10 +28,7 @@ functions.cloudEvent<UploadVideoEvent>(
   }
 );
 
-export async function uploadYoutubeVideo(params: {
-  slug: string;
-  projectId: string;
-}) {
+export async function uploadYoutubeVideo(params: UploadVideoEvent) {
   try {
     const { slug, projectId } = params;
 
@@ -95,14 +92,6 @@ export async function uploadYoutubeVideo(params: {
 
     invariant(currentProject?.youtubeCredentials, "NO_YOUTUBE_CREDENTIALS");
 
-    const videoFilePath = `${content.slug}.mp4`;
-
-    await downloadGcsVideoToLocalMemory({
-      storage,
-      slug: content.slug,
-      bucket: user.currentProjectId,
-    });
-
     const oauth2Client = new google.auth.OAuth2(
       process.env.YOUTUBE_CLIENT_ID,
       process.env.YOUTUBE_CLIENT_SECRET,
@@ -114,6 +103,15 @@ export async function uploadYoutubeVideo(params: {
       refresh_token: currentProject.youtubeCredentials.refreshToken,
     });
 
+    const videoFilePath = `${content.slug}.mp4`;
+
+    await downloadGcsFileToMemory({
+      storage,
+      bucket: user.currentProjectId,
+      file: videoFilePath,
+      path: videoFilePath,
+    });
+
     const youtube = google.youtube({
       version: "v3",
       auth: oauth2Client,
@@ -121,39 +119,42 @@ export async function uploadYoutubeVideo(params: {
 
     const bodyStream = fs.createReadStream(videoFilePath);
 
-    youtube.videos.insert(
-      {
-        part: ["snippet", "status"],
-        requestBody: {
-          snippet: {
-            title: content.title,
-            description: content.description,
-            tags: content.tags,
+    youtube.videos
+      .insert(
+        {
+          part: ["snippet", "status"],
+          requestBody: {
+            snippet: {
+              title: content.title,
+              description: content.description,
+              tags: content.tags,
+            },
+            status: {
+              privacyStatus: "private",
+            },
           },
-          status: {
-            privacyStatus: "private",
+          media: {
+            mimeType: "video/mp4",
+            body: bodyStream,
           },
         },
-        media: {
-          mimeType: "video/mp4",
-          body: bodyStream,
-        },
-      },
-      {
-        onUploadProgress: (evt) => {
-          const progress = (evt.bytesRead / evt.contentLength) * 100;
-          console.log(`${Math.round(progress)}% complete`);
-        },
-      }
-    );
-
-    // fs.unlinkSync(videoFilePath);
+        {
+          onUploadProgress: (evt) => {
+            const progress = (evt.bytesRead / evt.contentLength) * 100;
+            console.log(`${Math.round(progress)}% complete`);
+          },
+        }
+      )
+      .then(() => {
+        fs.unlinkSync(videoFilePath);
+      });
   } catch (error) {
     console.log(error, "error");
     throw new Error("ERROR_UPLOADING_YOUTUBE_VIDEO");
   }
 }
 
+// local
 uploadYoutubeVideo({
   slug: "my-tites",
   projectId: "clexq3lrp00029gfixvc8jcdz",

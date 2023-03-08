@@ -1,44 +1,45 @@
 import * as functions from "@google-cloud/functions-framework";
 import { PubSub } from "@google-cloud/pubsub";
 
-import type { UploadVideoEvent } from "../types";
+import type { UploadVideoEvent } from "../event-types";
 
 export const pubsub = new PubSub({
   servicePath: "./service-account.json",
 });
 
-functions.cloudEvent("process-content-video", async (cloudEvent) => {
-  const { slug, projectId } = cloudEvent.data as any;
+functions.cloudEvent<UploadVideoEvent>(
+  "process-content-video",
+  async (cloudEvent) => {
+    if (!cloudEvent?.data) {
+      throw new Error("MISSING_CLOUDEVENT_DATA");
+    }
 
-  await processContentVideo({
-    slug,
-    projectId,
-  });
+    const { slug, projectId } = cloudEvent.data;
 
-  return { message: "success" };
-});
-
-export async function processContentVideo(params: {
-  slug: string;
-  projectId: string;
-}) {
-  const { slug, projectId } = params;
-  try {
-    const json: UploadVideoEvent = {
+    await processContentVideo({
       slug,
       projectId,
-    };
+    });
 
+    return { message: "success" };
+  }
+);
+
+export async function processContentVideo(params: UploadVideoEvent) {
+  try {
     await Promise.all(
       [
         "upload-youtube-video",
-        "upload-tiktok-video",
-        "upload-instagram-video",
-        "upload-facebook-video",
-        "upload-twitter-video",
+        // "upload-tiktok-video",
+        // "upload-instagram-video",
+        // "upload-facebook-video",
+        // "upload-twitter-video",
       ].map((topic) =>
         pubsub.topic(topic).publishMessage({
-          json,
+          data: JSON.stringify({
+            slug: params.slug,
+            projectId: params.projectId,
+          }),
         })
       )
     );
