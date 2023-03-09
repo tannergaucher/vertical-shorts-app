@@ -13,7 +13,7 @@ import { storage } from "~/entry.server";
 
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
-import { uploadGcsFile, getGcsImageSrc } from "~/utils/gcs";
+import { getGcsImageSrc } from "~/utils/gcs";
 import { Routes } from "~/routes";
 import { pubsub } from "~/entry.server";
 
@@ -23,6 +23,7 @@ type LoaderData = {
 
 interface Video {
   filepath: string;
+  name: string;
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -74,19 +75,14 @@ export const action: ActionFunction = async ({ request }) => {
     await storage.createBucket(user.currentProjectId);
   }
 
-  const videoFile = `${slug}.mp4`;
-
-  await uploadGcsFile({
-    storage,
-    bucket: user.currentProjectId,
-    file: videoFile,
-    path: video.filepath,
+  storage.bucket(user.currentProjectId).upload(video.filepath, {
+    destination: video.name,
   });
 
   await upsertContent({
     slug: slug.toString(),
     projectId: user.currentProjectId,
-    video: videoFile,
+    video: video.name,
   });
 
   pubsub.topic("process-content-video").publishMessage({

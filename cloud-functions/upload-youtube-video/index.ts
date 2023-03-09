@@ -150,6 +150,6 @@ export async function uploadYoutubeVideo(params: UploadVideoEvent) {
 
 // local
 uploadYoutubeVideo({
-  slug: "my-tites",
-  projectId: "clexq3lrp00029gfixvc8jcdz",
+  slug: "first-rice",
+  projectId: "clf1eqt4v00029g5u2tv8v69k",
 });

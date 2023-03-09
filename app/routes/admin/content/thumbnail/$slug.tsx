@@ -15,7 +15,6 @@ import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { storage } from "~/entry.server";
-import { uploadGcsFile } from "~/utils/gcs";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -23,6 +22,7 @@ type LoaderData = {
 
 interface Thubmnail {
   filepath: string;
+  name: string;
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -74,17 +74,14 @@ export const action: ActionFunction = async ({ request }) => {
     await storage.createBucket(user.currentProjectId);
   }
 
-  await uploadGcsFile({
-    storage,
-    bucket: user.currentProjectId,
-    file: thumbnail.filepath,
-    path: `${slug}_thumbnail.jpg`,
+  storage.bucket(user.currentProjectId).upload(thumbnail.filepath, {
+    destination: thumbnail.name,
   });
 
   await upsertContent({
     slug: slug.toString(),
     projectId: user.currentProjectId,
-    thumbnail: `${slug}_thumbnail.jpg`,
+    thumbnail: thumbnail.name,
   });
 
   return redirect(Routes.AdminContenVideo(slug));
