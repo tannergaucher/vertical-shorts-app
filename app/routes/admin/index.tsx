@@ -140,7 +140,6 @@ export default function Page() {
         channels={compact([
           youtube
             ? {
-                id: youtube.id,
                 channelType: ChannelType.YOUTUBE,
                 name: youtube.name,
                 views: youtube.views || 0,
@@ -153,7 +152,6 @@ export default function Page() {
               },
           tiktok
             ? {
-                id: tiktok.id,
                 channelType: ChannelType.TIKTOK,
                 name: tiktok.name,
                 views: tiktok.views || 0,
@@ -166,7 +164,6 @@ export default function Page() {
               },
           instagram
             ? {
-                id: instagram.id,
                 channelType: ChannelType.INSTAGRAM,
                 name: instagram.name,
                 views: instagram.views || 0,
@@ -179,7 +176,6 @@ export default function Page() {
               },
           facebook
             ? {
-                id: facebook.id,
                 channelType: ChannelType.FACEBOOK,
                 name: facebook.name,
                 views: facebook.views || 0,
@@ -192,7 +188,6 @@ export default function Page() {
               },
           twitter
             ? {
-                id: twitter.id,
                 channelType: ChannelType.TWITTER,
                 name: twitter.name,
                 views: twitter.views || 0,
@@ -210,7 +205,7 @@ export default function Page() {
 }
 
 type ChannelGridItem =
-  | Pick<Channel, "name" | "channelType" | "views" | "subscribers" | "id">
+  | Pick<Channel, "name" | "channelType" | "views" | "subscribers">
   | {
       channelType: ChannelType;
       text: string;

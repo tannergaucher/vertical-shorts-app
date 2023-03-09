@@ -11216,7 +11216,6 @@ export namespace Prisma {
 
   export type ProjectWhereUniqueInput = {
     id?: string
-    userId?: string
   }
 
   export type ProjectOrderByWithAggregationInput = {
