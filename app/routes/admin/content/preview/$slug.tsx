@@ -5,7 +5,6 @@ import { useLoaderData } from "@remix-run/react";
 
 import { getContent } from "~/models/content.server";
 import { getUser } from "~/session.server";
-import { getGcsImageSrc, getGcsVideoSrc } from "~/utils/gcs";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -22,47 +21,33 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   invariant(user?.currentProjectId, "user must have a current project");
 
   return json({
+    user,
     content: await getContent({
       slug,
       projectId: user.currentProjectId,
     }),
-    user,
   });
 };
 
 export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
-  const imageSrc = content.thumbnail
-    ? getGcsImageSrc({
-        bucket: content.projectId,
-        file: content.thumbnail,
-      })
-    : null;
-
-  const videoSrc = content.video
-    ? getGcsVideoSrc({
-        bucket: content.projectId,
-        file: content.video,
-      })
-    : null;
-
   return (
     <main>
       <h1>{content.title}</h1>
       <div style={{ display: `grid`, gridTemplateColumns: `1fr 1fr` }}>
-        {videoSrc ? (
+        {content.video ? (
           <video
-            src={videoSrc}
+            src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.mp4`}
             controls
             style={{ width: `100%` }}
             autoPlay
             muted
           />
         ) : null}
-        {imageSrc ? (
+        {content.thumbnail ? (
           <img
-            src={imageSrc}
+            src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.jpg`}
             alt={content.title}
             style={{ width: `100%`, position: `sticky`, top: `0` }}
           />

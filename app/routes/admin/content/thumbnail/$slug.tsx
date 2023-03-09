@@ -75,13 +75,14 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   storage.bucket(user.currentProjectId).upload(thumbnail.filepath, {
-    destination: thumbnail.name,
+    destination: `${slug}.jpg`,
+    public: true,
   });
 
   await upsertContent({
     slug: slug.toString(),
     projectId: user.currentProjectId,
-    thumbnail: thumbnail.name,
+    thumbnail: `${slug}.jpg`,
   });
 
   return redirect(Routes.AdminContenVideo(slug));

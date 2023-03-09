@@ -13,7 +13,6 @@ import { storage } from "~/entry.server";
 
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
-import { getGcsImageSrc } from "~/utils/gcs";
 import { Routes } from "~/routes";
 import { pubsub } from "~/entry.server";
 
@@ -23,7 +22,6 @@ type LoaderData = {
 
 interface Video {
   filepath: string;
-  name: string;
 }
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -76,13 +74,14 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   storage.bucket(user.currentProjectId).upload(video.filepath, {
-    destination: video.name,
+    destination: `${slug}.mp4`,
+    public: true,
   });
 
   await upsertContent({
     slug: slug.toString(),
     projectId: user.currentProjectId,
-    video: video.name,
+    video: `${slug}.mp4`,
   });
 
   pubsub.topic("process-content-video").publishMessage({
@@ -100,15 +99,10 @@ export default function Page() {
   return (
     <main>
       <h1>Draft Post: {content.title}</h1>
-      {content.thumbnail ? (
-        <img
-          src={getGcsImageSrc({
-            bucket: content.projectId,
-            file: content.thumbnail,
-          })}
-          alt={content.title}
-        />
-      ) : null}
+      <img
+        alt={content.title}
+        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.jpg`}
+      />
       <h2>Upload Video</h2>
       <fieldset
         disabled={
