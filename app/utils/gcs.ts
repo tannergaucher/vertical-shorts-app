@@ -47,26 +47,3 @@ export async function uploadGcsFile(params: {
 export function createYoutubeVideoFilename({ file }: { file: string }) {
   return `${file}-yt-short.mp4`;
 }
-
-export async function downloadGcsFileToMemory(params: {
-  storage: Storage;
-  bucket: string;
-  file: string;
-  path: string;
-}) {
-  try {
-    const { storage, bucket, file, path } = params;
-
-    storage
-      .bucket(bucket)
-      .file(file)
-      .createReadStream()
-      .pipe(fs.createWriteStream(path))
-      .on("finish", () => {
-        console.log(`Downloaded ${file} to ${path}`);
-      });
-  } catch (error) {
-    console.log(error, "error");
-    throw new Error("ERROR_DOWNLOADING_VIDEO");
-  }
-}
