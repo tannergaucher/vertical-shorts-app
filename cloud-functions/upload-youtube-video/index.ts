@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 const storage = new Storage();
 
 functions.cloudEvent<UploadVideoEvent>(
-  "upload-youtube-video",
+  "upload-youtu be-video",
   async (cloudEvent) => {
     if (!cloudEvent?.data) {
       throw new Error("MISSING_CLOUDEVENT_DATA");
@@ -28,129 +28,124 @@ functions.cloudEvent<UploadVideoEvent>(
 );
 
 export async function uploadYoutubeVideo(params: UploadVideoEvent) {
-  try {
-    const { slug, projectId } = params;
+  const { slug, projectId } = params;
 
-    const content = await prisma.content.findUnique({
-      where: {
-        projectId_slug: {
-          projectId,
-          slug,
-        },
+  const content = await prisma.content.findUnique({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
       },
-      select: {
-        slug: true,
-        title: true,
-        description: true,
-        tags: true,
-        published: true,
-        project: {
-          select: {
-            id: true,
-            youtubeCredentials: true,
-            user: {
-              select: {
-                id: true,
-              },
+    },
+    select: {
+      slug: true,
+      title: true,
+      description: true,
+      tags: true,
+      published: true,
+      project: {
+        select: {
+          id: true,
+          youtubeCredentials: true,
+          user: {
+            select: {
+              id: true,
             },
           },
         },
       },
-    });
+    },
+  });
 
-    if (!content) {
-      throw new Error("NO_CONTENT");
-    }
+  if (!content) {
+    throw new Error("NO_CONTENT");
+  }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        id: content.project.user.id,
-      },
-      select: {
-        id: true,
-        currentProjectId: true,
-      },
-    });
+  const user = await prisma.user.findUnique({
+    where: {
+      id: content.project.user.id,
+    },
+    select: {
+      id: true,
+      currentProjectId: true,
+    },
+  });
 
-    if (!user) {
-      throw new Error("NO_USER");
-    }
+  if (!user) {
+    throw new Error("NO_USER");
+  }
 
-    if (!user.currentProjectId) {
-      throw new Error("NO_CURRENT_PROJECT");
-    }
+  if (!user.currentProjectId) {
+    throw new Error("NO_CURRENT_PROJECT");
+  }
 
-    const currentProject = await prisma.project.findUnique({
-      where: {
-        id: user.currentProjectId,
-      },
-      select: {
-        youtubeCredentials: true,
-      },
-    });
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.YOUTUBE_CLIENT_ID,
+    process.env.YOUTUBE_CLIENT_SECRET,
+    process.env.YOUTUBE_REDIRECT_URL
+  );
 
-    invariant(currentProject?.youtubeCredentials, "NO_YOUTUBE_CREDENTIALS");
+  const currentProject = await prisma.project.findUnique({
+    where: {
+      id: user.currentProjectId,
+    },
+    select: {
+      youtubeCredentials: true,
+    },
+  });
 
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.YOUTUBE_CLIENT_ID,
-      process.env.YOUTUBE_CLIENT_SECRET,
-      process.env.YOUTUBE_REDIRECT_URL
-    );
+  invariant(currentProject?.youtubeCredentials, "NO_YOUTUBE_CREDENTIALS");
 
-    oauth2Client.setCredentials({
-      access_token: currentProject.youtubeCredentials.accessToken,
-      refresh_token: currentProject.youtubeCredentials.refreshToken,
-    });
+  oauth2Client.setCredentials({
+    access_token: currentProject.youtubeCredentials.accessToken,
+    refresh_token: currentProject.youtubeCredentials.refreshToken,
+  });
 
-    const videoFilePath = `${content.slug}.mp4`;
+  const videoFilePath = `${content.slug}.mp4`;
 
-    storage
-      .bucket(user.currentProjectId)
-      .file(videoFilePath)
-      .createReadStream()
-      .pipe(fs.createWriteStream(videoFilePath))
-      .on("finish", () => {
-        const bodyStream = fs.createReadStream(videoFilePath);
+  storage
+    .bucket(user.currentProjectId)
+    .file(videoFilePath)
+    .createReadStream()
+    .pipe(fs.createWriteStream(videoFilePath))
+    .on("finish", () => {
+      const bodyStream = fs.createReadStream(videoFilePath);
 
-        const youtube = google.youtube({
-          version: "v3",
-          auth: oauth2Client,
-        });
+      const youtube = google.youtube({
+        version: "v3",
+        auth: oauth2Client,
+      });
 
-        youtube.videos
-          .insert(
-            {
-              part: ["snippet", "status"],
-              requestBody: {
-                snippet: {
-                  title: content.title,
-                  description: content.description,
-                  tags: content.tags,
-                },
-                status: {
-                  privacyStatus: "private",
-                },
+      youtube.videos
+        .insert(
+          {
+            part: ["snippet", "status"],
+            requestBody: {
+              snippet: {
+                title: content.title,
+                description: content.description,
+                tags: content.tags,
               },
-              media: {
-                mimeType: "video/mp4",
-                body: bodyStream,
+              status: {
+                privacyStatus: "private",
               },
             },
-            {
-              onUploadProgress: (evt) => {
-                const progress = (evt.bytesRead / evt.contentLength) * 100;
-                console.log(`${Math.round(progress)}% complete`);
-              },
-            }
-          )
-          .then(() => {
-            fs.unlinkSync(videoFilePath);
-          });
-      });
-  } catch (error) {
-    console.log(error, "error");
-    throw new Error("ERROR_UPLOADING_YOUTUBE_VIDEO");
-  }
+            media: {
+              mimeType: "video/mp4",
+              body: bodyStream,
+            },
+          },
+          {
+            onUploadProgress: (evt) => {
+              const progress = (evt.bytesRead / evt.contentLength) * 100;
+              console.log(`${Math.round(progress)}% complete`);
+            },
+          }
+        )
+        .then(() => {
+          fs.unlinkSync(videoFilePath);
+        });
+    });
 }
 
 // local

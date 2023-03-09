@@ -11142,7 +11142,6 @@ export namespace Prisma {
   }
 
   export type ContentWhereUniqueInput = {
-    slug?: string
     projectId_slug?: ContentProjectIdSlugCompoundUniqueInput
   }
 
@@ -11217,6 +11216,7 @@ export namespace Prisma {
 
   export type ProjectWhereUniqueInput = {
     id?: string
+    userId?: string
   }
 
   export type ProjectOrderByWithAggregationInput = {

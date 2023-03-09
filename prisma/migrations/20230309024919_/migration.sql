@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "IntegrationType" AS ENUM ('YOUTUBE', 'INSTAGRAM', 'TIKTOK', 'FACEBOOK', 'TWITTER');
+CREATE TYPE "ChannelType" AS ENUM ('YOUTUBE', 'INSTAGRAM', 'TIKTOK', 'FACEBOOK', 'TWITTER');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -91,9 +91,7 @@ CREATE TABLE "Content" (
     "published" BOOL DEFAULT false,
     "createdAt" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "projectId" STRING NOT NULL,
-
-    CONSTRAINT "Content_pkey" PRIMARY KEY ("projectId","slug")
+    "projectId" STRING NOT NULL
 );
 
 -- CreateTable
@@ -109,17 +107,14 @@ CREATE TABLE "Project" (
 
 -- CreateTable
 CREATE TABLE "Channel" (
-    "id" STRING NOT NULL,
     "name" STRING NOT NULL,
     "views" INT4,
     "subscribers" INT4,
     "thumbnail" STRING,
-    "integration" "IntegrationType" NOT NULL,
+    "channelType" "ChannelType" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "projectId" STRING NOT NULL,
-
-    CONSTRAINT "Channel_pkey" PRIMARY KEY ("id")
+    "projectId" STRING NOT NULL
 );
 
 -- CreateIndex
@@ -147,13 +142,16 @@ CREATE UNIQUE INDEX "FacebookCredentials_projectId_key" ON "FacebookCredentials"
 CREATE UNIQUE INDEX "TwitterCredentials_projectId_key" ON "TwitterCredentials"("projectId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Content_slug_key" ON "Content"("slug");
+CREATE UNIQUE INDEX "Content_projectId_slug_key" ON "Content"("projectId", "slug");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Project_userId_key" ON "Project"("userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Channel_projectId_key" ON "Channel"("projectId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Channel_projectId_integration_key" ON "Channel"("projectId", "integration");
+CREATE UNIQUE INDEX "Channel_projectId_channelType_key" ON "Channel"("projectId", "channelType");
 
 -- AddForeignKey
 ALTER TABLE "Password" ADD CONSTRAINT "Password_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
