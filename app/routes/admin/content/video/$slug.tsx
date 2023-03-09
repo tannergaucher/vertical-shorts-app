@@ -79,8 +79,8 @@ export const action: ActionFunction = async ({ request }) => {
   await uploadGcsFile({
     storage,
     bucket: user.currentProjectId,
-    filePath: video.filepath,
-    destFileName: videoFile,
+    file: videoFile,
+    path: video.filepath,
   });
 
   await upsertContent({
@@ -108,7 +108,7 @@ export default function Page() {
         <img
           src={getGcsImageSrc({
             bucket: content.projectId,
-            filename: content.thumbnail,
+            file: content.thumbnail,
           })}
           alt={content.title}
         />
