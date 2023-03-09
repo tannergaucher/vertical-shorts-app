@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 const storage = new Storage();
 
 functions.cloudEvent<UploadVideoEvent>(
-  "upload-youtu be-video",
+  "upload-youtube-video",
   async (cloudEvent) => {
     if (!cloudEvent?.data) {
       throw new Error("MISSING_CLOUDEVENT_DATA");
