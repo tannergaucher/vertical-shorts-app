@@ -5,7 +5,6 @@ import { google } from "googleapis";
 import invariant from "tiny-invariant";
 
 import { PrismaClient } from "./generated";
-import { downloadGcsFileToMemory } from "../../app/utils/gcs";
 import type { UploadVideoEvent } from "../event-types";
 
 const prisma = new PrismaClient();
@@ -105,48 +104,48 @@ export async function uploadYoutubeVideo(params: UploadVideoEvent) {
 
     const videoFilePath = `${content.slug}.mp4`;
 
-    await downloadGcsFileToMemory({
-      storage,
-      bucket: user.currentProjectId,
-      file: videoFilePath,
-      path: videoFilePath,
-    });
+    storage
+      .bucket(user.currentProjectId)
+      .file(videoFilePath)
+      .createReadStream()
+      .pipe(fs.createWriteStream(videoFilePath))
+      .on("finish", () => {
+        const bodyStream = fs.createReadStream(videoFilePath);
 
-    const youtube = google.youtube({
-      version: "v3",
-      auth: oauth2Client,
-    });
+        const youtube = google.youtube({
+          version: "v3",
+          auth: oauth2Client,
+        });
 
-    const bodyStream = fs.createReadStream(videoFilePath);
-
-    youtube.videos
-      .insert(
-        {
-          part: ["snippet", "status"],
-          requestBody: {
-            snippet: {
-              title: content.title,
-              description: content.description,
-              tags: content.tags,
+        youtube.videos
+          .insert(
+            {
+              part: ["snippet", "status"],
+              requestBody: {
+                snippet: {
+                  title: content.title,
+                  description: content.description,
+                  tags: content.tags,
+                },
+                status: {
+                  privacyStatus: "private",
+                },
+              },
+              media: {
+                mimeType: "video/mp4",
+                body: bodyStream,
+              },
             },
-            status: {
-              privacyStatus: "private",
-            },
-          },
-          media: {
-            mimeType: "video/mp4",
-            body: bodyStream,
-          },
-        },
-        {
-          onUploadProgress: (evt) => {
-            const progress = (evt.bytesRead / evt.contentLength) * 100;
-            console.log(`${Math.round(progress)}% complete`);
-          },
-        }
-      )
-      .then(() => {
-        fs.unlinkSync(videoFilePath);
+            {
+              onUploadProgress: (evt) => {
+                const progress = (evt.bytesRead / evt.contentLength) * 100;
+                console.log(`${Math.round(progress)}% complete`);
+              },
+            }
+          )
+          .then(() => {
+            fs.unlinkSync(videoFilePath);
+          });
       });
   } catch (error) {
     console.log(error, "error");
