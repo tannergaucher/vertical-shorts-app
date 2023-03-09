@@ -70,7 +70,7 @@ export const meta: MetaFunction = () => {
   };
 };
 
-export default function LoginPage() {
+export default function Page() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/notes";
   const actionData = useActionData<typeof action>();
@@ -91,7 +91,11 @@ export default function LoginPage() {
     <div className="flex min-h-full flex-col justify-center">
       <h1>Login</h1>
       <div className="mx-auto w-full max-w-md px-8">
-        <fieldset disabled={transition.state === "loading" ? true : undefined}>
+        <fieldset
+          disabled={
+            transition.state === "loading" || transition.state === "submitting"
+          }
+        >
           <Form method="post" className="space-y-6">
             <div>
               <label
@@ -120,7 +124,6 @@ export default function LoginPage() {
                 )}
               </div>
             </div>
-
             <div>
               <label
                 htmlFor="password"
