@@ -3,8 +3,9 @@ generator client {
 }
 
 generator cloudYoutubeClient {
-  provider = "prisma-client-js"
-  output   = "../cloud-functions/upload-youtube-video/generated"
+  provider      = "prisma-client-js"
+  output        = "../cloud-functions/upload-youtube-video/generated"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {

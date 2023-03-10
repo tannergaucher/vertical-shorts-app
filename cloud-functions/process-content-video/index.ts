@@ -11,7 +11,7 @@ functions.cloudEvent<UploadVideoEvent>(
   "process-content-video",
   async (cloudEvent) => {
     if (!cloudEvent?.data) {
-      throw new Error("MISSING_CLOUDEVENT_DATA");
+      throw new Error("MISSING_CLOUD_EVENT_DATA");
     }
 
     const { slug, projectId } = cloudEvent.data;

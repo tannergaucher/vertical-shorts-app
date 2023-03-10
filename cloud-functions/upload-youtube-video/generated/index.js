@@ -241,7 +241,16 @@ const config = {
     "config": {
       "engineType": "library"
     },
-    "binaryTargets": [],
+    "binaryTargets": [
+      {
+        "fromEnvVar": null,
+        "value": "darwin-arm64"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
+      }
+    ],
     "previewFeatures": [],
     "isCustomOutput": true
   },
@@ -277,5 +286,8 @@ Object.assign(exports, Prisma)
 
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
 path.join(process.cwd(), "cloud-functions/upload-youtube-video/generated/libquery_engine-darwin-arm64.dylib.node")
+
+path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
+path.join(process.cwd(), "cloud-functions/upload-youtube-video/generated/libquery_engine-debian-openssl-3.0.x.so.node")
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "cloud-functions/upload-youtube-video/generated/schema.prisma")

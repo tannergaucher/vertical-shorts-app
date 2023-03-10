@@ -40,42 +40,57 @@ exports.processContentVideo = exports.pubsub = void 0;
 var functions = require("@google-cloud/functions-framework");
 var pubsub_1 = require("@google-cloud/pubsub");
 exports.pubsub = new pubsub_1.PubSub({
-    projectId: "homerice",
-    keyFilename: "./service-account.json"
+    servicePath: "./service-account.json"
 });
 functions.cloudEvent("process-content-video", function (cloudEvent) { return __awaiter(void 0, void 0, void 0, function () {
-    var json;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var _a, slug, projectId;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                console.log(cloudEvent, "_cloudEvent_");
+                if (!(cloudEvent === null || cloudEvent === void 0 ? void 0 : cloudEvent.data)) {
+                    throw new Error("MISSING_CLOUD_EVENT_DATA");
+                }
+                _a = cloudEvent.data, slug = _a.slug, projectId = _a.projectId;
                 return [4 /*yield*/, processContentVideo({
-                        slug: "test",
-                        projectId: "test-hr"
+                        slug: slug,
+                        projectId: projectId
                     })];
             case 1:
-                _a.sent();
-                json = {
-                    slug: "test",
-                    projectId: "test-hr"
-                };
-                exports.pubsub.topic("upload-youtube-video").publishMessage({
-                    json: json
-                });
-                return [2 /*return*/];
+                _b.sent();
+                return [2 /*return*/, { message: "success" }];
         }
     });
 }); });
 function processContentVideo(params) {
     return __awaiter(this, void 0, void 0, function () {
+        var error_1;
         return __generator(this, function (_a) {
-            try {
-                console.log("Received cloud event");
+            switch (_a.label) {
+                case 0:
+                    _a.trys.push([0, 2, , 3]);
+                    return [4 /*yield*/, Promise.all([
+                            "upload-youtube-video",
+                            // "upload-tiktok-video",
+                            // "upload-instagram-video",
+                            // "upload-facebook-video",
+                            // "upload-twitter-video",
+                        ].map(function (topic) {
+                            return exports.pubsub.topic(topic).publishMessage({
+                                data: JSON.stringify({
+                                    slug: params.slug,
+                                    projectId: params.projectId
+                                })
+                            });
+                        }))];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/, { message: "success" }];
+                case 2:
+                    error_1 = _a.sent();
+                    console.log(error_1, "error");
+                    return [2 /*return*/, { message: "error" }];
+                case 3: return [2 /*return*/];
             }
-            catch (error) {
-                console.log(error, "error");
-            }
-            return [2 /*return*/];
         });
     });
 }

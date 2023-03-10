@@ -2,7 +2,6 @@ import * as functions from "@google-cloud/functions-framework";
 import * as fs from "fs";
 import { Storage } from "@google-cloud/storage";
 import { google } from "googleapis";
-import invariant from "tiny-invariant";
 
 import { PrismaClient } from "./generated";
 import type { UploadVideoEvent } from "../event-types";
@@ -94,7 +93,9 @@ export async function uploadYoutubeVideo(params: UploadVideoEvent) {
     },
   });
 
-  invariant(currentProject?.youtubeCredentials, "NO_YOUTUBE_CREDENTIALS");
+  if (!currentProject?.youtubeCredentials) {
+    throw new Error("NO_YOUTUBE_CREDENTIALS");
+  }
 
   oauth2Client.setCredentials({
     access_token: currentProject.youtubeCredentials.accessToken,
@@ -136,9 +137,8 @@ export async function uploadYoutubeVideo(params: UploadVideoEvent) {
             },
           },
           {
-            onUploadProgress: (evt) => {
-              const progress = (evt.bytesRead / evt.contentLength) * 100;
-              console.log(`${Math.round(progress)}% complete`);
+            onUploadProgress: (e) => {
+              console.log(`Progress: ${e}`);
             },
           }
         )
@@ -147,8 +147,3 @@ export async function uploadYoutubeVideo(params: UploadVideoEvent) {
         });
     });
 }
-
-uploadYoutubeVideo({
-  slug: "34",
-  projectId: "clf1eqt4v00029g5u2tv8v69k",
-});
