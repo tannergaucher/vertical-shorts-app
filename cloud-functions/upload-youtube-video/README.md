@@ -8,5 +8,4 @@ gcloud functions deploy nodejs-http-function \
 --source=./cloud-functions/upload-youtube-video \
 --entry-point=uploadYoutubeVideo \
 --trigger-http
-
 ```
