@@ -10,21 +10,18 @@ const prisma = new PrismaClient();
 
 const storage = new Storage();
 
-functions.cloudEvent<UploadVideoEvent>(
-  "upload-youtube-video",
-  async (cloudEvent) => {
-    if (!cloudEvent?.data) {
-      throw new Error("MISSING_CLOUDEVENT_DATA");
-    }
-
-    await uploadYoutubeVideo({
-      projectId: cloudEvent.data.projectId,
-      slug: cloudEvent.data.slug,
-    });
-
-    return { message: "success" };
+functions.http("upload-youtube-video", async (req, res) => {
+  if (!req.body) {
+    throw new Error("MISSING_CLOUDEVENT_DATA");
   }
-);
+
+  await uploadYoutubeVideo({
+    projectId: req.body.projectId,
+    slug: req.body.slug,
+  });
+
+  res.status(200).send({ message: "success", youtubeVideoUrl: "todo" });
+});
 
 export async function uploadYoutubeVideo(params: UploadVideoEvent) {
   const { slug, projectId } = params;
