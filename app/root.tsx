@@ -49,7 +49,9 @@ export async function loader({ request }: LoaderArgs) {
 export default function App() {
   const { user } = useLoaderData<LoaderData>();
 
-  console.log("user", user);
+  const currentProject = user?.projects.filter(
+    (project) => project.id === user.currentProjectId
+  )[0];
 
   return (
     <html lang="en">
@@ -75,69 +77,68 @@ export default function App() {
                 boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
               }}
             >
-              <h2
-                style={{
-                  textOrientation: "upright",
-                  writingMode: "vertical-rl",
-                  margin: 0,
-                }}
-              >
-                <em>
-                  <b>Vertical</b>
-                </em>
-              </h2>
+              {currentProject ? (
+                <Link to={Routes.Admin}>
+                  <h2>
+                    <em>
+                      <b>{currentProject.title} Content</b>
+                    </em>
+                  </h2>
+                </Link>
+              ) : null}
             </div>
           </Link>
-          <Link
-            to="/"
+          <menu
             style={{
-              textDecoration: "none",
+              display: "flex",
+              flexDirection: "column",
+              marginLeft: "auto",
             }}
           >
-            <div
-              style={{
-                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                boxShadow: "0px 16px 24px rgba(0, 0, 0, 0.25)",
-              }}
-            >
-              <h2
+            {user ? (
+              <Link
+                to={Routes.Logout}
                 style={{
-                  textOrientation: "upright",
-                  writingMode: "vertical-rl",
-                  margin: 0,
+                  textDecoration: "none",
                 }}
               >
-                <em>
-                  <b>Content</b>
-                </em>
-              </h2>
-            </div>
-          </Link>
-          <Link
-            to={Routes.AdminContentTitle}
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <div
-              style={{
-                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.25)",
-              }}
-            >
-              <h2
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                  }}
+                >
+                  <h2>
+                    <em>
+                      <b>Logout</b>
+                    </em>
+                  </h2>
+                </div>
+              </Link>
+            ) : (
+              <Link
+                to={Routes.Login}
                 style={{
-                  textOrientation: "upright",
-                  writingMode: "vertical-rl",
-                  margin: 0,
+                  textDecoration: "none",
                 }}
               >
-                <em>
-                  <b>Pulisher</b>
-                </em>
-              </h2>
-            </div>
-          </Link>
+                <div
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+                  }}
+                >
+                  <h2>
+                    <em>
+                      <b>Login</b>
+                    </em>
+                  </h2>
+                </div>
+              </Link>
+            )}
+          </menu>
         </nav>
         <Outlet />
         <ScrollRestoration />
