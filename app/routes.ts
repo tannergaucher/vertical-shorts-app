@@ -12,4 +12,5 @@ export const Routes = {
   AdminContentThumbnail: (slug: string) => `/admin/content/thumbnail/${slug}`,
   AdminContenVideo: (slug: string) => `/admin/content/video/${slug}`,
   Login: `/login`,
+  Logout: `/logout`,
 };
