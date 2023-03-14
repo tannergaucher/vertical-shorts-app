@@ -1,4 +1,5 @@
 export const Routes = {
+  Index: `/`,
   AuthorizeYoutube: `/authorize-integration/youtube`,
   AuthorizeTikTok: `/authorize-integration/tiktok`,
   AuthorizeInstagram: `/authorize-integration/instagram`,

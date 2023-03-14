@@ -49,10 +49,6 @@ export async function loader({ request }: LoaderArgs) {
 export default function App() {
   const { user } = useLoaderData<LoaderData>();
 
-  const currentProject = user?.projects.filter(
-    (project) => project.id === user.currentProjectId
-  )[0];
-
   return (
     <html lang="en">
       <head>
@@ -60,11 +56,47 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <nav
-          style={{
-            display: "flex",
-          }}
-        >
+        <nav>
+          <Link
+            to={Routes.Index}
+            style={{
+              textDecoration: "none",
+            }}
+          >
+            <div
+              style={{
+                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              <h2>
+                <em>
+                  <b>Posts</b>
+                </em>
+              </h2>
+            </div>
+          </Link>
+
+          <Link
+            to={Routes.AdminContentTitle}
+            style={{
+              textDecoration: "none",
+            }}
+          >
+            <div
+              style={{
+                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+              }}
+            >
+              <h2>
+                <em>
+                  <b>Publish</b>
+                </em>
+              </h2>
+            </div>
+          </Link>
+
           <Link
             to={Routes.Admin}
             style={{
@@ -77,68 +109,57 @@ export default function App() {
                 boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
               }}
             >
-              {currentProject ? (
-                <Link to={Routes.Admin}>
-                  <h2>
-                    <em>
-                      <b>{currentProject.title} Content</b>
-                    </em>
-                  </h2>
-                </Link>
-              ) : null}
+              <h2>
+                <em>
+                  <b>Admin</b>
+                </em>
+              </h2>
             </div>
           </Link>
-          <menu
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              marginLeft: "auto",
-            }}
-          >
-            {user ? (
-              <Link
-                to={Routes.Logout}
+
+          {user ? (
+            <Link
+              to={Routes.Logout}
+              style={{
+                textDecoration: "none",
+              }}
+            >
+              <div
                 style={{
-                  textDecoration: "none",
+                  background:
+                    "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                  boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
                 }}
               >
-                <div
-                  style={{
-                    background:
-                      "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  <h2>
-                    <em>
-                      <b>Logout</b>
-                    </em>
-                  </h2>
-                </div>
-              </Link>
-            ) : (
-              <Link
-                to={Routes.Login}
+                <h2>
+                  <em>
+                    <b>Logout</b>
+                  </em>
+                </h2>
+              </div>
+            </Link>
+          ) : (
+            <Link
+              to={Routes.Login}
+              style={{
+                textDecoration: "none",
+              }}
+            >
+              <div
                 style={{
-                  textDecoration: "none",
+                  background:
+                    "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
+                  boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
                 }}
               >
-                <div
-                  style={{
-                    background:
-                      "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-                  }}
-                >
-                  <h2>
-                    <em>
-                      <b>Login</b>
-                    </em>
-                  </h2>
-                </div>
-              </Link>
-            )}
-          </menu>
+                <h2>
+                  <em>
+                    <b>Login</b>
+                  </em>
+                </h2>
+              </div>
+            </Link>
+          )}
         </nav>
         <Outlet />
         <ScrollRestoration />
