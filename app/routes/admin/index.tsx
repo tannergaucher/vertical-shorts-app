@@ -94,8 +94,6 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Current Project</h1>
-
       <fieldset>
         <Form method="post">
           <label htmlFor="currentProjectId">Select Current Project</label>
@@ -131,11 +129,9 @@ export default function Page() {
           </select>
         </Form>
       </fieldset>
-
       <Link to={Routes.AdminCreateProject}>
-        <h2>Create New Project</h2>
+        <h2>New Project</h2>
       </Link>
-
       <ChannelsGrid
         channels={compact([
           youtube
@@ -200,6 +196,9 @@ export default function Page() {
               },
         ])}
       />
+      <Link to={Routes.Logout}>
+        <h2>Logout</h2>
+      </Link>
     </main>
   );
 }
@@ -215,7 +214,6 @@ type ChannelGridItem =
 function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
   return (
     <div>
-      <h2>Channels:</h2>
       <section
         style={{
           display: "grid",
@@ -234,11 +232,12 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
 function ChannelItem({ channel }: { channel: ChannelGridItem }) {
   return "href" in channel && channel.href ? (
     <Link to={channel.href}>
-      <h2>ADD {channel.channelType}</h2>
+      <h3>ADD {channel.channelType}</h3>
     </Link>
   ) : "name" in channel ? (
     <div>
-      <h2>{channel.name}</h2>
+      <h3>{channel.channelType}</h3>
+      <h4>{channel.name}</h4>
       <ul>
         <li>{`${channel.views} views`}</li>
         <li>{`${channel.subscribers} subscribers`}</li>

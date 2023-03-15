@@ -57,107 +57,39 @@ export default function App() {
       </head>
       <body>
         <nav>
-          <Link
-            to={Routes.Index}
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <div
-              style={{
-                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-              }}
-            >
-              <h2>
-                <em>
-                  <b>Posts</b>
-                </em>
-              </h2>
-            </div>
+          <Link to={Routes.Index}>
+            <h2>
+              <em>
+                <b>Content</b>
+              </em>
+            </h2>
           </Link>
-
-          <Link
-            to={Routes.AdminContentTitle}
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <div
-              style={{
-                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-              }}
-            >
-              <h2>
-                <em>
-                  <b>Publish</b>
-                </em>
-              </h2>
-            </div>
+          <Link to={Routes.AdminContentTitle}>
+            <h2>
+              <em>
+                <b>Publisher</b>
+              </em>
+            </h2>
           </Link>
-
-          <Link
-            to={Routes.Admin}
-            style={{
-              textDecoration: "none",
-            }}
-          >
-            <div
-              style={{
-                background: "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-              }}
-            >
-              <h2>
-                <em>
-                  <b>Admin</b>
-                </em>
-              </h2>
-            </div>
+          <Link to={Routes.Admin}>
+            <h2>
+              <em>
+                <b>Admin</b>
+              </em>
+            </h2>
           </Link>
-
-          {user ? (
-            <Link
-              to={Routes.Logout}
-              style={{
-                textDecoration: "none",
-              }}
-            >
-              <div
-                style={{
-                  background:
-                    "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                  boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-                }}
-              >
-                <h2>
-                  <em>
-                    <b>Logout</b>
-                  </em>
-                </h2>
-              </div>
-            </Link>
-          ) : (
+          {user ? null : (
             <Link
               to={Routes.Login}
               style={{
                 textDecoration: "none",
               }}
             >
-              <div
-                style={{
-                  background:
-                    "linear-gradient(90deg, #f6d365 0%, #fda085 100%)",
-                  boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-                }}
-              >
-                <h2>
-                  <em>
-                    <b>Login</b>
-                  </em>
-                </h2>
-              </div>
+              <h2>
+                <em>
+                  <b>Login</b>
+                </em>
+              </h2>
             </Link>
           )}
         </nav>
