@@ -94,9 +94,12 @@ export default function Page() {
 
   return (
     <main>
+      <Link to={Routes.AdminCreateProject}>
+        <h2>New Project</h2>
+      </Link>
       <fieldset>
         <Form method="post">
-          <label htmlFor="currentProjectId">Select Current Project</label>
+          <label htmlFor="currentProjectId">Current Project</label>
           <br />
           <select
             id="currentProjectId"
@@ -129,9 +132,6 @@ export default function Page() {
           </select>
         </Form>
       </fieldset>
-      <Link to={Routes.AdminCreateProject}>
-        <h2>New Project</h2>
-      </Link>
       <ChannelsGrid
         channels={compact([
           youtube
