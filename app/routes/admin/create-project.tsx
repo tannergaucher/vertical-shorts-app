@@ -53,7 +53,6 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Admin</h1>
       <fieldset>
         <legend>Create a New Project</legend>
         <fieldset
