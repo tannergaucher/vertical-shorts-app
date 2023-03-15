@@ -93,15 +93,14 @@ export default function Page() {
 
   const transition = useTransition();
 
+  const disabled =
+    transition.state === "loading" || transition.state === "submitting";
+
   return (
     <main>
       <h1>Draft Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
-      <fieldset
-        disabled={
-          transition.state === "loading" || transition.state === "submitting"
-        }
-      >
+      <fieldset disabled={disabled}>
         <Form method="post" encType="multipart/form-data">
           <label>
             <input

@@ -96,6 +96,9 @@ export default function Page() {
 
   const transition = useTransition();
 
+  const disabled =
+    transition.state === "loading" || transition.state === "submitting";
+
   return (
     <main>
       <h1>Draft Post: {content.title}</h1>
@@ -104,11 +107,7 @@ export default function Page() {
         src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.jpg`}
       />
       <h2>Upload Video</h2>
-      <fieldset
-        disabled={
-          transition.state === "loading" || transition.state === "submitting"
-        }
-      >
+      <fieldset disabled={disabled}>
         <Form method="post" encType="multipart/form-data">
           <label>
             <span>Video</span>

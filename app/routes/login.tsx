@@ -87,15 +87,14 @@ export default function Page() {
     }
   }, [actionData]);
 
+  const disabled =
+    transition.state === "loading" || transition.state === "submitting";
+
   return (
     <div className="flex min-h-full flex-col justify-center">
       <h1>Login</h1>
       <div className="mx-auto w-full max-w-md px-8">
-        <fieldset
-          disabled={
-            transition.state === "loading" || transition.state === "submitting"
-          }
-        >
+        <fieldset disabled={disabled}>
           <Form method="post" className="space-y-6">
             <div>
               <label

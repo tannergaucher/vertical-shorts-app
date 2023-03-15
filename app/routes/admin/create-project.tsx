@@ -51,15 +51,14 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const transition = useTransition();
 
+  const disabled =
+    transition.state === "loading" || transition.state === "submitting";
+
   return (
     <main>
       <fieldset>
         <legend>Create a New Project</legend>
-        <fieldset
-          disabled={
-            transition.state === "loading" || transition.state === "submitting"
-          }
-        >
+        <fieldset disabled={disabled}>
           <Form method="post">
             <label htmlFor="name">Project Name</label>
             <br />
