@@ -143,7 +143,6 @@ export default function Page() {
               }
             : {
                 channelType: ChannelType.YOUTUBE,
-                text: "Add Youtube Channel",
                 href: Routes.AuthorizeYoutube,
               },
           tiktok
@@ -155,7 +154,6 @@ export default function Page() {
               }
             : {
                 channelType: ChannelType.TIKTOK,
-                text: "Add TikTok Channel",
                 href: Routes.AuthorizeTikTok,
               },
           instagram
@@ -167,7 +165,6 @@ export default function Page() {
               }
             : {
                 channelType: ChannelType.INSTAGRAM,
-                text: "Add Instagram Channel",
                 href: Routes.AuthorizeInstagram,
               },
           facebook
@@ -179,7 +176,6 @@ export default function Page() {
               }
             : {
                 channelType: ChannelType.FACEBOOK,
-                text: "Add Facebook Channel",
                 href: Routes.AuthorizeFacebook,
               },
           twitter
@@ -191,7 +187,6 @@ export default function Page() {
               }
             : {
                 channelType: ChannelType.TWITTER,
-                text: "Add Twitter Channel",
                 href: Routes.AuthorizeTwitter,
               },
         ])}
@@ -207,7 +202,6 @@ type ChannelGridItem =
   | Pick<Channel, "name" | "channelType" | "views" | "subscribers">
   | {
       channelType: ChannelType;
-      text: string;
       href?: string;
     };
 
