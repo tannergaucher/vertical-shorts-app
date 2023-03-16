@@ -1,12 +1,12 @@
 # Vertical Content Publisher
 
-## Tech
+## Uses
 
-- Remix
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- CockroachDB
-- Google Cloud Storage
-- Google Cloud Pub / Sub
-- Google Cloud Functions 2nd Gen
+- [Remix](https://remix.run)
+- [TypeScript](https://www.typescriptlang.org)
+- [React](https://reactjs.org)
+- [PostgreSQL](https://www.postgresql.org)
+- [CockroachDB](https://www.cockroachlabs.com)
+- [Google Cloud Storage](https://cloud.google.com/storage)
+- [Google Cloud Pub / Sub](https://cloud.google.com/pubsub)
+- [Google Cloud Functions](https://cloud.google.com/functions)
