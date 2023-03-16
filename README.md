@@ -2,9 +2,9 @@
 
 ## Uses
 
+- [React](https://reactjs.org)
 - [Remix](https://remix.run)
 - [TypeScript](https://www.typescriptlang.org)
-- [React](https://reactjs.org)
 - [PostgreSQL](https://www.postgresql.org)
 - [CockroachDB](https://www.cockroachlabs.com)
 - [Google Cloud Storage](https://cloud.google.com/storage)
