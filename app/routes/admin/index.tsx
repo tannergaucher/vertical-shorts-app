@@ -94,12 +94,10 @@ export default function Page() {
 
   return (
     <main>
-      <Link to={Routes.AdminCreateProject}>
-        <h2>New Project</h2>
-      </Link>
       <fieldset>
+        <h2>Current Project</h2>
         <Form method="post">
-          <label htmlFor="currentProjectId">Current Project</label>
+          <label htmlFor="currentProjectId">Selected:</label>
           <br />
           <select
             id="currentProjectId"
@@ -191,6 +189,9 @@ export default function Page() {
               },
         ])}
       />
+      <Link to={Routes.AdminCreateProject}>
+        <h2>New Project</h2>
+      </Link>
       <Link to={Routes.Logout}>
         <h2>Logout</h2>
       </Link>

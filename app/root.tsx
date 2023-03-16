@@ -60,7 +60,7 @@ export default function App() {
           <Link to={Routes.Index}>
             <h2>
               <em>
-                <b>Content</b>
+                <b>Posts</b>
               </em>
             </h2>
           </Link>
@@ -74,7 +74,7 @@ export default function App() {
           <Link to={Routes.Admin}>
             <h2>
               <em>
-                <b>Admin</b>
+                <b>Settings</b>
               </em>
             </h2>
           </Link>

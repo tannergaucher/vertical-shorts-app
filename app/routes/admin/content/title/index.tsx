@@ -39,9 +39,10 @@ export default function Page() {
           transition.state === "loading" || transition.state === "submitting"
         }
       >
+        <h2>Create a New Post</h2>
         <Form method="post">
           <label>
-            Post Title
+            Title
             <br />
             <input
               type="text"
