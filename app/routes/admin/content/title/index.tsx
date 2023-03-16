@@ -14,6 +14,10 @@ export const action: ActionFunction = async ({ request }) => {
 
   const user = await getUser(request);
 
+  if (!user) {
+    return redirect(Routes.Login);
+  }
+
   if (!user?.currentProjectId) {
     return redirect(Routes.AdminCreateProject);
   }

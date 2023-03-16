@@ -32,6 +32,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   const user = await getUser(request);
 
+  if (!user) {
+    return redirect(Routes.Login);
+  }
+
   const projectId = user?.currentProjectId;
 
   invariant(typeof projectId === "string", "user must have a current project");
