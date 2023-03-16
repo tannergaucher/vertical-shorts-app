@@ -3,9 +3,10 @@
 ## Tech
 
 - Remix
-- Typescript
-- Prisma
-- Postgres
+- TypeScript
+- Prisma ORM
+- PostgreSQL
 - CockroachDB
-- GCS Cloud Run Functions
-- GCS Pub/Sub
+- Google Cloud Storage
+- Google Cloud Pub / Sub
+- Google Cloud Functions 2nd Gen
