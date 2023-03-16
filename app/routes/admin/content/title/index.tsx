@@ -1,10 +1,20 @@
 import { Form, useTransition } from "@remix-run/react";
-import type { ActionFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import invariant from "tiny-invariant";
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const user = await getUser(request);
+
+  if (!user) {
+    return redirect(Routes.Login);
+  }
+
+  return {};
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -13,10 +23,6 @@ export const action: ActionFunction = async ({ request }) => {
   invariant(typeof title === "string", "title is required");
 
   const user = await getUser(request);
-
-  if (!user) {
-    return redirect(Routes.Login);
-  }
 
   if (!user?.currentProjectId) {
     return redirect(Routes.AdminCreateProject);
