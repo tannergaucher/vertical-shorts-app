@@ -1,5 +1,5 @@
 {
-  "name": "blog-tutorial-907b",
+  "name": "vertical-content-publisher",
   "private": true,
   "sideEffects": false,
   "scripts": {
@@ -51,7 +51,7 @@
     "@faker-js/faker": "^7.5.0",
     "@remix-run/dev": "1.13.0",
     "@remix-run/eslint-config": "1.13.0",
-    "@remix-run/netlify": "1.14.3", 
+    "@remix-run/netlify": "1.14.3",
     "@testing-library/cypress": "^8.0.3",
     "@testing-library/dom": "^8.18.1",
     "@testing-library/jest-dom": "^5.16.5",
