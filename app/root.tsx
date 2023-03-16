@@ -79,12 +79,7 @@ export default function App() {
             </h2>
           </Link>
           {user ? null : (
-            <Link
-              to={Routes.Login}
-              style={{
-                textDecoration: "none",
-              }}
-            >
+            <Link to={Routes.Login}>
               <h2>
                 <em>
                   <b>Login</b>
