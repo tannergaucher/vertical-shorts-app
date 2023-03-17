@@ -13,12 +13,12 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 4.11.0
- * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
+ * Prisma Client JS version: 4.5.0
+ * Query Engine version: 0362da9eebca54d94c8ef5edd3b2e90af99ba452
  */
 Prisma.prismaVersion = {
-  client: "4.11.0",
-  engine: "8fde8fef4033376662cad983758335009d522acb"
+  client: "4.5.0",
+  engine: "0362da9eebca54d94c8ef5edd3b2e90af99ba452"
 }
 
 Prisma.PrismaClientKnownRequestError = () => {
@@ -68,7 +68,6 @@ In case this error is unexpected for you, please report it in https://github.com
 )}
 Prisma.validator = () => (val) => val
 
-
 /**
  * Shorthand utilities for JSON filtering
  */
@@ -104,9 +103,6 @@ exports.Prisma.ContentScalarFieldEnum = makeEnum({
   slug: 'slug',
   title: 'title',
   description: 'description',
-  markdown: 'markdown',
-  thumbnail: 'thumbnail',
-  video: 'video',
   tags: 'tags',
   published: 'published',
   createdAt: 'createdAt',

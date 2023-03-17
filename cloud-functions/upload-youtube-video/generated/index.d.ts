@@ -3,10 +3,12 @@
  * Client
 **/
 
-import * as runtime from './runtime/library';
+import * as runtime from './runtime/index';
+declare const prisma: unique symbol
+export type PrismaPromise<A> = Promise<A> & {[prisma]: true}
 type UnwrapPromise<P extends any> = P extends Promise<infer R> ? R : P
 type UnwrapTuple<Tuple extends readonly unknown[]> = {
-  [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends Prisma.PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
+  [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
 };
 
 
@@ -105,9 +107,6 @@ export type Content = {
   slug: string
   title: string
   description: string | null
-  markdown: string | null
-  thumbnail: string | null
-  video: string | null
   tags: string[]
   published: boolean | null
   createdAt: Date | null
@@ -182,6 +181,31 @@ export class PrismaClient<
     ? T['rejectOnNotFound']
     : false
       > {
+      /**
+       * @private
+       */
+      private fetcher;
+      /**
+       * @private
+       */
+      private readonly dmmf;
+      /**
+       * @private
+       */
+      private connectionPromise?;
+      /**
+       * @private
+       */
+      private disconnectionPromise?;
+      /**
+       * @private
+       */
+      private readonly engineConfig;
+      /**
+       * @private
+       */
+      private readonly measurePerformance;
+
     /**
    * ##  Prisma Client ʲˢ
    * 
@@ -224,7 +248,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<number>;
+  $executeRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<number>;
 
   /**
    * Executes a raw query and returns the number of affected rows.
@@ -236,7 +260,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<number>;
+  $executeRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<number>;
 
   /**
    * Performs a prepared raw query and returns the `SELECT` data.
@@ -247,7 +271,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): Prisma.PrismaPromise<T>;
+  $queryRaw<T = unknown>(query: TemplateStringsArray | Prisma.Sql, ...values: any[]): PrismaPromise<T>;
 
   /**
    * Performs a raw query and returns the `SELECT` data.
@@ -259,7 +283,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/raw-database-access).
    */
-  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): Prisma.PrismaPromise<T>;
+  $queryRawUnsafe<T = unknown>(query: string, ...values: any[]): PrismaPromise<T>;
 
   /**
    * Allows the running of a sequence of read/write operations that are guaranteed to either succeed or fail as a whole.
@@ -274,9 +298,7 @@ export class PrismaClient<
    * 
    * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client/transactions).
    */
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<UnwrapTuple<P>>
-
-  $transaction<R>(fn: (prisma: Omit<this, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use">) => Promise<R>, options?: { maxWait?: number, timeout?: number, isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<R>
+  $transaction<P extends PrismaPromise<any>[]>(arg: [...P], options?: { isolationLevel?: Prisma.TransactionIsolationLevel }): Promise<UnwrapTuple<P>>;
 
       /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
@@ -382,8 +404,6 @@ export class PrismaClient<
 export namespace Prisma {
   export import DMMF = runtime.DMMF
 
-  export type PrismaPromise<T> = runtime.Types.Public.PrismaPromise<T>
-
   /**
    * Prisma Errors
    */
@@ -413,15 +433,19 @@ export namespace Prisma {
   /**
    * Metrics 
    */
-  export type Metrics = runtime.Metrics
-  export type Metric<T> = runtime.Metric<T>
-  export type MetricHistogram = runtime.MetricHistogram
-  export type MetricHistogramBucket = runtime.MetricHistogramBucket
-
+  export import Metrics = runtime.Metrics
+  export import Metric = runtime.Metric
+  export import MetricHistogram = runtime.MetricHistogram
+  export import MetricHistogramBucket = runtime.MetricHistogramBucket
 
   /**
-   * Prisma Client JS version: 4.11.0
-   * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
+   * Extensions
+   */
+  export type Extension = runtime.Extension 
+
+  /**
+   * Prisma Client JS version: 4.5.0
+   * Query Engine version: 0362da9eebca54d94c8ef5edd3b2e90af99ba452
    */
   export type PrismaVersion = {
     client: string
@@ -585,9 +609,9 @@ export namespace Prisma {
     [K in keyof T]-?: {} extends Prisma__Pick<T, K> ? never : K
   }[keyof T]
 
-  export type TruthyKeys<T> = keyof {
-    [K in keyof T as T[K] extends false | undefined | null ? never : K]: K
-  }
+  export type TruthyKeys<T> = {
+    [key in keyof T]: T[key] extends false | undefined | null ? never : key
+  }[keyof T]
 
   export type TrueKeys<T> = TruthyKeys<Prisma__Pick<T, RequiredKeys<T>>>
 
@@ -785,11 +809,19 @@ export namespace Prisma {
 
   export type Keys<U extends Union> = U extends unknown ? keyof U : never
 
+  type Exact<A, W = unknown> = 
+  W extends unknown ? A extends Narrowable ? Cast<A, W> : Cast<
+  {[K in keyof A]: K extends keyof W ? Exact<A[K], W[K]> : never},
+  {[K in keyof W]: K extends keyof A ? Exact<A[K], W[K]> : W[K]}>
+  : never;
+
+  type Narrowable = string | number | boolean | bigint;
+
   type Cast<A, B> = A extends B ? A : B;
 
   export const type: unique symbol;
 
-  export function validator<V>(): <S>(select: runtime.Types.Utils.LegacyExact<S, V>) => S;
+  export function validator<V>(): <S>(select: Exact<S, V>) => S;
 
   /**
    * Used by group by
@@ -840,10 +872,19 @@ export namespace Prisma {
   type ExcludeUnderscoreKeys<T extends string> = T extends `_${string}` ? never : T
 
 
-  export type FieldRef<Model, FieldType> = runtime.FieldRef<Model, FieldType>
+  export import FieldRef = runtime.FieldRef
 
   type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRef<Model, FieldType>
 
+  class PrismaClientFetcher {
+    private readonly prisma;
+    private readonly debug;
+    private readonly hooks?;
+    constructor(prisma: PrismaClient<any, any>, debug?: boolean, hooks?: Hooks | undefined);
+    request<T>(document: any, dataPath?: string[], rootField?: string, typeName?: string, isList?: boolean, callsite?: string): Promise<T>;
+    sanitizeMessage(message: string): string;
+    protected unpack(document: any, data: any, path: string[], rootField?: string, isList?: boolean): any;
+  }
 
   export const ModelName: {
     User: 'User',
@@ -865,7 +906,6 @@ export namespace Prisma {
     db?: Datasource
   }
 
-  export type DefaultPrismaClient = PrismaClient
   export type RejectOnNotFound = boolean | ((error: Error) => Error)
   export type RejectPerModel = { [P in ModelName]?: RejectOnNotFound }
   export type RejectPerOperation =  { [P in "findUnique" | "findFirst"]?: RejectPerModel | RejectOnNotFound } 
@@ -932,6 +972,10 @@ export namespace Prisma {
      * Read more in our [docs](https://www.prisma.io/docs/reference/tools-and-interfaces/prisma-client/logging#the-log-option).
      */
     log?: Array<LogLevel | LogDefinition>
+  }
+
+  export type Hooks = {
+    beforeRequest?: (options: { query: string, path: string[], rootField?: string, typeName?: string, document: any }) => any
   }
 
   /* Types for Logging */
@@ -1002,11 +1046,6 @@ export namespace Prisma {
   // tested in getLogLevel.test.ts
   export function getLogLevel(log: Array<LogLevel | LogDefinition>): LogLevel | undefined;
 
-  /**
-   * `PrismaClient` proxy available in interactive transactions.
-   */
-  export type TransactionClient = Omit<Prisma.DefaultPrismaClient, '$connect' | '$disconnect' | '$on' | '$transaction' | '$use'>
-
   export type Datasource = {
     url?: string
   }
@@ -1029,18 +1068,23 @@ export namespace Prisma {
     projects?: boolean
   }
 
-  export type UserCountOutputTypeGetPayload<S extends boolean | null | undefined | UserCountOutputTypeArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? UserCountOutputType :
-    S extends undefined ? never :
-    S extends { include: any } & (UserCountOutputTypeArgs)
+  export type UserCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | UserCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? UserCountOutputType
+    : S extends undefined
+    ? never
+    : S extends UserCountOutputTypeArgs
+    ?'include' extends U
     ? UserCountOutputType 
-    : S extends { select: any } & (UserCountOutputTypeArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
     P extends keyof UserCountOutputType ? UserCountOutputType[P] : never
   } 
-      : UserCountOutputType
+    : UserCountOutputType
+  : UserCountOutputType
 
 
 
@@ -1053,7 +1097,8 @@ export namespace Prisma {
   export type UserCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the UserCountOutputType
-     */
+     * 
+    **/
     select?: UserCountOutputTypeSelect | null
   }
 
@@ -1074,18 +1119,23 @@ export namespace Prisma {
     channels?: boolean
   }
 
-  export type ProjectCountOutputTypeGetPayload<S extends boolean | null | undefined | ProjectCountOutputTypeArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? ProjectCountOutputType :
-    S extends undefined ? never :
-    S extends { include: any } & (ProjectCountOutputTypeArgs)
+  export type ProjectCountOutputTypeGetPayload<
+    S extends boolean | null | undefined | ProjectCountOutputTypeArgs,
+    U = keyof S
+      > = S extends true
+        ? ProjectCountOutputType
+    : S extends undefined
+    ? never
+    : S extends ProjectCountOutputTypeArgs
+    ?'include' extends U
     ? ProjectCountOutputType 
-    : S extends { select: any } & (ProjectCountOutputTypeArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
     P extends keyof ProjectCountOutputType ? ProjectCountOutputType[P] : never
   } 
-      : ProjectCountOutputType
+    : ProjectCountOutputType
+  : ProjectCountOutputType
 
 
 
@@ -1098,7 +1148,8 @@ export namespace Prisma {
   export type ProjectCountOutputTypeArgs = {
     /**
      * Select specific fields to fetch from the ProjectCountOutputType
-     */
+     * 
+    **/
     select?: ProjectCountOutputTypeSelect | null
   }
 
@@ -1173,31 +1224,36 @@ export namespace Prisma {
   export type UserAggregateArgs = {
     /**
      * Filter which User to aggregate.
-     */
+     * 
+    **/
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Users to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<UserOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Users from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Users.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -1233,7 +1289,7 @@ export namespace Prisma {
   export type UserGroupByArgs = {
     where?: UserWhereInput
     orderBy?: Enumerable<UserOrderByWithAggregationInput>
-    by: UserScalarFieldEnum[]
+    by: Array<UserScalarFieldEnum>
     having?: UserScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -1254,7 +1310,7 @@ export namespace Prisma {
     _max: UserMaxAggregateOutputType | null
   }
 
-  type GetUserGroupByPayload<T extends UserGroupByArgs> = Prisma.PrismaPromise<
+  type GetUserGroupByPayload<T extends UserGroupByArgs> = PrismaPromise<
     Array<
       PickArray<UserGroupByOutputType, T['by']> &
         {
@@ -1271,49 +1327,53 @@ export namespace Prisma {
   export type UserSelect = {
     id?: boolean
     email?: boolean
+    password?: boolean | PasswordArgs
+    projects?: boolean | ProjectFindManyArgs
     currentProjectId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    password?: boolean | PasswordArgs
-    projects?: boolean | User$projectsArgs
     _count?: boolean | UserCountOutputTypeArgs
   }
-
 
   export type UserInclude = {
     password?: boolean | PasswordArgs
-    projects?: boolean | User$projectsArgs
+    projects?: boolean | ProjectFindManyArgs
     _count?: boolean | UserCountOutputTypeArgs
   }
 
-  export type UserGetPayload<S extends boolean | null | undefined | UserArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? User :
-    S extends undefined ? never :
-    S extends { include: any } & (UserArgs | UserFindManyArgs)
+  export type UserGetPayload<
+    S extends boolean | null | undefined | UserArgs,
+    U = keyof S
+      > = S extends true
+        ? User
+    : S extends undefined
+    ? never
+    : S extends UserArgs | UserFindManyArgs
+    ?'include' extends U
     ? User  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'password' ? PasswordGetPayload<S['include'][P]> | null :
-        P extends 'projects' ? Array < ProjectGetPayload<S['include'][P]>>  :
-        P extends '_count' ? UserCountOutputTypeGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'password' ? PasswordGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'projects' ? Array < ProjectGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
+        P extends '_count' ? UserCountOutputTypeGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (UserArgs | UserFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'password' ? PasswordGetPayload<S['select'][P]> | null :
-        P extends 'projects' ? Array < ProjectGetPayload<S['select'][P]>>  :
-        P extends '_count' ? UserCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof User ? User[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'password' ? PasswordGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'projects' ? Array < ProjectGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
+        P extends '_count' ? UserCountOutputTypeGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof User ? User[P] : never
   } 
-      : User
+    : User
+  : User
 
 
-  type UserCountArgs = 
+  type UserCountArgs = Merge<
     Omit<UserFindManyArgs, 'select' | 'include'> & {
       select?: UserCountAggregateInputType | true
     }
+  >
 
   export interface UserDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one User that matches the filter.
      * @param {UserFindUniqueArgs} args - Arguments to find a User
@@ -1327,23 +1387,7 @@ export namespace Prisma {
     **/
     findUnique<T extends UserFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, UserFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'User'> extends True ? Prisma__UserClient<UserGetPayload<T>> : Prisma__UserClient<UserGetPayload<T> | null, null>
-
-    /**
-     * Find one User that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {UserFindUniqueOrThrowArgs} args - Arguments to find a User
-     * @example
-     * // Get one User
-     * const user = await prisma.user.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends UserFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, UserFindUniqueOrThrowArgs>
-    ): Prisma__UserClient<UserGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'User'> extends True ? CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>> : CheckSelect<T, Prisma__UserClient<User | null, null>, Prisma__UserClient<UserGetPayload<T> | null, null>>
 
     /**
      * Find the first User that matches the filter.
@@ -1360,25 +1404,7 @@ export namespace Prisma {
     **/
     findFirst<T extends UserFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, UserFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'User'> extends True ? Prisma__UserClient<UserGetPayload<T>> : Prisma__UserClient<UserGetPayload<T> | null, null>
-
-    /**
-     * Find the first User that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {UserFindFirstOrThrowArgs} args - Arguments to find a User
-     * @example
-     * // Get one User
-     * const user = await prisma.user.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends UserFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, UserFindFirstOrThrowArgs>
-    ): Prisma__UserClient<UserGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'User'> extends True ? CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>> : CheckSelect<T, Prisma__UserClient<User | null, null>, Prisma__UserClient<UserGetPayload<T> | null, null>>
 
     /**
      * Find zero or more Users that matches the filter.
@@ -1398,7 +1424,7 @@ export namespace Prisma {
     **/
     findMany<T extends UserFindManyArgs>(
       args?: SelectSubset<T, UserFindManyArgs>
-    ): Prisma.PrismaPromise<Array<UserGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<User>>, PrismaPromise<Array<UserGetPayload<T>>>>
 
     /**
      * Create a User.
@@ -1414,7 +1440,7 @@ export namespace Prisma {
     **/
     create<T extends UserCreateArgs>(
       args: SelectSubset<T, UserCreateArgs>
-    ): Prisma__UserClient<UserGetPayload<T>>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
 
     /**
      * Create many Users.
@@ -1430,7 +1456,7 @@ export namespace Prisma {
     **/
     createMany<T extends UserCreateManyArgs>(
       args?: SelectSubset<T, UserCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a User.
@@ -1446,7 +1472,7 @@ export namespace Prisma {
     **/
     delete<T extends UserDeleteArgs>(
       args: SelectSubset<T, UserDeleteArgs>
-    ): Prisma__UserClient<UserGetPayload<T>>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
 
     /**
      * Update one User.
@@ -1465,7 +1491,7 @@ export namespace Prisma {
     **/
     update<T extends UserUpdateArgs>(
       args: SelectSubset<T, UserUpdateArgs>
-    ): Prisma__UserClient<UserGetPayload<T>>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
 
     /**
      * Delete zero or more Users.
@@ -1481,7 +1507,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends UserDeleteManyArgs>(
       args?: SelectSubset<T, UserDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Users.
@@ -1502,7 +1528,7 @@ export namespace Prisma {
     **/
     updateMany<T extends UserUpdateManyArgs>(
       args: SelectSubset<T, UserUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one User.
@@ -1523,7 +1549,41 @@ export namespace Prisma {
     **/
     upsert<T extends UserUpsertArgs>(
       args: SelectSubset<T, UserUpsertArgs>
-    ): Prisma__UserClient<UserGetPayload<T>>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
+
+    /**
+     * Find one User that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {UserFindUniqueOrThrowArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends UserFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, UserFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
+
+    /**
+     * Find the first User that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserFindFirstOrThrowArgs} args - Arguments to find a User
+     * @example
+     * // Get one User
+     * const user = await prisma.user.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends UserFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, UserFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__UserClient<User>, Prisma__UserClient<UserGetPayload<T>>>
 
     /**
      * Count the number of Users.
@@ -1540,7 +1600,7 @@ export namespace Prisma {
     **/
     count<T extends UserCountArgs>(
       args?: Subset<T, UserCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -1572,7 +1632,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends UserAggregateArgs>(args: Subset<T, UserAggregateArgs>): Prisma.PrismaPromise<GetUserAggregateType<T>>
+    aggregate<T extends UserAggregateArgs>(args: Subset<T, UserAggregateArgs>): PrismaPromise<GetUserAggregateType<T>>
 
     /**
      * Group by User.
@@ -1649,7 +1709,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, UserGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, UserGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -1659,8 +1719,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__UserClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__UserClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -1671,12 +1733,12 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    password<T extends PasswordArgs= {}>(args?: Subset<T, PasswordArgs>): Prisma__PasswordClient<PasswordGetPayload<T> | Null>;
+    password<T extends PasswordArgs = {}>(args?: Subset<T, PasswordArgs>): CheckSelect<T, Prisma__PasswordClient<Password | Null>, Prisma__PasswordClient<PasswordGetPayload<T> | Null>>;
 
-    projects<T extends User$projectsArgs= {}>(args?: Subset<T, User$projectsArgs>): Prisma.PrismaPromise<Array<ProjectGetPayload<T>>| Null>;
+    projects<T extends ProjectFindManyArgs = {}>(args?: Subset<T, ProjectFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Project>| Null>, PrismaPromise<Array<ProjectGetPayload<T>>| Null>>;
 
     private get _document();
     /**
@@ -1711,20 +1773,23 @@ export namespace Prisma {
   export type UserFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
     /**
      * Filter, which User to fetch.
-     */
+     * 
+    **/
     where: UserWhereUniqueInput
   }
 
   /**
-   * User findUnique
+   * User: findUnique
    */
   export interface UserFindUniqueArgs extends UserFindUniqueArgsBase {
    /**
@@ -1736,74 +1801,63 @@ export namespace Prisma {
       
 
   /**
-   * User findUniqueOrThrow
-   */
-  export type UserFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the User
-     */
-    select?: UserSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: UserInclude | null
-    /**
-     * Filter, which User to fetch.
-     */
-    where: UserWhereUniqueInput
-  }
-
-
-  /**
    * User base type for findFirst actions
    */
   export type UserFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
     /**
      * Filter, which User to fetch.
-     */
+     * 
+    **/
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Users to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<UserOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Users.
-     */
+     * 
+    **/
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Users from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Users.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Users.
-     */
+     * 
+    **/
     distinct?: Enumerable<UserScalarFieldEnum>
   }
 
   /**
-   * User findFirst
+   * User: findFirst
    */
   export interface UserFindFirstArgs extends UserFindFirstArgsBase {
    /**
@@ -1815,93 +1869,51 @@ export namespace Prisma {
       
 
   /**
-   * User findFirstOrThrow
-   */
-  export type UserFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the User
-     */
-    select?: UserSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: UserInclude | null
-    /**
-     * Filter, which User to fetch.
-     */
-    where?: UserWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Users to fetch.
-     */
-    orderBy?: Enumerable<UserOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Users.
-     */
-    cursor?: UserWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Users from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Users.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Users.
-     */
-    distinct?: Enumerable<UserScalarFieldEnum>
-  }
-
-
-  /**
    * User findMany
    */
   export type UserFindManyArgs = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
     /**
      * Filter, which Users to fetch.
-     */
+     * 
+    **/
     where?: UserWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Users to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<UserOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Users.
-     */
+     * 
+    **/
     cursor?: UserWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Users from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Users.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<UserScalarFieldEnum>
   }
@@ -1913,15 +1925,18 @@ export namespace Prisma {
   export type UserCreateArgs = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
     /**
      * The data needed to create a User.
-     */
+     * 
+    **/
     data: XOR<UserCreateInput, UserUncheckedCreateInput>
   }
 
@@ -1932,7 +1947,8 @@ export namespace Prisma {
   export type UserCreateManyArgs = {
     /**
      * The data used to create many Users.
-     */
+     * 
+    **/
     data: Enumerable<UserCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -1944,19 +1960,23 @@ export namespace Prisma {
   export type UserUpdateArgs = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
     /**
      * The data needed to update a User.
-     */
+     * 
+    **/
     data: XOR<UserUpdateInput, UserUncheckedUpdateInput>
     /**
      * Choose, which User to update.
-     */
+     * 
+    **/
     where: UserWhereUniqueInput
   }
 
@@ -1967,11 +1987,13 @@ export namespace Prisma {
   export type UserUpdateManyArgs = {
     /**
      * The data used to update Users.
-     */
+     * 
+    **/
     data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyInput>
     /**
      * Filter which Users to update
-     */
+     * 
+    **/
     where?: UserWhereInput
   }
 
@@ -1982,23 +2004,28 @@ export namespace Prisma {
   export type UserUpsertArgs = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
     /**
      * The filter to search for the User to update in case it exists.
-     */
+     * 
+    **/
     where: UserWhereUniqueInput
     /**
      * In case the User found by the `where` argument doesn't exist, create a new User with this data.
-     */
+     * 
+    **/
     create: XOR<UserCreateInput, UserUncheckedCreateInput>
     /**
      * In case the User was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<UserUpdateInput, UserUncheckedUpdateInput>
   }
 
@@ -2009,15 +2036,18 @@ export namespace Prisma {
   export type UserDeleteArgs = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
     /**
      * Filter which User to delete.
-     */
+     * 
+    **/
     where: UserWhereUniqueInput
   }
 
@@ -2028,31 +2058,23 @@ export namespace Prisma {
   export type UserDeleteManyArgs = {
     /**
      * Filter which Users to delete
-     */
+     * 
+    **/
     where?: UserWhereInput
   }
 
 
   /**
-   * User.projects
+   * User: findUniqueOrThrow
    */
-  export type User$projectsArgs = {
-    /**
-     * Select specific fields to fetch from the Project
-     */
-    select?: ProjectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ProjectInclude | null
-    where?: ProjectWhereInput
-    orderBy?: Enumerable<ProjectOrderByWithRelationInput>
-    cursor?: ProjectWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<ProjectScalarFieldEnum>
-  }
+  export type UserFindUniqueOrThrowArgs = UserFindUniqueArgsBase
+      
 
+  /**
+   * User: findFirstOrThrow
+   */
+  export type UserFindFirstOrThrowArgs = UserFindFirstArgsBase
+      
 
   /**
    * User without action
@@ -2060,11 +2082,13 @@ export namespace Prisma {
   export type UserArgs = {
     /**
      * Select specific fields to fetch from the User
-     */
+     * 
+    **/
     select?: UserSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: UserInclude | null
   }
 
@@ -2117,31 +2141,36 @@ export namespace Prisma {
   export type PasswordAggregateArgs = {
     /**
      * Filter which Password to aggregate.
-     */
+     * 
+    **/
     where?: PasswordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Passwords to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<PasswordOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: PasswordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Passwords from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Passwords.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -2177,7 +2206,7 @@ export namespace Prisma {
   export type PasswordGroupByArgs = {
     where?: PasswordWhereInput
     orderBy?: Enumerable<PasswordOrderByWithAggregationInput>
-    by: PasswordScalarFieldEnum[]
+    by: Array<PasswordScalarFieldEnum>
     having?: PasswordScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -2195,7 +2224,7 @@ export namespace Prisma {
     _max: PasswordMaxAggregateOutputType | null
   }
 
-  type GetPasswordGroupByPayload<T extends PasswordGroupByArgs> = Prisma.PrismaPromise<
+  type GetPasswordGroupByPayload<T extends PasswordGroupByArgs> = PrismaPromise<
     Array<
       PickArray<PasswordGroupByOutputType, T['by']> &
         {
@@ -2215,35 +2244,39 @@ export namespace Prisma {
     user?: boolean | UserArgs
   }
 
-
   export type PasswordInclude = {
     user?: boolean | UserArgs
   }
 
-  export type PasswordGetPayload<S extends boolean | null | undefined | PasswordArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Password :
-    S extends undefined ? never :
-    S extends { include: any } & (PasswordArgs | PasswordFindManyArgs)
+  export type PasswordGetPayload<
+    S extends boolean | null | undefined | PasswordArgs,
+    U = keyof S
+      > = S extends true
+        ? Password
+    : S extends undefined
+    ? never
+    : S extends PasswordArgs | PasswordFindManyArgs
+    ?'include' extends U
     ? Password  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (PasswordArgs | PasswordFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<S['select'][P]> :  P extends keyof Password ? Password[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Password ? Password[P] : never
   } 
-      : Password
+    : Password
+  : Password
 
 
-  type PasswordCountArgs = 
+  type PasswordCountArgs = Merge<
     Omit<PasswordFindManyArgs, 'select' | 'include'> & {
       select?: PasswordCountAggregateInputType | true
     }
+  >
 
   export interface PasswordDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one Password that matches the filter.
      * @param {PasswordFindUniqueArgs} args - Arguments to find a Password
@@ -2257,23 +2290,7 @@ export namespace Prisma {
     **/
     findUnique<T extends PasswordFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, PasswordFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Password'> extends True ? Prisma__PasswordClient<PasswordGetPayload<T>> : Prisma__PasswordClient<PasswordGetPayload<T> | null, null>
-
-    /**
-     * Find one Password that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {PasswordFindUniqueOrThrowArgs} args - Arguments to find a Password
-     * @example
-     * // Get one Password
-     * const password = await prisma.password.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends PasswordFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, PasswordFindUniqueOrThrowArgs>
-    ): Prisma__PasswordClient<PasswordGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Password'> extends True ? CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>> : CheckSelect<T, Prisma__PasswordClient<Password | null, null>, Prisma__PasswordClient<PasswordGetPayload<T> | null, null>>
 
     /**
      * Find the first Password that matches the filter.
@@ -2290,25 +2307,7 @@ export namespace Prisma {
     **/
     findFirst<T extends PasswordFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, PasswordFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Password'> extends True ? Prisma__PasswordClient<PasswordGetPayload<T>> : Prisma__PasswordClient<PasswordGetPayload<T> | null, null>
-
-    /**
-     * Find the first Password that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PasswordFindFirstOrThrowArgs} args - Arguments to find a Password
-     * @example
-     * // Get one Password
-     * const password = await prisma.password.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends PasswordFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, PasswordFindFirstOrThrowArgs>
-    ): Prisma__PasswordClient<PasswordGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Password'> extends True ? CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>> : CheckSelect<T, Prisma__PasswordClient<Password | null, null>, Prisma__PasswordClient<PasswordGetPayload<T> | null, null>>
 
     /**
      * Find zero or more Passwords that matches the filter.
@@ -2328,7 +2327,7 @@ export namespace Prisma {
     **/
     findMany<T extends PasswordFindManyArgs>(
       args?: SelectSubset<T, PasswordFindManyArgs>
-    ): Prisma.PrismaPromise<Array<PasswordGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<Password>>, PrismaPromise<Array<PasswordGetPayload<T>>>>
 
     /**
      * Create a Password.
@@ -2344,7 +2343,7 @@ export namespace Prisma {
     **/
     create<T extends PasswordCreateArgs>(
       args: SelectSubset<T, PasswordCreateArgs>
-    ): Prisma__PasswordClient<PasswordGetPayload<T>>
+    ): CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>>
 
     /**
      * Create many Passwords.
@@ -2360,7 +2359,7 @@ export namespace Prisma {
     **/
     createMany<T extends PasswordCreateManyArgs>(
       args?: SelectSubset<T, PasswordCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Password.
@@ -2376,7 +2375,7 @@ export namespace Prisma {
     **/
     delete<T extends PasswordDeleteArgs>(
       args: SelectSubset<T, PasswordDeleteArgs>
-    ): Prisma__PasswordClient<PasswordGetPayload<T>>
+    ): CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>>
 
     /**
      * Update one Password.
@@ -2395,7 +2394,7 @@ export namespace Prisma {
     **/
     update<T extends PasswordUpdateArgs>(
       args: SelectSubset<T, PasswordUpdateArgs>
-    ): Prisma__PasswordClient<PasswordGetPayload<T>>
+    ): CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>>
 
     /**
      * Delete zero or more Passwords.
@@ -2411,7 +2410,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends PasswordDeleteManyArgs>(
       args?: SelectSubset<T, PasswordDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Passwords.
@@ -2432,7 +2431,7 @@ export namespace Prisma {
     **/
     updateMany<T extends PasswordUpdateManyArgs>(
       args: SelectSubset<T, PasswordUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Password.
@@ -2453,7 +2452,41 @@ export namespace Prisma {
     **/
     upsert<T extends PasswordUpsertArgs>(
       args: SelectSubset<T, PasswordUpsertArgs>
-    ): Prisma__PasswordClient<PasswordGetPayload<T>>
+    ): CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>>
+
+    /**
+     * Find one Password that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {PasswordFindUniqueOrThrowArgs} args - Arguments to find a Password
+     * @example
+     * // Get one Password
+     * const password = await prisma.password.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends PasswordFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, PasswordFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>>
+
+    /**
+     * Find the first Password that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {PasswordFindFirstOrThrowArgs} args - Arguments to find a Password
+     * @example
+     * // Get one Password
+     * const password = await prisma.password.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends PasswordFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, PasswordFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__PasswordClient<Password>, Prisma__PasswordClient<PasswordGetPayload<T>>>
 
     /**
      * Count the number of Passwords.
@@ -2470,7 +2503,7 @@ export namespace Prisma {
     **/
     count<T extends PasswordCountArgs>(
       args?: Subset<T, PasswordCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -2502,7 +2535,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends PasswordAggregateArgs>(args: Subset<T, PasswordAggregateArgs>): Prisma.PrismaPromise<GetPasswordAggregateType<T>>
+    aggregate<T extends PasswordAggregateArgs>(args: Subset<T, PasswordAggregateArgs>): PrismaPromise<GetPasswordAggregateType<T>>
 
     /**
      * Group by Password.
@@ -2579,7 +2612,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, PasswordGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPasswordGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, PasswordGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPasswordGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -2589,8 +2622,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__PasswordClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__PasswordClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -2601,10 +2636,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    user<T extends UserArgs= {}>(args?: Subset<T, UserArgs>): Prisma__UserClient<UserGetPayload<T> | Null>;
+    user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -2639,20 +2674,23 @@ export namespace Prisma {
   export type PasswordFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
     /**
      * Filter, which Password to fetch.
-     */
+     * 
+    **/
     where: PasswordWhereUniqueInput
   }
 
   /**
-   * Password findUnique
+   * Password: findUnique
    */
   export interface PasswordFindUniqueArgs extends PasswordFindUniqueArgsBase {
    /**
@@ -2664,74 +2702,63 @@ export namespace Prisma {
       
 
   /**
-   * Password findUniqueOrThrow
-   */
-  export type PasswordFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Password
-     */
-    select?: PasswordSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: PasswordInclude | null
-    /**
-     * Filter, which Password to fetch.
-     */
-    where: PasswordWhereUniqueInput
-  }
-
-
-  /**
    * Password base type for findFirst actions
    */
   export type PasswordFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
     /**
      * Filter, which Password to fetch.
-     */
+     * 
+    **/
     where?: PasswordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Passwords to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<PasswordOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Passwords.
-     */
+     * 
+    **/
     cursor?: PasswordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Passwords from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Passwords.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Passwords.
-     */
+     * 
+    **/
     distinct?: Enumerable<PasswordScalarFieldEnum>
   }
 
   /**
-   * Password findFirst
+   * Password: findFirst
    */
   export interface PasswordFindFirstArgs extends PasswordFindFirstArgsBase {
    /**
@@ -2743,93 +2770,51 @@ export namespace Prisma {
       
 
   /**
-   * Password findFirstOrThrow
-   */
-  export type PasswordFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Password
-     */
-    select?: PasswordSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: PasswordInclude | null
-    /**
-     * Filter, which Password to fetch.
-     */
-    where?: PasswordWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Passwords to fetch.
-     */
-    orderBy?: Enumerable<PasswordOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Passwords.
-     */
-    cursor?: PasswordWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Passwords from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Passwords.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Passwords.
-     */
-    distinct?: Enumerable<PasswordScalarFieldEnum>
-  }
-
-
-  /**
    * Password findMany
    */
   export type PasswordFindManyArgs = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
     /**
      * Filter, which Passwords to fetch.
-     */
+     * 
+    **/
     where?: PasswordWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Passwords to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<PasswordOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Passwords.
-     */
+     * 
+    **/
     cursor?: PasswordWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Passwords from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Passwords.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<PasswordScalarFieldEnum>
   }
@@ -2841,15 +2826,18 @@ export namespace Prisma {
   export type PasswordCreateArgs = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
     /**
      * The data needed to create a Password.
-     */
+     * 
+    **/
     data: XOR<PasswordCreateInput, PasswordUncheckedCreateInput>
   }
 
@@ -2860,7 +2848,8 @@ export namespace Prisma {
   export type PasswordCreateManyArgs = {
     /**
      * The data used to create many Passwords.
-     */
+     * 
+    **/
     data: Enumerable<PasswordCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -2872,19 +2861,23 @@ export namespace Prisma {
   export type PasswordUpdateArgs = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
     /**
      * The data needed to update a Password.
-     */
+     * 
+    **/
     data: XOR<PasswordUpdateInput, PasswordUncheckedUpdateInput>
     /**
      * Choose, which Password to update.
-     */
+     * 
+    **/
     where: PasswordWhereUniqueInput
   }
 
@@ -2895,11 +2888,13 @@ export namespace Prisma {
   export type PasswordUpdateManyArgs = {
     /**
      * The data used to update Passwords.
-     */
+     * 
+    **/
     data: XOR<PasswordUpdateManyMutationInput, PasswordUncheckedUpdateManyInput>
     /**
      * Filter which Passwords to update
-     */
+     * 
+    **/
     where?: PasswordWhereInput
   }
 
@@ -2910,23 +2905,28 @@ export namespace Prisma {
   export type PasswordUpsertArgs = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
     /**
      * The filter to search for the Password to update in case it exists.
-     */
+     * 
+    **/
     where: PasswordWhereUniqueInput
     /**
      * In case the Password found by the `where` argument doesn't exist, create a new Password with this data.
-     */
+     * 
+    **/
     create: XOR<PasswordCreateInput, PasswordUncheckedCreateInput>
     /**
      * In case the Password was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<PasswordUpdateInput, PasswordUncheckedUpdateInput>
   }
 
@@ -2937,15 +2937,18 @@ export namespace Prisma {
   export type PasswordDeleteArgs = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
     /**
      * Filter which Password to delete.
-     */
+     * 
+    **/
     where: PasswordWhereUniqueInput
   }
 
@@ -2956,10 +2959,23 @@ export namespace Prisma {
   export type PasswordDeleteManyArgs = {
     /**
      * Filter which Passwords to delete
-     */
+     * 
+    **/
     where?: PasswordWhereInput
   }
 
+
+  /**
+   * Password: findUniqueOrThrow
+   */
+  export type PasswordFindUniqueOrThrowArgs = PasswordFindUniqueArgsBase
+      
+
+  /**
+   * Password: findFirstOrThrow
+   */
+  export type PasswordFindFirstOrThrowArgs = PasswordFindFirstArgsBase
+      
 
   /**
    * Password without action
@@ -2967,11 +2983,13 @@ export namespace Prisma {
   export type PasswordArgs = {
     /**
      * Select specific fields to fetch from the Password
-     */
+     * 
+    **/
     select?: PasswordSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: PasswordInclude | null
   }
 
@@ -3060,31 +3078,36 @@ export namespace Prisma {
   export type YoutubeCredentialsAggregateArgs = {
     /**
      * Filter which YoutubeCredentials to aggregate.
-     */
+     * 
+    **/
     where?: YoutubeCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of YoutubeCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<YoutubeCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: YoutubeCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` YoutubeCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` YoutubeCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -3120,7 +3143,7 @@ export namespace Prisma {
   export type YoutubeCredentialsGroupByArgs = {
     where?: YoutubeCredentialsWhereInput
     orderBy?: Enumerable<YoutubeCredentialsOrderByWithAggregationInput>
-    by: YoutubeCredentialsScalarFieldEnum[]
+    by: Array<YoutubeCredentialsScalarFieldEnum>
     having?: YoutubeCredentialsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -3144,7 +3167,7 @@ export namespace Prisma {
     _max: YoutubeCredentialsMaxAggregateOutputType | null
   }
 
-  type GetYoutubeCredentialsGroupByPayload<T extends YoutubeCredentialsGroupByArgs> = Prisma.PrismaPromise<
+  type GetYoutubeCredentialsGroupByPayload<T extends YoutubeCredentialsGroupByArgs> = PrismaPromise<
     Array<
       PickArray<YoutubeCredentialsGroupByOutputType, T['by']> &
         {
@@ -3170,35 +3193,39 @@ export namespace Prisma {
     project?: boolean | ProjectArgs
   }
 
-
   export type YoutubeCredentialsInclude = {
     project?: boolean | ProjectArgs
   }
 
-  export type YoutubeCredentialsGetPayload<S extends boolean | null | undefined | YoutubeCredentialsArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? YoutubeCredentials :
-    S extends undefined ? never :
-    S extends { include: any } & (YoutubeCredentialsArgs | YoutubeCredentialsFindManyArgs)
+  export type YoutubeCredentialsGetPayload<
+    S extends boolean | null | undefined | YoutubeCredentialsArgs,
+    U = keyof S
+      > = S extends true
+        ? YoutubeCredentials
+    : S extends undefined
+    ? never
+    : S extends YoutubeCredentialsArgs | YoutubeCredentialsFindManyArgs
+    ?'include' extends U
     ? YoutubeCredentials  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (YoutubeCredentialsArgs | YoutubeCredentialsFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<S['select'][P]> :  P extends keyof YoutubeCredentials ? YoutubeCredentials[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof YoutubeCredentials ? YoutubeCredentials[P] : never
   } 
-      : YoutubeCredentials
+    : YoutubeCredentials
+  : YoutubeCredentials
 
 
-  type YoutubeCredentialsCountArgs = 
+  type YoutubeCredentialsCountArgs = Merge<
     Omit<YoutubeCredentialsFindManyArgs, 'select' | 'include'> & {
       select?: YoutubeCredentialsCountAggregateInputType | true
     }
+  >
 
   export interface YoutubeCredentialsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one YoutubeCredentials that matches the filter.
      * @param {YoutubeCredentialsFindUniqueArgs} args - Arguments to find a YoutubeCredentials
@@ -3212,23 +3239,7 @@ export namespace Prisma {
     **/
     findUnique<T extends YoutubeCredentialsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, YoutubeCredentialsFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'YoutubeCredentials'> extends True ? Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>> : Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find one YoutubeCredentials that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {YoutubeCredentialsFindUniqueOrThrowArgs} args - Arguments to find a YoutubeCredentials
-     * @example
-     * // Get one YoutubeCredentials
-     * const youtubeCredentials = await prisma.youtubeCredentials.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends YoutubeCredentialsFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, YoutubeCredentialsFindUniqueOrThrowArgs>
-    ): Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'YoutubeCredentials'> extends True ? CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials | null, null>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find the first YoutubeCredentials that matches the filter.
@@ -3245,25 +3256,7 @@ export namespace Prisma {
     **/
     findFirst<T extends YoutubeCredentialsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, YoutubeCredentialsFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'YoutubeCredentials'> extends True ? Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>> : Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find the first YoutubeCredentials that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {YoutubeCredentialsFindFirstOrThrowArgs} args - Arguments to find a YoutubeCredentials
-     * @example
-     * // Get one YoutubeCredentials
-     * const youtubeCredentials = await prisma.youtubeCredentials.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends YoutubeCredentialsFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, YoutubeCredentialsFindFirstOrThrowArgs>
-    ): Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'YoutubeCredentials'> extends True ? CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials | null, null>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find zero or more YoutubeCredentials that matches the filter.
@@ -3283,7 +3276,7 @@ export namespace Prisma {
     **/
     findMany<T extends YoutubeCredentialsFindManyArgs>(
       args?: SelectSubset<T, YoutubeCredentialsFindManyArgs>
-    ): Prisma.PrismaPromise<Array<YoutubeCredentialsGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<YoutubeCredentials>>, PrismaPromise<Array<YoutubeCredentialsGetPayload<T>>>>
 
     /**
      * Create a YoutubeCredentials.
@@ -3299,7 +3292,7 @@ export namespace Prisma {
     **/
     create<T extends YoutubeCredentialsCreateArgs>(
       args: SelectSubset<T, YoutubeCredentialsCreateArgs>
-    ): Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>>
 
     /**
      * Create many YoutubeCredentials.
@@ -3315,7 +3308,7 @@ export namespace Prisma {
     **/
     createMany<T extends YoutubeCredentialsCreateManyArgs>(
       args?: SelectSubset<T, YoutubeCredentialsCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a YoutubeCredentials.
@@ -3331,7 +3324,7 @@ export namespace Prisma {
     **/
     delete<T extends YoutubeCredentialsDeleteArgs>(
       args: SelectSubset<T, YoutubeCredentialsDeleteArgs>
-    ): Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>>
 
     /**
      * Update one YoutubeCredentials.
@@ -3350,7 +3343,7 @@ export namespace Prisma {
     **/
     update<T extends YoutubeCredentialsUpdateArgs>(
       args: SelectSubset<T, YoutubeCredentialsUpdateArgs>
-    ): Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>>
 
     /**
      * Delete zero or more YoutubeCredentials.
@@ -3366,7 +3359,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends YoutubeCredentialsDeleteManyArgs>(
       args?: SelectSubset<T, YoutubeCredentialsDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more YoutubeCredentials.
@@ -3387,7 +3380,7 @@ export namespace Prisma {
     **/
     updateMany<T extends YoutubeCredentialsUpdateManyArgs>(
       args: SelectSubset<T, YoutubeCredentialsUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one YoutubeCredentials.
@@ -3408,7 +3401,41 @@ export namespace Prisma {
     **/
     upsert<T extends YoutubeCredentialsUpsertArgs>(
       args: SelectSubset<T, YoutubeCredentialsUpsertArgs>
-    ): Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>>
+
+    /**
+     * Find one YoutubeCredentials that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {YoutubeCredentialsFindUniqueOrThrowArgs} args - Arguments to find a YoutubeCredentials
+     * @example
+     * // Get one YoutubeCredentials
+     * const youtubeCredentials = await prisma.youtubeCredentials.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends YoutubeCredentialsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, YoutubeCredentialsFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>>
+
+    /**
+     * Find the first YoutubeCredentials that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {YoutubeCredentialsFindFirstOrThrowArgs} args - Arguments to find a YoutubeCredentials
+     * @example
+     * // Get one YoutubeCredentials
+     * const youtubeCredentials = await prisma.youtubeCredentials.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends YoutubeCredentialsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, YoutubeCredentialsFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T>>>
 
     /**
      * Count the number of YoutubeCredentials.
@@ -3425,7 +3452,7 @@ export namespace Prisma {
     **/
     count<T extends YoutubeCredentialsCountArgs>(
       args?: Subset<T, YoutubeCredentialsCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -3457,7 +3484,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends YoutubeCredentialsAggregateArgs>(args: Subset<T, YoutubeCredentialsAggregateArgs>): Prisma.PrismaPromise<GetYoutubeCredentialsAggregateType<T>>
+    aggregate<T extends YoutubeCredentialsAggregateArgs>(args: Subset<T, YoutubeCredentialsAggregateArgs>): PrismaPromise<GetYoutubeCredentialsAggregateType<T>>
 
     /**
      * Group by YoutubeCredentials.
@@ -3534,7 +3561,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, YoutubeCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetYoutubeCredentialsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, YoutubeCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetYoutubeCredentialsGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -3544,8 +3571,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__YoutubeCredentialsClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__YoutubeCredentialsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -3556,10 +3585,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    project<T extends ProjectArgs= {}>(args?: Subset<T, ProjectArgs>): Prisma__ProjectClient<ProjectGetPayload<T> | Null>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -3594,20 +3623,23 @@ export namespace Prisma {
   export type YoutubeCredentialsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
     /**
      * Filter, which YoutubeCredentials to fetch.
-     */
+     * 
+    **/
     where: YoutubeCredentialsWhereUniqueInput
   }
 
   /**
-   * YoutubeCredentials findUnique
+   * YoutubeCredentials: findUnique
    */
   export interface YoutubeCredentialsFindUniqueArgs extends YoutubeCredentialsFindUniqueArgsBase {
    /**
@@ -3619,74 +3651,63 @@ export namespace Prisma {
       
 
   /**
-   * YoutubeCredentials findUniqueOrThrow
-   */
-  export type YoutubeCredentialsFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeCredentials
-     */
-    select?: YoutubeCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: YoutubeCredentialsInclude | null
-    /**
-     * Filter, which YoutubeCredentials to fetch.
-     */
-    where: YoutubeCredentialsWhereUniqueInput
-  }
-
-
-  /**
    * YoutubeCredentials base type for findFirst actions
    */
   export type YoutubeCredentialsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
     /**
      * Filter, which YoutubeCredentials to fetch.
-     */
+     * 
+    **/
     where?: YoutubeCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of YoutubeCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<YoutubeCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for YoutubeCredentials.
-     */
+     * 
+    **/
     cursor?: YoutubeCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` YoutubeCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` YoutubeCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of YoutubeCredentials.
-     */
+     * 
+    **/
     distinct?: Enumerable<YoutubeCredentialsScalarFieldEnum>
   }
 
   /**
-   * YoutubeCredentials findFirst
+   * YoutubeCredentials: findFirst
    */
   export interface YoutubeCredentialsFindFirstArgs extends YoutubeCredentialsFindFirstArgsBase {
    /**
@@ -3698,93 +3719,51 @@ export namespace Prisma {
       
 
   /**
-   * YoutubeCredentials findFirstOrThrow
-   */
-  export type YoutubeCredentialsFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the YoutubeCredentials
-     */
-    select?: YoutubeCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: YoutubeCredentialsInclude | null
-    /**
-     * Filter, which YoutubeCredentials to fetch.
-     */
-    where?: YoutubeCredentialsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of YoutubeCredentials to fetch.
-     */
-    orderBy?: Enumerable<YoutubeCredentialsOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for YoutubeCredentials.
-     */
-    cursor?: YoutubeCredentialsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` YoutubeCredentials from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` YoutubeCredentials.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of YoutubeCredentials.
-     */
-    distinct?: Enumerable<YoutubeCredentialsScalarFieldEnum>
-  }
-
-
-  /**
    * YoutubeCredentials findMany
    */
   export type YoutubeCredentialsFindManyArgs = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
     /**
      * Filter, which YoutubeCredentials to fetch.
-     */
+     * 
+    **/
     where?: YoutubeCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of YoutubeCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<YoutubeCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing YoutubeCredentials.
-     */
+     * 
+    **/
     cursor?: YoutubeCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` YoutubeCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` YoutubeCredentials.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<YoutubeCredentialsScalarFieldEnum>
   }
@@ -3796,15 +3775,18 @@ export namespace Prisma {
   export type YoutubeCredentialsCreateArgs = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
     /**
      * The data needed to create a YoutubeCredentials.
-     */
+     * 
+    **/
     data: XOR<YoutubeCredentialsCreateInput, YoutubeCredentialsUncheckedCreateInput>
   }
 
@@ -3815,7 +3797,8 @@ export namespace Prisma {
   export type YoutubeCredentialsCreateManyArgs = {
     /**
      * The data used to create many YoutubeCredentials.
-     */
+     * 
+    **/
     data: Enumerable<YoutubeCredentialsCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -3827,19 +3810,23 @@ export namespace Prisma {
   export type YoutubeCredentialsUpdateArgs = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
     /**
      * The data needed to update a YoutubeCredentials.
-     */
+     * 
+    **/
     data: XOR<YoutubeCredentialsUpdateInput, YoutubeCredentialsUncheckedUpdateInput>
     /**
      * Choose, which YoutubeCredentials to update.
-     */
+     * 
+    **/
     where: YoutubeCredentialsWhereUniqueInput
   }
 
@@ -3850,11 +3837,13 @@ export namespace Prisma {
   export type YoutubeCredentialsUpdateManyArgs = {
     /**
      * The data used to update YoutubeCredentials.
-     */
+     * 
+    **/
     data: XOR<YoutubeCredentialsUpdateManyMutationInput, YoutubeCredentialsUncheckedUpdateManyInput>
     /**
      * Filter which YoutubeCredentials to update
-     */
+     * 
+    **/
     where?: YoutubeCredentialsWhereInput
   }
 
@@ -3865,23 +3854,28 @@ export namespace Prisma {
   export type YoutubeCredentialsUpsertArgs = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
     /**
      * The filter to search for the YoutubeCredentials to update in case it exists.
-     */
+     * 
+    **/
     where: YoutubeCredentialsWhereUniqueInput
     /**
      * In case the YoutubeCredentials found by the `where` argument doesn't exist, create a new YoutubeCredentials with this data.
-     */
+     * 
+    **/
     create: XOR<YoutubeCredentialsCreateInput, YoutubeCredentialsUncheckedCreateInput>
     /**
      * In case the YoutubeCredentials was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<YoutubeCredentialsUpdateInput, YoutubeCredentialsUncheckedUpdateInput>
   }
 
@@ -3892,15 +3886,18 @@ export namespace Prisma {
   export type YoutubeCredentialsDeleteArgs = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
     /**
      * Filter which YoutubeCredentials to delete.
-     */
+     * 
+    **/
     where: YoutubeCredentialsWhereUniqueInput
   }
 
@@ -3911,10 +3908,23 @@ export namespace Prisma {
   export type YoutubeCredentialsDeleteManyArgs = {
     /**
      * Filter which YoutubeCredentials to delete
-     */
+     * 
+    **/
     where?: YoutubeCredentialsWhereInput
   }
 
+
+  /**
+   * YoutubeCredentials: findUniqueOrThrow
+   */
+  export type YoutubeCredentialsFindUniqueOrThrowArgs = YoutubeCredentialsFindUniqueArgsBase
+      
+
+  /**
+   * YoutubeCredentials: findFirstOrThrow
+   */
+  export type YoutubeCredentialsFindFirstOrThrowArgs = YoutubeCredentialsFindFirstArgsBase
+      
 
   /**
    * YoutubeCredentials without action
@@ -3922,11 +3932,13 @@ export namespace Prisma {
   export type YoutubeCredentialsArgs = {
     /**
      * Select specific fields to fetch from the YoutubeCredentials
-     */
+     * 
+    **/
     select?: YoutubeCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: YoutubeCredentialsInclude | null
   }
 
@@ -4003,31 +4015,36 @@ export namespace Prisma {
   export type InstagramCredentialsAggregateArgs = {
     /**
      * Filter which InstagramCredentials to aggregate.
-     */
+     * 
+    **/
     where?: InstagramCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of InstagramCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<InstagramCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: InstagramCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` InstagramCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` InstagramCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -4063,7 +4080,7 @@ export namespace Prisma {
   export type InstagramCredentialsGroupByArgs = {
     where?: InstagramCredentialsWhereInput
     orderBy?: Enumerable<InstagramCredentialsOrderByWithAggregationInput>
-    by: InstagramCredentialsScalarFieldEnum[]
+    by: Array<InstagramCredentialsScalarFieldEnum>
     having?: InstagramCredentialsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -4085,7 +4102,7 @@ export namespace Prisma {
     _max: InstagramCredentialsMaxAggregateOutputType | null
   }
 
-  type GetInstagramCredentialsGroupByPayload<T extends InstagramCredentialsGroupByArgs> = Prisma.PrismaPromise<
+  type GetInstagramCredentialsGroupByPayload<T extends InstagramCredentialsGroupByArgs> = PrismaPromise<
     Array<
       PickArray<InstagramCredentialsGroupByOutputType, T['by']> &
         {
@@ -4109,35 +4126,39 @@ export namespace Prisma {
     project?: boolean | ProjectArgs
   }
 
-
   export type InstagramCredentialsInclude = {
     project?: boolean | ProjectArgs
   }
 
-  export type InstagramCredentialsGetPayload<S extends boolean | null | undefined | InstagramCredentialsArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? InstagramCredentials :
-    S extends undefined ? never :
-    S extends { include: any } & (InstagramCredentialsArgs | InstagramCredentialsFindManyArgs)
+  export type InstagramCredentialsGetPayload<
+    S extends boolean | null | undefined | InstagramCredentialsArgs,
+    U = keyof S
+      > = S extends true
+        ? InstagramCredentials
+    : S extends undefined
+    ? never
+    : S extends InstagramCredentialsArgs | InstagramCredentialsFindManyArgs
+    ?'include' extends U
     ? InstagramCredentials  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (InstagramCredentialsArgs | InstagramCredentialsFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<S['select'][P]> :  P extends keyof InstagramCredentials ? InstagramCredentials[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof InstagramCredentials ? InstagramCredentials[P] : never
   } 
-      : InstagramCredentials
+    : InstagramCredentials
+  : InstagramCredentials
 
 
-  type InstagramCredentialsCountArgs = 
+  type InstagramCredentialsCountArgs = Merge<
     Omit<InstagramCredentialsFindManyArgs, 'select' | 'include'> & {
       select?: InstagramCredentialsCountAggregateInputType | true
     }
+  >
 
   export interface InstagramCredentialsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one InstagramCredentials that matches the filter.
      * @param {InstagramCredentialsFindUniqueArgs} args - Arguments to find a InstagramCredentials
@@ -4151,23 +4172,7 @@ export namespace Prisma {
     **/
     findUnique<T extends InstagramCredentialsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, InstagramCredentialsFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'InstagramCredentials'> extends True ? Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>> : Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find one InstagramCredentials that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {InstagramCredentialsFindUniqueOrThrowArgs} args - Arguments to find a InstagramCredentials
-     * @example
-     * // Get one InstagramCredentials
-     * const instagramCredentials = await prisma.instagramCredentials.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends InstagramCredentialsFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, InstagramCredentialsFindUniqueOrThrowArgs>
-    ): Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'InstagramCredentials'> extends True ? CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials | null, null>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find the first InstagramCredentials that matches the filter.
@@ -4184,25 +4189,7 @@ export namespace Prisma {
     **/
     findFirst<T extends InstagramCredentialsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, InstagramCredentialsFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'InstagramCredentials'> extends True ? Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>> : Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find the first InstagramCredentials that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {InstagramCredentialsFindFirstOrThrowArgs} args - Arguments to find a InstagramCredentials
-     * @example
-     * // Get one InstagramCredentials
-     * const instagramCredentials = await prisma.instagramCredentials.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends InstagramCredentialsFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, InstagramCredentialsFindFirstOrThrowArgs>
-    ): Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'InstagramCredentials'> extends True ? CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials | null, null>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find zero or more InstagramCredentials that matches the filter.
@@ -4222,7 +4209,7 @@ export namespace Prisma {
     **/
     findMany<T extends InstagramCredentialsFindManyArgs>(
       args?: SelectSubset<T, InstagramCredentialsFindManyArgs>
-    ): Prisma.PrismaPromise<Array<InstagramCredentialsGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<InstagramCredentials>>, PrismaPromise<Array<InstagramCredentialsGetPayload<T>>>>
 
     /**
      * Create a InstagramCredentials.
@@ -4238,7 +4225,7 @@ export namespace Prisma {
     **/
     create<T extends InstagramCredentialsCreateArgs>(
       args: SelectSubset<T, InstagramCredentialsCreateArgs>
-    ): Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>>
 
     /**
      * Create many InstagramCredentials.
@@ -4254,7 +4241,7 @@ export namespace Prisma {
     **/
     createMany<T extends InstagramCredentialsCreateManyArgs>(
       args?: SelectSubset<T, InstagramCredentialsCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a InstagramCredentials.
@@ -4270,7 +4257,7 @@ export namespace Prisma {
     **/
     delete<T extends InstagramCredentialsDeleteArgs>(
       args: SelectSubset<T, InstagramCredentialsDeleteArgs>
-    ): Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>>
 
     /**
      * Update one InstagramCredentials.
@@ -4289,7 +4276,7 @@ export namespace Prisma {
     **/
     update<T extends InstagramCredentialsUpdateArgs>(
       args: SelectSubset<T, InstagramCredentialsUpdateArgs>
-    ): Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>>
 
     /**
      * Delete zero or more InstagramCredentials.
@@ -4305,7 +4292,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends InstagramCredentialsDeleteManyArgs>(
       args?: SelectSubset<T, InstagramCredentialsDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more InstagramCredentials.
@@ -4326,7 +4313,7 @@ export namespace Prisma {
     **/
     updateMany<T extends InstagramCredentialsUpdateManyArgs>(
       args: SelectSubset<T, InstagramCredentialsUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one InstagramCredentials.
@@ -4347,7 +4334,41 @@ export namespace Prisma {
     **/
     upsert<T extends InstagramCredentialsUpsertArgs>(
       args: SelectSubset<T, InstagramCredentialsUpsertArgs>
-    ): Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>>
+
+    /**
+     * Find one InstagramCredentials that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {InstagramCredentialsFindUniqueOrThrowArgs} args - Arguments to find a InstagramCredentials
+     * @example
+     * // Get one InstagramCredentials
+     * const instagramCredentials = await prisma.instagramCredentials.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends InstagramCredentialsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, InstagramCredentialsFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>>
+
+    /**
+     * Find the first InstagramCredentials that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {InstagramCredentialsFindFirstOrThrowArgs} args - Arguments to find a InstagramCredentials
+     * @example
+     * // Get one InstagramCredentials
+     * const instagramCredentials = await prisma.instagramCredentials.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends InstagramCredentialsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, InstagramCredentialsFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T>>>
 
     /**
      * Count the number of InstagramCredentials.
@@ -4364,7 +4385,7 @@ export namespace Prisma {
     **/
     count<T extends InstagramCredentialsCountArgs>(
       args?: Subset<T, InstagramCredentialsCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -4396,7 +4417,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends InstagramCredentialsAggregateArgs>(args: Subset<T, InstagramCredentialsAggregateArgs>): Prisma.PrismaPromise<GetInstagramCredentialsAggregateType<T>>
+    aggregate<T extends InstagramCredentialsAggregateArgs>(args: Subset<T, InstagramCredentialsAggregateArgs>): PrismaPromise<GetInstagramCredentialsAggregateType<T>>
 
     /**
      * Group by InstagramCredentials.
@@ -4473,7 +4494,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, InstagramCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInstagramCredentialsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, InstagramCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetInstagramCredentialsGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -4483,8 +4504,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__InstagramCredentialsClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__InstagramCredentialsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -4495,10 +4518,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    project<T extends ProjectArgs= {}>(args?: Subset<T, ProjectArgs>): Prisma__ProjectClient<ProjectGetPayload<T> | Null>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -4533,20 +4556,23 @@ export namespace Prisma {
   export type InstagramCredentialsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
     /**
      * Filter, which InstagramCredentials to fetch.
-     */
+     * 
+    **/
     where: InstagramCredentialsWhereUniqueInput
   }
 
   /**
-   * InstagramCredentials findUnique
+   * InstagramCredentials: findUnique
    */
   export interface InstagramCredentialsFindUniqueArgs extends InstagramCredentialsFindUniqueArgsBase {
    /**
@@ -4558,74 +4584,63 @@ export namespace Prisma {
       
 
   /**
-   * InstagramCredentials findUniqueOrThrow
-   */
-  export type InstagramCredentialsFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramCredentials
-     */
-    select?: InstagramCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: InstagramCredentialsInclude | null
-    /**
-     * Filter, which InstagramCredentials to fetch.
-     */
-    where: InstagramCredentialsWhereUniqueInput
-  }
-
-
-  /**
    * InstagramCredentials base type for findFirst actions
    */
   export type InstagramCredentialsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
     /**
      * Filter, which InstagramCredentials to fetch.
-     */
+     * 
+    **/
     where?: InstagramCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of InstagramCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<InstagramCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for InstagramCredentials.
-     */
+     * 
+    **/
     cursor?: InstagramCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` InstagramCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` InstagramCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of InstagramCredentials.
-     */
+     * 
+    **/
     distinct?: Enumerable<InstagramCredentialsScalarFieldEnum>
   }
 
   /**
-   * InstagramCredentials findFirst
+   * InstagramCredentials: findFirst
    */
   export interface InstagramCredentialsFindFirstArgs extends InstagramCredentialsFindFirstArgsBase {
    /**
@@ -4637,93 +4652,51 @@ export namespace Prisma {
       
 
   /**
-   * InstagramCredentials findFirstOrThrow
-   */
-  export type InstagramCredentialsFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the InstagramCredentials
-     */
-    select?: InstagramCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: InstagramCredentialsInclude | null
-    /**
-     * Filter, which InstagramCredentials to fetch.
-     */
-    where?: InstagramCredentialsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of InstagramCredentials to fetch.
-     */
-    orderBy?: Enumerable<InstagramCredentialsOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for InstagramCredentials.
-     */
-    cursor?: InstagramCredentialsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` InstagramCredentials from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` InstagramCredentials.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of InstagramCredentials.
-     */
-    distinct?: Enumerable<InstagramCredentialsScalarFieldEnum>
-  }
-
-
-  /**
    * InstagramCredentials findMany
    */
   export type InstagramCredentialsFindManyArgs = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
     /**
      * Filter, which InstagramCredentials to fetch.
-     */
+     * 
+    **/
     where?: InstagramCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of InstagramCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<InstagramCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing InstagramCredentials.
-     */
+     * 
+    **/
     cursor?: InstagramCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` InstagramCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` InstagramCredentials.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<InstagramCredentialsScalarFieldEnum>
   }
@@ -4735,15 +4708,18 @@ export namespace Prisma {
   export type InstagramCredentialsCreateArgs = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
     /**
      * The data needed to create a InstagramCredentials.
-     */
+     * 
+    **/
     data: XOR<InstagramCredentialsCreateInput, InstagramCredentialsUncheckedCreateInput>
   }
 
@@ -4754,7 +4730,8 @@ export namespace Prisma {
   export type InstagramCredentialsCreateManyArgs = {
     /**
      * The data used to create many InstagramCredentials.
-     */
+     * 
+    **/
     data: Enumerable<InstagramCredentialsCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -4766,19 +4743,23 @@ export namespace Prisma {
   export type InstagramCredentialsUpdateArgs = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
     /**
      * The data needed to update a InstagramCredentials.
-     */
+     * 
+    **/
     data: XOR<InstagramCredentialsUpdateInput, InstagramCredentialsUncheckedUpdateInput>
     /**
      * Choose, which InstagramCredentials to update.
-     */
+     * 
+    **/
     where: InstagramCredentialsWhereUniqueInput
   }
 
@@ -4789,11 +4770,13 @@ export namespace Prisma {
   export type InstagramCredentialsUpdateManyArgs = {
     /**
      * The data used to update InstagramCredentials.
-     */
+     * 
+    **/
     data: XOR<InstagramCredentialsUpdateManyMutationInput, InstagramCredentialsUncheckedUpdateManyInput>
     /**
      * Filter which InstagramCredentials to update
-     */
+     * 
+    **/
     where?: InstagramCredentialsWhereInput
   }
 
@@ -4804,23 +4787,28 @@ export namespace Prisma {
   export type InstagramCredentialsUpsertArgs = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
     /**
      * The filter to search for the InstagramCredentials to update in case it exists.
-     */
+     * 
+    **/
     where: InstagramCredentialsWhereUniqueInput
     /**
      * In case the InstagramCredentials found by the `where` argument doesn't exist, create a new InstagramCredentials with this data.
-     */
+     * 
+    **/
     create: XOR<InstagramCredentialsCreateInput, InstagramCredentialsUncheckedCreateInput>
     /**
      * In case the InstagramCredentials was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<InstagramCredentialsUpdateInput, InstagramCredentialsUncheckedUpdateInput>
   }
 
@@ -4831,15 +4819,18 @@ export namespace Prisma {
   export type InstagramCredentialsDeleteArgs = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
     /**
      * Filter which InstagramCredentials to delete.
-     */
+     * 
+    **/
     where: InstagramCredentialsWhereUniqueInput
   }
 
@@ -4850,10 +4841,23 @@ export namespace Prisma {
   export type InstagramCredentialsDeleteManyArgs = {
     /**
      * Filter which InstagramCredentials to delete
-     */
+     * 
+    **/
     where?: InstagramCredentialsWhereInput
   }
 
+
+  /**
+   * InstagramCredentials: findUniqueOrThrow
+   */
+  export type InstagramCredentialsFindUniqueOrThrowArgs = InstagramCredentialsFindUniqueArgsBase
+      
+
+  /**
+   * InstagramCredentials: findFirstOrThrow
+   */
+  export type InstagramCredentialsFindFirstOrThrowArgs = InstagramCredentialsFindFirstArgsBase
+      
 
   /**
    * InstagramCredentials without action
@@ -4861,11 +4865,13 @@ export namespace Prisma {
   export type InstagramCredentialsArgs = {
     /**
      * Select specific fields to fetch from the InstagramCredentials
-     */
+     * 
+    **/
     select?: InstagramCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: InstagramCredentialsInclude | null
   }
 
@@ -4954,31 +4960,36 @@ export namespace Prisma {
   export type TikTokCredentialsAggregateArgs = {
     /**
      * Filter which TikTokCredentials to aggregate.
-     */
+     * 
+    **/
     where?: TikTokCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of TikTokCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<TikTokCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: TikTokCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` TikTokCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` TikTokCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -5014,7 +5025,7 @@ export namespace Prisma {
   export type TikTokCredentialsGroupByArgs = {
     where?: TikTokCredentialsWhereInput
     orderBy?: Enumerable<TikTokCredentialsOrderByWithAggregationInput>
-    by: TikTokCredentialsScalarFieldEnum[]
+    by: Array<TikTokCredentialsScalarFieldEnum>
     having?: TikTokCredentialsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -5038,7 +5049,7 @@ export namespace Prisma {
     _max: TikTokCredentialsMaxAggregateOutputType | null
   }
 
-  type GetTikTokCredentialsGroupByPayload<T extends TikTokCredentialsGroupByArgs> = Prisma.PrismaPromise<
+  type GetTikTokCredentialsGroupByPayload<T extends TikTokCredentialsGroupByArgs> = PrismaPromise<
     Array<
       PickArray<TikTokCredentialsGroupByOutputType, T['by']> &
         {
@@ -5064,35 +5075,39 @@ export namespace Prisma {
     project?: boolean | ProjectArgs
   }
 
-
   export type TikTokCredentialsInclude = {
     project?: boolean | ProjectArgs
   }
 
-  export type TikTokCredentialsGetPayload<S extends boolean | null | undefined | TikTokCredentialsArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? TikTokCredentials :
-    S extends undefined ? never :
-    S extends { include: any } & (TikTokCredentialsArgs | TikTokCredentialsFindManyArgs)
+  export type TikTokCredentialsGetPayload<
+    S extends boolean | null | undefined | TikTokCredentialsArgs,
+    U = keyof S
+      > = S extends true
+        ? TikTokCredentials
+    : S extends undefined
+    ? never
+    : S extends TikTokCredentialsArgs | TikTokCredentialsFindManyArgs
+    ?'include' extends U
     ? TikTokCredentials  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (TikTokCredentialsArgs | TikTokCredentialsFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<S['select'][P]> :  P extends keyof TikTokCredentials ? TikTokCredentials[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof TikTokCredentials ? TikTokCredentials[P] : never
   } 
-      : TikTokCredentials
+    : TikTokCredentials
+  : TikTokCredentials
 
 
-  type TikTokCredentialsCountArgs = 
+  type TikTokCredentialsCountArgs = Merge<
     Omit<TikTokCredentialsFindManyArgs, 'select' | 'include'> & {
       select?: TikTokCredentialsCountAggregateInputType | true
     }
+  >
 
   export interface TikTokCredentialsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one TikTokCredentials that matches the filter.
      * @param {TikTokCredentialsFindUniqueArgs} args - Arguments to find a TikTokCredentials
@@ -5106,23 +5121,7 @@ export namespace Prisma {
     **/
     findUnique<T extends TikTokCredentialsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, TikTokCredentialsFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TikTokCredentials'> extends True ? Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>> : Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find one TikTokCredentials that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {TikTokCredentialsFindUniqueOrThrowArgs} args - Arguments to find a TikTokCredentials
-     * @example
-     * // Get one TikTokCredentials
-     * const tikTokCredentials = await prisma.tikTokCredentials.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends TikTokCredentialsFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, TikTokCredentialsFindUniqueOrThrowArgs>
-    ): Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TikTokCredentials'> extends True ? CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials | null, null>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find the first TikTokCredentials that matches the filter.
@@ -5139,25 +5138,7 @@ export namespace Prisma {
     **/
     findFirst<T extends TikTokCredentialsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, TikTokCredentialsFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TikTokCredentials'> extends True ? Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>> : Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find the first TikTokCredentials that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TikTokCredentialsFindFirstOrThrowArgs} args - Arguments to find a TikTokCredentials
-     * @example
-     * // Get one TikTokCredentials
-     * const tikTokCredentials = await prisma.tikTokCredentials.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends TikTokCredentialsFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, TikTokCredentialsFindFirstOrThrowArgs>
-    ): Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TikTokCredentials'> extends True ? CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials | null, null>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find zero or more TikTokCredentials that matches the filter.
@@ -5177,7 +5158,7 @@ export namespace Prisma {
     **/
     findMany<T extends TikTokCredentialsFindManyArgs>(
       args?: SelectSubset<T, TikTokCredentialsFindManyArgs>
-    ): Prisma.PrismaPromise<Array<TikTokCredentialsGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<TikTokCredentials>>, PrismaPromise<Array<TikTokCredentialsGetPayload<T>>>>
 
     /**
      * Create a TikTokCredentials.
@@ -5193,7 +5174,7 @@ export namespace Prisma {
     **/
     create<T extends TikTokCredentialsCreateArgs>(
       args: SelectSubset<T, TikTokCredentialsCreateArgs>
-    ): Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>>
 
     /**
      * Create many TikTokCredentials.
@@ -5209,7 +5190,7 @@ export namespace Prisma {
     **/
     createMany<T extends TikTokCredentialsCreateManyArgs>(
       args?: SelectSubset<T, TikTokCredentialsCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a TikTokCredentials.
@@ -5225,7 +5206,7 @@ export namespace Prisma {
     **/
     delete<T extends TikTokCredentialsDeleteArgs>(
       args: SelectSubset<T, TikTokCredentialsDeleteArgs>
-    ): Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>>
 
     /**
      * Update one TikTokCredentials.
@@ -5244,7 +5225,7 @@ export namespace Prisma {
     **/
     update<T extends TikTokCredentialsUpdateArgs>(
       args: SelectSubset<T, TikTokCredentialsUpdateArgs>
-    ): Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>>
 
     /**
      * Delete zero or more TikTokCredentials.
@@ -5260,7 +5241,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends TikTokCredentialsDeleteManyArgs>(
       args?: SelectSubset<T, TikTokCredentialsDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more TikTokCredentials.
@@ -5281,7 +5262,7 @@ export namespace Prisma {
     **/
     updateMany<T extends TikTokCredentialsUpdateManyArgs>(
       args: SelectSubset<T, TikTokCredentialsUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one TikTokCredentials.
@@ -5302,7 +5283,41 @@ export namespace Prisma {
     **/
     upsert<T extends TikTokCredentialsUpsertArgs>(
       args: SelectSubset<T, TikTokCredentialsUpsertArgs>
-    ): Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>>
+
+    /**
+     * Find one TikTokCredentials that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {TikTokCredentialsFindUniqueOrThrowArgs} args - Arguments to find a TikTokCredentials
+     * @example
+     * // Get one TikTokCredentials
+     * const tikTokCredentials = await prisma.tikTokCredentials.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends TikTokCredentialsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, TikTokCredentialsFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>>
+
+    /**
+     * Find the first TikTokCredentials that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TikTokCredentialsFindFirstOrThrowArgs} args - Arguments to find a TikTokCredentials
+     * @example
+     * // Get one TikTokCredentials
+     * const tikTokCredentials = await prisma.tikTokCredentials.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends TikTokCredentialsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, TikTokCredentialsFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T>>>
 
     /**
      * Count the number of TikTokCredentials.
@@ -5319,7 +5334,7 @@ export namespace Prisma {
     **/
     count<T extends TikTokCredentialsCountArgs>(
       args?: Subset<T, TikTokCredentialsCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -5351,7 +5366,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends TikTokCredentialsAggregateArgs>(args: Subset<T, TikTokCredentialsAggregateArgs>): Prisma.PrismaPromise<GetTikTokCredentialsAggregateType<T>>
+    aggregate<T extends TikTokCredentialsAggregateArgs>(args: Subset<T, TikTokCredentialsAggregateArgs>): PrismaPromise<GetTikTokCredentialsAggregateType<T>>
 
     /**
      * Group by TikTokCredentials.
@@ -5428,7 +5443,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TikTokCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTikTokCredentialsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, TikTokCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTikTokCredentialsGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -5438,8 +5453,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__TikTokCredentialsClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__TikTokCredentialsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -5450,10 +5467,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    project<T extends ProjectArgs= {}>(args?: Subset<T, ProjectArgs>): Prisma__ProjectClient<ProjectGetPayload<T> | Null>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -5488,20 +5505,23 @@ export namespace Prisma {
   export type TikTokCredentialsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
     /**
      * Filter, which TikTokCredentials to fetch.
-     */
+     * 
+    **/
     where: TikTokCredentialsWhereUniqueInput
   }
 
   /**
-   * TikTokCredentials findUnique
+   * TikTokCredentials: findUnique
    */
   export interface TikTokCredentialsFindUniqueArgs extends TikTokCredentialsFindUniqueArgsBase {
    /**
@@ -5513,74 +5533,63 @@ export namespace Prisma {
       
 
   /**
-   * TikTokCredentials findUniqueOrThrow
-   */
-  export type TikTokCredentialsFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the TikTokCredentials
-     */
-    select?: TikTokCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: TikTokCredentialsInclude | null
-    /**
-     * Filter, which TikTokCredentials to fetch.
-     */
-    where: TikTokCredentialsWhereUniqueInput
-  }
-
-
-  /**
    * TikTokCredentials base type for findFirst actions
    */
   export type TikTokCredentialsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
     /**
      * Filter, which TikTokCredentials to fetch.
-     */
+     * 
+    **/
     where?: TikTokCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of TikTokCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<TikTokCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for TikTokCredentials.
-     */
+     * 
+    **/
     cursor?: TikTokCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` TikTokCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` TikTokCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of TikTokCredentials.
-     */
+     * 
+    **/
     distinct?: Enumerable<TikTokCredentialsScalarFieldEnum>
   }
 
   /**
-   * TikTokCredentials findFirst
+   * TikTokCredentials: findFirst
    */
   export interface TikTokCredentialsFindFirstArgs extends TikTokCredentialsFindFirstArgsBase {
    /**
@@ -5592,93 +5601,51 @@ export namespace Prisma {
       
 
   /**
-   * TikTokCredentials findFirstOrThrow
-   */
-  export type TikTokCredentialsFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the TikTokCredentials
-     */
-    select?: TikTokCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: TikTokCredentialsInclude | null
-    /**
-     * Filter, which TikTokCredentials to fetch.
-     */
-    where?: TikTokCredentialsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TikTokCredentials to fetch.
-     */
-    orderBy?: Enumerable<TikTokCredentialsOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for TikTokCredentials.
-     */
-    cursor?: TikTokCredentialsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TikTokCredentials from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TikTokCredentials.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of TikTokCredentials.
-     */
-    distinct?: Enumerable<TikTokCredentialsScalarFieldEnum>
-  }
-
-
-  /**
    * TikTokCredentials findMany
    */
   export type TikTokCredentialsFindManyArgs = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
     /**
      * Filter, which TikTokCredentials to fetch.
-     */
+     * 
+    **/
     where?: TikTokCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of TikTokCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<TikTokCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing TikTokCredentials.
-     */
+     * 
+    **/
     cursor?: TikTokCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` TikTokCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` TikTokCredentials.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<TikTokCredentialsScalarFieldEnum>
   }
@@ -5690,15 +5657,18 @@ export namespace Prisma {
   export type TikTokCredentialsCreateArgs = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
     /**
      * The data needed to create a TikTokCredentials.
-     */
+     * 
+    **/
     data: XOR<TikTokCredentialsCreateInput, TikTokCredentialsUncheckedCreateInput>
   }
 
@@ -5709,7 +5679,8 @@ export namespace Prisma {
   export type TikTokCredentialsCreateManyArgs = {
     /**
      * The data used to create many TikTokCredentials.
-     */
+     * 
+    **/
     data: Enumerable<TikTokCredentialsCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -5721,19 +5692,23 @@ export namespace Prisma {
   export type TikTokCredentialsUpdateArgs = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
     /**
      * The data needed to update a TikTokCredentials.
-     */
+     * 
+    **/
     data: XOR<TikTokCredentialsUpdateInput, TikTokCredentialsUncheckedUpdateInput>
     /**
      * Choose, which TikTokCredentials to update.
-     */
+     * 
+    **/
     where: TikTokCredentialsWhereUniqueInput
   }
 
@@ -5744,11 +5719,13 @@ export namespace Prisma {
   export type TikTokCredentialsUpdateManyArgs = {
     /**
      * The data used to update TikTokCredentials.
-     */
+     * 
+    **/
     data: XOR<TikTokCredentialsUpdateManyMutationInput, TikTokCredentialsUncheckedUpdateManyInput>
     /**
      * Filter which TikTokCredentials to update
-     */
+     * 
+    **/
     where?: TikTokCredentialsWhereInput
   }
 
@@ -5759,23 +5736,28 @@ export namespace Prisma {
   export type TikTokCredentialsUpsertArgs = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
     /**
      * The filter to search for the TikTokCredentials to update in case it exists.
-     */
+     * 
+    **/
     where: TikTokCredentialsWhereUniqueInput
     /**
      * In case the TikTokCredentials found by the `where` argument doesn't exist, create a new TikTokCredentials with this data.
-     */
+     * 
+    **/
     create: XOR<TikTokCredentialsCreateInput, TikTokCredentialsUncheckedCreateInput>
     /**
      * In case the TikTokCredentials was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<TikTokCredentialsUpdateInput, TikTokCredentialsUncheckedUpdateInput>
   }
 
@@ -5786,15 +5768,18 @@ export namespace Prisma {
   export type TikTokCredentialsDeleteArgs = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
     /**
      * Filter which TikTokCredentials to delete.
-     */
+     * 
+    **/
     where: TikTokCredentialsWhereUniqueInput
   }
 
@@ -5805,10 +5790,23 @@ export namespace Prisma {
   export type TikTokCredentialsDeleteManyArgs = {
     /**
      * Filter which TikTokCredentials to delete
-     */
+     * 
+    **/
     where?: TikTokCredentialsWhereInput
   }
 
+
+  /**
+   * TikTokCredentials: findUniqueOrThrow
+   */
+  export type TikTokCredentialsFindUniqueOrThrowArgs = TikTokCredentialsFindUniqueArgsBase
+      
+
+  /**
+   * TikTokCredentials: findFirstOrThrow
+   */
+  export type TikTokCredentialsFindFirstOrThrowArgs = TikTokCredentialsFindFirstArgsBase
+      
 
   /**
    * TikTokCredentials without action
@@ -5816,11 +5814,13 @@ export namespace Prisma {
   export type TikTokCredentialsArgs = {
     /**
      * Select specific fields to fetch from the TikTokCredentials
-     */
+     * 
+    **/
     select?: TikTokCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TikTokCredentialsInclude | null
   }
 
@@ -5891,31 +5891,36 @@ export namespace Prisma {
   export type FacebookCredentialsAggregateArgs = {
     /**
      * Filter which FacebookCredentials to aggregate.
-     */
+     * 
+    **/
     where?: FacebookCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of FacebookCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<FacebookCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: FacebookCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` FacebookCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` FacebookCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -5951,7 +5956,7 @@ export namespace Prisma {
   export type FacebookCredentialsGroupByArgs = {
     where?: FacebookCredentialsWhereInput
     orderBy?: Enumerable<FacebookCredentialsOrderByWithAggregationInput>
-    by: FacebookCredentialsScalarFieldEnum[]
+    by: Array<FacebookCredentialsScalarFieldEnum>
     having?: FacebookCredentialsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -5972,7 +5977,7 @@ export namespace Prisma {
     _max: FacebookCredentialsMaxAggregateOutputType | null
   }
 
-  type GetFacebookCredentialsGroupByPayload<T extends FacebookCredentialsGroupByArgs> = Prisma.PrismaPromise<
+  type GetFacebookCredentialsGroupByPayload<T extends FacebookCredentialsGroupByArgs> = PrismaPromise<
     Array<
       PickArray<FacebookCredentialsGroupByOutputType, T['by']> &
         {
@@ -5995,35 +6000,39 @@ export namespace Prisma {
     project?: boolean | ProjectArgs
   }
 
-
   export type FacebookCredentialsInclude = {
     project?: boolean | ProjectArgs
   }
 
-  export type FacebookCredentialsGetPayload<S extends boolean | null | undefined | FacebookCredentialsArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? FacebookCredentials :
-    S extends undefined ? never :
-    S extends { include: any } & (FacebookCredentialsArgs | FacebookCredentialsFindManyArgs)
+  export type FacebookCredentialsGetPayload<
+    S extends boolean | null | undefined | FacebookCredentialsArgs,
+    U = keyof S
+      > = S extends true
+        ? FacebookCredentials
+    : S extends undefined
+    ? never
+    : S extends FacebookCredentialsArgs | FacebookCredentialsFindManyArgs
+    ?'include' extends U
     ? FacebookCredentials  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (FacebookCredentialsArgs | FacebookCredentialsFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<S['select'][P]> :  P extends keyof FacebookCredentials ? FacebookCredentials[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof FacebookCredentials ? FacebookCredentials[P] : never
   } 
-      : FacebookCredentials
+    : FacebookCredentials
+  : FacebookCredentials
 
 
-  type FacebookCredentialsCountArgs = 
+  type FacebookCredentialsCountArgs = Merge<
     Omit<FacebookCredentialsFindManyArgs, 'select' | 'include'> & {
       select?: FacebookCredentialsCountAggregateInputType | true
     }
+  >
 
   export interface FacebookCredentialsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one FacebookCredentials that matches the filter.
      * @param {FacebookCredentialsFindUniqueArgs} args - Arguments to find a FacebookCredentials
@@ -6037,23 +6046,7 @@ export namespace Prisma {
     **/
     findUnique<T extends FacebookCredentialsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, FacebookCredentialsFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'FacebookCredentials'> extends True ? Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>> : Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find one FacebookCredentials that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {FacebookCredentialsFindUniqueOrThrowArgs} args - Arguments to find a FacebookCredentials
-     * @example
-     * // Get one FacebookCredentials
-     * const facebookCredentials = await prisma.facebookCredentials.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends FacebookCredentialsFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, FacebookCredentialsFindUniqueOrThrowArgs>
-    ): Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'FacebookCredentials'> extends True ? CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials | null, null>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find the first FacebookCredentials that matches the filter.
@@ -6070,25 +6063,7 @@ export namespace Prisma {
     **/
     findFirst<T extends FacebookCredentialsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, FacebookCredentialsFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'FacebookCredentials'> extends True ? Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>> : Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find the first FacebookCredentials that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {FacebookCredentialsFindFirstOrThrowArgs} args - Arguments to find a FacebookCredentials
-     * @example
-     * // Get one FacebookCredentials
-     * const facebookCredentials = await prisma.facebookCredentials.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends FacebookCredentialsFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, FacebookCredentialsFindFirstOrThrowArgs>
-    ): Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'FacebookCredentials'> extends True ? CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials | null, null>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find zero or more FacebookCredentials that matches the filter.
@@ -6108,7 +6083,7 @@ export namespace Prisma {
     **/
     findMany<T extends FacebookCredentialsFindManyArgs>(
       args?: SelectSubset<T, FacebookCredentialsFindManyArgs>
-    ): Prisma.PrismaPromise<Array<FacebookCredentialsGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<FacebookCredentials>>, PrismaPromise<Array<FacebookCredentialsGetPayload<T>>>>
 
     /**
      * Create a FacebookCredentials.
@@ -6124,7 +6099,7 @@ export namespace Prisma {
     **/
     create<T extends FacebookCredentialsCreateArgs>(
       args: SelectSubset<T, FacebookCredentialsCreateArgs>
-    ): Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>>
 
     /**
      * Create many FacebookCredentials.
@@ -6140,7 +6115,7 @@ export namespace Prisma {
     **/
     createMany<T extends FacebookCredentialsCreateManyArgs>(
       args?: SelectSubset<T, FacebookCredentialsCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a FacebookCredentials.
@@ -6156,7 +6131,7 @@ export namespace Prisma {
     **/
     delete<T extends FacebookCredentialsDeleteArgs>(
       args: SelectSubset<T, FacebookCredentialsDeleteArgs>
-    ): Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>>
 
     /**
      * Update one FacebookCredentials.
@@ -6175,7 +6150,7 @@ export namespace Prisma {
     **/
     update<T extends FacebookCredentialsUpdateArgs>(
       args: SelectSubset<T, FacebookCredentialsUpdateArgs>
-    ): Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>>
 
     /**
      * Delete zero or more FacebookCredentials.
@@ -6191,7 +6166,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends FacebookCredentialsDeleteManyArgs>(
       args?: SelectSubset<T, FacebookCredentialsDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more FacebookCredentials.
@@ -6212,7 +6187,7 @@ export namespace Prisma {
     **/
     updateMany<T extends FacebookCredentialsUpdateManyArgs>(
       args: SelectSubset<T, FacebookCredentialsUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one FacebookCredentials.
@@ -6233,7 +6208,41 @@ export namespace Prisma {
     **/
     upsert<T extends FacebookCredentialsUpsertArgs>(
       args: SelectSubset<T, FacebookCredentialsUpsertArgs>
-    ): Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>>
+
+    /**
+     * Find one FacebookCredentials that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {FacebookCredentialsFindUniqueOrThrowArgs} args - Arguments to find a FacebookCredentials
+     * @example
+     * // Get one FacebookCredentials
+     * const facebookCredentials = await prisma.facebookCredentials.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends FacebookCredentialsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, FacebookCredentialsFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>>
+
+    /**
+     * Find the first FacebookCredentials that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {FacebookCredentialsFindFirstOrThrowArgs} args - Arguments to find a FacebookCredentials
+     * @example
+     * // Get one FacebookCredentials
+     * const facebookCredentials = await prisma.facebookCredentials.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends FacebookCredentialsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, FacebookCredentialsFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T>>>
 
     /**
      * Count the number of FacebookCredentials.
@@ -6250,7 +6259,7 @@ export namespace Prisma {
     **/
     count<T extends FacebookCredentialsCountArgs>(
       args?: Subset<T, FacebookCredentialsCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -6282,7 +6291,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends FacebookCredentialsAggregateArgs>(args: Subset<T, FacebookCredentialsAggregateArgs>): Prisma.PrismaPromise<GetFacebookCredentialsAggregateType<T>>
+    aggregate<T extends FacebookCredentialsAggregateArgs>(args: Subset<T, FacebookCredentialsAggregateArgs>): PrismaPromise<GetFacebookCredentialsAggregateType<T>>
 
     /**
      * Group by FacebookCredentials.
@@ -6359,7 +6368,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, FacebookCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFacebookCredentialsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, FacebookCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetFacebookCredentialsGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -6369,8 +6378,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__FacebookCredentialsClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__FacebookCredentialsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -6381,10 +6392,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    project<T extends ProjectArgs= {}>(args?: Subset<T, ProjectArgs>): Prisma__ProjectClient<ProjectGetPayload<T> | Null>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -6419,20 +6430,23 @@ export namespace Prisma {
   export type FacebookCredentialsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
     /**
      * Filter, which FacebookCredentials to fetch.
-     */
+     * 
+    **/
     where: FacebookCredentialsWhereUniqueInput
   }
 
   /**
-   * FacebookCredentials findUnique
+   * FacebookCredentials: findUnique
    */
   export interface FacebookCredentialsFindUniqueArgs extends FacebookCredentialsFindUniqueArgsBase {
    /**
@@ -6444,74 +6458,63 @@ export namespace Prisma {
       
 
   /**
-   * FacebookCredentials findUniqueOrThrow
-   */
-  export type FacebookCredentialsFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookCredentials
-     */
-    select?: FacebookCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: FacebookCredentialsInclude | null
-    /**
-     * Filter, which FacebookCredentials to fetch.
-     */
-    where: FacebookCredentialsWhereUniqueInput
-  }
-
-
-  /**
    * FacebookCredentials base type for findFirst actions
    */
   export type FacebookCredentialsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
     /**
      * Filter, which FacebookCredentials to fetch.
-     */
+     * 
+    **/
     where?: FacebookCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of FacebookCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<FacebookCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for FacebookCredentials.
-     */
+     * 
+    **/
     cursor?: FacebookCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` FacebookCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` FacebookCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of FacebookCredentials.
-     */
+     * 
+    **/
     distinct?: Enumerable<FacebookCredentialsScalarFieldEnum>
   }
 
   /**
-   * FacebookCredentials findFirst
+   * FacebookCredentials: findFirst
    */
   export interface FacebookCredentialsFindFirstArgs extends FacebookCredentialsFindFirstArgsBase {
    /**
@@ -6523,93 +6526,51 @@ export namespace Prisma {
       
 
   /**
-   * FacebookCredentials findFirstOrThrow
-   */
-  export type FacebookCredentialsFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the FacebookCredentials
-     */
-    select?: FacebookCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: FacebookCredentialsInclude | null
-    /**
-     * Filter, which FacebookCredentials to fetch.
-     */
-    where?: FacebookCredentialsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of FacebookCredentials to fetch.
-     */
-    orderBy?: Enumerable<FacebookCredentialsOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for FacebookCredentials.
-     */
-    cursor?: FacebookCredentialsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` FacebookCredentials from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` FacebookCredentials.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of FacebookCredentials.
-     */
-    distinct?: Enumerable<FacebookCredentialsScalarFieldEnum>
-  }
-
-
-  /**
    * FacebookCredentials findMany
    */
   export type FacebookCredentialsFindManyArgs = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
     /**
      * Filter, which FacebookCredentials to fetch.
-     */
+     * 
+    **/
     where?: FacebookCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of FacebookCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<FacebookCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing FacebookCredentials.
-     */
+     * 
+    **/
     cursor?: FacebookCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` FacebookCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` FacebookCredentials.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<FacebookCredentialsScalarFieldEnum>
   }
@@ -6621,15 +6582,18 @@ export namespace Prisma {
   export type FacebookCredentialsCreateArgs = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
     /**
      * The data needed to create a FacebookCredentials.
-     */
+     * 
+    **/
     data: XOR<FacebookCredentialsCreateInput, FacebookCredentialsUncheckedCreateInput>
   }
 
@@ -6640,7 +6604,8 @@ export namespace Prisma {
   export type FacebookCredentialsCreateManyArgs = {
     /**
      * The data used to create many FacebookCredentials.
-     */
+     * 
+    **/
     data: Enumerable<FacebookCredentialsCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -6652,19 +6617,23 @@ export namespace Prisma {
   export type FacebookCredentialsUpdateArgs = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
     /**
      * The data needed to update a FacebookCredentials.
-     */
+     * 
+    **/
     data: XOR<FacebookCredentialsUpdateInput, FacebookCredentialsUncheckedUpdateInput>
     /**
      * Choose, which FacebookCredentials to update.
-     */
+     * 
+    **/
     where: FacebookCredentialsWhereUniqueInput
   }
 
@@ -6675,11 +6644,13 @@ export namespace Prisma {
   export type FacebookCredentialsUpdateManyArgs = {
     /**
      * The data used to update FacebookCredentials.
-     */
+     * 
+    **/
     data: XOR<FacebookCredentialsUpdateManyMutationInput, FacebookCredentialsUncheckedUpdateManyInput>
     /**
      * Filter which FacebookCredentials to update
-     */
+     * 
+    **/
     where?: FacebookCredentialsWhereInput
   }
 
@@ -6690,23 +6661,28 @@ export namespace Prisma {
   export type FacebookCredentialsUpsertArgs = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
     /**
      * The filter to search for the FacebookCredentials to update in case it exists.
-     */
+     * 
+    **/
     where: FacebookCredentialsWhereUniqueInput
     /**
      * In case the FacebookCredentials found by the `where` argument doesn't exist, create a new FacebookCredentials with this data.
-     */
+     * 
+    **/
     create: XOR<FacebookCredentialsCreateInput, FacebookCredentialsUncheckedCreateInput>
     /**
      * In case the FacebookCredentials was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<FacebookCredentialsUpdateInput, FacebookCredentialsUncheckedUpdateInput>
   }
 
@@ -6717,15 +6693,18 @@ export namespace Prisma {
   export type FacebookCredentialsDeleteArgs = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
     /**
      * Filter which FacebookCredentials to delete.
-     */
+     * 
+    **/
     where: FacebookCredentialsWhereUniqueInput
   }
 
@@ -6736,10 +6715,23 @@ export namespace Prisma {
   export type FacebookCredentialsDeleteManyArgs = {
     /**
      * Filter which FacebookCredentials to delete
-     */
+     * 
+    **/
     where?: FacebookCredentialsWhereInput
   }
 
+
+  /**
+   * FacebookCredentials: findUniqueOrThrow
+   */
+  export type FacebookCredentialsFindUniqueOrThrowArgs = FacebookCredentialsFindUniqueArgsBase
+      
+
+  /**
+   * FacebookCredentials: findFirstOrThrow
+   */
+  export type FacebookCredentialsFindFirstOrThrowArgs = FacebookCredentialsFindFirstArgsBase
+      
 
   /**
    * FacebookCredentials without action
@@ -6747,11 +6739,13 @@ export namespace Prisma {
   export type FacebookCredentialsArgs = {
     /**
      * Select specific fields to fetch from the FacebookCredentials
-     */
+     * 
+    **/
     select?: FacebookCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: FacebookCredentialsInclude | null
   }
 
@@ -6816,31 +6810,36 @@ export namespace Prisma {
   export type TwitterCredentialsAggregateArgs = {
     /**
      * Filter which TwitterCredentials to aggregate.
-     */
+     * 
+    **/
     where?: TwitterCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of TwitterCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<TwitterCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: TwitterCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` TwitterCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` TwitterCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -6876,7 +6875,7 @@ export namespace Prisma {
   export type TwitterCredentialsGroupByArgs = {
     where?: TwitterCredentialsWhereInput
     orderBy?: Enumerable<TwitterCredentialsOrderByWithAggregationInput>
-    by: TwitterCredentialsScalarFieldEnum[]
+    by: Array<TwitterCredentialsScalarFieldEnum>
     having?: TwitterCredentialsScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -6896,7 +6895,7 @@ export namespace Prisma {
     _max: TwitterCredentialsMaxAggregateOutputType | null
   }
 
-  type GetTwitterCredentialsGroupByPayload<T extends TwitterCredentialsGroupByArgs> = Prisma.PrismaPromise<
+  type GetTwitterCredentialsGroupByPayload<T extends TwitterCredentialsGroupByArgs> = PrismaPromise<
     Array<
       PickArray<TwitterCredentialsGroupByOutputType, T['by']> &
         {
@@ -6918,35 +6917,39 @@ export namespace Prisma {
     project?: boolean | ProjectArgs
   }
 
-
   export type TwitterCredentialsInclude = {
     project?: boolean | ProjectArgs
   }
 
-  export type TwitterCredentialsGetPayload<S extends boolean | null | undefined | TwitterCredentialsArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? TwitterCredentials :
-    S extends undefined ? never :
-    S extends { include: any } & (TwitterCredentialsArgs | TwitterCredentialsFindManyArgs)
+  export type TwitterCredentialsGetPayload<
+    S extends boolean | null | undefined | TwitterCredentialsArgs,
+    U = keyof S
+      > = S extends true
+        ? TwitterCredentials
+    : S extends undefined
+    ? never
+    : S extends TwitterCredentialsArgs | TwitterCredentialsFindManyArgs
+    ?'include' extends U
     ? TwitterCredentials  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (TwitterCredentialsArgs | TwitterCredentialsFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<S['select'][P]> :  P extends keyof TwitterCredentials ? TwitterCredentials[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof TwitterCredentials ? TwitterCredentials[P] : never
   } 
-      : TwitterCredentials
+    : TwitterCredentials
+  : TwitterCredentials
 
 
-  type TwitterCredentialsCountArgs = 
+  type TwitterCredentialsCountArgs = Merge<
     Omit<TwitterCredentialsFindManyArgs, 'select' | 'include'> & {
       select?: TwitterCredentialsCountAggregateInputType | true
     }
+  >
 
   export interface TwitterCredentialsDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one TwitterCredentials that matches the filter.
      * @param {TwitterCredentialsFindUniqueArgs} args - Arguments to find a TwitterCredentials
@@ -6960,23 +6963,7 @@ export namespace Prisma {
     **/
     findUnique<T extends TwitterCredentialsFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, TwitterCredentialsFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TwitterCredentials'> extends True ? Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>> : Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find one TwitterCredentials that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {TwitterCredentialsFindUniqueOrThrowArgs} args - Arguments to find a TwitterCredentials
-     * @example
-     * // Get one TwitterCredentials
-     * const twitterCredentials = await prisma.twitterCredentials.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends TwitterCredentialsFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, TwitterCredentialsFindUniqueOrThrowArgs>
-    ): Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'TwitterCredentials'> extends True ? CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials | null, null>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find the first TwitterCredentials that matches the filter.
@@ -6993,25 +6980,7 @@ export namespace Prisma {
     **/
     findFirst<T extends TwitterCredentialsFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, TwitterCredentialsFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TwitterCredentials'> extends True ? Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>> : Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | null, null>
-
-    /**
-     * Find the first TwitterCredentials that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {TwitterCredentialsFindFirstOrThrowArgs} args - Arguments to find a TwitterCredentials
-     * @example
-     * // Get one TwitterCredentials
-     * const twitterCredentials = await prisma.twitterCredentials.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends TwitterCredentialsFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, TwitterCredentialsFindFirstOrThrowArgs>
-    ): Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'TwitterCredentials'> extends True ? CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>> : CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials | null, null>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | null, null>>
 
     /**
      * Find zero or more TwitterCredentials that matches the filter.
@@ -7031,7 +7000,7 @@ export namespace Prisma {
     **/
     findMany<T extends TwitterCredentialsFindManyArgs>(
       args?: SelectSubset<T, TwitterCredentialsFindManyArgs>
-    ): Prisma.PrismaPromise<Array<TwitterCredentialsGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<TwitterCredentials>>, PrismaPromise<Array<TwitterCredentialsGetPayload<T>>>>
 
     /**
      * Create a TwitterCredentials.
@@ -7047,7 +7016,7 @@ export namespace Prisma {
     **/
     create<T extends TwitterCredentialsCreateArgs>(
       args: SelectSubset<T, TwitterCredentialsCreateArgs>
-    ): Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
 
     /**
      * Create many TwitterCredentials.
@@ -7063,7 +7032,7 @@ export namespace Prisma {
     **/
     createMany<T extends TwitterCredentialsCreateManyArgs>(
       args?: SelectSubset<T, TwitterCredentialsCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a TwitterCredentials.
@@ -7079,7 +7048,7 @@ export namespace Prisma {
     **/
     delete<T extends TwitterCredentialsDeleteArgs>(
       args: SelectSubset<T, TwitterCredentialsDeleteArgs>
-    ): Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
 
     /**
      * Update one TwitterCredentials.
@@ -7098,7 +7067,7 @@ export namespace Prisma {
     **/
     update<T extends TwitterCredentialsUpdateArgs>(
       args: SelectSubset<T, TwitterCredentialsUpdateArgs>
-    ): Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
 
     /**
      * Delete zero or more TwitterCredentials.
@@ -7114,7 +7083,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends TwitterCredentialsDeleteManyArgs>(
       args?: SelectSubset<T, TwitterCredentialsDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more TwitterCredentials.
@@ -7135,7 +7104,7 @@ export namespace Prisma {
     **/
     updateMany<T extends TwitterCredentialsUpdateManyArgs>(
       args: SelectSubset<T, TwitterCredentialsUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one TwitterCredentials.
@@ -7156,7 +7125,41 @@ export namespace Prisma {
     **/
     upsert<T extends TwitterCredentialsUpsertArgs>(
       args: SelectSubset<T, TwitterCredentialsUpsertArgs>
-    ): Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Find one TwitterCredentials that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {TwitterCredentialsFindUniqueOrThrowArgs} args - Arguments to find a TwitterCredentials
+     * @example
+     * // Get one TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends TwitterCredentialsFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, TwitterCredentialsFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
+
+    /**
+     * Find the first TwitterCredentials that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TwitterCredentialsFindFirstOrThrowArgs} args - Arguments to find a TwitterCredentials
+     * @example
+     * // Get one TwitterCredentials
+     * const twitterCredentials = await prisma.twitterCredentials.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends TwitterCredentialsFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, TwitterCredentialsFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T>>>
 
     /**
      * Count the number of TwitterCredentials.
@@ -7173,7 +7176,7 @@ export namespace Prisma {
     **/
     count<T extends TwitterCredentialsCountArgs>(
       args?: Subset<T, TwitterCredentialsCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -7205,7 +7208,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends TwitterCredentialsAggregateArgs>(args: Subset<T, TwitterCredentialsAggregateArgs>): Prisma.PrismaPromise<GetTwitterCredentialsAggregateType<T>>
+    aggregate<T extends TwitterCredentialsAggregateArgs>(args: Subset<T, TwitterCredentialsAggregateArgs>): PrismaPromise<GetTwitterCredentialsAggregateType<T>>
 
     /**
      * Group by TwitterCredentials.
@@ -7282,7 +7285,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, TwitterCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTwitterCredentialsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, TwitterCredentialsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTwitterCredentialsGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -7292,8 +7295,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__TwitterCredentialsClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__TwitterCredentialsClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -7304,10 +7309,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    project<T extends ProjectArgs= {}>(args?: Subset<T, ProjectArgs>): Prisma__ProjectClient<ProjectGetPayload<T> | Null>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -7342,20 +7347,23 @@ export namespace Prisma {
   export type TwitterCredentialsFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
     /**
      * Filter, which TwitterCredentials to fetch.
-     */
+     * 
+    **/
     where: TwitterCredentialsWhereUniqueInput
   }
 
   /**
-   * TwitterCredentials findUnique
+   * TwitterCredentials: findUnique
    */
   export interface TwitterCredentialsFindUniqueArgs extends TwitterCredentialsFindUniqueArgsBase {
    /**
@@ -7367,74 +7375,63 @@ export namespace Prisma {
       
 
   /**
-   * TwitterCredentials findUniqueOrThrow
-   */
-  export type TwitterCredentialsFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the TwitterCredentials
-     */
-    select?: TwitterCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: TwitterCredentialsInclude | null
-    /**
-     * Filter, which TwitterCredentials to fetch.
-     */
-    where: TwitterCredentialsWhereUniqueInput
-  }
-
-
-  /**
    * TwitterCredentials base type for findFirst actions
    */
   export type TwitterCredentialsFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
     /**
      * Filter, which TwitterCredentials to fetch.
-     */
+     * 
+    **/
     where?: TwitterCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of TwitterCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<TwitterCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for TwitterCredentials.
-     */
+     * 
+    **/
     cursor?: TwitterCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` TwitterCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` TwitterCredentials.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of TwitterCredentials.
-     */
+     * 
+    **/
     distinct?: Enumerable<TwitterCredentialsScalarFieldEnum>
   }
 
   /**
-   * TwitterCredentials findFirst
+   * TwitterCredentials: findFirst
    */
   export interface TwitterCredentialsFindFirstArgs extends TwitterCredentialsFindFirstArgsBase {
    /**
@@ -7446,93 +7443,51 @@ export namespace Prisma {
       
 
   /**
-   * TwitterCredentials findFirstOrThrow
-   */
-  export type TwitterCredentialsFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the TwitterCredentials
-     */
-    select?: TwitterCredentialsSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: TwitterCredentialsInclude | null
-    /**
-     * Filter, which TwitterCredentials to fetch.
-     */
-    where?: TwitterCredentialsWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of TwitterCredentials to fetch.
-     */
-    orderBy?: Enumerable<TwitterCredentialsOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for TwitterCredentials.
-     */
-    cursor?: TwitterCredentialsWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` TwitterCredentials from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` TwitterCredentials.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of TwitterCredentials.
-     */
-    distinct?: Enumerable<TwitterCredentialsScalarFieldEnum>
-  }
-
-
-  /**
    * TwitterCredentials findMany
    */
   export type TwitterCredentialsFindManyArgs = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
     /**
      * Filter, which TwitterCredentials to fetch.
-     */
+     * 
+    **/
     where?: TwitterCredentialsWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of TwitterCredentials to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<TwitterCredentialsOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing TwitterCredentials.
-     */
+     * 
+    **/
     cursor?: TwitterCredentialsWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` TwitterCredentials from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` TwitterCredentials.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<TwitterCredentialsScalarFieldEnum>
   }
@@ -7544,15 +7499,18 @@ export namespace Prisma {
   export type TwitterCredentialsCreateArgs = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
     /**
      * The data needed to create a TwitterCredentials.
-     */
+     * 
+    **/
     data: XOR<TwitterCredentialsCreateInput, TwitterCredentialsUncheckedCreateInput>
   }
 
@@ -7563,7 +7521,8 @@ export namespace Prisma {
   export type TwitterCredentialsCreateManyArgs = {
     /**
      * The data used to create many TwitterCredentials.
-     */
+     * 
+    **/
     data: Enumerable<TwitterCredentialsCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -7575,19 +7534,23 @@ export namespace Prisma {
   export type TwitterCredentialsUpdateArgs = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
     /**
      * The data needed to update a TwitterCredentials.
-     */
+     * 
+    **/
     data: XOR<TwitterCredentialsUpdateInput, TwitterCredentialsUncheckedUpdateInput>
     /**
      * Choose, which TwitterCredentials to update.
-     */
+     * 
+    **/
     where: TwitterCredentialsWhereUniqueInput
   }
 
@@ -7598,11 +7561,13 @@ export namespace Prisma {
   export type TwitterCredentialsUpdateManyArgs = {
     /**
      * The data used to update TwitterCredentials.
-     */
+     * 
+    **/
     data: XOR<TwitterCredentialsUpdateManyMutationInput, TwitterCredentialsUncheckedUpdateManyInput>
     /**
      * Filter which TwitterCredentials to update
-     */
+     * 
+    **/
     where?: TwitterCredentialsWhereInput
   }
 
@@ -7613,23 +7578,28 @@ export namespace Prisma {
   export type TwitterCredentialsUpsertArgs = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
     /**
      * The filter to search for the TwitterCredentials to update in case it exists.
-     */
+     * 
+    **/
     where: TwitterCredentialsWhereUniqueInput
     /**
      * In case the TwitterCredentials found by the `where` argument doesn't exist, create a new TwitterCredentials with this data.
-     */
+     * 
+    **/
     create: XOR<TwitterCredentialsCreateInput, TwitterCredentialsUncheckedCreateInput>
     /**
      * In case the TwitterCredentials was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<TwitterCredentialsUpdateInput, TwitterCredentialsUncheckedUpdateInput>
   }
 
@@ -7640,15 +7610,18 @@ export namespace Prisma {
   export type TwitterCredentialsDeleteArgs = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
     /**
      * Filter which TwitterCredentials to delete.
-     */
+     * 
+    **/
     where: TwitterCredentialsWhereUniqueInput
   }
 
@@ -7659,10 +7632,23 @@ export namespace Prisma {
   export type TwitterCredentialsDeleteManyArgs = {
     /**
      * Filter which TwitterCredentials to delete
-     */
+     * 
+    **/
     where?: TwitterCredentialsWhereInput
   }
 
+
+  /**
+   * TwitterCredentials: findUniqueOrThrow
+   */
+  export type TwitterCredentialsFindUniqueOrThrowArgs = TwitterCredentialsFindUniqueArgsBase
+      
+
+  /**
+   * TwitterCredentials: findFirstOrThrow
+   */
+  export type TwitterCredentialsFindFirstOrThrowArgs = TwitterCredentialsFindFirstArgsBase
+      
 
   /**
    * TwitterCredentials without action
@@ -7670,11 +7656,13 @@ export namespace Prisma {
   export type TwitterCredentialsArgs = {
     /**
      * Select specific fields to fetch from the TwitterCredentials
-     */
+     * 
+    **/
     select?: TwitterCredentialsSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: TwitterCredentialsInclude | null
   }
 
@@ -7695,9 +7683,6 @@ export namespace Prisma {
     slug: string | null
     title: string | null
     description: string | null
-    markdown: string | null
-    thumbnail: string | null
-    video: string | null
     published: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7708,9 +7693,6 @@ export namespace Prisma {
     slug: string | null
     title: string | null
     description: string | null
-    markdown: string | null
-    thumbnail: string | null
-    video: string | null
     published: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7721,9 +7703,6 @@ export namespace Prisma {
     slug: number
     title: number
     description: number
-    markdown: number
-    thumbnail: number
-    video: number
     tags: number
     published: number
     createdAt: number
@@ -7737,9 +7716,6 @@ export namespace Prisma {
     slug?: true
     title?: true
     description?: true
-    markdown?: true
-    thumbnail?: true
-    video?: true
     published?: true
     createdAt?: true
     updatedAt?: true
@@ -7750,9 +7726,6 @@ export namespace Prisma {
     slug?: true
     title?: true
     description?: true
-    markdown?: true
-    thumbnail?: true
-    video?: true
     published?: true
     createdAt?: true
     updatedAt?: true
@@ -7763,9 +7736,6 @@ export namespace Prisma {
     slug?: true
     title?: true
     description?: true
-    markdown?: true
-    thumbnail?: true
-    video?: true
     tags?: true
     published?: true
     createdAt?: true
@@ -7777,31 +7747,36 @@ export namespace Prisma {
   export type ContentAggregateArgs = {
     /**
      * Filter which Content to aggregate.
-     */
+     * 
+    **/
     where?: ContentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Contents to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ContentOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: ContentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Contents from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Contents.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -7837,7 +7812,7 @@ export namespace Prisma {
   export type ContentGroupByArgs = {
     where?: ContentWhereInput
     orderBy?: Enumerable<ContentOrderByWithAggregationInput>
-    by: ContentScalarFieldEnum[]
+    by: Array<ContentScalarFieldEnum>
     having?: ContentScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -7851,9 +7826,6 @@ export namespace Prisma {
     slug: string
     title: string
     description: string | null
-    markdown: string | null
-    thumbnail: string | null
-    video: string | null
     tags: string[]
     published: boolean | null
     createdAt: Date | null
@@ -7864,7 +7836,7 @@ export namespace Prisma {
     _max: ContentMaxAggregateOutputType | null
   }
 
-  type GetContentGroupByPayload<T extends ContentGroupByArgs> = Prisma.PrismaPromise<
+  type GetContentGroupByPayload<T extends ContentGroupByArgs> = PrismaPromise<
     Array<
       PickArray<ContentGroupByOutputType, T['by']> &
         {
@@ -7882,9 +7854,6 @@ export namespace Prisma {
     slug?: boolean
     title?: boolean
     description?: boolean
-    markdown?: boolean
-    thumbnail?: boolean
-    video?: boolean
     tags?: boolean
     published?: boolean
     createdAt?: boolean
@@ -7893,35 +7862,39 @@ export namespace Prisma {
     project?: boolean | ProjectArgs
   }
 
-
   export type ContentInclude = {
     project?: boolean | ProjectArgs
   }
 
-  export type ContentGetPayload<S extends boolean | null | undefined | ContentArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Content :
-    S extends undefined ? never :
-    S extends { include: any } & (ContentArgs | ContentFindManyArgs)
+  export type ContentGetPayload<
+    S extends boolean | null | undefined | ContentArgs,
+    U = keyof S
+      > = S extends true
+        ? Content
+    : S extends undefined
+    ? never
+    : S extends ContentArgs | ContentFindManyArgs
+    ?'include' extends U
     ? Content  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (ContentArgs | ContentFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<S['select'][P]> :  P extends keyof Content ? Content[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Content ? Content[P] : never
   } 
-      : Content
+    : Content
+  : Content
 
 
-  type ContentCountArgs = 
+  type ContentCountArgs = Merge<
     Omit<ContentFindManyArgs, 'select' | 'include'> & {
       select?: ContentCountAggregateInputType | true
     }
+  >
 
   export interface ContentDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one Content that matches the filter.
      * @param {ContentFindUniqueArgs} args - Arguments to find a Content
@@ -7935,23 +7908,7 @@ export namespace Prisma {
     **/
     findUnique<T extends ContentFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, ContentFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Content'> extends True ? Prisma__ContentClient<ContentGetPayload<T>> : Prisma__ContentClient<ContentGetPayload<T> | null, null>
-
-    /**
-     * Find one Content that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {ContentFindUniqueOrThrowArgs} args - Arguments to find a Content
-     * @example
-     * // Get one Content
-     * const content = await prisma.content.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends ContentFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, ContentFindUniqueOrThrowArgs>
-    ): Prisma__ContentClient<ContentGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Content'> extends True ? CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>> : CheckSelect<T, Prisma__ContentClient<Content | null, null>, Prisma__ContentClient<ContentGetPayload<T> | null, null>>
 
     /**
      * Find the first Content that matches the filter.
@@ -7968,25 +7925,7 @@ export namespace Prisma {
     **/
     findFirst<T extends ContentFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, ContentFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Content'> extends True ? Prisma__ContentClient<ContentGetPayload<T>> : Prisma__ContentClient<ContentGetPayload<T> | null, null>
-
-    /**
-     * Find the first Content that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ContentFindFirstOrThrowArgs} args - Arguments to find a Content
-     * @example
-     * // Get one Content
-     * const content = await prisma.content.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends ContentFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, ContentFindFirstOrThrowArgs>
-    ): Prisma__ContentClient<ContentGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Content'> extends True ? CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>> : CheckSelect<T, Prisma__ContentClient<Content | null, null>, Prisma__ContentClient<ContentGetPayload<T> | null, null>>
 
     /**
      * Find zero or more Contents that matches the filter.
@@ -8006,7 +7945,7 @@ export namespace Prisma {
     **/
     findMany<T extends ContentFindManyArgs>(
       args?: SelectSubset<T, ContentFindManyArgs>
-    ): Prisma.PrismaPromise<Array<ContentGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<Content>>, PrismaPromise<Array<ContentGetPayload<T>>>>
 
     /**
      * Create a Content.
@@ -8022,7 +7961,7 @@ export namespace Prisma {
     **/
     create<T extends ContentCreateArgs>(
       args: SelectSubset<T, ContentCreateArgs>
-    ): Prisma__ContentClient<ContentGetPayload<T>>
+    ): CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>>
 
     /**
      * Create many Contents.
@@ -8038,7 +7977,7 @@ export namespace Prisma {
     **/
     createMany<T extends ContentCreateManyArgs>(
       args?: SelectSubset<T, ContentCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Content.
@@ -8054,7 +7993,7 @@ export namespace Prisma {
     **/
     delete<T extends ContentDeleteArgs>(
       args: SelectSubset<T, ContentDeleteArgs>
-    ): Prisma__ContentClient<ContentGetPayload<T>>
+    ): CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>>
 
     /**
      * Update one Content.
@@ -8073,7 +8012,7 @@ export namespace Prisma {
     **/
     update<T extends ContentUpdateArgs>(
       args: SelectSubset<T, ContentUpdateArgs>
-    ): Prisma__ContentClient<ContentGetPayload<T>>
+    ): CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>>
 
     /**
      * Delete zero or more Contents.
@@ -8089,7 +8028,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends ContentDeleteManyArgs>(
       args?: SelectSubset<T, ContentDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Contents.
@@ -8110,7 +8049,7 @@ export namespace Prisma {
     **/
     updateMany<T extends ContentUpdateManyArgs>(
       args: SelectSubset<T, ContentUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Content.
@@ -8131,7 +8070,41 @@ export namespace Prisma {
     **/
     upsert<T extends ContentUpsertArgs>(
       args: SelectSubset<T, ContentUpsertArgs>
-    ): Prisma__ContentClient<ContentGetPayload<T>>
+    ): CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>>
+
+    /**
+     * Find one Content that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {ContentFindUniqueOrThrowArgs} args - Arguments to find a Content
+     * @example
+     * // Get one Content
+     * const content = await prisma.content.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends ContentFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, ContentFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>>
+
+    /**
+     * Find the first Content that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ContentFindFirstOrThrowArgs} args - Arguments to find a Content
+     * @example
+     * // Get one Content
+     * const content = await prisma.content.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends ContentFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ContentFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__ContentClient<Content>, Prisma__ContentClient<ContentGetPayload<T>>>
 
     /**
      * Count the number of Contents.
@@ -8148,7 +8121,7 @@ export namespace Prisma {
     **/
     count<T extends ContentCountArgs>(
       args?: Subset<T, ContentCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -8180,7 +8153,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends ContentAggregateArgs>(args: Subset<T, ContentAggregateArgs>): Prisma.PrismaPromise<GetContentAggregateType<T>>
+    aggregate<T extends ContentAggregateArgs>(args: Subset<T, ContentAggregateArgs>): PrismaPromise<GetContentAggregateType<T>>
 
     /**
      * Group by Content.
@@ -8257,7 +8230,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ContentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetContentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ContentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetContentGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -8267,8 +8240,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__ContentClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__ContentClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -8279,10 +8254,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    project<T extends ProjectArgs= {}>(args?: Subset<T, ProjectArgs>): Prisma__ProjectClient<ProjectGetPayload<T> | Null>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -8317,20 +8292,23 @@ export namespace Prisma {
   export type ContentFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
     /**
      * Filter, which Content to fetch.
-     */
+     * 
+    **/
     where: ContentWhereUniqueInput
   }
 
   /**
-   * Content findUnique
+   * Content: findUnique
    */
   export interface ContentFindUniqueArgs extends ContentFindUniqueArgsBase {
    /**
@@ -8342,74 +8320,63 @@ export namespace Prisma {
       
 
   /**
-   * Content findUniqueOrThrow
-   */
-  export type ContentFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Content
-     */
-    select?: ContentSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ContentInclude | null
-    /**
-     * Filter, which Content to fetch.
-     */
-    where: ContentWhereUniqueInput
-  }
-
-
-  /**
    * Content base type for findFirst actions
    */
   export type ContentFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
     /**
      * Filter, which Content to fetch.
-     */
+     * 
+    **/
     where?: ContentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Contents to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ContentOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Contents.
-     */
+     * 
+    **/
     cursor?: ContentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Contents from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Contents.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Contents.
-     */
+     * 
+    **/
     distinct?: Enumerable<ContentScalarFieldEnum>
   }
 
   /**
-   * Content findFirst
+   * Content: findFirst
    */
   export interface ContentFindFirstArgs extends ContentFindFirstArgsBase {
    /**
@@ -8421,93 +8388,51 @@ export namespace Prisma {
       
 
   /**
-   * Content findFirstOrThrow
-   */
-  export type ContentFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Content
-     */
-    select?: ContentSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ContentInclude | null
-    /**
-     * Filter, which Content to fetch.
-     */
-    where?: ContentWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Contents to fetch.
-     */
-    orderBy?: Enumerable<ContentOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Contents.
-     */
-    cursor?: ContentWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Contents from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Contents.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Contents.
-     */
-    distinct?: Enumerable<ContentScalarFieldEnum>
-  }
-
-
-  /**
    * Content findMany
    */
   export type ContentFindManyArgs = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
     /**
      * Filter, which Contents to fetch.
-     */
+     * 
+    **/
     where?: ContentWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Contents to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ContentOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Contents.
-     */
+     * 
+    **/
     cursor?: ContentWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Contents from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Contents.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<ContentScalarFieldEnum>
   }
@@ -8519,15 +8444,18 @@ export namespace Prisma {
   export type ContentCreateArgs = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
     /**
      * The data needed to create a Content.
-     */
+     * 
+    **/
     data: XOR<ContentCreateInput, ContentUncheckedCreateInput>
   }
 
@@ -8538,7 +8466,8 @@ export namespace Prisma {
   export type ContentCreateManyArgs = {
     /**
      * The data used to create many Contents.
-     */
+     * 
+    **/
     data: Enumerable<ContentCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -8550,19 +8479,23 @@ export namespace Prisma {
   export type ContentUpdateArgs = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
     /**
      * The data needed to update a Content.
-     */
+     * 
+    **/
     data: XOR<ContentUpdateInput, ContentUncheckedUpdateInput>
     /**
      * Choose, which Content to update.
-     */
+     * 
+    **/
     where: ContentWhereUniqueInput
   }
 
@@ -8573,11 +8506,13 @@ export namespace Prisma {
   export type ContentUpdateManyArgs = {
     /**
      * The data used to update Contents.
-     */
+     * 
+    **/
     data: XOR<ContentUpdateManyMutationInput, ContentUncheckedUpdateManyInput>
     /**
      * Filter which Contents to update
-     */
+     * 
+    **/
     where?: ContentWhereInput
   }
 
@@ -8588,23 +8523,28 @@ export namespace Prisma {
   export type ContentUpsertArgs = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
     /**
      * The filter to search for the Content to update in case it exists.
-     */
+     * 
+    **/
     where: ContentWhereUniqueInput
     /**
      * In case the Content found by the `where` argument doesn't exist, create a new Content with this data.
-     */
+     * 
+    **/
     create: XOR<ContentCreateInput, ContentUncheckedCreateInput>
     /**
      * In case the Content was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<ContentUpdateInput, ContentUncheckedUpdateInput>
   }
 
@@ -8615,15 +8555,18 @@ export namespace Prisma {
   export type ContentDeleteArgs = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
     /**
      * Filter which Content to delete.
-     */
+     * 
+    **/
     where: ContentWhereUniqueInput
   }
 
@@ -8634,10 +8577,23 @@ export namespace Prisma {
   export type ContentDeleteManyArgs = {
     /**
      * Filter which Contents to delete
-     */
+     * 
+    **/
     where?: ContentWhereInput
   }
 
+
+  /**
+   * Content: findUniqueOrThrow
+   */
+  export type ContentFindUniqueOrThrowArgs = ContentFindUniqueArgsBase
+      
+
+  /**
+   * Content: findFirstOrThrow
+   */
+  export type ContentFindFirstOrThrowArgs = ContentFindFirstArgsBase
+      
 
   /**
    * Content without action
@@ -8645,11 +8601,13 @@ export namespace Prisma {
   export type ContentArgs = {
     /**
      * Select specific fields to fetch from the Content
-     */
+     * 
+    **/
     select?: ContentSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ContentInclude | null
   }
 
@@ -8720,31 +8678,36 @@ export namespace Prisma {
   export type ProjectAggregateArgs = {
     /**
      * Filter which Project to aggregate.
-     */
+     * 
+    **/
     where?: ProjectWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Projects to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ProjectOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: ProjectWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Projects from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Projects.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -8780,7 +8743,7 @@ export namespace Prisma {
   export type ProjectGroupByArgs = {
     where?: ProjectWhereInput
     orderBy?: Enumerable<ProjectOrderByWithAggregationInput>
-    by: ProjectScalarFieldEnum[]
+    by: Array<ProjectScalarFieldEnum>
     having?: ProjectScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -8801,7 +8764,7 @@ export namespace Prisma {
     _max: ProjectMaxAggregateOutputType | null
   }
 
-  type GetProjectGroupByPayload<T extends ProjectGroupByArgs> = Prisma.PrismaPromise<
+  type GetProjectGroupByPayload<T extends ProjectGroupByArgs> = PrismaPromise<
     Array<
       PickArray<ProjectGroupByOutputType, T['by']> &
         {
@@ -8822,8 +8785,8 @@ export namespace Prisma {
     updatedAt?: boolean
     userId?: boolean
     user?: boolean | UserArgs
-    content?: boolean | Project$contentArgs
-    channels?: boolean | Project$channelsArgs
+    content?: boolean | ContentFindManyArgs
+    channels?: boolean | ChannelFindManyArgs
     youtubeCredentials?: boolean | YoutubeCredentialsArgs
     instagramCredentials?: boolean | InstagramCredentialsArgs
     tikTokCredentials?: boolean | TikTokCredentialsArgs
@@ -8831,12 +8794,11 @@ export namespace Prisma {
     twitterCredentials?: boolean | TwitterCredentialsArgs
     _count?: boolean | ProjectCountOutputTypeArgs
   }
-
 
   export type ProjectInclude = {
     user?: boolean | UserArgs
-    content?: boolean | Project$contentArgs
-    channels?: boolean | Project$channelsArgs
+    content?: boolean | ContentFindManyArgs
+    channels?: boolean | ChannelFindManyArgs
     youtubeCredentials?: boolean | YoutubeCredentialsArgs
     instagramCredentials?: boolean | InstagramCredentialsArgs
     tikTokCredentials?: boolean | TikTokCredentialsArgs
@@ -8845,46 +8807,51 @@ export namespace Prisma {
     _count?: boolean | ProjectCountOutputTypeArgs
   }
 
-  export type ProjectGetPayload<S extends boolean | null | undefined | ProjectArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Project :
-    S extends undefined ? never :
-    S extends { include: any } & (ProjectArgs | ProjectFindManyArgs)
+  export type ProjectGetPayload<
+    S extends boolean | null | undefined | ProjectArgs,
+    U = keyof S
+      > = S extends true
+        ? Project
+    : S extends undefined
+    ? never
+    : S extends ProjectArgs | ProjectFindManyArgs
+    ?'include' extends U
     ? Project  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'user' ? UserGetPayload<S['include'][P]> :
-        P extends 'content' ? Array < ContentGetPayload<S['include'][P]>>  :
-        P extends 'channels' ? Array < ChannelGetPayload<S['include'][P]>>  :
-        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<S['include'][P]> | null :
-        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<S['include'][P]> | null :
-        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<S['include'][P]> | null :
-        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<S['include'][P]> | null :
-        P extends 'twitterCredentials' ? TwitterCredentialsGetPayload<S['include'][P]> | null :
-        P extends '_count' ? ProjectCountOutputTypeGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'user' ? UserGetPayload<Exclude<S['include'], undefined | null>[P]> :
+        P extends 'content' ? Array < ContentGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
+        P extends 'channels' ? Array < ChannelGetPayload<Exclude<S['include'], undefined | null>[P]>>  :
+        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends 'twitterCredentials' ? TwitterCredentialsGetPayload<Exclude<S['include'], undefined | null>[P]> | null :
+        P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (ProjectArgs | ProjectFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'user' ? UserGetPayload<S['select'][P]> :
-        P extends 'content' ? Array < ContentGetPayload<S['select'][P]>>  :
-        P extends 'channels' ? Array < ChannelGetPayload<S['select'][P]>>  :
-        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<S['select'][P]> | null :
-        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<S['select'][P]> | null :
-        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<S['select'][P]> | null :
-        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<S['select'][P]> | null :
-        P extends 'twitterCredentials' ? TwitterCredentialsGetPayload<S['select'][P]> | null :
-        P extends '_count' ? ProjectCountOutputTypeGetPayload<S['select'][P]> :  P extends keyof Project ? Project[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'user' ? UserGetPayload<Exclude<S['select'], undefined | null>[P]> :
+        P extends 'content' ? Array < ContentGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
+        P extends 'channels' ? Array < ChannelGetPayload<Exclude<S['select'], undefined | null>[P]>>  :
+        P extends 'youtubeCredentials' ? YoutubeCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'instagramCredentials' ? InstagramCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'tikTokCredentials' ? TikTokCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'facebookCredentials' ? FacebookCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends 'twitterCredentials' ? TwitterCredentialsGetPayload<Exclude<S['select'], undefined | null>[P]> | null :
+        P extends '_count' ? ProjectCountOutputTypeGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Project ? Project[P] : never
   } 
-      : Project
+    : Project
+  : Project
 
 
-  type ProjectCountArgs = 
+  type ProjectCountArgs = Merge<
     Omit<ProjectFindManyArgs, 'select' | 'include'> & {
       select?: ProjectCountAggregateInputType | true
     }
+  >
 
   export interface ProjectDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one Project that matches the filter.
      * @param {ProjectFindUniqueArgs} args - Arguments to find a Project
@@ -8898,23 +8865,7 @@ export namespace Prisma {
     **/
     findUnique<T extends ProjectFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, ProjectFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Project'> extends True ? Prisma__ProjectClient<ProjectGetPayload<T>> : Prisma__ProjectClient<ProjectGetPayload<T> | null, null>
-
-    /**
-     * Find one Project that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {ProjectFindUniqueOrThrowArgs} args - Arguments to find a Project
-     * @example
-     * // Get one Project
-     * const project = await prisma.project.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends ProjectFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, ProjectFindUniqueOrThrowArgs>
-    ): Prisma__ProjectClient<ProjectGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Project'> extends True ? CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>> : CheckSelect<T, Prisma__ProjectClient<Project | null, null>, Prisma__ProjectClient<ProjectGetPayload<T> | null, null>>
 
     /**
      * Find the first Project that matches the filter.
@@ -8931,25 +8882,7 @@ export namespace Prisma {
     **/
     findFirst<T extends ProjectFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, ProjectFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Project'> extends True ? Prisma__ProjectClient<ProjectGetPayload<T>> : Prisma__ProjectClient<ProjectGetPayload<T> | null, null>
-
-    /**
-     * Find the first Project that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ProjectFindFirstOrThrowArgs} args - Arguments to find a Project
-     * @example
-     * // Get one Project
-     * const project = await prisma.project.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends ProjectFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, ProjectFindFirstOrThrowArgs>
-    ): Prisma__ProjectClient<ProjectGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Project'> extends True ? CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>> : CheckSelect<T, Prisma__ProjectClient<Project | null, null>, Prisma__ProjectClient<ProjectGetPayload<T> | null, null>>
 
     /**
      * Find zero or more Projects that matches the filter.
@@ -8969,7 +8902,7 @@ export namespace Prisma {
     **/
     findMany<T extends ProjectFindManyArgs>(
       args?: SelectSubset<T, ProjectFindManyArgs>
-    ): Prisma.PrismaPromise<Array<ProjectGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<Project>>, PrismaPromise<Array<ProjectGetPayload<T>>>>
 
     /**
      * Create a Project.
@@ -8985,7 +8918,7 @@ export namespace Prisma {
     **/
     create<T extends ProjectCreateArgs>(
       args: SelectSubset<T, ProjectCreateArgs>
-    ): Prisma__ProjectClient<ProjectGetPayload<T>>
+    ): CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>>
 
     /**
      * Create many Projects.
@@ -9001,7 +8934,7 @@ export namespace Prisma {
     **/
     createMany<T extends ProjectCreateManyArgs>(
       args?: SelectSubset<T, ProjectCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Project.
@@ -9017,7 +8950,7 @@ export namespace Prisma {
     **/
     delete<T extends ProjectDeleteArgs>(
       args: SelectSubset<T, ProjectDeleteArgs>
-    ): Prisma__ProjectClient<ProjectGetPayload<T>>
+    ): CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>>
 
     /**
      * Update one Project.
@@ -9036,7 +8969,7 @@ export namespace Prisma {
     **/
     update<T extends ProjectUpdateArgs>(
       args: SelectSubset<T, ProjectUpdateArgs>
-    ): Prisma__ProjectClient<ProjectGetPayload<T>>
+    ): CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>>
 
     /**
      * Delete zero or more Projects.
@@ -9052,7 +8985,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends ProjectDeleteManyArgs>(
       args?: SelectSubset<T, ProjectDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Projects.
@@ -9073,7 +9006,7 @@ export namespace Prisma {
     **/
     updateMany<T extends ProjectUpdateManyArgs>(
       args: SelectSubset<T, ProjectUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Project.
@@ -9094,7 +9027,41 @@ export namespace Prisma {
     **/
     upsert<T extends ProjectUpsertArgs>(
       args: SelectSubset<T, ProjectUpsertArgs>
-    ): Prisma__ProjectClient<ProjectGetPayload<T>>
+    ): CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>>
+
+    /**
+     * Find one Project that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {ProjectFindUniqueOrThrowArgs} args - Arguments to find a Project
+     * @example
+     * // Get one Project
+     * const project = await prisma.project.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends ProjectFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, ProjectFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>>
+
+    /**
+     * Find the first Project that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ProjectFindFirstOrThrowArgs} args - Arguments to find a Project
+     * @example
+     * // Get one Project
+     * const project = await prisma.project.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends ProjectFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ProjectFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__ProjectClient<Project>, Prisma__ProjectClient<ProjectGetPayload<T>>>
 
     /**
      * Count the number of Projects.
@@ -9111,7 +9078,7 @@ export namespace Prisma {
     **/
     count<T extends ProjectCountArgs>(
       args?: Subset<T, ProjectCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -9143,7 +9110,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends ProjectAggregateArgs>(args: Subset<T, ProjectAggregateArgs>): Prisma.PrismaPromise<GetProjectAggregateType<T>>
+    aggregate<T extends ProjectAggregateArgs>(args: Subset<T, ProjectAggregateArgs>): PrismaPromise<GetProjectAggregateType<T>>
 
     /**
      * Group by Project.
@@ -9220,7 +9187,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ProjectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ProjectGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetProjectGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -9230,8 +9197,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__ProjectClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__ProjectClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -9242,24 +9211,24 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    user<T extends UserArgs= {}>(args?: Subset<T, UserArgs>): Prisma__UserClient<UserGetPayload<T> | Null>;
+    user<T extends UserArgs = {}>(args?: Subset<T, UserArgs>): CheckSelect<T, Prisma__UserClient<User | Null>, Prisma__UserClient<UserGetPayload<T> | Null>>;
 
-    content<T extends Project$contentArgs= {}>(args?: Subset<T, Project$contentArgs>): Prisma.PrismaPromise<Array<ContentGetPayload<T>>| Null>;
+    content<T extends ContentFindManyArgs = {}>(args?: Subset<T, ContentFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Content>| Null>, PrismaPromise<Array<ContentGetPayload<T>>| Null>>;
 
-    channels<T extends Project$channelsArgs= {}>(args?: Subset<T, Project$channelsArgs>): Prisma.PrismaPromise<Array<ChannelGetPayload<T>>| Null>;
+    channels<T extends ChannelFindManyArgs = {}>(args?: Subset<T, ChannelFindManyArgs>): CheckSelect<T, PrismaPromise<Array<Channel>| Null>, PrismaPromise<Array<ChannelGetPayload<T>>| Null>>;
 
-    youtubeCredentials<T extends YoutubeCredentialsArgs= {}>(args?: Subset<T, YoutubeCredentialsArgs>): Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | Null>;
+    youtubeCredentials<T extends YoutubeCredentialsArgs = {}>(args?: Subset<T, YoutubeCredentialsArgs>): CheckSelect<T, Prisma__YoutubeCredentialsClient<YoutubeCredentials | Null>, Prisma__YoutubeCredentialsClient<YoutubeCredentialsGetPayload<T> | Null>>;
 
-    instagramCredentials<T extends InstagramCredentialsArgs= {}>(args?: Subset<T, InstagramCredentialsArgs>): Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | Null>;
+    instagramCredentials<T extends InstagramCredentialsArgs = {}>(args?: Subset<T, InstagramCredentialsArgs>): CheckSelect<T, Prisma__InstagramCredentialsClient<InstagramCredentials | Null>, Prisma__InstagramCredentialsClient<InstagramCredentialsGetPayload<T> | Null>>;
 
-    tikTokCredentials<T extends TikTokCredentialsArgs= {}>(args?: Subset<T, TikTokCredentialsArgs>): Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | Null>;
+    tikTokCredentials<T extends TikTokCredentialsArgs = {}>(args?: Subset<T, TikTokCredentialsArgs>): CheckSelect<T, Prisma__TikTokCredentialsClient<TikTokCredentials | Null>, Prisma__TikTokCredentialsClient<TikTokCredentialsGetPayload<T> | Null>>;
 
-    facebookCredentials<T extends FacebookCredentialsArgs= {}>(args?: Subset<T, FacebookCredentialsArgs>): Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | Null>;
+    facebookCredentials<T extends FacebookCredentialsArgs = {}>(args?: Subset<T, FacebookCredentialsArgs>): CheckSelect<T, Prisma__FacebookCredentialsClient<FacebookCredentials | Null>, Prisma__FacebookCredentialsClient<FacebookCredentialsGetPayload<T> | Null>>;
 
-    twitterCredentials<T extends TwitterCredentialsArgs= {}>(args?: Subset<T, TwitterCredentialsArgs>): Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | Null>;
+    twitterCredentials<T extends TwitterCredentialsArgs = {}>(args?: Subset<T, TwitterCredentialsArgs>): CheckSelect<T, Prisma__TwitterCredentialsClient<TwitterCredentials | Null>, Prisma__TwitterCredentialsClient<TwitterCredentialsGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -9294,20 +9263,23 @@ export namespace Prisma {
   export type ProjectFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
     /**
      * Filter, which Project to fetch.
-     */
+     * 
+    **/
     where: ProjectWhereUniqueInput
   }
 
   /**
-   * Project findUnique
+   * Project: findUnique
    */
   export interface ProjectFindUniqueArgs extends ProjectFindUniqueArgsBase {
    /**
@@ -9319,74 +9291,63 @@ export namespace Prisma {
       
 
   /**
-   * Project findUniqueOrThrow
-   */
-  export type ProjectFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Project
-     */
-    select?: ProjectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ProjectInclude | null
-    /**
-     * Filter, which Project to fetch.
-     */
-    where: ProjectWhereUniqueInput
-  }
-
-
-  /**
    * Project base type for findFirst actions
    */
   export type ProjectFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
     /**
      * Filter, which Project to fetch.
-     */
+     * 
+    **/
     where?: ProjectWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Projects to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ProjectOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Projects.
-     */
+     * 
+    **/
     cursor?: ProjectWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Projects from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Projects.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Projects.
-     */
+     * 
+    **/
     distinct?: Enumerable<ProjectScalarFieldEnum>
   }
 
   /**
-   * Project findFirst
+   * Project: findFirst
    */
   export interface ProjectFindFirstArgs extends ProjectFindFirstArgsBase {
    /**
@@ -9398,93 +9359,51 @@ export namespace Prisma {
       
 
   /**
-   * Project findFirstOrThrow
-   */
-  export type ProjectFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Project
-     */
-    select?: ProjectSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ProjectInclude | null
-    /**
-     * Filter, which Project to fetch.
-     */
-    where?: ProjectWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Projects to fetch.
-     */
-    orderBy?: Enumerable<ProjectOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Projects.
-     */
-    cursor?: ProjectWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Projects from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Projects.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Projects.
-     */
-    distinct?: Enumerable<ProjectScalarFieldEnum>
-  }
-
-
-  /**
    * Project findMany
    */
   export type ProjectFindManyArgs = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
     /**
      * Filter, which Projects to fetch.
-     */
+     * 
+    **/
     where?: ProjectWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Projects to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ProjectOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Projects.
-     */
+     * 
+    **/
     cursor?: ProjectWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Projects from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Projects.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<ProjectScalarFieldEnum>
   }
@@ -9496,15 +9415,18 @@ export namespace Prisma {
   export type ProjectCreateArgs = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
     /**
      * The data needed to create a Project.
-     */
+     * 
+    **/
     data: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
   }
 
@@ -9515,7 +9437,8 @@ export namespace Prisma {
   export type ProjectCreateManyArgs = {
     /**
      * The data used to create many Projects.
-     */
+     * 
+    **/
     data: Enumerable<ProjectCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -9527,19 +9450,23 @@ export namespace Prisma {
   export type ProjectUpdateArgs = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
     /**
      * The data needed to update a Project.
-     */
+     * 
+    **/
     data: XOR<ProjectUpdateInput, ProjectUncheckedUpdateInput>
     /**
      * Choose, which Project to update.
-     */
+     * 
+    **/
     where: ProjectWhereUniqueInput
   }
 
@@ -9550,11 +9477,13 @@ export namespace Prisma {
   export type ProjectUpdateManyArgs = {
     /**
      * The data used to update Projects.
-     */
+     * 
+    **/
     data: XOR<ProjectUpdateManyMutationInput, ProjectUncheckedUpdateManyInput>
     /**
      * Filter which Projects to update
-     */
+     * 
+    **/
     where?: ProjectWhereInput
   }
 
@@ -9565,23 +9494,28 @@ export namespace Prisma {
   export type ProjectUpsertArgs = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
     /**
      * The filter to search for the Project to update in case it exists.
-     */
+     * 
+    **/
     where: ProjectWhereUniqueInput
     /**
      * In case the Project found by the `where` argument doesn't exist, create a new Project with this data.
-     */
+     * 
+    **/
     create: XOR<ProjectCreateInput, ProjectUncheckedCreateInput>
     /**
      * In case the Project was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<ProjectUpdateInput, ProjectUncheckedUpdateInput>
   }
 
@@ -9592,15 +9526,18 @@ export namespace Prisma {
   export type ProjectDeleteArgs = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
     /**
      * Filter which Project to delete.
-     */
+     * 
+    **/
     where: ProjectWhereUniqueInput
   }
 
@@ -9611,52 +9548,23 @@ export namespace Prisma {
   export type ProjectDeleteManyArgs = {
     /**
      * Filter which Projects to delete
-     */
+     * 
+    **/
     where?: ProjectWhereInput
   }
 
 
   /**
-   * Project.content
+   * Project: findUniqueOrThrow
    */
-  export type Project$contentArgs = {
-    /**
-     * Select specific fields to fetch from the Content
-     */
-    select?: ContentSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ContentInclude | null
-    where?: ContentWhereInput
-    orderBy?: Enumerable<ContentOrderByWithRelationInput>
-    cursor?: ContentWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<ContentScalarFieldEnum>
-  }
-
+  export type ProjectFindUniqueOrThrowArgs = ProjectFindUniqueArgsBase
+      
 
   /**
-   * Project.channels
+   * Project: findFirstOrThrow
    */
-  export type Project$channelsArgs = {
-    /**
-     * Select specific fields to fetch from the Channel
-     */
-    select?: ChannelSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ChannelInclude | null
-    where?: ChannelWhereInput
-    orderBy?: Enumerable<ChannelOrderByWithRelationInput>
-    cursor?: ChannelWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: Enumerable<ChannelScalarFieldEnum>
-  }
-
+  export type ProjectFindFirstOrThrowArgs = ProjectFindFirstArgsBase
+      
 
   /**
    * Project without action
@@ -9664,11 +9572,13 @@ export namespace Prisma {
   export type ProjectArgs = {
     /**
      * Select specific fields to fetch from the Project
-     */
+     * 
+    **/
     select?: ProjectSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ProjectInclude | null
   }
 
@@ -9779,31 +9689,36 @@ export namespace Prisma {
   export type ChannelAggregateArgs = {
     /**
      * Filter which Channel to aggregate.
-     */
+     * 
+    **/
     where?: ChannelWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Channels to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ChannelOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
-     */
+     * 
+    **/
     cursor?: ChannelWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Channels from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Channels.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
@@ -9851,7 +9766,7 @@ export namespace Prisma {
   export type ChannelGroupByArgs = {
     where?: ChannelWhereInput
     orderBy?: Enumerable<ChannelOrderByWithAggregationInput>
-    by: ChannelScalarFieldEnum[]
+    by: Array<ChannelScalarFieldEnum>
     having?: ChannelScalarWhereWithAggregatesInput
     take?: number
     skip?: number
@@ -9879,7 +9794,7 @@ export namespace Prisma {
     _max: ChannelMaxAggregateOutputType | null
   }
 
-  type GetChannelGroupByPayload<T extends ChannelGroupByArgs> = Prisma.PrismaPromise<
+  type GetChannelGroupByPayload<T extends ChannelGroupByArgs> = PrismaPromise<
     Array<
       PickArray<ChannelGroupByOutputType, T['by']> &
         {
@@ -9905,35 +9820,39 @@ export namespace Prisma {
     project?: boolean | ProjectArgs
   }
 
-
   export type ChannelInclude = {
     project?: boolean | ProjectArgs
   }
 
-  export type ChannelGetPayload<S extends boolean | null | undefined | ChannelArgs> =
-    S extends { select: any, include: any } ? 'Please either choose `select` or `include`' :
-    S extends true ? Channel :
-    S extends undefined ? never :
-    S extends { include: any } & (ChannelArgs | ChannelFindManyArgs)
+  export type ChannelGetPayload<
+    S extends boolean | null | undefined | ChannelArgs,
+    U = keyof S
+      > = S extends true
+        ? Channel
+    : S extends undefined
+    ? never
+    : S extends ChannelArgs | ChannelFindManyArgs
+    ?'include' extends U
     ? Channel  & {
-    [P in TruthyKeys<S['include']>]:
-        P extends 'project' ? ProjectGetPayload<S['include'][P]> :  never
+    [P in TrueKeys<S['include']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['include'], undefined | null>[P]> :  never
   } 
-    : S extends { select: any } & (ChannelArgs | ChannelFindManyArgs)
-      ? {
-    [P in TruthyKeys<S['select']>]:
-        P extends 'project' ? ProjectGetPayload<S['select'][P]> :  P extends keyof Channel ? Channel[P] : never
+    : 'select' extends U
+    ? {
+    [P in TrueKeys<S['select']>]:
+        P extends 'project' ? ProjectGetPayload<Exclude<S['select'], undefined | null>[P]> :  P extends keyof Channel ? Channel[P] : never
   } 
-      : Channel
+    : Channel
+  : Channel
 
 
-  type ChannelCountArgs = 
+  type ChannelCountArgs = Merge<
     Omit<ChannelFindManyArgs, 'select' | 'include'> & {
       select?: ChannelCountAggregateInputType | true
     }
+  >
 
   export interface ChannelDelegate<GlobalRejectSettings extends Prisma.RejectOnNotFound | Prisma.RejectPerOperation | false | undefined> {
-
     /**
      * Find zero or one Channel that matches the filter.
      * @param {ChannelFindUniqueArgs} args - Arguments to find a Channel
@@ -9947,23 +9866,7 @@ export namespace Prisma {
     **/
     findUnique<T extends ChannelFindUniqueArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args: SelectSubset<T, ChannelFindUniqueArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Channel'> extends True ? Prisma__ChannelClient<ChannelGetPayload<T>> : Prisma__ChannelClient<ChannelGetPayload<T> | null, null>
-
-    /**
-     * Find one Channel that matches the filter or throw an error  with `error.code='P2025'` 
-     *     if no matches were found.
-     * @param {ChannelFindUniqueOrThrowArgs} args - Arguments to find a Channel
-     * @example
-     * // Get one Channel
-     * const channel = await prisma.channel.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findUniqueOrThrow<T extends ChannelFindUniqueOrThrowArgs>(
-      args?: SelectSubset<T, ChannelFindUniqueOrThrowArgs>
-    ): Prisma__ChannelClient<ChannelGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findUnique', 'Channel'> extends True ? CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>> : CheckSelect<T, Prisma__ChannelClient<Channel | null, null>, Prisma__ChannelClient<ChannelGetPayload<T> | null, null>>
 
     /**
      * Find the first Channel that matches the filter.
@@ -9980,25 +9883,7 @@ export namespace Prisma {
     **/
     findFirst<T extends ChannelFindFirstArgs,  LocalRejectSettings = T["rejectOnNotFound"] extends RejectOnNotFound ? T['rejectOnNotFound'] : undefined>(
       args?: SelectSubset<T, ChannelFindFirstArgs>
-    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Channel'> extends True ? Prisma__ChannelClient<ChannelGetPayload<T>> : Prisma__ChannelClient<ChannelGetPayload<T> | null, null>
-
-    /**
-     * Find the first Channel that matches the filter or
-     * throw `NotFoundError` if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {ChannelFindFirstOrThrowArgs} args - Arguments to find a Channel
-     * @example
-     * // Get one Channel
-     * const channel = await prisma.channel.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-    **/
-    findFirstOrThrow<T extends ChannelFindFirstOrThrowArgs>(
-      args?: SelectSubset<T, ChannelFindFirstOrThrowArgs>
-    ): Prisma__ChannelClient<ChannelGetPayload<T>>
+    ): HasReject<GlobalRejectSettings, LocalRejectSettings, 'findFirst', 'Channel'> extends True ? CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>> : CheckSelect<T, Prisma__ChannelClient<Channel | null, null>, Prisma__ChannelClient<ChannelGetPayload<T> | null, null>>
 
     /**
      * Find zero or more Channels that matches the filter.
@@ -10018,7 +9903,7 @@ export namespace Prisma {
     **/
     findMany<T extends ChannelFindManyArgs>(
       args?: SelectSubset<T, ChannelFindManyArgs>
-    ): Prisma.PrismaPromise<Array<ChannelGetPayload<T>>>
+    ): CheckSelect<T, PrismaPromise<Array<Channel>>, PrismaPromise<Array<ChannelGetPayload<T>>>>
 
     /**
      * Create a Channel.
@@ -10034,7 +9919,7 @@ export namespace Prisma {
     **/
     create<T extends ChannelCreateArgs>(
       args: SelectSubset<T, ChannelCreateArgs>
-    ): Prisma__ChannelClient<ChannelGetPayload<T>>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
      * Create many Channels.
@@ -10050,7 +9935,7 @@ export namespace Prisma {
     **/
     createMany<T extends ChannelCreateManyArgs>(
       args?: SelectSubset<T, ChannelCreateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Delete a Channel.
@@ -10066,7 +9951,7 @@ export namespace Prisma {
     **/
     delete<T extends ChannelDeleteArgs>(
       args: SelectSubset<T, ChannelDeleteArgs>
-    ): Prisma__ChannelClient<ChannelGetPayload<T>>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
      * Update one Channel.
@@ -10085,7 +9970,7 @@ export namespace Prisma {
     **/
     update<T extends ChannelUpdateArgs>(
       args: SelectSubset<T, ChannelUpdateArgs>
-    ): Prisma__ChannelClient<ChannelGetPayload<T>>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
      * Delete zero or more Channels.
@@ -10101,7 +9986,7 @@ export namespace Prisma {
     **/
     deleteMany<T extends ChannelDeleteManyArgs>(
       args?: SelectSubset<T, ChannelDeleteManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Update zero or more Channels.
@@ -10122,7 +10007,7 @@ export namespace Prisma {
     **/
     updateMany<T extends ChannelUpdateManyArgs>(
       args: SelectSubset<T, ChannelUpdateManyArgs>
-    ): Prisma.PrismaPromise<BatchPayload>
+    ): PrismaPromise<BatchPayload>
 
     /**
      * Create or update one Channel.
@@ -10143,7 +10028,41 @@ export namespace Prisma {
     **/
     upsert<T extends ChannelUpsertArgs>(
       args: SelectSubset<T, ChannelUpsertArgs>
-    ): Prisma__ChannelClient<ChannelGetPayload<T>>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
+
+    /**
+     * Find one Channel that matches the filter or throw
+     * `NotFoundError` if no matches were found.
+     * @param {ChannelFindUniqueOrThrowArgs} args - Arguments to find a Channel
+     * @example
+     * // Get one Channel
+     * const channel = await prisma.channel.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findUniqueOrThrow<T extends ChannelFindUniqueOrThrowArgs>(
+      args?: SelectSubset<T, ChannelFindUniqueOrThrowArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
+
+    /**
+     * Find the first Channel that matches the filter or
+     * throw `NotFoundError` if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelFindFirstOrThrowArgs} args - Arguments to find a Channel
+     * @example
+     * // Get one Channel
+     * const channel = await prisma.channel.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+    **/
+    findFirstOrThrow<T extends ChannelFindFirstOrThrowArgs>(
+      args?: SelectSubset<T, ChannelFindFirstOrThrowArgs>
+    ): CheckSelect<T, Prisma__ChannelClient<Channel>, Prisma__ChannelClient<ChannelGetPayload<T>>>
 
     /**
      * Count the number of Channels.
@@ -10160,7 +10079,7 @@ export namespace Prisma {
     **/
     count<T extends ChannelCountArgs>(
       args?: Subset<T, ChannelCountArgs>,
-    ): Prisma.PrismaPromise<
+    ): PrismaPromise<
       T extends _Record<'select', any>
         ? T['select'] extends true
           ? number
@@ -10192,7 +10111,7 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends ChannelAggregateArgs>(args: Subset<T, ChannelAggregateArgs>): Prisma.PrismaPromise<GetChannelAggregateType<T>>
+    aggregate<T extends ChannelAggregateArgs>(args: Subset<T, ChannelAggregateArgs>): PrismaPromise<GetChannelAggregateType<T>>
 
     /**
      * Group by Channel.
@@ -10269,7 +10188,7 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, ChannelGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChannelGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, ChannelGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChannelGroupByPayload<T> : PrismaPromise<InputErrors>
 
   }
 
@@ -10279,8 +10198,10 @@ export namespace Prisma {
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export class Prisma__ChannelClient<T, Null = never> implements Prisma.PrismaPromise<T> {
+  export class Prisma__ChannelClient<T, Null = never> implements PrismaPromise<T> {
+    [prisma]: true;
     private readonly _dmmf;
+    private readonly _fetcher;
     private readonly _queryType;
     private readonly _rootField;
     private readonly _clientMethod;
@@ -10291,10 +10212,10 @@ export namespace Prisma {
     private _isList;
     private _callsite;
     private _requestPromise?;
-    readonly [Symbol.toStringTag]: 'PrismaPromise';
-    constructor(_dmmf: runtime.DMMFClass, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    constructor(_dmmf: runtime.DMMFClass, _fetcher: PrismaClientFetcher, _queryType: 'query' | 'mutation', _rootField: string, _clientMethod: string, _args: any, _dataPath: string[], _errorFormat: ErrorFormat, _measurePerformance?: boolean | undefined, _isList?: boolean);
+    readonly [Symbol.toStringTag]: 'PrismaClientPromise';
 
-    project<T extends ProjectArgs= {}>(args?: Subset<T, ProjectArgs>): Prisma__ProjectClient<ProjectGetPayload<T> | Null>;
+    project<T extends ProjectArgs = {}>(args?: Subset<T, ProjectArgs>): CheckSelect<T, Prisma__ProjectClient<Project | Null>, Prisma__ProjectClient<ProjectGetPayload<T> | Null>>;
 
     private get _document();
     /**
@@ -10329,20 +10250,23 @@ export namespace Prisma {
   export type ChannelFindUniqueArgsBase = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
     /**
      * Filter, which Channel to fetch.
-     */
+     * 
+    **/
     where: ChannelWhereUniqueInput
   }
 
   /**
-   * Channel findUnique
+   * Channel: findUnique
    */
   export interface ChannelFindUniqueArgs extends ChannelFindUniqueArgsBase {
    /**
@@ -10354,74 +10278,63 @@ export namespace Prisma {
       
 
   /**
-   * Channel findUniqueOrThrow
-   */
-  export type ChannelFindUniqueOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Channel
-     */
-    select?: ChannelSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ChannelInclude | null
-    /**
-     * Filter, which Channel to fetch.
-     */
-    where: ChannelWhereUniqueInput
-  }
-
-
-  /**
    * Channel base type for findFirst actions
    */
   export type ChannelFindFirstArgsBase = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
     /**
      * Filter, which Channel to fetch.
-     */
+     * 
+    **/
     where?: ChannelWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Channels to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ChannelOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for searching for Channels.
-     */
+     * 
+    **/
     cursor?: ChannelWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Channels from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Channels.
-     */
+     * 
+    **/
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
      * Filter by unique combinations of Channels.
-     */
+     * 
+    **/
     distinct?: Enumerable<ChannelScalarFieldEnum>
   }
 
   /**
-   * Channel findFirst
+   * Channel: findFirst
    */
   export interface ChannelFindFirstArgs extends ChannelFindFirstArgsBase {
    /**
@@ -10433,93 +10346,51 @@ export namespace Prisma {
       
 
   /**
-   * Channel findFirstOrThrow
-   */
-  export type ChannelFindFirstOrThrowArgs = {
-    /**
-     * Select specific fields to fetch from the Channel
-     */
-    select?: ChannelSelect | null
-    /**
-     * Choose, which related nodes to fetch as well.
-     */
-    include?: ChannelInclude | null
-    /**
-     * Filter, which Channel to fetch.
-     */
-    where?: ChannelWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Channels to fetch.
-     */
-    orderBy?: Enumerable<ChannelOrderByWithRelationInput>
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Channels.
-     */
-    cursor?: ChannelWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Channels from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Channels.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Channels.
-     */
-    distinct?: Enumerable<ChannelScalarFieldEnum>
-  }
-
-
-  /**
    * Channel findMany
    */
   export type ChannelFindManyArgs = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
     /**
      * Filter, which Channels to fetch.
-     */
+     * 
+    **/
     where?: ChannelWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
      * Determine the order of Channels to fetch.
-     */
+     * 
+    **/
     orderBy?: Enumerable<ChannelOrderByWithRelationInput>
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the position for listing Channels.
-     */
+     * 
+    **/
     cursor?: ChannelWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Take `±n` Channels from the position of the cursor.
-     */
+     * 
+    **/
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
      * Skip the first `n` Channels.
-     */
+     * 
+    **/
     skip?: number
     distinct?: Enumerable<ChannelScalarFieldEnum>
   }
@@ -10531,15 +10402,18 @@ export namespace Prisma {
   export type ChannelCreateArgs = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
     /**
      * The data needed to create a Channel.
-     */
+     * 
+    **/
     data: XOR<ChannelCreateInput, ChannelUncheckedCreateInput>
   }
 
@@ -10550,7 +10424,8 @@ export namespace Prisma {
   export type ChannelCreateManyArgs = {
     /**
      * The data used to create many Channels.
-     */
+     * 
+    **/
     data: Enumerable<ChannelCreateManyInput>
     skipDuplicates?: boolean
   }
@@ -10562,19 +10437,23 @@ export namespace Prisma {
   export type ChannelUpdateArgs = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
     /**
      * The data needed to update a Channel.
-     */
+     * 
+    **/
     data: XOR<ChannelUpdateInput, ChannelUncheckedUpdateInput>
     /**
      * Choose, which Channel to update.
-     */
+     * 
+    **/
     where: ChannelWhereUniqueInput
   }
 
@@ -10585,11 +10464,13 @@ export namespace Prisma {
   export type ChannelUpdateManyArgs = {
     /**
      * The data used to update Channels.
-     */
+     * 
+    **/
     data: XOR<ChannelUpdateManyMutationInput, ChannelUncheckedUpdateManyInput>
     /**
      * Filter which Channels to update
-     */
+     * 
+    **/
     where?: ChannelWhereInput
   }
 
@@ -10600,23 +10481,28 @@ export namespace Prisma {
   export type ChannelUpsertArgs = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
     /**
      * The filter to search for the Channel to update in case it exists.
-     */
+     * 
+    **/
     where: ChannelWhereUniqueInput
     /**
      * In case the Channel found by the `where` argument doesn't exist, create a new Channel with this data.
-     */
+     * 
+    **/
     create: XOR<ChannelCreateInput, ChannelUncheckedCreateInput>
     /**
      * In case the Channel was found with the provided `where` argument, update it with this data.
-     */
+     * 
+    **/
     update: XOR<ChannelUpdateInput, ChannelUncheckedUpdateInput>
   }
 
@@ -10627,15 +10513,18 @@ export namespace Prisma {
   export type ChannelDeleteArgs = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
     /**
      * Filter which Channel to delete.
-     */
+     * 
+    **/
     where: ChannelWhereUniqueInput
   }
 
@@ -10646,10 +10535,23 @@ export namespace Prisma {
   export type ChannelDeleteManyArgs = {
     /**
      * Filter which Channels to delete
-     */
+     * 
+    **/
     where?: ChannelWhereInput
   }
 
+
+  /**
+   * Channel: findUniqueOrThrow
+   */
+  export type ChannelFindUniqueOrThrowArgs = ChannelFindUniqueArgsBase
+      
+
+  /**
+   * Channel: findFirstOrThrow
+   */
+  export type ChannelFindFirstOrThrowArgs = ChannelFindFirstArgsBase
+      
 
   /**
    * Channel without action
@@ -10657,11 +10559,13 @@ export namespace Prisma {
   export type ChannelArgs = {
     /**
      * Select specific fields to fetch from the Channel
-     */
+     * 
+    **/
     select?: ChannelSelect | null
     /**
      * Choose, which related nodes to fetch as well.
-     */
+     * 
+    **/
     include?: ChannelInclude | null
   }
 
@@ -10692,9 +10596,6 @@ export namespace Prisma {
     slug: 'slug',
     title: 'title',
     description: 'description',
-    markdown: 'markdown',
-    thumbnail: 'thumbnail',
-    video: 'video',
     tags: 'tags',
     published: 'published',
     createdAt: 'createdAt',
@@ -10833,21 +10734,21 @@ export namespace Prisma {
     NOT?: Enumerable<UserWhereInput>
     id?: StringFilter | string
     email?: StringFilter | string
+    password?: XOR<PasswordRelationFilter, PasswordWhereInput> | null
+    projects?: ProjectListRelationFilter
     currentProjectId?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    password?: XOR<PasswordRelationFilter, PasswordWhereInput> | null
-    projects?: ProjectListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     email?: SortOrder
+    password?: PasswordOrderByWithRelationInput
+    projects?: ProjectOrderByRelationAggregateInput
     currentProjectId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    password?: PasswordOrderByWithRelationInput
-    projects?: ProjectOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = {
@@ -11184,9 +11085,6 @@ export namespace Prisma {
     slug?: StringFilter | string
     title?: StringFilter | string
     description?: StringNullableFilter | string | null
-    markdown?: StringNullableFilter | string | null
-    thumbnail?: StringNullableFilter | string | null
-    video?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
     createdAt?: DateTimeNullableFilter | Date | string | null
@@ -11199,9 +11097,6 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    markdown?: SortOrder
-    thumbnail?: SortOrder
-    video?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -11218,9 +11113,6 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    markdown?: SortOrder
-    thumbnail?: SortOrder
-    video?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -11238,9 +11130,6 @@ export namespace Prisma {
     slug?: StringWithAggregatesFilter | string
     title?: StringWithAggregatesFilter | string
     description?: StringNullableWithAggregatesFilter | string | null
-    markdown?: StringNullableWithAggregatesFilter | string | null
-    thumbnail?: StringNullableWithAggregatesFilter | string | null
-    video?: StringNullableWithAggregatesFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableWithAggregatesFilter | boolean | null
     createdAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
@@ -11374,41 +11263,41 @@ export namespace Prisma {
   export type UserCreateInput = {
     id?: string
     email: string
+    password?: PasswordCreateNestedOneWithoutUserInput
+    projects?: ProjectCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    password?: PasswordCreateNestedOneWithoutUserInput
-    projects?: ProjectCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
     id?: string
     email: string
+    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    password?: PasswordUpdateOneWithoutUserNestedInput
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    password?: PasswordUpdateOneWithoutUserNestedInput
-    projects?: ProjectUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -11790,9 +11679,6 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -11804,9 +11690,6 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -11818,9 +11701,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11832,9 +11712,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11846,9 +11723,6 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -11860,9 +11734,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11873,9 +11744,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12057,6 +11925,17 @@ export namespace Prisma {
     not?: NestedStringFilter | string
   }
 
+  export type PasswordRelationFilter = {
+    is?: PasswordWhereInput | null
+    isNot?: PasswordWhereInput | null
+  }
+
+  export type ProjectListRelationFilter = {
+    every?: ProjectWhereInput
+    some?: ProjectWhereInput
+    none?: ProjectWhereInput
+  }
+
   export type StringNullableFilter = {
     equals?: string | null
     in?: Enumerable<string> | null
@@ -12081,17 +11960,6 @@ export namespace Prisma {
     gt?: Date | string
     gte?: Date | string
     not?: NestedDateTimeFilter | Date | string
-  }
-
-  export type PasswordRelationFilter = {
-    is?: PasswordWhereInput | null
-    isNot?: PasswordWhereInput | null
-  }
-
-  export type ProjectListRelationFilter = {
-    every?: ProjectWhereInput
-    some?: ProjectWhereInput
-    none?: ProjectWhereInput
   }
 
   export type ProjectOrderByRelationAggregateInput = {
@@ -12373,9 +12241,6 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    markdown?: SortOrder
-    thumbnail?: SortOrder
-    video?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -12387,9 +12252,6 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    markdown?: SortOrder
-    thumbnail?: SortOrder
-    video?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12400,9 +12262,6 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
-    markdown?: SortOrder
-    thumbnail?: SortOrder
-    video?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12622,14 +12481,6 @@ export namespace Prisma {
     set?: string
   }
 
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
-  }
-
   export type PasswordUpdateOneWithoutUserNestedInput = {
     create?: XOR<PasswordCreateWithoutUserInput, PasswordUncheckedCreateWithoutUserInput>
     connectOrCreate?: PasswordCreateOrConnectWithoutUserInput
@@ -12652,6 +12503,14 @@ export namespace Prisma {
     update?: Enumerable<ProjectUpdateWithWhereUniqueWithoutUserInput>
     updateMany?: Enumerable<ProjectUpdateManyWithWhereWithoutUserInput>
     deleteMany?: Enumerable<ProjectScalarWhereInput>
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
   }
 
   export type PasswordUncheckedUpdateOneWithoutUserNestedInput = {
@@ -13362,19 +13221,19 @@ export namespace Prisma {
   export type UserCreateWithoutPasswordInput = {
     id?: string
     email: string
+    projects?: ProjectCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    projects?: ProjectCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPasswordInput = {
     id?: string
     email: string
+    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
     currentProjectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPasswordInput = {
@@ -13390,19 +13249,19 @@ export namespace Prisma {
   export type UserUpdateWithoutPasswordInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    projects?: ProjectUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    projects?: ProjectUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPasswordInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ProjectCreateWithoutYoutubeCredentialsInput = {
@@ -13804,19 +13663,19 @@ export namespace Prisma {
   export type UserCreateWithoutProjectsInput = {
     id?: string
     email: string
+    password?: PasswordCreateNestedOneWithoutUserInput
     currentProjectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    password?: PasswordCreateNestedOneWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutProjectsInput = {
     id?: string
     email: string
+    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
     currentProjectId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    password?: PasswordUncheckedCreateNestedOneWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutProjectsInput = {
@@ -13828,9 +13687,6 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -13841,9 +13697,6 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -14005,19 +13858,19 @@ export namespace Prisma {
   export type UserUpdateWithoutProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    password?: PasswordUpdateOneWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    password?: PasswordUpdateOneWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutProjectsInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
+    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
   }
 
   export type ContentUpsertWithWhereUniqueWithoutProjectInput = {
@@ -14043,9 +13896,6 @@ export namespace Prisma {
     slug?: StringFilter | string
     title?: StringFilter | string
     description?: StringNullableFilter | string | null
-    markdown?: StringNullableFilter | string | null
-    thumbnail?: StringNullableFilter | string | null
-    video?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
     createdAt?: DateTimeNullableFilter | Date | string | null
@@ -14302,9 +14152,6 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
-    markdown?: string | null
-    thumbnail?: string | null
-    video?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -14325,9 +14172,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14338,9 +14182,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14351,9 +14192,6 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
-    markdown?: NullableStringFieldUpdateOperationsInput | string | null
-    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
-    video?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

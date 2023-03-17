@@ -2,21 +2,33 @@
  * TODO
  * @param this
  */
-declare function $extends(this: Client, extension: Args | ((client: Client) => Client)): Client;
+declare function $extends(this: Client, extension: Extension | (() => Extension)): Client;
 
 declare type Action = keyof typeof DMMF.ModelAction | 'executeRaw' | 'queryRaw' | 'runCommandRaw';
 
-declare type Aggregate = '_count' | '_max' | '_min' | '_avg' | '_sum';
+declare const actionOperationMap: {
+    findUnique: string;
+    findFirst: string;
+    findMany: string;
+    count: string;
+    create: string;
+    createMany: string;
+    update: string;
+    updateMany: string;
+    upsert: string;
+    delete: string;
+    deleteMany: string;
+    executeRaw: string;
+    queryRaw: string;
+    aggregate: string;
+    groupBy: string;
+    runCommandRaw: string;
+    findRaw: string;
+    aggregateRaw: string;
+};
 
 declare class AnyNull extends NullTypesEnumValue {
 }
-
-declare type ApplyExtensionsParams = {
-    result: object;
-    modelName: string;
-    args: JsArgs;
-    extensions: MergedExtensionsList;
-};
 
 declare class Arg {
     key: string;
@@ -49,9 +61,7 @@ declare interface ArgOptions {
     inputType?: DMMF.SchemaArgInputType;
 }
 
-declare type Args = OptionalFlat<RequiredArgs>;
-
-declare class Args_2 {
+declare class Args {
     args: Arg[];
     readonly hasInvalidArg: boolean;
     constructor(args?: Arg[]);
@@ -60,19 +70,7 @@ declare class Args_2 {
     collectErrors(): ArgError[];
 }
 
-declare type Args_3 = InternalArgs;
-
-declare type Args_4<T, F extends Operation> = T extends {
-    [K: symbol]: {
-        types: {
-            [K in F]: {
-                args: any;
-            };
-        };
-    };
-} ? T[symbol]['types'][F]['args'] : never;
-
-declare type ArgValue = string | boolean | number | undefined | Args_2 | string[] | boolean[] | number[] | Args_2[] | null;
+declare type ArgValue = string | boolean | number | undefined | Args | string[] | boolean[] | number[] | Args[] | null;
 
 declare interface AtLeastOneError {
     type: 'atLeastOne';
@@ -97,11 +95,11 @@ declare class BaseDMMFHelper {
     constructor(dmmf: BaseDMMF);
 }
 
-declare type BatchQueryEngineResult<T> = QueryEngineResult<T> | Error;
-
 declare type BatchTransactionOptions = {
     isolationLevel?: Transaction.IsolationLevel;
 };
+
+declare type BatchTransactionOptions_2 = Omit<PrismaPromiseBatchTransaction, 'kind'>;
 
 declare interface BinaryTargetsEnvValue {
     fromEnvVar: null | string;
@@ -112,38 +110,22 @@ declare interface CallSite {
     getLocation(): LocationInFile | null;
 }
 
-declare type Cast<A, W> = A extends W ? A : W;
-
 declare type Client = ReturnType<typeof getPrismaClient> extends new () => infer T ? T : never;
-
-declare type ClientArg = {
-    [MethodName in string]: Function;
-};
-
-declare type ClientArgs = {
-    client: ClientArg;
-};
 
 declare enum ClientEngineType {
     Library = "library",
     Binary = "binary"
 }
 
-declare type Compute<T> = T extends Function ? T : {
-    [K in keyof T]: T[K];
-} & unknown;
-
-declare type ComputedField = {
-    name: string;
-    needs: string[];
-    compute: ResultArgsFieldCompute;
-};
-
-declare type ComputedFieldsMap = {
-    [fieldName: string]: ComputedField;
+declare type ClientOptions = {
+    client?: {
+        [K in string]: () => unknown;
+    };
 };
 
 declare type ConnectorType = 'mysql' | 'mongodb' | 'sqlite' | 'postgresql' | 'sqlserver' | 'jdbc:sqlserver' | 'cockroachdb';
+
+declare type ConnectorType_2 = 'mysql' | 'mongodb' | 'sqlite' | 'postgresql' | 'sqlserver' | 'jdbc:sqlserver' | 'cockroachdb';
 
 declare interface Context {
     /**
@@ -169,31 +151,6 @@ declare interface Context {
     deleteValue(key: symbol): Context;
 }
 
-declare type Context_2<T> = T extends {
-    [K: symbol]: {
-        ctx: infer C;
-    };
-} ? C & {
-    [K in Exclude<keyof T, keyof C> & string]: T[K];
-} & ContextMeta : T & ContextMeta;
-
-declare type ContextMeta = {
-    name: string;
-};
-
-declare type Count<O> = {
-    [K in keyof O]: Count<number>;
-} & {};
-
-declare type CreateMessageOptions = {
-    action: Action;
-    modelName?: string;
-    args?: JsArgs;
-    extensions: MergedExtensionsList;
-    clientMethod: string;
-    callsite?: CallSite;
-};
-
 declare class DataLoader<T = unknown> {
     private options;
     batches: {
@@ -211,6 +168,16 @@ declare type DataLoaderOptions<T> = {
     batchLoader: (request: T[]) => Promise<any[]>;
     batchBy: (request: T) => string | undefined;
 };
+
+declare interface DataSource {
+    name: string;
+    activeProvider: ConnectorType;
+    provider: ConnectorType;
+    url: EnvValue;
+    config: {
+        [key: string]: string;
+    };
+}
 
 declare type Datasource = {
     url?: string;
@@ -272,6 +239,7 @@ export declare class Decimal {
     readonly d: number[];
     readonly e: number;
     readonly s: number;
+    private readonly toStringTag: string;
 
     constructor(n: Decimal.Value);
 
@@ -523,22 +491,17 @@ export declare interface DecimalJsLike {
     d: number[];
     e: number;
     s: number;
-    toFixed(): string;
 }
 
 export declare const decompressFromBase64: any;
 
-declare type DefaultArgs = InternalArgs<{}, {}, {}, {}>;
-
-declare function defineExtension(ext: Args | ((client: Client) => Client)): (client: Client) => Client;
-
-declare interface Dictionary<T> {
-    [key: string]: T;
-}
-
-declare type Dictionary_2<T> = {
+declare type Dictionary<T> = {
     [key: string]: T;
 };
+
+declare interface Dictionary_2<T> {
+    [key: string]: T;
+}
 
 export declare namespace DMMF {
     export interface Document {
@@ -729,9 +692,7 @@ export declare namespace DMMF {
         model: string;
         plural: string;
         findUnique?: string | null;
-        findUniqueOrThrow?: string | null;
         findFirst?: string | null;
-        findFirstOrThrow?: string | null;
         findMany?: string | null;
         create?: string | null;
         createMany?: string | null;
@@ -748,9 +709,7 @@ export declare namespace DMMF {
     }
     export enum ModelAction {
         findUnique = "findUnique",
-        findUniqueOrThrow = "findUniqueOrThrow",
         findFirst = "findFirst",
-        findFirstOrThrow = "findFirstOrThrow",
         findMany = "findMany",
         create = "create",
         createMany = "createMany",
@@ -776,23 +735,22 @@ export declare class DMMFClass {
 
 declare class DMMFDatamodelHelper implements Pick<DMMF.Document, 'datamodel'> {
     datamodel: DMMF.Datamodel;
-    datamodelEnumMap: Dictionary<DMMF.DatamodelEnum>;
-    modelMap: Dictionary<DMMF.Model>;
-    typeMap: Dictionary<DMMF.Model>;
-    typeAndModelMap: Dictionary<DMMF.Model>;
+    datamodelEnumMap: Dictionary_2<DMMF.DatamodelEnum>;
+    modelMap: Dictionary_2<DMMF.Model>;
+    typeMap: Dictionary_2<DMMF.Model>;
+    typeAndModelMap: Dictionary_2<DMMF.Model>;
     constructor({ datamodel }: Pick<DMMF.Document, 'datamodel'>);
-    getDatamodelEnumMap(): Dictionary<DMMF.DatamodelEnum>;
-    getModelMap(): Dictionary<DMMF.Model>;
-    getTypeMap(): Dictionary<DMMF.Model>;
-    getTypeModelMap(): Dictionary<DMMF.Model>;
+    getDatamodelEnumMap(): Dictionary_2<DMMF.DatamodelEnum>;
+    getModelMap(): Dictionary_2<DMMF.Model>;
+    getTypeMap(): Dictionary_2<DMMF.Model>;
+    getTypeModelMap(): Dictionary_2<DMMF.Model>;
 }
 
 declare class DMMFMappingsHelper implements Pick<DMMF.Document, 'mappings'> {
     mappings: DMMF.Mappings;
-    mappingsMap: Dictionary<DMMF.ModelMapping>;
+    mappingsMap: Dictionary_2<DMMF.ModelMapping>;
     constructor({ mappings }: Pick<DMMF.Document, 'mappings'>);
-    getMappingsMap(): Dictionary<DMMF.ModelMapping>;
-    getOtherOperationNames(): string[];
+    getMappingsMap(): Dictionary_2<DMMF.ModelMapping>;
 }
 
 declare class DMMFSchemaHelper implements Pick<DMMF.Document, 'schema'> {
@@ -803,14 +761,14 @@ declare class DMMFSchemaHelper implements Pick<DMMF.Document, 'schema'> {
         model: DMMF.OutputType[];
         prisma: DMMF.OutputType[];
     };
-    outputTypeMap: Dictionary<DMMF.OutputType>;
+    outputTypeMap: Dictionary_2<DMMF.OutputType>;
     inputObjectTypes: {
         model?: DMMF.InputType[];
         prisma: DMMF.InputType[];
     };
-    inputTypeMap: Dictionary<DMMF.InputType>;
-    enumMap: Dictionary<DMMF.SchemaEnum>;
-    rootFieldMap: Dictionary<DMMF.SchemaField>;
+    inputTypeMap: Dictionary_2<DMMF.InputType>;
+    enumMap: Dictionary_2<DMMF.SchemaEnum>;
+    rootFieldMap: Dictionary_2<DMMF.SchemaField>;
     constructor({ schema }: Pick<DMMF.Document, 'schema'>);
     get [Symbol.toStringTag](): string;
     outputTypeToMergedOutputType: (outputType: DMMF.OutputType) => DMMF.OutputType;
@@ -823,11 +781,11 @@ declare class DMMFSchemaHelper implements Pick<DMMF.Document, 'schema'> {
         model: DMMF.OutputType[];
         prisma: DMMF.OutputType[];
     };
-    getEnumMap(): Dictionary<DMMF.SchemaEnum>;
+    getEnumMap(): Dictionary_2<DMMF.SchemaEnum>;
     hasEnumInNamespace(enumName: string, namespace: 'prisma' | 'model'): boolean;
-    getMergedOutputTypeMap(): Dictionary<DMMF.OutputType>;
-    getInputTypeMap(): Dictionary<DMMF.InputType>;
-    getRootFieldMap(): Dictionary<DMMF.SchemaField>;
+    getMergedOutputTypeMap(): Dictionary_2<DMMF.OutputType>;
+    getInputTypeMap(): Dictionary_2<DMMF.InputType>;
+    getRootFieldMap(): Dictionary_2<DMMF.SchemaField>;
 }
 
 declare class Document_2 {
@@ -854,7 +812,6 @@ declare interface DocumentInput {
     rootField: string;
     select?: any;
     modelName?: string;
-    extensions: MergedExtensionsList;
 }
 
 /**
@@ -872,32 +829,33 @@ declare interface EmptySelectError {
     field: DMMF.SchemaField;
 }
 
-declare type EmptyToUnknown<T> = T;
-
-export declare abstract class Engine<InteractiveTransactionPayload = unknown> {
+export declare abstract class Engine {
     abstract on(event: EngineEventType, listener: (args?: any) => any): void;
     abstract start(): Promise<void>;
     abstract stop(): Promise<void>;
+    abstract getConfig(): Promise<GetConfigResult>;
     abstract getDmmf(): Promise<DMMF.Document>;
     abstract version(forceRun?: boolean): Promise<string> | string;
-    abstract request<T>(query: EngineQuery, options: RequestOptions<InteractiveTransactionPayload>): Promise<QueryEngineResult<T>>;
-    abstract requestBatch<T>(queries: EngineBatchQueries, options: RequestBatchOptions<InteractiveTransactionPayload>): Promise<BatchQueryEngineResult<T>[]>;
-    abstract transaction(action: 'start', headers: Transaction.TransactionHeaders, options?: Transaction.Options): Promise<Transaction.InteractiveTransactionInfo<unknown>>;
-    abstract transaction(action: 'commit', headers: Transaction.TransactionHeaders, info: Transaction.InteractiveTransactionInfo<unknown>): Promise<void>;
-    abstract transaction(action: 'rollback', headers: Transaction.TransactionHeaders, info: Transaction.InteractiveTransactionInfo<unknown>): Promise<void>;
+    abstract request<T>(query: string, headers?: QueryEngineRequestHeaders, numTry?: number): Promise<QueryEngineResult<T>>;
+    abstract requestBatch<T>(queries: string[], headers?: QueryEngineRequestHeaders, transaction?: BatchTransactionOptions, numTry?: number): Promise<QueryEngineResult<T>[]>;
+    abstract transaction(action: 'start', headers: Transaction.TransactionHeaders, options?: Transaction.Options): Promise<Transaction.Info>;
+    abstract transaction(action: 'commit', headers: Transaction.TransactionHeaders, info: Transaction.Info): Promise<void>;
+    abstract transaction(action: 'rollback', headers: Transaction.TransactionHeaders, info: Transaction.Info): Promise<void>;
     abstract metrics(options: MetricsOptionsJson): Promise<Metrics>;
     abstract metrics(options: MetricsOptionsPrometheus): Promise<string>;
 }
 
-declare type EngineBatchQueries = GraphQLQuery[] | JsonQuery[];
-
 declare interface EngineConfig {
-    cwd: string;
+    cwd?: string;
     dirname?: string;
     datamodelPath: string;
     enableDebugLogs?: boolean;
     allowTriggerPanic?: boolean;
     prismaPath?: string;
+    fetcher?: (query: string) => Promise<{
+        data?: any;
+        error?: any;
+    }>;
     generator?: GeneratorConfig;
     datasources?: DatasourceOverwrite[];
     showColors?: boolean;
@@ -909,8 +867,6 @@ declare interface EngineConfig {
     previewFeatures?: string[];
     engineEndpoint?: string;
     activeProvider?: string;
-    logEmitter: EventEmitter;
-    engineProtocol: EngineProtocol;
     /**
      * The contents of the schema encoded into a string
      * @remarks only used for the purpose of data proxy
@@ -935,13 +891,22 @@ declare interface EngineConfig {
 
 declare type EngineEventType = 'query' | 'info' | 'warn' | 'error' | 'beforeExit';
 
-declare type EngineProtocol = 'graphql' | 'json';
+declare type EngineMiddleware<T = unknown> = (params: EngineMiddlewareParams, next: (params: EngineMiddlewareParams) => Promise<{
+    data: T;
+    elapsed: number;
+}>) => Promise<{
+    data: T;
+    elapsed: number;
+}>;
 
-declare type EngineQuery = GraphQLQuery | JsonQuery;
+declare type EngineMiddlewareParams = {
+    document: Document_2;
+    runInTransaction?: boolean;
+};
 
 declare interface EnvValue {
     fromEnvVar: null | string;
-    value: null | string;
+    value: string;
 }
 
 declare interface EnvValue_2 {
@@ -951,46 +916,13 @@ declare interface EnvValue_2 {
 
 declare type ErrorFormat = 'pretty' | 'colorless' | 'minimal';
 
-declare interface ErrorWithBatchIndex {
-    batchRequestIdx?: number;
-}
-
-declare interface EventEmitter {
-    on(event: string, listener: (...args: any[]) => void): unknown;
-    emit(event: string, args?: any): boolean;
-}
-
-declare type Exact<A, W> = (W extends A ? {
-    [K in keyof W]: K extends keyof A ? Exact<A[K], W[K]> : never;
-} : W) | (A extends Narrowable ? A : never);
-
-declare namespace Extensions {
-    export {
-        defineExtension,
-        getExtensionContext
-    }
-}
-export { Extensions }
-
-declare namespace Extensions_2 {
-    export {
-        InternalArgs,
-        Args_3 as Args,
-        DefaultArgs,
-        GetResult,
-        GetSelect,
-        GetModel,
-        GetClient,
-        ReadonlySelector,
-        RequiredArgs as UserArgs
-    }
-}
-
-declare type Fetch = typeof nodeFetch;
+export declare type Extension = {
+    type: string;
+} & ResultOptions & ModelOptions & ClientOptions & QueryOptions;
 
 declare class Field {
     readonly name: string;
-    readonly args?: Args_2;
+    readonly args?: Args;
     readonly children?: Field[];
     readonly error?: InvalidFieldError;
     readonly hasInvalidChild: boolean;
@@ -1008,7 +940,7 @@ declare class Field {
 declare interface FieldArgs {
     name: string;
     schemaField?: DMMF.SchemaField;
-    args?: Args_2;
+    args?: Args;
     children?: Field[];
     error?: InvalidFieldError;
 }
@@ -1047,67 +979,14 @@ declare interface GeneratorConfig {
     output: EnvValue | null;
     isCustomOutput?: boolean;
     provider: EnvValue;
-    config: Dictionary_2<string>;
+    config: Dictionary<string>;
     binaryTargets: BinaryTargetsEnvValue[];
     previewFeatures: string[];
 }
 
-declare type GetAggregateResult<P, A> = {
-    [K in keyof A as K extends Aggregate ? K : never]: K extends '_count' ? A[K] extends true ? number : Count<A[K]> : Count<A[K]>;
-};
-
-declare type GetBatchResult<P, A> = {
-    count: number;
-};
-
-declare type GetClient<Base extends Record<any, any>, C extends Args_3['client']> = Omit<Base, keyof C | '$use'> & {
-    [K in keyof C]: ReturnType<C[K]>;
-};
-
-declare type GetCountResult<P, A> = A extends {
-    select: infer S;
-} ? S extends true ? number : Count<S> : number;
-
-declare function getExtensionContext<T>(that: T): Context_2<T>;
-
-declare type GetFindResult<P extends Payload, A> = A extends {
-    select: infer S;
-} & Record<string, unknown> | {
-    include: infer S;
-} & Record<string, unknown> ? {
-    [K in keyof S as S[K] extends false | undefined | null ? never : K]: S[K] extends true ? P extends {
-        objects: {
-            [k in K]: (infer O)[];
-        };
-    } ? O extends Payload ? O['scalars'][] : never : P extends {
-        objects: {
-            [k in K]: (infer O) | null;
-        };
-    } ? O extends Payload ? O['scalars'] | P['objects'][K] & null : never : P extends {
-        scalars: {
-            [k in K]: infer O;
-        };
-    } ? O : K extends '_count' ? Count<P['objects']> : never : P extends {
-        objects: {
-            [k in K]: (infer O)[];
-        };
-    } ? O extends Payload ? GetFindResult<O, S[K]>[] : never : P extends {
-        objects: {
-            [k in K]: (infer O) | null;
-        };
-    } ? O extends Payload ? GetFindResult<O, S[K]> | P['objects'][K] & null : never : K extends '_count' ? Count<GetFindResult<P, S[K]>> : never;
-} & (A extends {
-    include: any;
-} & Record<string, unknown> ? P['scalars'] : unknown) : P['scalars'];
-
-declare type GetGroupByResult<P, A> = P extends Payload ? A extends {
-    by: string[];
-} ? Array<GetAggregateResult<P, A> & {
-    [K in A['by'][number]]: P['scalars'][K];
-}> : never : never;
-
-declare type GetModel<Base extends Record<any, any>, M extends Args_3['model'][string]> = {
-    [K in keyof M | keyof Base]: K extends keyof M ? ReturnType<M[K]> : Base[K];
+declare type GetConfigResult = {
+    datasources: DataSource[];
+    generators: GeneratorConfig[];
 };
 
 export declare function getPrismaClient(config: GetPrismaClientConfig): {
@@ -1123,19 +1002,35 @@ export declare function getPrismaClient(config: GetPrismaClientConfig): {
         _errorFormat: ErrorFormat;
         _clientEngineType: ClientEngineType;
         _tracingConfig: TracingConfig;
+        _hooks?: Hooks | undefined;
         _metrics: MetricsClient;
-        _middlewares: MiddlewareHandler<QueryMiddleware>;
+        _getConfigPromise?: Promise<{
+            datasources: DataSource[];
+            generators: GeneratorConfig[];
+        }> | undefined;
+        _middlewares: Middlewares;
         _previewFeatures: string[];
         _activeProvider: string;
+        _transactionId: number;
         _rejectOnNotFound?: InstanceRejectOnNotFound;
         _dataProxy: boolean;
-        _extensions: MergedExtensionsList;
+        _extensions: Extension[];
         getEngine(): Engine;
         /**
          * Hook a middleware into the client
          * @param middleware to hook
          */
-        $use<T>(middleware: QueryMiddleware): void;
+        $use<T>(middleware: QueryMiddleware<T>): any;
+        /**
+         * Hook a middleware into the client
+         * @param middleware to hook
+         */
+        $use<T_1>(namespace: 'all', cb: QueryMiddleware<T_1>): any;
+        /**
+         * Hook a middleware into the client
+         * @param middleware to hook
+         */
+        $use<T_2>(namespace: 'engine', cb: EngineMiddleware<T_2>): any;
         $on(eventType: EngineEventType, callback: (event: any) => void): void;
         $connect(): Promise<void>;
         /**
@@ -1146,10 +1041,11 @@ export declare function getPrismaClient(config: GetPrismaClientConfig): {
          * Disconnect from the database
          */
         $disconnect(): Promise<void>;
+        _getActiveProvider(): Promise<void>;
         /**
          * Executes a raw query and always returns a number
          */
-        $executeRawInternal(transaction: PrismaPromiseTransaction | undefined, clientMethod: string, args: RawQueryArgs): Promise<number>;
+        $executeRawInternal(transaction: PrismaPromiseTransaction | undefined, lock: PromiseLike<void> | undefined, query: string | TemplateStringsArray | Sql, ...values: RawValue[]): Promise<any>;
         /**
          * Executes a raw query provided through a safe tag function
          * @see https://github.com/prisma/prisma/issues/7142
@@ -1178,7 +1074,7 @@ export declare function getPrismaClient(config: GetPrismaClientConfig): {
         /**
          * Executes a raw query and returns selected data
          */
-        $queryRawInternal(transaction: PrismaPromiseTransaction | undefined, clientMethod: string, args: RawQueryArgs): Promise<unknown[]>;
+        $queryRawInternal(transaction: PrismaPromiseTransaction | undefined, lock: PromiseLike<void> | undefined, query: string | TemplateStringsArray | Sql, ...values: RawValue[]): Promise<unknown[]>;
         /**
          * Executes a raw query provided through a safe tag function
          * @see https://github.com/prisma/prisma/issues/7142
@@ -1197,6 +1093,7 @@ export declare function getPrismaClient(config: GetPrismaClientConfig): {
          * @returns
          */
         $queryRawUnsafe(query: string, ...values: RawValue[]): PrismaPromise<unknown>;
+        __internal_triggerPanic(fatal: boolean): Promise<any>;
         /**
          * Execute a batch of requests in a transaction
          * @param requests
@@ -1229,9 +1126,8 @@ export declare function getPrismaClient(config: GetPrismaClientConfig): {
          * @returns
          */
         _request(internalParams: InternalRequestParams): Promise<any>;
-        _executeRequest({ args, clientMethod, dataPath, callsite, action, model, argsMapper, transaction, unpacker, otelParentCtx, customDataProxyFetch, }: InternalRequestParams): Promise<any>;
+        _executeRequest({ args, clientMethod, jsModelName, dataPath, callsite, action, model, headers, transaction, lock, unpacker, otelParentCtx, }: InternalRequestParams): Promise<any>;
         _getDmmf: (params: Pick<InternalRequestParams, "callsite" | "clientMethod">) => Promise<DMMFClass>;
-        _getProtocolEncoder: (params: Pick<InternalRequestParams, "callsite" | "clientMethod">) => Promise<ProtocolEncoder<EngineQuery>>;
         readonly $metrics: MetricsClient;
         /**
          * Shortcut for checking a preview flag
@@ -1283,12 +1179,6 @@ declare interface GetPrismaClientConfig {
      */
     injectableEdgeEnv?: LoadedEnv;
     /**
-     * Engine protocol to use within edge runtime. Passed
-     * through config because edge client can not read env variables
-     * @remarks only used for the purpose of data proxy
-     */
-    edgeClientProtocol?: QueryEngineProtocol;
-    /**
      * The contents of the datasource url saved in a string.
      * This can either be an env var name or connection string.
      * It is needed by the client to connect to the Data Proxy.
@@ -1302,57 +1192,36 @@ declare interface GetPrismaClientConfig {
     inlineSchemaHash?: string;
 }
 
-declare type GetResult<Base extends Record<any, any>, R extends Args_3['result'][string]> = {
-    [K in keyof R | keyof Base]: K extends keyof R ? ReturnType<ReturnType<R[K]>['compute']> : Base[K];
-} & unknown;
-
-declare type GetResult_2<P extends Payload, A, O extends Operation> = {
-    findUnique: GetFindResult<P, A>;
-    findUniqueOrThrow: GetFindResult<P, A>;
-    findFirst: GetFindResult<P, A>;
-    findFirstOrThrow: GetFindResult<P, A>;
-    findMany: GetFindResult<P, A>[];
-    create: GetFindResult<P, A>;
-    createMany: GetBatchResult<P, A>;
-    update: GetFindResult<P, A>;
-    updateMany: GetBatchResult<P, A>;
-    upsert: GetFindResult<P, A>;
-    delete: GetFindResult<P, A>;
-    deleteMany: GetBatchResult<P, A>;
-    aggregate: GetAggregateResult<P, A>;
-    count: GetCountResult<P, A>;
-    groupBy: GetGroupByResult<P, A>;
-    $queryRaw: any;
-    $executeRaw: any;
-    $queryRawUnsafe: any;
-    $executeRawUnsafe: any;
-    $runCommandRaw: object;
-}[O];
-
-declare type GetSelect<Base extends Record<any, any>, R extends Args_3['result'][string]> = {
-    [K in keyof R | keyof Base]?: K extends keyof R ? boolean : Base[K];
-};
-
-declare type GraphQLQuery = {
-    query: string;
-    variables: object;
-};
-
 declare type HandleErrorParams = {
     error: any;
     clientMethod: string;
     callsite?: CallSite;
-    transaction?: PrismaPromiseTransaction;
 };
 
 declare type Handler = (base: string, item: string, type: ItemType) => boolean | string;
 
-declare type Headers_2 = Record<string, string | string[] | undefined>;
+declare type HookParams = {
+    query: string;
+    path: string[];
+    rootField?: string;
+    typeName?: string;
+    document: any;
+    clientMethod: string;
+    args: any;
+};
+
+declare type Hooks = {
+    beforeRequest?: (options: HookParams) => any;
+};
 
 declare interface IncludeAndSelectError {
     type: 'includeAndSelect';
     field: DMMF.SchemaField;
 }
+
+declare type Info = {
+    id: string;
+};
 
 declare type InlineDatasource = {
     url: NullableEnvValue;
@@ -1366,46 +1235,12 @@ declare type InlineDatasources = {
 
 declare type InstanceRejectOnNotFound = RejectOnNotFound | Record<string, RejectOnNotFound> | Record<string, Record<string, RejectOnNotFound>>;
 
-declare type InteractiveTransactionInfo<Payload = unknown> = {
-    /**
-     * Transaction ID returned by the query engine.
-     */
-    id: string;
-    /**
-     * Arbitrary payload the meaning of which depends on the `Engine` implementation.
-     * For example, `DataProxyEngine` needs to associate different API endpoints with transactions.
-     * In `LibraryEngine` and `BinaryEngine` it is currently not used.
-     */
-    payload: Payload;
-};
-
-declare type InteractiveTransactionOptions<Payload> = Transaction.InteractiveTransactionInfo<Payload>;
-
-declare type InternalArgs<R extends RequiredArgs['result'] = RequiredArgs['result'], M extends RequiredArgs['model'] = RequiredArgs['model'], Q extends RequiredArgs['query'] = RequiredArgs['query'], C extends RequiredArgs['client'] = RequiredArgs['client']> = {
-    result: {
-        [K in keyof R]: {
-            [P in keyof R[K]]: () => R[K][P];
-        };
-    };
-    model: {
-        [K in keyof M]: {
-            [P in keyof M[K]]: () => M[K][P];
-        };
-    };
-    query: {
-        [K in keyof Q]: {
-            [P in keyof Q[K]]: () => Q[K][P];
-        };
-    };
-    client: {
-        [K in keyof C]: () => C[K];
-    };
-};
+declare type InteractiveTransactionOptions = Omit<PrismaPromiseInteractiveTransaction, 'kind'>;
 
 declare interface InternalDatasource {
     name: string;
-    activeProvider: ConnectorType;
-    provider: ConnectorType;
+    activeProvider: ConnectorType_2;
+    provider: ConnectorType_2;
     url: EnvValue_2;
     config: any;
 }
@@ -1424,13 +1259,12 @@ declare type InternalRequestParams = {
      */
     jsModelName?: string;
     callsite?: CallSite;
+    /** Headers metadata that will be passed to the Engine */
+    headers?: Record<string, string>;
     transaction?: PrismaPromiseTransaction;
     unpacker?: Unpacker;
+    lock?: PromiseLike<void>;
     otelParentCtx?: Context;
-    /** Used to "desugar" a user input into an "expanded" one */
-    argsMapper?: (args?: UserArgs) => UserArgs;
-    /** Used for Accelerate client extension via Data Proxy */
-    customDataProxyFetch?: (fetch: Fetch) => Fetch;
 } & Omit<QueryMiddlewareParams, 'runInTransaction'>;
 
 declare type InvalidArgError = InvalidArgNameError | MissingArgError | InvalidArgTypeError | AtLeastOneError | AtMostOneError | InvalidNullArgError;
@@ -1513,62 +1347,8 @@ declare interface Job {
  */
 export declare function join(values: RawValue[], separator?: string, prefix?: string, suffix?: string): Sql;
 
-declare type JsArgs = {
-    select?: Selection_2;
-    include?: Selection_2;
-    [argName: string]: JsInputValue;
-};
-
-declare type JsInputValue = null | undefined | string | number | boolean | bigint | Uint8Array | Date | DecimalJsLike | ObjectEnumValue | RawParameters | FieldRef<string, unknown> | JsInputValue[] | {
-    [key: string]: JsInputValue;
-};
-
-declare type JsonArgumentValue = number | string | boolean | null | JsonTaggedValue | JsonArgumentValue[] | {
-    [key: string]: JsonArgumentValue;
-};
-
-declare type JsonFieldSelection = {
-    arguments?: Record<string, JsonArgumentValue>;
-    selection: JsonSelectionSet;
-};
-
 declare class JsonNull extends NullTypesEnumValue {
 }
-
-declare type JsonQuery = {
-    modelName?: string;
-    action: JsonQueryAction;
-    query: JsonFieldSelection;
-};
-
-declare type JsonQueryAction = 'findUnique' | 'findUniqueOrThrow' | 'findFirst' | 'findFirstOrThrow' | 'findMany' | 'createOne' | 'createMany' | 'updateOne' | 'updateMany' | 'deleteOne' | 'deleteMany' | 'upsertOne' | 'aggregate' | 'groupBy' | 'executeRaw' | 'queryRaw' | 'runCommandRaw' | 'findRaw' | 'aggregateRaw';
-
-declare type JsonSelectionSet = {
-    $scalars?: boolean;
-    $composites?: boolean;
-} & {
-    [fieldName: string]: boolean | JsonFieldSelection;
-};
-
-declare type JsonTaggedValue = {
-    $type: 'Json';
-    value: string;
-};
-
-declare type KnownErrorParams = {
-    code: string;
-    clientVersion: string;
-    meta?: Record<string, unknown>;
-    batchRequestIdx?: number;
-};
-
-declare type LegacyExact<A, W = unknown> = W extends unknown ? A extends LegacyNarrowable ? Cast<A, W> : Cast<{
-    [K in keyof A]: K extends keyof W ? LegacyExact<A[K], W[K]> : never;
-}, {
-    [K in keyof W]: K extends keyof A ? LegacyExact<A[K], W[K]> : W[K];
-}> : never;
-
-declare type LegacyNarrowable = string | number | boolean | bigint;
 
 declare type LoadedEnv = {
     message?: string;
@@ -1590,7 +1370,7 @@ declare type LogDefinition = {
 
 declare type LogLevel = 'info' | 'query' | 'warn' | 'error';
 
-export declare function makeDocument({ dmmf, rootTypeName, rootField, select, modelName, extensions, }: DocumentInput): Document_2;
+export declare function makeDocument({ dmmf, rootTypeName, rootField, select, modelName }: DocumentInput): Document_2;
 
 /**
  * Generates more strict variant of an enum which, unlike regular enum,
@@ -1609,27 +1389,6 @@ export declare function makeDocument({ dmmf, rootTypeName, rootField, select, mo
  * @returns
  */
 export declare function makeStrictEnum<T extends Record<PropertyKey, string | number>>(definition: T): T;
-
-/**
- * Class that holds the list of all extensions, applied to particular instance, as well
- * as resolved versions of the components that need to apply on different levels. Main idea
- * of this class: avoid re-resolving as much of the stuff as possible when new extensions are added while also
- * delaying the resolve until the point it is actually needed. For example, computed fields of the model won't be resolved unless
- * the model is actually queried. Neither adding extensions with `client` component only cause other components to
- * recompute.
- */
-declare class MergedExtensionsList {
-    private head?;
-    private constructor();
-    static empty(): MergedExtensionsList;
-    static single(extension: Args): MergedExtensionsList;
-    isEmpty(): boolean;
-    append(extension: Args): MergedExtensionsList;
-    getAllComputedFields(dmmfModelName: string): ComputedFieldsMap | undefined;
-    getAllClientExtensions(): ClientArg | undefined;
-    getAllModelExtensions(dmmfModelName: string): ModelArg | undefined;
-    getAllQueryCallbacks(jsModelName: string, operation: string): any;
-}
 
 export declare type Metric<T> = {
     key: string;
@@ -1699,6 +1458,11 @@ declare class MiddlewareHandler<M extends Function> {
     length(): number;
 }
 
+declare class Middlewares {
+    query: MiddlewareHandler<QueryMiddleware<unknown>>;
+    engine: MiddlewareHandler<EngineMiddleware<unknown>>;
+}
+
 /**
  * Opposite of InvalidArgNameError - if the user *doesn't* provide an arg that should be provided
  * This error both happens with an implicit and explicit `undefined`
@@ -1717,44 +1481,13 @@ declare interface MissingItem {
     type: string | object;
 }
 
-declare type ModelArg = {
-    [MethodName in string]: Function;
-};
-
-declare type ModelArgs = {
-    model: {
-        [ModelName in string]: ModelArg;
+declare type ModelOptions = {
+    model?: {
+        [K in string]: () => unknown;
     };
 };
 
-declare type NameArgs = {
-    name?: string;
-};
-
-declare type Narrow<A> = {
-    [K in keyof A]: A[K] extends Function ? A[K] : Narrow<A[K]>;
-} | (A extends Narrowable ? A : never);
-
-declare type Narrowable = string | number | bigint | boolean | [];
-
-declare type NeverToUnknown<T> = [T] extends [never] ? unknown : T;
-
-/**
- * Imitates `fetch` via `https` to only suit our needs, it does nothing more.
- * This is because we cannot bundle `node-fetch` as it uses many other Node.js
- * utilities, while also bloating our bundles. This approach is much leaner.
- * @param url
- * @param options
- * @returns
- */
-declare function nodeFetch(url: string, options?: RequestOptions_2): Promise<RequestResponse>;
-
-/**
- * @deprecated please don´t rely on type checks to this error anymore.
- * This will become a PrismaClientKnownRequestError with code P2025
- * in the future major version of the client
- */
-export declare class NotFoundError extends PrismaClientKnownRequestError {
+export declare class NotFoundError extends Error {
     constructor(message: string);
 }
 
@@ -1795,16 +1528,6 @@ export declare const objectEnumValues: {
     };
 };
 
-declare type Omit_2<T, K extends string | number | symbol> = {
-    [P in keyof T as P extends K ? never : P]: T[P];
-};
-
-declare type Operation = 'findFirst' | 'findFirstOrThrow' | 'findUnique' | 'findUniqueOrThrow' | 'findMany' | 'create' | 'createMany' | 'update' | 'updateMany' | 'upsert' | 'delete' | 'deleteMany' | 'aggregate' | 'count' | 'groupBy' | '$queryRaw' | '$executeRaw' | '$queryRawUnsafe' | '$executeRawUnsafe' | '$runCommandRaw';
-
-declare type OptionalFlat<T> = {
-    [K in keyof T]?: T[K];
-};
-
 /**
  * maxWait ?= 2000
  * timeout ?= 5000
@@ -1815,43 +1538,6 @@ declare type Options = {
     isolationLevel?: IsolationLevel;
 };
 
-declare type PatchDeep<O1, O2, O = O1 & O2> = {
-    [K in keyof O]: K extends keyof O1 ? K extends keyof O2 ? O1[K] extends object ? O2[K] extends object ? O1[K] extends Function ? O1[K] : O2[K] extends Function ? O1[K] : PatchDeep<O1[K], O2[K]> : O1[K] : O1[K] : O1[K] : O2[K & keyof O2];
-};
-
-declare type PatchFlat<O1, O2> = O1 & Omit_2<O2, keyof O1>;
-
-/**
- * Patches 3 objects on top of each other with minimal looping.
- * This is a more efficient way of doing `PatchFlat<A, PatchFlat<B, C>>`
- */
-declare type PatchFlat3<A, B, C> = A & {
-    [K in Exclude<keyof B | keyof C, keyof A>]: K extends keyof B ? B[K] : C[K & keyof C];
-};
-
-export declare type Payload = {
-    scalars: {
-        [ScalarName in string]: unknown;
-    };
-    objects: {
-        [ObjectName in string]: unknown;
-    };
-};
-
-declare type Payload_2<T, F extends Operation> = T extends {
-    [K: symbol]: {
-        types: {
-            [K in F]: {
-                payload: any;
-            };
-        };
-    };
-} ? T[symbol]['types'][F]['payload'] : never;
-
-declare type Pick_2<T, K extends string | number | symbol> = {
-    [P in keyof T as P extends K ? P : never]: T[P];
-};
-
 export declare class PrismaClientInitializationError extends Error {
     clientVersion: string;
     errorCode?: string;
@@ -1859,12 +1545,11 @@ export declare class PrismaClientInitializationError extends Error {
     get [Symbol.toStringTag](): string;
 }
 
-export declare class PrismaClientKnownRequestError extends Error implements ErrorWithBatchIndex {
+export declare class PrismaClientKnownRequestError extends Error {
     code: string;
     meta?: Record<string, unknown>;
     clientVersion: string;
-    batchRequestIdx?: number;
-    constructor(message: string, { code, clientVersion, meta, batchRequestIdx }: KnownErrorParams);
+    constructor(message: string, code: string, clientVersion: string, meta?: any);
     get [Symbol.toStringTag](): string;
 }
 
@@ -1903,6 +1588,7 @@ export declare interface PrismaClientOptions {
      */
     __internal?: {
         debug?: boolean;
+        hooks?: Hooks;
         engine?: {
             cwd?: string;
             binaryPath?: string;
@@ -1918,10 +1604,9 @@ export declare class PrismaClientRustPanicError extends Error {
     get [Symbol.toStringTag](): string;
 }
 
-export declare class PrismaClientUnknownRequestError extends Error implements ErrorWithBatchIndex {
+export declare class PrismaClientUnknownRequestError extends Error {
     clientVersion: string;
-    batchRequestIdx?: number;
-    constructor(message: string, { clientVersion, batchRequestIdx }: UnknownErrorParams);
+    constructor(message: string, clientVersion: string);
     get [Symbol.toStringTag](): string;
 }
 
@@ -1939,80 +1624,53 @@ declare interface PrismaPromise<A> extends Promise<A> {
      * Extension of the original `.then` function
      * @param onfulfilled same as regular promises
      * @param onrejected same as regular promises
-     * @param transaction transaction options
+     * @param transaction interactive transaction options
      */
-    then<R1 = A, R2 = never>(onfulfilled?: (value: A) => R1 | PromiseLike<R1>, onrejected?: (error: unknown) => R2 | PromiseLike<R2>, transaction?: PrismaPromiseTransaction): Promise<R1 | R2>;
+    then<R1 = A, R2 = never>(onfulfilled?: (value: A) => R1 | PromiseLike<R1>, onrejected?: (error: unknown) => R2 | PromiseLike<R2>, transaction?: InteractiveTransactionOptions): Promise<R1 | R2>;
     /**
      * Extension of the original `.catch` function
      * @param onrejected same as regular promises
-     * @param transaction transaction options
+     * @param transaction interactive transaction options
      */
-    catch<R = never>(onrejected?: ((reason: any) => R | PromiseLike<R>) | undefined | null, transaction?: PrismaPromiseTransaction): Promise<A | R>;
+    catch<R = never>(onrejected?: ((reason: any) => R | PromiseLike<R>) | undefined | null, transaction?: InteractiveTransactionOptions): Promise<A | R>;
     /**
      * Extension of the original `.finally` function
      * @param onfinally same as regular promises
-     * @param transaction transaction options
+     * @param transaction interactive transaction options
      */
-    finally(onfinally?: (() => void) | undefined | null, transaction?: PrismaPromiseTransaction): Promise<A>;
+    finally(onfinally?: (() => void) | undefined | null, transaction?: InteractiveTransactionOptions): Promise<A>;
     /**
      * Called when executing a batch of regular tx
-     * @param transaction transaction options for batch tx
+     * @param transaction transaction options for regular tx
      */
-    requestTransaction?(transaction: PrismaPromiseBatchTransaction): PromiseLike<unknown>;
-}
-
-declare interface PrismaPromise_2<T> extends Promise<T> {
-    [Symbol.toStringTag]: 'PrismaPromise';
+    requestTransaction?(transaction: BatchTransactionOptions_2, lock?: PromiseLike<void>): PromiseLike<unknown>;
 }
 
 declare type PrismaPromiseBatchTransaction = {
     kind: 'batch';
     id: number;
     isolationLevel?: IsolationLevel;
-    index: number;
-    lock: PromiseLike<void>;
 };
 
-declare type PrismaPromiseInteractiveTransaction<PayloadType = unknown> = {
+declare type PrismaPromiseInteractiveTransaction = {
     kind: 'itx';
     id: string;
-    payload: PayloadType;
 };
 
-declare type PrismaPromiseTransaction<PayloadType = unknown> = PrismaPromiseBatchTransaction | PrismaPromiseInteractiveTransaction<PayloadType>;
+declare type PrismaPromiseTransaction = PrismaPromiseBatchTransaction | PrismaPromiseInteractiveTransaction;
 
-declare interface ProtocolEncoder<EngineQueryType extends EngineQuery = EngineQuery> {
-    createMessage(options: CreateMessageOptions): ProtocolMessage<EngineQueryType>;
-    createBatch(messages: ProtocolMessage<EngineQueryType>[]): EngineBatchQueries;
-}
-
-declare interface ProtocolMessage<EngineQueryType extends EngineQuery = EngineQuery> {
-    isWrite(): boolean;
-    getBatchId(): string | undefined;
-    toDebugString(): string;
-    toEngineQuery(): EngineQueryType;
-    deserializeResponse(data: unknown, dataPath: string[]): unknown;
-}
-
-declare namespace Public {
-    export {
-        Args_4 as Args,
-        Result,
-        Payload_2 as Payload,
-        PrismaPromise_2 as PrismaPromise,
-        Operation,
-        Exact
-    }
-}
-
-declare type QueryEngineProtocol = 'graphql' | 'json';
+declare type QueryEngineRequestHeaders = {
+    traceparent?: string;
+    transactionId?: string;
+    fatal?: string;
+};
 
 declare type QueryEngineResult<T> = {
     data: T;
     elapsed: number;
 };
 
-declare type QueryMiddleware = (params: QueryMiddlewareParams, next: (params: QueryMiddlewareParams) => Promise<unknown>) => Promise<unknown>;
+declare type QueryMiddleware<T = unknown> = (params: QueryMiddlewareParams, next: (params: QueryMiddlewareParams) => Promise<T>) => Promise<T>;
 
 declare type QueryMiddlewareParams = {
     /** The model this is executed on */
@@ -2023,24 +1681,31 @@ declare type QueryMiddlewareParams = {
     dataPath: string[];
     /** TODO what is this */
     runInTransaction: boolean;
-    args?: UserArgs;
+    /** TODO what is this */
+    args: any;
 };
 
 declare type QueryOptions = {
-    query: {
-        [ModelName in string]: {
-            [ModelAction in string]: QueryOptionsCb;
-        } | QueryOptionsCb;
+    query?: {
+        [key in keyof typeof actionOperationMap]: (args: QueryOptionsCbArgs) => unknown;
+    } & {
+        nested?: {
+            [K in string]: (args: QueryOptionsCbArgsNested) => unknown;
+        };
     };
 };
 
-declare type QueryOptionsCb = (args: QueryOptionsCbArgs) => Promise<any>;
-
 declare type QueryOptionsCbArgs = {
-    model?: string;
+    model: string;
     operation: string;
-    args: object;
-    query: (args: object) => Promise<unknown>;
+    args: {
+        [K in string]: {} | undefined | null | QueryOptionsCbArgs['args'];
+    };
+    data: Promise<unknown>;
+};
+
+declare type QueryOptionsCbArgsNested = QueryOptionsCbArgs & {
+    path: string;
 };
 
 /**
@@ -2048,140 +1713,64 @@ declare type QueryOptionsCbArgs = {
  */
 export declare function raw(value: string): Sql;
 
-declare type RawParameters = {
-    __prismaRawParameters__: true;
-    values: string;
-};
-
-declare type RawQueryArgs = [query: string | TemplateStringsArray | Sql, ...values: RawValue[]];
-
 /**
  * Supported value or SQL instance.
  */
 export declare type RawValue = Value | Sql;
 
-declare type ReadonlyDeep<T> = {
-    readonly [K in keyof T]: ReadonlyDeep<T[K]>;
-};
-
-declare type ReadonlySelector<T> = T extends unknown ? {
-    readonly [K in keyof T as K extends 'include' | 'select' ? K : never]: ReadonlyDeep<T[K]>;
-} & {
-    [K in keyof T as K extends 'include' | 'select' ? never : K]: T[K];
-} : never;
-
 declare type RejectOnNotFound = boolean | ((error: Error) => Error) | undefined;
 
 declare type Request_2 = {
-    protocolMessage: ProtocolMessage;
-    protocolEncoder: ProtocolEncoder;
+    document: Document_2;
     transaction?: PrismaPromiseTransaction;
+    headers?: Record<string, string>;
     otelParentCtx?: Context;
     otelChildCtx?: Context;
     tracingConfig?: TracingConfig;
-    customDataProxyFetch?: (fetch: Fetch) => Fetch;
-};
-
-declare type RequestBatchOptions<InteractiveTransactionPayload> = {
-    transaction?: TransactionOptions<InteractiveTransactionPayload>;
-    traceparent?: string;
-    numTry?: number;
-    containsWrite: boolean;
-    customDataProxyFetch?: (fetch: Fetch) => Fetch;
 };
 
 declare class RequestHandler {
     client: Client;
+    hooks: any;
     dataloader: DataLoader<Request_2>;
-    private logEmitter?;
-    constructor(client: Client, logEmitter?: EventEmitter);
-    request({ protocolMessage, protocolEncoder, dataPath, callsite, modelName, rejectOnNotFound, clientMethod, args, transaction, unpacker, extensions, otelParentCtx, otelChildCtx, customDataProxyFetch, }: RequestParams): Promise<any>;
-    /**
-     * Handles the error and logs it, logging the error is done synchronously waiting for the event
-     * handlers to finish.
-     */
-    handleAndLogRequestError({ error, clientMethod, callsite, transaction }: HandleErrorParams): never;
-    handleRequestError({ error, clientMethod, callsite, transaction }: HandleErrorParams): never;
+    constructor(client: Client, hooks?: any);
+    request({ document, dataPath, rootField, typeName, isList, callsite, rejectOnNotFound, clientMethod, engineHook, args, headers, transaction, unpacker, otelParentCtx, otelChildCtx, }: RequestParams): Promise<any>;
+    handleRequestError({ error, clientMethod, callsite }: HandleErrorParams): never;
     sanitizeMessage(message: any): any;
-    unpack(message: ProtocolMessage, data: unknown, dataPath: string[], unpacker?: Unpacker): any;
-    applyResultExtensions({ result, modelName, args, extensions }: ApplyExtensionsParams): object;
+    unpack(document: any, data: any, path: any, rootField: any, unpacker?: Unpacker): any;
     get [Symbol.toStringTag](): string;
 }
 
-declare type RequestOptions<InteractiveTransactionPayload> = {
-    traceparent?: string;
-    numTry?: number;
-    interactiveTransaction?: InteractiveTransactionOptions<InteractiveTransactionPayload>;
-    isWrite: boolean;
-    customDataProxyFetch?: (fetch: Fetch) => Fetch;
-};
-
-declare type RequestOptions_2 = {
-    method?: string;
-    headers?: Record<string, string>;
-    body?: string;
-};
-
 declare type RequestParams = {
-    modelName?: string;
-    protocolMessage: ProtocolMessage;
-    protocolEncoder: ProtocolEncoder;
+    document: Document_2;
     dataPath: string[];
+    rootField: string;
+    typeName: string;
+    isList: boolean;
     clientMethod: string;
     callsite?: CallSite;
     rejectOnNotFound?: RejectOnNotFound;
     transaction?: PrismaPromiseTransaction;
-    extensions: MergedExtensionsList;
-    args?: any;
+    engineHook?: EngineMiddleware;
+    args: any;
     headers?: Record<string, string>;
     unpacker?: Unpacker;
     otelParentCtx?: Context;
     otelChildCtx?: Context;
-    customDataProxyFetch?: (fetch: Fetch) => Fetch;
 };
 
-declare type RequestResponse = {
-    ok: boolean;
-    url: string;
-    statusText?: string;
-    status: number;
-    headers: Headers_2;
-    text: () => Promise<string>;
-    json: () => Promise<any>;
-};
-
-declare type RequiredArgs = NameArgs & ResultArgs & ModelArgs & ClientArgs & QueryOptions;
-
-declare type Result<T, A, F extends Operation> = T extends {
-    [K: symbol]: {
-        types: {
-            [K in F]: {
-                payload: any;
-            };
+declare type ResultOptions = {
+    result?: {
+        needs: ResultOptionsNeeds;
+        fields: {
+            [K in string]: () => unknown;
         };
     };
-} ? GetResult_2<T[symbol]['types'][F]['payload'], A, F> : never;
-
-declare type ResultArg = {
-    [FieldName in string]: ResultFieldDefinition;
 };
 
-declare type ResultArgs = {
-    result: {
-        [ModelName in string]: ResultArg;
-    };
+declare type ResultOptionsNeeds = {
+    [K in string]: boolean | ResultOptionsNeeds;
 };
-
-declare type ResultArgsFieldCompute = (model: any) => unknown;
-
-declare type ResultFieldDefinition = {
-    needs?: {
-        [FieldName in string]: boolean;
-    };
-    compute: ResultArgsFieldCompute;
-};
-
-declare type Selection_2 = Record<string, boolean | JsArgs>;
 
 /**
  * A SQL instance can be nested within each other to build SQL strings.
@@ -2213,7 +1802,7 @@ declare namespace Transaction {
     export {
         IsolationLevel,
         Options,
-        InteractiveTransactionInfo,
+        Info,
         TransactionHeaders
     }
 }
@@ -2222,32 +1811,7 @@ declare type TransactionHeaders = {
     traceparent?: string;
 };
 
-declare type TransactionOptions<InteractiveTransactionPayload> = {
-    kind: 'itx';
-    options: InteractiveTransactionOptions<InteractiveTransactionPayload>;
-} | {
-    kind: 'batch';
-    options: BatchTransactionOptions;
-};
-
 export declare function transformDocument(document: Document_2): Document_2;
-
-declare namespace Types {
-    export {
-        Extensions_2 as Extensions,
-        Utils,
-        Public,
-        GetResult_2 as GetResult,
-        GetFindResult,
-        Payload
-    }
-}
-export { Types }
-
-declare type UnknownErrorParams = {
-    clientVersion: string;
-    batchRequestIdx?: number;
-};
 
 /**
  * Unpacks the result of a data object and maps DateTime fields to instances of `Date` in-place
@@ -2264,39 +1828,10 @@ declare interface UnpackOptions {
 }
 
 /**
- * Input that flows from the user into the Client.
- */
-declare type UserArgs = any;
-
-declare namespace Utils {
-    export {
-        EmptyToUnknown,
-        NeverToUnknown,
-        PatchFlat,
-        PatchDeep,
-        Omit_2 as Omit,
-        Pick_2 as Pick,
-        PatchFlat3,
-        Compute,
-        OptionalFlat,
-        ReadonlyDeep,
-        Narrow,
-        Exact,
-        Cast,
-        LegacyExact,
-        WrapPropsInFnDeep
-    }
-}
-
-/**
  * Values supported by SQL engine.
  */
 export declare type Value = unknown;
 
 export declare function warnEnvConflicts(envPaths: any): void;
-
-declare type WrapPropsInFnDeep<T> = {
-    [K in keyof T]: T[K] extends Function ? T[K] : T[K] extends object ? WrapPropsInFnDeep<T[K]> : () => T[K];
-} & {};
 
 export { }

@@ -86,9 +86,6 @@ model Content {
   slug        String
   title       String
   description String?
-  markdown    String?
-  thumbnail   String?
-  video       String?
   tags        String[]
   published   Boolean?  @default(false)
   createdAt   DateTime? @default(now())

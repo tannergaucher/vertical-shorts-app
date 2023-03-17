@@ -85,7 +85,6 @@ export const action: ActionFunction = async ({ request }) => {
   await upsertContent({
     slug: slug.toString(),
     projectId: user.currentProjectId,
-    video: `${slug}.mp4`,
   });
 
   pubsub.topic("create-vertical-video-content").publishMessage({
