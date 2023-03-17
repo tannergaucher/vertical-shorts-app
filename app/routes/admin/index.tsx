@@ -114,10 +114,11 @@ export default function Page() {
             ))}
           </select>
         </Form>
+        <Link to={Routes.AdminCreateProject}>
+          <h3>+ New Project</h3>
+        </Link>
       </fieldset>
-      <Link to={Routes.AdminCreateProject}>
-        <h2>+ New Project</h2>
-      </Link>
+      <br />
       <details>
         <summary
           style={{
@@ -132,11 +133,11 @@ export default function Page() {
         </summary>
         <ChannelsGrid channels={channels} />
       </details>
-      <Link to={Routes.AuthorizeYoutube}>
-        <h2>+ Youtube</h2>
-      </Link>
       <Link to={Routes.AuthorizeTikTok}>
         <h2>+ TikTok</h2>
+      </Link>
+      <Link to={Routes.AuthorizeYoutube}>
+        <h2>+ Youtube</h2>
       </Link>
       <Link to={Routes.AuthorizeInstagram}>
         <h2>+ Instagram</h2>
