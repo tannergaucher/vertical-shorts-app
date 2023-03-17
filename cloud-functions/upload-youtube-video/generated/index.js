@@ -237,7 +237,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tg/Desktop/test-remix-netlify-deploy/cloud-functions/upload-youtube-video/generated",
+      "value": "/Users/tg/Documents/remix-blog/cloud-functions/upload-youtube-video/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -257,7 +257,8 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null
+    "rootEnvPath": null,
+    "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
   "clientVersion": "4.11.0",
