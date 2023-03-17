@@ -5,15 +5,12 @@ import { prisma } from "~/db.server";
 import type { ChannelType } from "@prisma/client";
 import compact from "lodash/compact";
 
-import { getContents } from "~/models/content.server";
-
 import type { Channel } from "~/models/chanel.server";
 import { getChannels } from "~/models/chanel.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
 type LoaderData = {
-  contents?: Awaited<ReturnType<typeof getContents>>;
   user?: Awaited<ReturnType<typeof getUser>>;
   channels?: Awaited<ReturnType<typeof getChannels>>;
 };
@@ -31,9 +28,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   return json<LoaderData>({
     user,
-    contents: await getContents({
-      projectId: user.currentProjectId,
-    }),
     channels: await getChannels({
       projectId: user.currentProjectId,
     }),
