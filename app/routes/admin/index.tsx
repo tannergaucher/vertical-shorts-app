@@ -113,25 +113,27 @@ export default function Page() {
         </Link>
       </fieldset>
       <br />
-      <details>
-        <summary
-          style={{
-            fontSize: "xx-large",
-          }}
-        >
-          {`${
-            compact([channels]).length === 1
-              ? `1 Channel`
-              : `${compact([channels]).length} Channels`
-          }`}
-        </summary>
-        <ChannelsGrid channels={channels} />
-      </details>
-      <Link to={Routes.AuthorizeTikTok}>
-        <h2>+ TikTok</h2>
-      </Link>
+      {channels?.length ? (
+        <details>
+          <summary
+            style={{
+              fontSize: "xx-large",
+            }}
+          >
+            {`${
+              channels.length === 1
+                ? `1 Channel`
+                : `${channels.length} Channels`
+            }`}
+          </summary>
+          <ChannelsGrid channels={channels} />
+        </details>
+      ) : null}
       <Link to={Routes.AuthorizeYoutube}>
         <h2>+ Youtube</h2>
+      </Link>
+      <Link to={Routes.AuthorizeTikTok}>
+        <h2>+ TikTok</h2>
       </Link>
       <Link to={Routes.AuthorizeInstagram}>
         <h2>+ Instagram</h2>
