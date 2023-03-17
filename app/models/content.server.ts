@@ -41,10 +41,7 @@ interface UpsertContentParams {
   projectId: string;
   slug: string;
   title?: string;
-  video?: string | null;
-  thumbnail?: string | null;
   description?: string | null;
-  markdown?: string | null;
   published?: boolean | null;
   tags?: string[];
 }
@@ -62,7 +59,6 @@ export async function upsertContent(content: UpsertContentParams) {
       projectId: content.projectId,
       title: content.title || "Untitled Content",
       published: content.published || false,
-      markdown: content.markdown || "",
     },
     update: {
       ...content,

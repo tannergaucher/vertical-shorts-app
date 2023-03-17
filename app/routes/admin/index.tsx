@@ -2,24 +2,20 @@ import type { LoaderArgs, ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Form, useLoaderData, useSubmit, Link } from "@remix-run/react";
 import { prisma } from "~/db.server";
-import { ChannelType } from "@prisma/client";
+import type { ChannelType } from "@prisma/client";
 import compact from "lodash/compact";
 
 import { getContents } from "~/models/content.server";
 
 import type { Channel } from "~/models/chanel.server";
-import { getChannel } from "~/models/chanel.server";
+import { getChannels } from "~/models/chanel.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
   user?: Awaited<ReturnType<typeof getUser>>;
-  youtube?: Awaited<ReturnType<typeof getChannel>>;
-  tiktok?: Awaited<ReturnType<typeof getChannel>>;
-  instagram?: Awaited<ReturnType<typeof getChannel>>;
-  facebook?: Awaited<ReturnType<typeof getChannel>>;
-  twitter?: Awaited<ReturnType<typeof getChannel>>;
+  channels?: Awaited<ReturnType<typeof getChannels>>;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -38,25 +34,8 @@ export const loader = async ({ request }: LoaderArgs) => {
     contents: await getContents({
       projectId: user.currentProjectId,
     }),
-    youtube: await getChannel({
+    channels: await getChannels({
       projectId: user.currentProjectId,
-      channelType: ChannelType.YOUTUBE,
-    }),
-    tiktok: await getChannel({
-      projectId: user.currentProjectId,
-      channelType: ChannelType.TIKTOK,
-    }),
-    instagram: await getChannel({
-      projectId: user.currentProjectId,
-      channelType: ChannelType.INSTAGRAM,
-    }),
-    facebook: await getChannel({
-      projectId: user.currentProjectId,
-      channelType: ChannelType.FACEBOOK,
-    }),
-    twitter: await getChannel({
-      projectId: user.currentProjectId,
-      channelType: ChannelType.TWITTER,
     }),
   });
 };
@@ -69,7 +48,7 @@ export const action: ActionFunction = async ({ request }) => {
   const userId = formData.get("userId");
 
   if (!currentProjectId || !userId) {
-    return redirect(Routes.Admin);
+    return redirect(Routes.Login);
   }
 
   const user = prisma.user.update({
@@ -85,8 +64,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { user, youtube, tiktok, instagram, facebook, twitter } =
-    useLoaderData<LoaderData>();
+  const { user, channels } = useLoaderData<LoaderData>();
 
   const submit = useSubmit();
 
@@ -95,9 +73,15 @@ export default function Page() {
   return (
     <main>
       <fieldset>
-        <h2>Current Project</h2>
         <Form method="post">
-          <label htmlFor="currentProjectId">Selected:</label>
+          <label
+            htmlFor="currentProjectId"
+            style={{
+              fontSize: "x-large",
+            }}
+          >
+            Currrent Project
+          </label>
           <br />
           <select
             id="currentProjectId"
@@ -105,6 +89,7 @@ export default function Page() {
             style={{
               width: "100%",
               marginBlockStart: "8px",
+              fontSize: "xx-large",
             }}
             onChange={(event) => {
               submit(
@@ -130,67 +115,37 @@ export default function Page() {
           </select>
         </Form>
       </fieldset>
-      <ChannelsGrid
-        channels={compact([
-          youtube
-            ? {
-                channelType: ChannelType.YOUTUBE,
-                name: youtube.name,
-                views: youtube.views || 0,
-                subscribers: youtube.subscribers || 0,
-              }
-            : {
-                channelType: ChannelType.YOUTUBE,
-                href: Routes.AuthorizeYoutube,
-              },
-          tiktok
-            ? {
-                channelType: ChannelType.TIKTOK,
-                name: tiktok.name,
-                views: tiktok.views || 0,
-                subscribers: tiktok.subscribers || 0,
-              }
-            : {
-                channelType: ChannelType.TIKTOK,
-                href: Routes.AuthorizeTikTok,
-              },
-          instagram
-            ? {
-                channelType: ChannelType.INSTAGRAM,
-                name: instagram.name,
-                views: instagram.views || 0,
-                subscribers: instagram.subscribers || 0,
-              }
-            : {
-                channelType: ChannelType.INSTAGRAM,
-                href: Routes.AuthorizeInstagram,
-              },
-          facebook
-            ? {
-                channelType: ChannelType.FACEBOOK,
-                name: facebook.name,
-                views: facebook.views || 0,
-                subscribers: facebook.subscribers || 0,
-              }
-            : {
-                channelType: ChannelType.FACEBOOK,
-                href: Routes.AuthorizeFacebook,
-              },
-          twitter
-            ? {
-                channelType: ChannelType.TWITTER,
-                name: twitter.name,
-                views: twitter.views || 0,
-                subscribers: twitter.subscribers || 0,
-              }
-            : {
-                channelType: ChannelType.TWITTER,
-                href: Routes.AuthorizeTwitter,
-              },
-        ])}
-      />
       <Link to={Routes.AdminCreateProject}>
-        <h2>New Project</h2>
+        <h2>+ New Project</h2>
+      </Link>
+      <details>
+        <summary
+          style={{
+            fontSize: "xx-large",
+          }}
+        >
+          {`${
+            compact([channels]).length === 1
+              ? `1 Channel`
+              : `${compact([channels]).length} Channels`
+          }`}
+        </summary>
+        <ChannelsGrid channels={channels} />
+      </details>
+      <Link to={Routes.AuthorizeYoutube}>
+        <h2>+ Youtube</h2>
+      </Link>
+      <Link to={Routes.AuthorizeTikTok}>
+        <h2>+ TikTok</h2>
+      </Link>
+      <Link to={Routes.AuthorizeInstagram}>
+        <h2>+ Instagram</h2>
+      </Link>
+      <Link to={Routes.AuthorizeTwitter}>
+        <h2>+ Twitter</h2>
+      </Link>
+      <Link to={Routes.AuthorizeFacebook}>
+        <h2>+ Facebook</h2>
       </Link>
       <Link to={Routes.Logout}>
         <h2>Logout</h2>
@@ -212,8 +167,8 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
       <section
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gridGap: "16px",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          justifyItems: "start",
         }}
       >
         {channels?.map((channel) => (
@@ -227,7 +182,7 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
 function ChannelItem({ channel }: { channel: ChannelGridItem }) {
   return "href" in channel && channel.href ? (
     <Link to={channel.href}>
-      <h3>ADD {channel.channelType}</h3>
+      <h3>+ {channel.channelType}</h3>
     </Link>
   ) : "name" in channel ? (
     <div>

@@ -10,7 +10,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { useLoaderData } from "@remix-run/react";
+// import { useLoaderData } from "@remix-run/react";
 
 import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
@@ -36,9 +36,9 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-type LoaderData = {
-  user?: Awaited<ReturnType<typeof getUser>>;
-};
+// type LoaderData = {
+//   user?: Awaited<ReturnType<typeof getUser>>;
+// };
 
 export async function loader({ request }: LoaderArgs) {
   return json({
@@ -47,8 +47,6 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function App() {
-  const { user } = useLoaderData<LoaderData>();
-
   return (
     <html lang="en">
       <head>
@@ -57,36 +55,35 @@ export default function App() {
       </head>
       <body>
         <nav>
-          <Link to={Routes.Index}>
-            <h2>
-              <em>
-                <b>Posts</b>
-              </em>
-            </h2>
-          </Link>
-          <Link to={Routes.AdminContentTitle}>
-            <h2>
-              <em>
-                <b>Publisher</b>
-              </em>
-            </h2>
-          </Link>
-          <Link to={Routes.Admin}>
-            <h2>
-              <em>
-                <b>Settings</b>
-              </em>
-            </h2>
-          </Link>
-          {user ? null : (
-            <Link to={Routes.Login}>
-              <h2>
-                <em>
-                  <b>Login</b>
-                </em>
-              </h2>
-            </Link>
-          )}
+          <ul>
+            <li>
+              <Link to={Routes.Index}>
+                <h2>
+                  <em>
+                    <b>Posts</b>
+                  </em>
+                </h2>
+              </Link>
+            </li>
+            <li>
+              <Link to={Routes.AdminContentTitle}>
+                <h2>
+                  <em>
+                    <b>Publisher</b>
+                  </em>
+                </h2>
+              </Link>
+            </li>
+            <li>
+              <Link to={Routes.Admin}>
+                <h2>
+                  <em>
+                    <b>Settings</b>
+                  </em>
+                </h2>
+              </Link>
+            </li>
+          </ul>
         </nav>
         <Outlet />
         <ScrollRestoration />

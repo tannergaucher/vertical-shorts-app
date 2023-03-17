@@ -29,3 +29,26 @@ export async function getChannel(params: {
     },
   });
 }
+
+export async function getChannels(params: { projectId: string }) {
+  const { projectId } = params;
+
+  const channels = await prisma.channel.findMany({
+    where: {
+      projectId,
+    },
+    include: {
+      project: {
+        include: {
+          user: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return channels;
+}
