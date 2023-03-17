@@ -57,19 +57,19 @@ export default function App() {
         <nav>
           <ul>
             <li>
-              <Link to={Routes.Index}>
+              <Link to={Routes.AdminContentTitle}>
                 <h2>
                   <em>
-                    <b>Posts</b>
+                    <b>Publish</b>
                   </em>
                 </h2>
               </Link>
             </li>
             <li>
-              <Link to={Routes.AdminContentTitle}>
+              <Link to={Routes.Index}>
                 <h2>
                   <em>
-                    <b>Publisher</b>
+                    <b>Posts</b>
                   </em>
                 </h2>
               </Link>
