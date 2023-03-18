@@ -86,7 +86,6 @@ export const action: ActionFunction = async ({ request }) => {
   await upsertContent({
     slug: slug.toString(),
     projectId: user.currentProjectId,
-    thumbnail: `${slug}.jpg`,
   });
 
   return redirect(Routes.AdminContenVideo(slug));
