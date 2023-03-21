@@ -16,7 +16,7 @@ export const loader = async () => {
   const url = oauth2Client.generateAuthUrl({
     access_type: "offline",
     scope: scopes,
-    redirect_uri: "http://localhost:3000/authorize-integration/youtube/success",
+    redirect_uri: process.env.YOUTUBE_REDIRECT_URI,
   });
 
   return redirect(url);
