@@ -3,7 +3,6 @@ import { redirect, json } from "@remix-run/node";
 import { Form, useLoaderData, useSubmit, Link } from "@remix-run/react";
 import { prisma } from "~/db.server";
 import type { ChannelType } from "@prisma/client";
-import compact from "lodash/compact";
 
 import type { Channel } from "~/models/chanel.server";
 import { getChannels } from "~/models/chanel.server";
