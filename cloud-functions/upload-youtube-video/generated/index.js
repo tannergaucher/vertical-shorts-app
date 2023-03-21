@@ -234,7 +234,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tg/Documents/remix-blog/cloud-functions/upload-youtube-video/generated",
+      "value": "/Users/tg/Documents/GitHub/remix-blog/cloud-functions/upload-youtube-video/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -248,6 +248,10 @@ const config = {
       {
         "fromEnvVar": null,
         "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-1.0.x"
       }
     ],
     "previewFeatures": [],
@@ -289,5 +293,8 @@ path.join(process.cwd(), "cloud-functions/upload-youtube-video/generated/libquer
 
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
 path.join(process.cwd(), "cloud-functions/upload-youtube-video/generated/libquery_engine-debian-openssl-3.0.x.so.node")
+
+path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
+path.join(process.cwd(), "cloud-functions/upload-youtube-video/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "cloud-functions/upload-youtube-video/generated/schema.prisma")
