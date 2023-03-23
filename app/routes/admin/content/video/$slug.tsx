@@ -14,7 +14,7 @@ import { storage } from "~/entry.server";
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
-import { pubsub } from "~/entry.server";
+
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -49,6 +49,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 export const action: ActionFunction = async ({ request }) => {
   const user = await getUser(request);
+
+  console.log("action")
 
   invariant(user?.currentProjectId, "user must have a current project");
 
