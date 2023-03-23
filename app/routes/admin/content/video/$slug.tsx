@@ -13,7 +13,7 @@ import invariant from "tiny-invariant";
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
-import { storage, pubsub  } from "~/entry.server";
+import { storage, pubsub } from "~/entry.server";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -41,7 +41,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const content = await getContent({
     slug,
     projectId,
-
   });
 
   return json({ content });
@@ -90,11 +89,13 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  const data = Buffer.from(JSON.stringify({
-    slug,
-    projectId: user.currentProjectId,
-  }));
-  
+  const data = Buffer.from(
+    JSON.stringify({
+      slug,
+      projectId: user.currentProjectId,
+    })
+  );
+
   pubsub.topic("create-vertical-video-content").publishMessage(
     {
       data,
