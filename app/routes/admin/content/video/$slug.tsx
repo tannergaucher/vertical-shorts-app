@@ -80,21 +80,21 @@ export const action: ActionFunction = async ({ request }) => {
   await storage.bucket(user.currentProjectId).upload(video.filepath, {
     destination: `${slug}.mp4`,
     public: true,
-  })
+    onUploadProgress: (progress) => {
+      console.log(progress, "progress");
+    },
+  });
 
   await upsertContent({
     slug: slug.toString(),
     projectId: user.currentProjectId,
   });
-
-
-  return null
-
+  
   // pubsub.topic("create-vertical-video-content").publishMessage({
   //   json: { slug, projectId: user.currentProjectId },
   // });
 
-  // return redirect(Routes.AdminContentPreview(slug));
+  return redirect(Routes.AdminContentPreview(slug));
 };
 
 export default function Page() {
