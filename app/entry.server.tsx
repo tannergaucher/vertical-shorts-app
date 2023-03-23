@@ -12,13 +12,19 @@ export * as functions from "@google-cloud/functions-framework";
 const projectId = "homerice";
 
 export const storage = new Storage({
-  keyFilename: "./service-account.json",
   projectId,
+  credentials: {
+    client_email: process.env.GCP_CLIENT_EMAIL,
+    private_key: process.env.GCP_PRIVATE_KEY,
+  }
 });
 
 export const pubsub = new PubSub({
   projectId,
-  keyFilename: "./service-account.json",
+  credentials: {
+    client_email: process.env.GCP_CLIENT_EMAIL,
+    private_key: process.env.GCP_PRIVATE_KEY,
+  }
 });
 
 const ABORT_DELAY = 5000;
