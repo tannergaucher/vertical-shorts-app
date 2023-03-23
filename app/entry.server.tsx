@@ -11,10 +11,6 @@ export * as functions from "@google-cloud/functions-framework";
 
 const projectId = "homerice";
 
-
-console.log("GCP_CLIENT_EMAIL", process.env.GCP_CLIENT_EMAIL)
-console.log("GCP_PRIVATE_KEY", process.env.GCP_PRIVATE_KEY)
-
 export const storage = new Storage({
   projectId,
   credentials: {
