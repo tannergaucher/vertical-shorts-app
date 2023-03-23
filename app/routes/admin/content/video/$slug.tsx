@@ -87,11 +87,14 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  pubsub.topic("create-vertical-video-content").publishMessage({
-    json: { slug, projectId: user.currentProjectId },
-  });
 
-  return redirect(Routes.AdminContentPreview(slug));
+  return null
+
+  // pubsub.topic("create-vertical-video-content").publishMessage({
+  //   json: { slug, projectId: user.currentProjectId },
+  // });
+
+  // return redirect(Routes.AdminContentPreview(slug));
 };
 
 export default function Page() {
