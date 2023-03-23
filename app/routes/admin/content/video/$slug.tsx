@@ -9,11 +9,11 @@ import {
 } from "@remix-run/node";
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { storage } from "~/entry.server";
 
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
+import { storage, pubsub } from "~/entry.server";
 
 
 type LoaderData = {
@@ -49,8 +49,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
 export const action: ActionFunction = async ({ request }) => {
   const user = await getUser(request);
-
-  console.log("_action")
 
   invariant(user?.currentProjectId, "user must have a current project");
 
@@ -92,9 +90,9 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
   
-  // pubsub.topic("create-vertical-video-content").publishMessage({
-  //   json: { slug, projectId: user.currentProjectId },
-  // });
+  pubsub.topic("create-vertical-video-content").publishMessage({
+    json: { slug, projectId: user.currentProjectId },
+  });
 
   return redirect(Routes.AdminContentPreview(slug));
 };
