@@ -85,7 +85,7 @@ function createVerticalVideoContent(params) {
                                 if (err) {
                                     console.error(err);
                                 }
-                                console.log("Published: ".concat(messageId));
+                                console.log("Published: ".concat(messageId, " to topic: ").concat(topic));
                             });
                         }))];
                 case 1:
