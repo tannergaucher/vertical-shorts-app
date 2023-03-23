@@ -40,24 +40,8 @@ export default function Page() {
   return (
     <main>
       <h1>{content.title}</h1>
-      <div style={{ display: `grid`, gridTemplateColumns: `1fr 1fr` }}>
-        {content.video ? (
-          <video
-            src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.mp4`}
-            controls
-            style={{ width: `100%` }}
-            autoPlay
-            muted
-          />
-        ) : null}
-        {content.thumbnail ? (
-          <img
-            src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.jpg`}
-            alt={content.title}
-            style={{ width: `100%`, position: `sticky`, top: `0` }}
-          />
-        ) : null}
-      </div>
     </main>
   );
 }
+
+
