@@ -50,7 +50,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 export const action: ActionFunction = async ({ request }) => {
   const user = await getUser(request);
 
-  console.log("action")
+  console.log("_action")
 
   invariant(user?.currentProjectId, "user must have a current project");
 
