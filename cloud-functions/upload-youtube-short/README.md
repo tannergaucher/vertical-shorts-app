@@ -1,11 +1,11 @@
 ## Deploy 2nd Gen Function Using Gcloud CLI
 
 ```
-gcloud functions deploy nodejs-http-function \
+gcloud functions deploy upload-youtube-short \
 --gen2 \
---runtime=nodejs18 \
 --region=us-east1 \
---source=./cloud-functions/upload-youtube-video \
---entry-point=uploadYoutubeVideo \
---trigger-http
+--runtime=nodejs18 \
+--source=./cloud-functions/upload-youtube-short \
+--entry-point=uploadYoutubeShort \
+--trigger-topic=upload-youtube-short
 ```

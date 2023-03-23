@@ -39,14 +39,26 @@ export async function createVerticalVideoContent(
         // "upload-instagram-video",
         // "upload-facebook-video",
         // "upload-twitter-video",
-      ].map((topic) =>
-        pubsub.topic(topic).publishMessage({
-          data: JSON.stringify({
+      ].map((topic) => {
+        const data = Buffer.from(
+          JSON.stringify({
             slug: params.slug,
             projectId: params.projectId,
-          }),
-        })
-      )
+          })
+        );
+
+        return pubsub.topic(topic).publishMessage(
+          {
+            data,
+          },
+          (err, messageId) => {
+            if (err) {
+              console.error(err);
+            }
+            console.log(`Published: ${messageId} to topic: ${topic}`);
+          }
+        );
+      })
     );
 
     return { message: "success" };

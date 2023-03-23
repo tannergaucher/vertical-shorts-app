@@ -90,13 +90,11 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  const data = Buffer.from(
-    JSON.stringify({
-      slug,
-      projectId: user.currentProjectId,
-    })
-  )
-
+  const data = Buffer.from(JSON.stringify({
+    slug,
+    projectId: user.currentProjectId,
+  }));
+  
   pubsub.topic("create-vertical-video-content").publishMessage(
     {
       data,

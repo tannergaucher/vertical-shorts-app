@@ -36,13 +36,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.processContentVideo = exports.pubsub = void 0;
+exports.createVerticalVideoContent = exports.pubsub = void 0;
 var functions = require("@google-cloud/functions-framework");
 var pubsub_1 = require("@google-cloud/pubsub");
 exports.pubsub = new pubsub_1.PubSub({
     servicePath: "./service-account.json"
 });
-functions.cloudEvent("process-content-video", function (cloudEvent) { return __awaiter(void 0, void 0, void 0, function () {
+functions.cloudEvent("create-vertical-video-content", function (cloudEvent) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, slug, projectId;
     return __generator(this, function (_b) {
         switch (_b.label) {
@@ -51,7 +51,7 @@ functions.cloudEvent("process-content-video", function (cloudEvent) { return __a
                     throw new Error("MISSING_CLOUD_EVENT_DATA");
                 }
                 _a = cloudEvent.data, slug = _a.slug, projectId = _a.projectId;
-                return [4 /*yield*/, processContentVideo({
+                return [4 /*yield*/, createVerticalVideoContent({
                         slug: slug,
                         projectId: projectId
                     })];
@@ -61,7 +61,7 @@ functions.cloudEvent("process-content-video", function (cloudEvent) { return __a
         }
     });
 }); });
-function processContentVideo(params) {
+function createVerticalVideoContent(params) {
     return __awaiter(this, void 0, void 0, function () {
         var error_1;
         return __generator(this, function (_a) {
@@ -69,17 +69,23 @@ function processContentVideo(params) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, Promise.all([
-                            "upload-youtube-video",
+                            "upload-youtube-short",
                             // "upload-tiktok-video",
                             // "upload-instagram-video",
                             // "upload-facebook-video",
                             // "upload-twitter-video",
                         ].map(function (topic) {
+                            var data = Buffer.from(JSON.stringify({
+                                slug: params.slug,
+                                projectId: params.projectId
+                            }));
                             return exports.pubsub.topic(topic).publishMessage({
-                                data: JSON.stringify({
-                                    slug: params.slug,
-                                    projectId: params.projectId
-                                })
+                                data: data
+                            }, function (err, messageId) {
+                                if (err) {
+                                    console.error(err);
+                                }
+                                console.log("Published: ".concat(messageId));
                             });
                         }))];
                 case 1:
@@ -94,4 +100,4 @@ function processContentVideo(params) {
         });
     });
 }
-exports.processContentVideo = processContentVideo;
+exports.createVerticalVideoContent = createVerticalVideoContent;

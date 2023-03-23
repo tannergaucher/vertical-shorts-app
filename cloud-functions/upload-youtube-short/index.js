@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.uploadYoutubeVideo = void 0;
+exports.uploadYoutubeShort = void 0;
 var functions = require("@google-cloud/functions-framework");
 var fs = require("fs");
 var storage_1 = require("@google-cloud/storage");
@@ -44,24 +44,25 @@ var googleapis_1 = require("googleapis");
 var generated_1 = require("./generated");
 var prisma = new generated_1.PrismaClient();
 var storage = new storage_1.Storage();
-functions.cloudEvent("upload-youtube-video", function (cloudEvent) { return __awaiter(void 0, void 0, void 0, function () {
+functions.http("upload-youtube-short", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!(cloudEvent === null || cloudEvent === void 0 ? void 0 : cloudEvent.data)) {
+                if (!req.body) {
                     throw new Error("MISSING_CLOUDEVENT_DATA");
                 }
-                return [4 /*yield*/, uploadYoutubeVideo({
-                        projectId: cloudEvent.data.projectId,
-                        slug: cloudEvent.data.slug
+                return [4 /*yield*/, uploadYoutubeShort({
+                        projectId: req.body.projectId,
+                        slug: req.body.slug
                     })];
             case 1:
                 _a.sent();
-                return [2 /*return*/, { message: "success" }];
+                res.status(200).send({ message: "success" });
+                return [2 /*return*/];
         }
     });
 }); });
-function uploadYoutubeVideo(params) {
+function uploadYoutubeShort(params) {
     return __awaiter(this, void 0, void 0, function () {
         var slug, projectId, content, user, oauth2Client, currentProject, videoFilePath;
         return __generator(this, function (_a) {
@@ -163,10 +164,6 @@ function uploadYoutubeVideo(params) {
                                 mimeType: "video/mp4",
                                 body: bodyStream
                             }
-                        }, {
-                            onUploadProgress: function (e) {
-                                console.log("Progress: ".concat(e));
-                            }
                         })
                             .then(function () {
                             fs.unlinkSync(videoFilePath);
@@ -177,4 +174,4 @@ function uploadYoutubeVideo(params) {
         });
     });
 }
-exports.uploadYoutubeVideo = uploadYoutubeVideo;
+exports.uploadYoutubeShort = uploadYoutubeShort;
