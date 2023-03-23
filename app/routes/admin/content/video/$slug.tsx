@@ -77,10 +77,10 @@ export const action: ActionFunction = async ({ request }) => {
     await storage.createBucket(user.currentProjectId);
   }
 
-  storage.bucket(user.currentProjectId).upload(video.filepath, {
+  await storage.bucket(user.currentProjectId).upload(video.filepath, {
     destination: `${slug}.mp4`,
     public: true,
-  });
+  })
 
   await upsertContent({
     slug: slug.toString(),
