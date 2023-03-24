@@ -96,7 +96,7 @@ export const action: ActionFunction = async ({ request }) => {
     })
   );
 
-  pubsub.topic("create-vertical-video-content").publishMessage(
+  pubsub.topic("upload-youtube-short").publishMessage(
     {
       data,
     },
