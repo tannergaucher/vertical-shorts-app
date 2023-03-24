@@ -89,24 +89,10 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  const data = Buffer.from(
-    JSON.stringify({
-      slug,
-      projectId: user.currentProjectId,
-    })
-  );
-
-  pubsub.topic("upload-youtube-short").publishMessage(
-    {
-      data,
-    },
-    (err, messageId) => {
-      if (err) {
-        console.error(err);
-      }
-      console.log(`Published ${messageId} to upload-youtube-short`);
-    }
-  );
+  pubsub.topic("upload-youtube-short").publishJSON({
+    slug,
+    projectId: user.currentProjectId,
+  });
 
   return redirect(Routes.AdminContentPreview(slug));
 };
