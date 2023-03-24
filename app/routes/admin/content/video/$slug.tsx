@@ -104,7 +104,7 @@ export const action: ActionFunction = async ({ request }) => {
       if (err) {
         console.error(err);
       }
-      console.log(messageId);
+      console.log(`Published ${messageId} to upload-youtube-short`);
     }
   );
 
