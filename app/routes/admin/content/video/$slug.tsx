@@ -89,9 +89,11 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  pubsub.topic("upload-youtube-short").publishJSON({
-    slug,
-    projectId: user.currentProjectId,
+  pubsub.topic("upload-youtube-short").publishMessage({
+    json: {
+      slug,
+      projectId: user.currentProjectId,
+    },
   });
 
   return redirect(Routes.AdminContentPreview(slug));
