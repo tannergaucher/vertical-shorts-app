@@ -14,26 +14,18 @@ const prisma = new PrismaClient();
 
 const storage = new Storage();
 
-functions.cloudEvent<UploadVideoEvent>(
-  "upload-youtube-short",
-  async (cloudEvent) => {
-    if (!cloudEvent?.data) {
-      throw new Error("MISSING_CLOUD_EVENT_DATA");
-    }
+functions.cloudEvent("upload-youtube-short", async (cloudEvent) => {
+  await uploadYoutubeShort(cloudEvent);
 
-    const { slug, projectId } = cloudEvent.data;
+  return { message: "success" };
+});
 
-    await uploadYoutubeShort({
-      slug,
-      projectId,
-    });
+export async function uploadYoutubeShort(cloudEvent: any) {
+  const parsed = JSON.parse(
+    Buffer.from(cloudEvent.data, "base64").toString("utf8")
+  ) as UploadVideoEvent;
 
-    return { message: "success" };
-  }
-);
-
-export async function uploadYoutubeShort(params: UploadVideoEvent) {
-  const { slug, projectId } = params;
+  const { slug, projectId } = parsed;
 
   const content = await prisma.content.findUnique({
     where: {
@@ -110,39 +102,44 @@ export async function uploadYoutubeShort(params: UploadVideoEvent) {
 
   const videoFilePath = `${content.slug}.mp4`;
 
-  storage
-    .bucket(user.currentProjectId)
-    .file(videoFilePath)
-    .createReadStream()
-    .pipe(fs.createWriteStream(videoFilePath))
-    .on("finish", () => {
-      const bodyStream = fs.createReadStream(videoFilePath);
+  try {
+    storage
+      .bucket(user.currentProjectId)
+      .file(videoFilePath)
+      .createReadStream()
+      .pipe(fs.createWriteStream(videoFilePath))
+      .on("finish", () => {
+        const bodyStream = fs.createReadStream(videoFilePath);
 
-      const youtube = google.youtube({
-        version: "v3",
-        auth: oauth2Client,
-      });
-
-      youtube.videos
-        .insert({
-          part: ["snippet", "status"],
-          requestBody: {
-            snippet: {
-              title: content.title,
-              description: content.description,
-              tags: content.tags,
-            },
-            status: {
-              privacyStatus: "private",
-            },
-          },
-          media: {
-            mimeType: "video/mp4",
-            body: bodyStream,
-          },
-        })
-        .then(() => {
-          fs.unlinkSync(videoFilePath);
+        const youtube = google.youtube({
+          version: "v3",
+          auth: oauth2Client,
         });
-    });
+
+        youtube.videos
+          .insert({
+            part: ["snippet", "status"],
+            requestBody: {
+              snippet: {
+                title: content.title,
+                description: content.description,
+                tags: content.tags,
+              },
+              status: {
+                privacyStatus: "private",
+              },
+            },
+            media: {
+              mimeType: "video/mp4",
+              body: bodyStream,
+            },
+          })
+          .finally(() => {
+            fs.unlinkSync(videoFilePath);
+          });
+      });
+  } catch (error) {
+    console.log(error);
+    throw new Error("YOUTUBE_UPLOAD_ERROR");
+  }
 }

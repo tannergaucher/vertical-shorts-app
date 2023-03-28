@@ -44,31 +44,26 @@ var googleapis_1 = require("googleapis");
 var generated_1 = require("./generated");
 var prisma = new generated_1.PrismaClient();
 var storage = new storage_1.Storage();
-functions.http("upload-youtube-short", function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+functions.cloudEvent("upload-youtube-short", function (cloudEvent) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
-                if (!req.body) {
-                    throw new Error("MISSING_CLOUDEVENT_DATA");
-                }
-                return [4 /*yield*/, uploadYoutubeShort({
-                        projectId: req.body.projectId,
-                        slug: req.body.slug
-                    })];
+            case 0: return [4 /*yield*/, uploadYoutubeShort(cloudEvent)];
             case 1:
                 _a.sent();
-                res.status(200).send({ message: "success" });
-                return [2 /*return*/];
+                return [2 /*return*/, { message: "success" }];
         }
     });
 }); });
-function uploadYoutubeShort(params) {
+function uploadYoutubeShort(cloudEvent) {
     return __awaiter(this, void 0, void 0, function () {
-        var slug, projectId, content, user, oauth2Client, currentProject, videoFilePath;
+        var parsed, slug, projectId, content, user, oauth2Client, currentProject, videoFilePath;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    slug = params.slug, projectId = params.projectId;
+                    parsed = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8"));
+                    slug = parsed.slug, projectId = parsed.projectId;
+                    console.log(slug, "slug");
+                    console.log(projectId, "projectId");
                     return [4 /*yield*/, prisma.content.findUnique({
                             where: {
                                 projectId_slug: {
@@ -136,39 +131,44 @@ function uploadYoutubeShort(params) {
                         refresh_token: currentProject.youtubeCredentials.refreshToken
                     });
                     videoFilePath = "".concat(content.slug, ".mp4");
-                    storage
-                        .bucket(user.currentProjectId)
-                        .file(videoFilePath)
-                        .createReadStream()
-                        .pipe(fs.createWriteStream(videoFilePath))
-                        .on("finish", function () {
-                        var bodyStream = fs.createReadStream(videoFilePath);
-                        var youtube = googleapis_1.google.youtube({
-                            version: "v3",
-                            auth: oauth2Client
-                        });
-                        youtube.videos
-                            .insert({
-                            part: ["snippet", "status"],
-                            requestBody: {
-                                snippet: {
-                                    title: content.title,
-                                    description: content.description,
-                                    tags: content.tags
+                    try {
+                        storage
+                            .bucket(user.currentProjectId)
+                            .file(videoFilePath)
+                            .createReadStream()
+                            .pipe(fs.createWriteStream(videoFilePath))
+                            .on("finish", function () {
+                            var bodyStream = fs.createReadStream(videoFilePath);
+                            var youtube = googleapis_1.google.youtube({
+                                version: "v3",
+                                auth: oauth2Client
+                            });
+                            youtube.videos
+                                .insert({
+                                part: ["snippet", "status"],
+                                requestBody: {
+                                    snippet: {
+                                        title: content.title,
+                                        description: content.description,
+                                        tags: content.tags
+                                    },
+                                    status: {
+                                        privacyStatus: "private"
+                                    }
                                 },
-                                status: {
-                                    privacyStatus: "private"
+                                media: {
+                                    mimeType: "video/mp4",
+                                    body: bodyStream
                                 }
-                            },
-                            media: {
-                                mimeType: "video/mp4",
-                                body: bodyStream
-                            }
-                        })
-                            .then(function () {
-                            fs.unlinkSync(videoFilePath);
+                            })["finally"](function () {
+                                fs.unlinkSync(videoFilePath);
+                            });
                         });
-                    });
+                    }
+                    catch (error) {
+                        console.log(error);
+                        throw new Error("YOUTUBE_UPLOAD_ERROR");
+                    }
                     return [2 /*return*/];
             }
         });

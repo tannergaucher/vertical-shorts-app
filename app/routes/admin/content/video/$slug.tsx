@@ -85,7 +85,7 @@ export const action: ActionFunction = async ({ request }) => {
   });
 
   await upsertContent({
-    slug: slug.toString(),
+    slug,
     projectId: user.currentProjectId,
   });
 
