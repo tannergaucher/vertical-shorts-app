@@ -8,7 +8,7 @@ export const loader = async () => {
   const url = `https://www.tiktok.com/auth/authorize?client_key=${
     process.env.TIKTOK_CLIENT_KEY
   }&response_type=code&scope=user.info.basic&redirect_uri=${encodeURIComponent(
-    `http://localhost:3000/authorize-integration/tiktok/success`
+    process.env.TIKTOK_REDIRECT_URI as string
   )}&state=${xsrfState}`;
 
   return redirect(url);
