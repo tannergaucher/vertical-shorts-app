@@ -8,6 +8,12 @@ generator cloudYoutubeClient {
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
 }
 
+generator cloudTiktokClient {
+  provider      = "prisma-client-js"
+  output        = "../cloud-functions/upload-tiktok-video/generated"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
