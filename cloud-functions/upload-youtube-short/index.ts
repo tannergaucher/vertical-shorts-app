@@ -82,6 +82,23 @@ export async function uploadYoutubeShort(cloudEvent: any) {
     process.env.YOUTUBE_REDIRECT_URL
   );
 
+  oauth2Client.on("tokens", async (tokens) => {
+    if (tokens.refresh_token && user.currentProjectId) {
+      await prisma.project.update({
+        where: {
+          id: user.currentProjectId,
+        },
+        data: {
+          youtubeCredentials: {
+            update: {
+              refreshToken: tokens.refresh_token,
+            },
+          },
+        },
+      });
+    }
+  });
+
   const currentProject = await prisma.project.findUnique({
     where: {
       id: user.currentProjectId,
@@ -140,57 +157,8 @@ export async function uploadYoutubeShort(cloudEvent: any) {
           });
       });
   } catch (error) {
-    console.log("AUTH ERR, HANDLING REFRESH TOKEN", error);
+    console.log(error);
 
-    if (error instanceof google.auth.GoogleAuth) {
-      oauth2Client.setCredentials({
-        refresh_token: currentProject.youtubeCredentials.refreshToken,
-      });
-
-      const { token } = await oauth2Client.getAccessToken();
-
-      if (token) {
-        oauth2Client.setCredentials({
-          access_token: token,
-          refresh_token: currentProject.youtubeCredentials.refreshToken,
-        });
-      }
-
-      storage
-        .bucket(user.currentProjectId)
-        .file(videoFilePath)
-        .createReadStream()
-        .pipe(fs.createWriteStream(videoFilePath))
-        .on("finish", () => {
-          const bodyStream = fs.createReadStream(videoFilePath);
-
-          const youtube = google.youtube({
-            version: "v3",
-            auth: oauth2Client,
-          });
-
-          youtube.videos
-            .insert({
-              part: ["snippet", "status"],
-              requestBody: {
-                snippet: {
-                  title: content.title,
-                  description: content.description,
-                  tags: content.tags,
-                },
-                status: {
-                  privacyStatus: "private",
-                },
-              },
-              media: {
-                mimeType: "video/mp4",
-                body: bodyStream,
-              },
-            })
-            .finally(() => {
-              fs.unlinkSync(videoFilePath);
-            });
-        });
-    }
+    throw new Error("ERROR_INSERTING_YOUTUBE_VIDEO");
   }
 }
