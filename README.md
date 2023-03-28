@@ -27,7 +27,7 @@ npx prisma migrate --dev
 
 ```
 
-## Deploy Remix Client via Netlify CLI
+## Deploy Remix App via Netlify CLI
 
 ### Deploy Preview
 
