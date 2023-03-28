@@ -56,14 +56,12 @@ functions.cloudEvent("upload-youtube-short", function (cloudEvent) { return __aw
 }); });
 function uploadYoutubeShort(cloudEvent) {
     return __awaiter(this, void 0, void 0, function () {
-        var parsed, slug, projectId, content, user, oauth2Client, currentProject, videoFilePath;
+        var parsedData, slug, projectId, content, user, oauth2Client, currentProject, videoFilePath, error_1, token;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    parsed = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8"));
-                    slug = parsed.slug, projectId = parsed.projectId;
-                    console.log(slug, "slug");
-                    console.log(projectId, "projectId");
+                    parsedData = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8"));
+                    slug = parsedData.slug, projectId = parsedData.projectId;
                     return [4 /*yield*/, prisma.content.findUnique({
                             where: {
                                 projectId_slug: {
@@ -123,53 +121,101 @@ function uploadYoutubeShort(cloudEvent) {
                         })];
                 case 3:
                     currentProject = _a.sent();
+                    console.log(currentProject, "CURRENT PROJECT");
                     if (!(currentProject === null || currentProject === void 0 ? void 0 : currentProject.youtubeCredentials)) {
                         throw new Error("NO_YOUTUBE_CREDENTIALS");
                     }
                     oauth2Client.setCredentials({
-                        access_token: currentProject.youtubeCredentials.accessToken,
-                        refresh_token: currentProject.youtubeCredentials.refreshToken
+                        access_token: currentProject.youtubeCredentials.accessToken
                     });
                     videoFilePath = "".concat(content.slug, ".mp4");
-                    try {
-                        storage
-                            .bucket(user.currentProjectId)
-                            .file(videoFilePath)
-                            .createReadStream()
-                            .pipe(fs.createWriteStream(videoFilePath))
-                            .on("finish", function () {
-                            var bodyStream = fs.createReadStream(videoFilePath);
-                            var youtube = googleapis_1.google.youtube({
-                                version: "v3",
-                                auth: oauth2Client
-                            });
-                            youtube.videos
-                                .insert({
-                                part: ["snippet", "status"],
-                                requestBody: {
-                                    snippet: {
-                                        title: content.title,
-                                        description: content.description,
-                                        tags: content.tags
-                                    },
-                                    status: {
-                                        privacyStatus: "private"
-                                    }
+                    _a.label = 4;
+                case 4:
+                    _a.trys.push([4, 5, , 8]);
+                    storage
+                        .bucket(user.currentProjectId)
+                        .file(videoFilePath)
+                        .createReadStream()
+                        .pipe(fs.createWriteStream(videoFilePath))
+                        .on("finish", function () {
+                        var bodyStream = fs.createReadStream(videoFilePath);
+                        var youtube = googleapis_1.google.youtube({
+                            version: "v3",
+                            auth: oauth2Client
+                        });
+                        youtube.videos
+                            .insert({
+                            part: ["snippet", "status"],
+                            requestBody: {
+                                snippet: {
+                                    title: content.title,
+                                    description: content.description,
+                                    tags: content.tags
                                 },
-                                media: {
-                                    mimeType: "video/mp4",
-                                    body: bodyStream
+                                status: {
+                                    privacyStatus: "private"
                                 }
-                            })["finally"](function () {
-                                fs.unlinkSync(videoFilePath);
-                            });
+                            },
+                            media: {
+                                mimeType: "video/mp4",
+                                body: bodyStream
+                            }
+                        })["finally"](function () {
+                            fs.unlinkSync(videoFilePath);
+                        });
+                    });
+                    return [3 /*break*/, 8];
+                case 5:
+                    error_1 = _a.sent();
+                    console.log("AUTH ERR, HANDLING REFRESH TOKEN", error_1);
+                    if (!(error_1 instanceof googleapis_1.google.auth.GoogleAuth)) return [3 /*break*/, 7];
+                    oauth2Client.setCredentials({
+                        refresh_token: currentProject.youtubeCredentials.refreshToken
+                    });
+                    return [4 /*yield*/, oauth2Client.getAccessToken()];
+                case 6:
+                    token = (_a.sent()).token;
+                    if (token) {
+                        oauth2Client.setCredentials({
+                            access_token: token,
+                            refresh_token: currentProject.youtubeCredentials.refreshToken
                         });
                     }
-                    catch (error) {
-                        console.log(error);
-                        throw new Error("YOUTUBE_UPLOAD_ERROR");
-                    }
-                    return [2 /*return*/];
+                    storage
+                        .bucket(user.currentProjectId)
+                        .file(videoFilePath)
+                        .createReadStream()
+                        .pipe(fs.createWriteStream(videoFilePath))
+                        .on("finish", function () {
+                        var bodyStream = fs.createReadStream(videoFilePath);
+                        var youtube = googleapis_1.google.youtube({
+                            version: "v3",
+                            auth: oauth2Client
+                        });
+                        youtube.videos
+                            .insert({
+                            part: ["snippet", "status"],
+                            requestBody: {
+                                snippet: {
+                                    title: content.title,
+                                    description: content.description,
+                                    tags: content.tags
+                                },
+                                status: {
+                                    privacyStatus: "private"
+                                }
+                            },
+                            media: {
+                                mimeType: "video/mp4",
+                                body: bodyStream
+                            }
+                        })["finally"](function () {
+                            fs.unlinkSync(videoFilePath);
+                        });
+                    });
+                    _a.label = 7;
+                case 7: return [3 /*break*/, 8];
+                case 8: return [2 /*return*/];
             }
         });
     });

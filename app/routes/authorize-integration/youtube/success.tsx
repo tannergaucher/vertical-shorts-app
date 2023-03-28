@@ -5,12 +5,13 @@ import invariant from "tiny-invariant";
 
 import { getUser } from "~/session.server";
 import { prisma } from "~/db.server";
+import { Routes } from "~/routes";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const user = await getUser(request);
 
   if (!user) {
-    return redirect("/login");
+    return redirect(Routes.Login);
   }
 
   invariant(
@@ -32,6 +33,8 @@ export const loader = async ({ request }: LoaderArgs) => {
   );
 
   const { tokens } = await oauth2Client.getToken(authorizationCode);
+
+  console.log("tokens", tokens);
 
   oauth2Client.setCredentials(tokens);
 
@@ -109,6 +112,43 @@ export const loader = async ({ request }: LoaderArgs) => {
 
     return null;
   }
+
+  // handle refresh token
+  oauth2Client.on("tokens", async (tokens) => {
+    if (tokens.refresh_token && user.currentProjectId) {
+      console.log("refresh_token", tokens.refresh_token);
+
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          projects: {
+            update: {
+              where: {
+                id: user.currentProjectId,
+              },
+              data: {
+                youtubeCredentials: {
+                  upsert: {
+                    create: {
+                      accessToken: tokens.access_token,
+                      refreshToken: tokens.refresh_token,
+                      userId: user.id,
+                    },
+                    update: {
+                      accessToken: tokens.access_token,
+                      refreshToken: tokens.refresh_token,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+  });
 };
 
 export default function Page() {

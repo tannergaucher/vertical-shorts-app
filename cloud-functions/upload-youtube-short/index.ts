@@ -21,11 +21,11 @@ functions.cloudEvent("upload-youtube-short", async (cloudEvent) => {
 });
 
 export async function uploadYoutubeShort(cloudEvent: any) {
-  const parsed = JSON.parse(
+  const parsedData = JSON.parse(
     Buffer.from(cloudEvent.data, "base64").toString("utf8")
   ) as UploadVideoEvent;
 
-  const { slug, projectId } = parsed;
+  const { slug, projectId } = parsedData;
 
   const content = await prisma.content.findUnique({
     where: {
@@ -91,13 +91,14 @@ export async function uploadYoutubeShort(cloudEvent: any) {
     },
   });
 
+  console.log(currentProject, "CURRENT PROJECT");
+
   if (!currentProject?.youtubeCredentials) {
     throw new Error("NO_YOUTUBE_CREDENTIALS");
   }
 
   oauth2Client.setCredentials({
     access_token: currentProject.youtubeCredentials.accessToken,
-    refresh_token: currentProject.youtubeCredentials.refreshToken,
   });
 
   const videoFilePath = `${content.slug}.mp4`;
@@ -139,7 +140,57 @@ export async function uploadYoutubeShort(cloudEvent: any) {
           });
       });
   } catch (error) {
-    console.log(error);
-    throw new Error("YOUTUBE_UPLOAD_ERROR");
+    console.log("AUTH ERR, HANDLING REFRESH TOKEN", error);
+
+    if (error instanceof google.auth.GoogleAuth) {
+      oauth2Client.setCredentials({
+        refresh_token: currentProject.youtubeCredentials.refreshToken,
+      });
+
+      const { token } = await oauth2Client.getAccessToken();
+
+      if (token) {
+        oauth2Client.setCredentials({
+          access_token: token,
+          refresh_token: currentProject.youtubeCredentials.refreshToken,
+        });
+      }
+
+      storage
+        .bucket(user.currentProjectId)
+        .file(videoFilePath)
+        .createReadStream()
+        .pipe(fs.createWriteStream(videoFilePath))
+        .on("finish", () => {
+          const bodyStream = fs.createReadStream(videoFilePath);
+
+          const youtube = google.youtube({
+            version: "v3",
+            auth: oauth2Client,
+          });
+
+          youtube.videos
+            .insert({
+              part: ["snippet", "status"],
+              requestBody: {
+                snippet: {
+                  title: content.title,
+                  description: content.description,
+                  tags: content.tags,
+                },
+                status: {
+                  privacyStatus: "private",
+                },
+              },
+              media: {
+                mimeType: "video/mp4",
+                body: bodyStream,
+              },
+            })
+            .finally(() => {
+              fs.unlinkSync(videoFilePath);
+            });
+        });
+    }
   }
 }
