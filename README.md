@@ -6,14 +6,11 @@
 - [Remix](https://remix.run)
 - [TypeScript](https://www.typescriptlang.org)
 - [PostgreSQL](https://www.postgresql.org)
+  = [Prisma](https://www.prisma.io/)
 - [CockroachDB](https://www.cockroachlabs.com)
 - [Google Cloud Storage](https://cloud.google.com/storage)
 - [Google Cloud Pub / Sub](https://cloud.google.com/pubsub)
 - [Google Cloud Functions](https://cloud.google.com/functions)
-
-## Getting Started
-
-- Todo
 
 ## Generate Prisma Client
 
