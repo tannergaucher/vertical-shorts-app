@@ -8,11 +8,11 @@ export default function Page() {
         <Link to="youtube">
           <li>YouTube</li>
         </Link>
-        <Link to="tik-tok">
-          <li>Tik Tok</li>
+        <Link to="tiktok">
+          <li>TikTok</li>
         </Link>
-        <Link to="facebook-and-instagram">
-          <li>Facebook and Instagram</li>
+        <Link to="instagram">
+          <li>Instagram</li>
         </Link>
       </ul>
     </main>

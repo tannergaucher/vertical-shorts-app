@@ -8,7 +8,7 @@ export const action = () => {
 export default function Page() {
   return (
     <main>
-      <h1>Authorize Instagram and Facebook</h1>
+      <h1>Authorize Instagram</h1>
       <Form>
         <button type="submit">Authorize</button>
       </Form>
