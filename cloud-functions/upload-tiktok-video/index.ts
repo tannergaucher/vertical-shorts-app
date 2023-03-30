@@ -104,7 +104,9 @@ export async function uploadTikTokVideo(cloudEvent: any) {
           `https://open-api.tiktok.com/share/video/upload?open_id=${OPEN_ID}&access_token=${ACCESS_TOKEN}`,
           {
             method: "POST",
-            body: videoFilePath,
+            body: JSON.stringify({
+              video: videoFilePath,
+            }),
           }
         );
 
