@@ -14,12 +14,12 @@ export type UploadVideoEvent = {
 };
 
 functions.cloudEvent("upload-tiktok-video", async (cloudEvent) => {
-  await uploadTiktokVideo(cloudEvent);
+  await uploadTikTokVideo(cloudEvent);
 
   return { message: "success" };
 });
 
-export async function uploadTiktokVideo(cloudEvent: any) {
+export async function uploadTikTokVideo(cloudEvent: any) {
   const parsedData = JSON.parse(
     Buffer.from(cloudEvent.data, "base64").toString("utf8")
   ) as UploadVideoEvent;
@@ -101,7 +101,7 @@ export async function uploadTiktokVideo(cloudEvent: any) {
         const ACCESS_TOKEN = "";
 
         const res = await fetch(
-          `https://open-api.tiktok.com/share/video/upload/?open_id=${OPEN_ID}&access_token=${ACCESS_TOKEN}`,
+          `https://open-api.tiktok.com/share/video/upload?open_id=${OPEN_ID}&access_token=${ACCESS_TOKEN}`,
           {
             method: "POST",
             body: videoFilePath,

@@ -6,6 +6,6 @@ gcloud functions deploy upload-tiktok-video \
 --region=us-east1 \
 --runtime=nodejs18 \
 --source=./cloud-functions/upload-tiktok-video \
---entry-point=uploadTiktokVideo \
+--entry-point=uploadTikTokVideo \
 --trigger-topic=upload-tiktok-video
 ```
