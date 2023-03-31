@@ -116,8 +116,6 @@ export const loader = async ({ request }: LoaderArgs) => {
   // handle refresh token
   oauth2Client.on("tokens", async (tokens) => {
     if (tokens.refresh_token && user.currentProjectId) {
-      console.log("refresh_token", tokens.refresh_token);
-
       await prisma.user.update({
         where: {
           id: user.id,
