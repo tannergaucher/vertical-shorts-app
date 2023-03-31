@@ -82,23 +82,6 @@ export async function uploadYoutubeShort(cloudEvent: any) {
     process.env.YOUTUBE_REDIRECT_URL
   );
 
-  oauth2Client.on("tokens", async (tokens) => {
-    if (tokens.refresh_token && user.currentProjectId) {
-      await prisma.project.update({
-        where: {
-          id: user.currentProjectId,
-        },
-        data: {
-          youtubeCredentials: {
-            update: {
-              refreshToken: tokens.refresh_token,
-            },
-          },
-        },
-      });
-    }
-  });
-
   const currentProject = await prisma.project.findUnique({
     where: {
       id: user.currentProjectId,
