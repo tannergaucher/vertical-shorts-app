@@ -34,8 +34,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const { tokens } = await oauth2Client.getToken(authorizationCode);
 
-  console.log("tokens", tokens);
-
   oauth2Client.setCredentials(tokens);
 
   const youtube = google.youtube({
