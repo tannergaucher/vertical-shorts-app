@@ -1,4 +1,3 @@
-import { Form } from "@remix-run/react";
 import { useLayoutEffect } from "react";
 
 export const action = () => {};
@@ -20,17 +19,18 @@ export default function Page() {
   return (
     <main>
       <h1>Authorize Instagram</h1>
-      <Form>
-        <div
-          className="fb-login-button"
-          data-width="100px"
-          data-size=""
-          data-button-type=""
-          data-layout=""
-          data-auto-logout-link="false"
-          data-use-continue-as="true"
-        ></div>
-      </Form>
+      <button
+        onClick={() => {
+          FB.login(
+            function (response) {
+              console.log(response, "__response__");
+            },
+            { scope: "instagram_content_publish" }
+          );
+        }}
+      >
+        LOGIN
+      </button>
     </main>
   );
 }
