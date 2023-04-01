@@ -25,8 +25,7 @@ export default function Page() {
             function (response) {
               console.log(response, "__response__");
             },
-            // { scope: "instagram_content_publish" }
-            { scope: "public_profile" }
+            { scope: "instagram_content_publish" }
           );
         }}
       >
