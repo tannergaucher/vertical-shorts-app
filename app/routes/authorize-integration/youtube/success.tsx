@@ -31,7 +31,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     process.env.YOUTUBE_CLIENT_SECRET,
     process.env.YOUTUBE_REDIRECT_URI
   );
-
+  
   const { tokens } = await oauth2Client.getToken(authorizationCode);
 
   oauth2Client.setCredentials(tokens);

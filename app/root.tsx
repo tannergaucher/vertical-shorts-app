@@ -54,7 +54,7 @@ export default function App() {
         <Links />
       </head>
       <body>
-        {/* todo match routes */}
+        {/* todo match routes, only on fb login page */}
         <div id="fb-root"></div>
         <script
           async
