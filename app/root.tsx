@@ -54,6 +54,14 @@ export default function App() {
         <Links />
       </head>
       <body>
+        {/* todo match routes */}
+        <div id="fb-root"></div>
+        <script
+          async
+          defer
+          crossOrigin="anonymous"
+          src="https://connect.facebook.net/en_US/sdk.js"
+        ></script>
         <nav>
           <ul>
             <li>
