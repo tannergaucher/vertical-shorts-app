@@ -91,8 +91,6 @@ export async function uploadYoutubeShort(cloudEvent: any) {
     },
   });
 
-  console.log(currentProject, "CURRENT PROJECT");
-
   if (!currentProject?.youtubeCredentials) {
     throw new Error("NO_YOUTUBE_CREDENTIALS");
   }

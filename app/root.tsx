@@ -10,9 +10,8 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-// import { useLoaderData } from "@remix-run/react";
+import styles from "semantic-styles/index.css";
 
-import styles from "~/styles/index.css";
 import { getUser } from "./session.server";
 import { Routes } from "./routes";
 
@@ -36,10 +35,6 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-// type LoaderData = {
-//   user?: Awaited<ReturnType<typeof getUser>>;
-// };
-
 export async function loader({ request }: LoaderArgs) {
   return json({
     user: await getUser(request),
@@ -55,13 +50,13 @@ export default function App() {
       </head>
       <body>
         {/* todo match routes, only on fb login page */}
-        <div id="fb-root"></div>
+        {/* <div id="fb-root"></div>
         <script
           async
           defer
           crossOrigin="anonymous"
           src="https://connect.facebook.net/en_US/sdk.js"
-        ></script>
+        ></script> */}
         <nav>
           <ul>
             <li>
