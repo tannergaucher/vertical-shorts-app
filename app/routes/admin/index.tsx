@@ -64,7 +64,7 @@ export default function Page() {
   if (!user) return null;
 
   return (
-    <main>
+    <main className="padding">
       <fieldset>
         <Form method="post">
           <label
@@ -73,7 +73,7 @@ export default function Page() {
               fontSize: "x-large",
             }}
           >
-            Currrent Project
+            Select Currrent Project
           </label>
           <br />
           <select
@@ -108,7 +108,7 @@ export default function Page() {
           </select>
         </Form>
         <Link to={Routes.AdminCreateProject}>
-          <h3>+ New Project</h3>
+          <h3>New Project</h3>
         </Link>
       </fieldset>
       <br />
@@ -128,24 +128,23 @@ export default function Page() {
           <ChannelsGrid channels={channels} />
         </details>
       ) : null}
-      <Link to={Routes.AuthorizeYoutube}>
-        <h2>+ Youtube</h2>
-      </Link>
-      <Link to={Routes.AuthorizeTikTok}>
-        <h2>+ TikTok</h2>
-      </Link>
-      <Link to={Routes.AuthorizeInstagram}>
-        <h2>+ Instagram</h2>
-      </Link>
-      <Link to={Routes.AuthorizeTwitter}>
-        <h2>+ Twitter</h2>
-      </Link>
-      <Link to={Routes.AuthorizeFacebook}>
-        <h2>+ Facebook</h2>
-      </Link>
-      <Link to={Routes.Logout}>
-        <h2>Logout</h2>
-      </Link>
+      <section className="content-grid">
+        <Link className="card" to={Routes.AuthorizeYoutube}>
+          <h2 className="card-heading">Add Youtube</h2>
+        </Link>
+        <Link className="card" to={Routes.AuthorizeTikTok}>
+          <h2 className="card-heading">Add TikTok</h2>
+        </Link>
+        <Link className="card" to={Routes.AuthorizeInstagram}>
+          <h2 className="card-heading">Add Instagram</h2>
+        </Link>
+        <Link className="card" to={Routes.AuthorizeTwitter}>
+          <h2 className="card-heading">Add Twitter</h2>
+        </Link>
+        <Link className="card" to={Routes.AuthorizeFacebook}>
+          <h2 className="card-heading">Add Facebook</h2>
+        </Link>
+      </section>
     </main>
   );
 }
@@ -178,7 +177,7 @@ function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
 function ChannelItem({ channel }: { channel: ChannelGridItem }) {
   return "href" in channel && channel.href ? (
     <Link to={channel.href}>
-      <h3>+ {channel.channelType}</h3>
+      <h3 className="card-heading">Add {channel.channelType}</h3>
     </Link>
   ) : "name" in channel ? (
     <div>

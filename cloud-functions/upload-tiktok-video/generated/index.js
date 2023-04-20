@@ -234,7 +234,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tg/Documents/vertical-shorts-app/cloud-functions/upload-tiktok-video/generated",
+      "value": "/Users/tg/Documents/GitHub/remix-blog/cloud-functions/upload-tiktok-video/generated",
       "fromEnvVar": null
     },
     "config": {

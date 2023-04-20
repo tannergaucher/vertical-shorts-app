@@ -49,44 +49,16 @@ export default function App() {
         <Links />
       </head>
       <body>
-        {/* todo match routes, only on fb login page */}
-        {/* <div id="fb-root"></div>
-        <script
-          async
-          defer
-          crossOrigin="anonymous"
-          src="https://connect.facebook.net/en_US/sdk.js"
-        ></script> */}
-        <nav>
-          <ul>
-            <li>
-              <Link to={Routes.AdminContentTitle}>
-                <h2>
-                  <em>
-                    <b>Publish</b>
-                  </em>
-                </h2>
-              </Link>
-            </li>
-            <li>
-              <Link to={Routes.Index}>
-                <h2>
-                  <em>
-                    <b>Posts</b>
-                  </em>
-                </h2>
-              </Link>
-            </li>
-            <li>
-              <Link to={Routes.Admin}>
-                <h2>
-                  <em>
-                    <b>Settings</b>
-                  </em>
-                </h2>
-              </Link>
-            </li>
-          </ul>
+        <nav
+          className="padding"
+          style={{ display: "flex", justifyContent: "space-between" }}
+        >
+          <Link to={Routes.Index}>
+            <h2>Shorts Publisher</h2>
+          </Link>
+          <Link to={Routes.Admin}>
+            <h2>Admin</h2>
+          </Link>
         </nav>
         <Outlet />
         <ScrollRestoration />

@@ -100,31 +100,14 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
+    <main className="padding">
       <h1>Draft Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
       <fieldset disabled={disabled}>
         <Form method="post" encType="multipart/form-data">
-          <label>
-            <input
-              type="file"
-              name="thumbnail"
-              required
-              style={{
-                width: "100%",
-              }}
-            />
-          </label>
+          <input type="file" name="thumbnail" required />
           <input type="hidden" name="slug" value={content.slug} />
-          <button
-            type="submit"
-            style={{
-              width: "100%",
-              marginBlockStart: "8px",
-            }}
-          >
-            Next
-          </button>
+          <button type="submit">Next</button>
         </Form>
       </fieldset>
     </main>

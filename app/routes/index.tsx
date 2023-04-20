@@ -32,7 +32,7 @@ export default function Page() {
   const { contents } = useLoaderData<LoaderData>();
 
   return (
-    <main>
+    <main className="padding">
       <ul>
         {contents?.map((content) => (
           <li key={content.slug}>

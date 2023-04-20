@@ -55,30 +55,14 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
+    <main className="padding">
       <fieldset>
-        <legend>Create a New Project</legend>
         <fieldset disabled={disabled}>
           <Form method="post">
             <label htmlFor="name">Project Name</label>
             <br />
-            <input
-              type="text"
-              id="name"
-              name="name"
-              style={{
-                width: "calc(100% - 8px)",
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                marginBlockStart: "16px",
-              }}
-            >
-              Create Project
-            </button>
+            <input type="text" id="name" name="name" />
+            <button type="submit">Create Project</button>
           </Form>
         </fieldset>
       </fieldset>

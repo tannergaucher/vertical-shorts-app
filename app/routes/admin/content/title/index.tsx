@@ -42,37 +42,18 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const transition = useTransition();
 
+  const disabled =
+    transition.state === "loading" || transition.state === "submitting";
+
   return (
-    <main>
-      <fieldset
-        disabled={
-          transition.state === "loading" || transition.state === "submitting"
-        }
-      >
-        <h2>Create a New Post</h2>
+    <main className="padding">
+      <h2>Create a New Post</h2>
+      <fieldset disabled={disabled}>
         <Form method="post">
-          <label>
-            Title
-            <br />
-            <input
-              type="text"
-              name="title"
-              required
-              style={{
-                width: `calc(100% - 8px)`,
-                marginBlockStart: `8px`,
-              }}
-            />
-          </label>
-          <button
-            type="submit"
-            style={{
-              width: `100%`,
-              marginBlockStart: `16px`,
-            }}
-          >
-            Next
-          </button>
+          <label>Title</label>
+          <br />
+          <input type="text" name="title" required />
+          <button type="submit">Next</button>
         </Form>
       </fieldset>
     </main>
