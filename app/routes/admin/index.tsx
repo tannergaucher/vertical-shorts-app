@@ -128,7 +128,7 @@ export default function Page() {
           <ChannelsGrid channels={channels} />
         </details>
       ) : null}
-      <section className="content-grid">
+      <section className="content-grid" style={{ marginBlockStart: `0` }}>
         <Link className="card" to={Routes.AuthorizeYoutube}>
           <h2 className="card-heading">Add Youtube</h2>
         </Link>
