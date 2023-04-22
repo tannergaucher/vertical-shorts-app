@@ -33,7 +33,7 @@ export default function Page() {
 
   return (
     <main className="padding">
-      {contents.length ? (
+      {contents?.length ? (
         <ul>
           {contents.map((content) => (
             <li key={content.slug}>
@@ -46,7 +46,12 @@ export default function Page() {
           ))}
         </ul>
       ) : (
-        <h2>No content yet for this project</h2>
+        <>
+          <h2>No content yet for this project</h2>
+          <Link to={Routes.AdminContentTitle}>
+            <h3>Create Post</h3>
+          </Link>
+        </>
       )}
     </main>
   );

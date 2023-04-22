@@ -80,9 +80,7 @@ export default function Page() {
             id="currentProjectId"
             name="currentProjectId"
             style={{
-              width: "100%",
-              marginBlockStart: "8px",
-              fontSize: "xx-large",
+              fontSize: "x-large",
             }}
             onChange={(event) => {
               submit(
@@ -108,7 +106,13 @@ export default function Page() {
           </select>
         </Form>
         <Link to={Routes.AdminCreateProject}>
-          <h3>New Project</h3>
+          <h3
+            style={{
+              marginBlockEnd: `var(--space-md)`,
+            }}
+          >
+            New Project
+          </h3>
         </Link>
       </fieldset>
       <br />

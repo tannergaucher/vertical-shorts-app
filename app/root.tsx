@@ -25,6 +25,7 @@ export const links: LinksFunction = () => {
     {
       rel: "stylesheet",
       href: styles,
+      type: "text/css",
     },
   ];
 };
