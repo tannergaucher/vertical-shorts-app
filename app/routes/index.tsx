@@ -33,17 +33,21 @@ export default function Page() {
 
   return (
     <main className="padding">
-      <ul>
-        {contents?.map((content) => (
-          <li key={content.slug}>
-            <Link to={Routes.AdminContentPreview(content.slug)}>{`${
-              content.published
-                ? `${content.title}`
-                : `Draft - ${content.title}`
-            }`}</Link>
-          </li>
-        ))}
-      </ul>
+      {contents.length ? (
+        <ul>
+          {contents.map((content) => (
+            <li key={content.slug}>
+              <Link to={Routes.AdminContentPreview(content.slug)}>{`${
+                content.published
+                  ? `${content.title}`
+                  : `Draft - ${content.title}`
+              }`}</Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <h2>No content yet for this project</h2>
+      )}
     </main>
   );
 }

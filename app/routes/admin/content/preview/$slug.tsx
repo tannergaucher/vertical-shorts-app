@@ -38,10 +38,8 @@ export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
   return (
-    <main>
+    <main className="padding">
       <h1>{content.title}</h1>
     </main>
   );
 }
-
-
