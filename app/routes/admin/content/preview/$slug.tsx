@@ -38,8 +38,22 @@ export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
   return (
-    <main className="padding">
+    <main>
       <h1>{content.title}</h1>
+      <video
+        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.mp4`}
+        controls
+        style={{
+          width: `500px`,
+        }}
+      ></video>
+      <img
+        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.jpg`}
+        alt="content thumbnail"
+        style={{
+          width: `500px`,
+        }}
+      />
     </main>
   );
 }
