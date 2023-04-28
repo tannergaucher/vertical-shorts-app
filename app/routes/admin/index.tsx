@@ -117,7 +117,7 @@ export default function Page() {
       </fieldset>
       <br />
       {channels?.length ? (
-        <details>
+        <details open>
           <summary
             style={{
               fontSize: "xx-large",
@@ -184,13 +184,15 @@ function ChannelItem({ channel }: { channel: ChannelGridItem }) {
       <h3 className="card-heading">Add {channel.channelType}</h3>
     </Link>
   ) : "name" in channel ? (
-    <div>
-      <h3>{channel.channelType}</h3>
-      <h4>{channel.name}</h4>
-      <ul>
-        <li>{`${channel.views} views`}</li>
-        <li>{`${channel.subscribers} subscribers`}</li>
-      </ul>
+    <div className="card">
+      <h3 className="card-heading">{channel.channelType}</h3>
+      <h4 className="card-text">{channel.name}</h4>
+      <section className="padding">
+        <ul>
+          <li>{`${channel.views} views`}</li>
+          <li>{`${channel.subscribers} subscribers`}</li>
+        </ul>
+      </section>
     </div>
   ) : null;
 }
