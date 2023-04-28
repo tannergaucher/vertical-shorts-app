@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, useNavigate } from "@remix-run/react";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
@@ -43,6 +43,8 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function App() {
+  const navigate = useNavigate();
+
   return (
     <html lang="en">
       <head>
@@ -67,6 +69,18 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <button
+          style={{
+            position: "fixed",
+            bottom: 0,
+            right: `var(--space-md)`,
+          }}
+          onClick={() => {
+            navigate(Routes.AdminContentTitle);
+          }}
+        >
+          Publish
+        </button>
       </body>
     </html>
   );
