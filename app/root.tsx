@@ -55,13 +55,15 @@ export default function App() {
           style={{ display: "flex", justifyContent: "space-between" }}
         >
           <Link to={Routes.Index}>
-            <h2>Shorts Publisher</h2>
+            <h3>Shorts Publisher</h3>
           </Link>
           <Link to={Routes.Admin}>
-            <h2>Admin</h2>
+            <h3>Admin</h3>
           </Link>
         </nav>
-        <Outlet />
+        <div className="container">
+          <Outlet />
+        </div>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
