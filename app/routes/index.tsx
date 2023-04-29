@@ -34,17 +34,20 @@ export default function Page() {
   return (
     <main className="padding">
       {contents?.length ? (
-        <ul>
+        <section className="content-grid">
           {contents.map((content) => (
-            <li key={content.slug}>
-              <Link to={Routes.AdminContentPreview(content.slug)}>{`${
+            <div key={content.slug} className="card">
+              <Link
+                to={Routes.AdminContentPreview(content.slug)}
+                className="card-heading"
+              >{`${
                 content.published
                   ? `${content.title}`
                   : `Draft - ${content.title}`
               }`}</Link>
-            </li>
+            </div>
           ))}
-        </ul>
+        </section>
       ) : (
         <>
           <h2>No content yet for this project</h2>
