@@ -59,21 +59,33 @@ export default function App() {
             top: 0,
             display: "flex",
             justifyContent: "space-between",
-            backgroundColor: `var(--bg-1)`,
+            backgroundColor: `var(--bg-2)`,
+            borderBottom: `var(--thickness) solid var(--text-color)`,
+            boxShadow: `var(--elevation-3)`,
           }}
         >
           <Link to={Routes.Index}>
-            <h3>Shorts Publisher</h3>
+            <h3
+              style={{
+                marginBlockEnd: `var(--space-sm)`,
+              }}
+            >
+              Shorts Publisher
+            </h3>
           </Link>
           <section
             style={{
               display: `grid`,
               gridTemplateColumns: `1fr 1fr`,
-              alignItems: `baseline`,
-              marginBlockStart: `var(--space-sm)`,
+              alignItems: `center`,
+              // marginBlockStart: `var(--space-sm)`,
             }}
           >
             <button
+              style={{
+                textTransform: `initial`,
+                marginBlockEnd: `0`,
+              }}
               onClick={() => {
                 navigate(Routes.Admin);
               }}
@@ -82,6 +94,10 @@ export default function App() {
             </button>
             <button
               className="primary"
+              style={{
+                textTransform: `initial`,
+                marginBlockEnd: `0`,
+              }}
               onClick={() => {
                 navigate(Routes.AdminContentTitle);
               }}
