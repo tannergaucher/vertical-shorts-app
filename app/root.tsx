@@ -54,14 +54,41 @@ export default function App() {
       <body>
         <nav
           className="padding"
-          style={{ display: "flex", justifyContent: "space-between" }}
+          style={{
+            position: "sticky",
+            top: 0,
+            display: "flex",
+            justifyContent: "space-between",
+            backgroundColor: `var(--bg-1)`,
+          }}
         >
           <Link to={Routes.Index}>
             <h3>Shorts Publisher</h3>
           </Link>
-          <Link to={Routes.Admin}>
-            <h3>Admin</h3>
-          </Link>
+          <section
+            style={{
+              display: `grid`,
+              gridTemplateColumns: `1fr 1fr`,
+              alignItems: `baseline`,
+              marginBlockStart: `var(--space-sm)`,
+            }}
+          >
+            <button
+              onClick={() => {
+                navigate(Routes.Admin);
+              }}
+            >
+              Admin
+            </button>
+            <button
+              className="primary"
+              onClick={() => {
+                navigate(Routes.AdminContentTitle);
+              }}
+            >
+              Create
+            </button>
+          </section>
         </nav>
         <div className="container">
           <Outlet />
@@ -69,18 +96,6 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        <button
-          style={{
-            position: "fixed",
-            bottom: 0,
-            right: `var(--space-md)`,
-          }}
-          onClick={() => {
-            navigate(Routes.AdminContentTitle);
-          }}
-        >
-          Publish
-        </button>
       </body>
     </html>
   );
