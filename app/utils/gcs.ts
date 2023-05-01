@@ -1,21 +1,21 @@
 export function getGcsImageSrc({
-  bucket,
-  file,
+  projectId,
+  contentSlug,
 }: {
-  bucket: string;
-  file: string;
+  projectId: string;
+  contentSlug: string;
 }) {
-  return `https://storage.googleapis.com/${bucket}/${file}`;
+  return `https://storage.googleapis.com/${projectId}/${contentSlug}`;
 }
 
 export function getGcsVideoSrc({
-  bucket,
-  file,
+  projectId,
+  contentSlug,
 }: {
-  bucket: string;
-  file: string;
+  projectId: string;
+  contentSlug: string;
 }) {
-  return `https://storage.googleapis.com/${bucket}/${file}`;
+  return `https://storage.googleapis.com/${projectId}/${contentSlug}`;
 }
 
 export function createYoutubeVideoFilename({ file }: { file: string }) {
