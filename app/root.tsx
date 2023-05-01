@@ -78,7 +78,6 @@ export default function App() {
               display: `grid`,
               gridTemplateColumns: `1fr 1fr`,
               alignItems: `center`,
-              // marginBlockStart: `var(--space-sm)`,
             }}
           >
             <button
@@ -108,10 +107,10 @@ export default function App() {
         </nav>
         <div className="container">
           <Outlet />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
         </div>
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
       </body>
     </html>
   );
