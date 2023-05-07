@@ -64,7 +64,7 @@ export default function Page() {
   if (!user) return null;
 
   return (
-    <main className="padding">
+    <main className="padding" style={{ marginBlockStart: `var(--space-lg)` }}>
       <fieldset>
         <Form method="post">
           <label
