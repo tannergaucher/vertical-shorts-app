@@ -39,9 +39,6 @@ export const action: ActionFunction = async ({ request }) => {
   const slug = formData.get("slug");
   const projectId = formData.get("projectId");
 
-  console.log("slug", slug);
-  console.log("projectId", projectId);
-
   invariant(typeof slug === "string", "slug is required");
   invariant(typeof projectId === "string", "projectId is required");
 
