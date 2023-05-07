@@ -67,14 +67,7 @@ export default function Page() {
     <main className="padding" style={{ marginBlockStart: `var(--space-lg)` }}>
       <fieldset>
         <Form method="post">
-          <label
-            htmlFor="currentProjectId"
-            style={{
-              fontSize: "x-large",
-            }}
-          >
-            Select Currrent Project
-          </label>
+          <label htmlFor="currentProjectId">Select Currrent Project</label>
           <br />
           <select
             id="currentProjectId"
