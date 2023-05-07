@@ -13,7 +13,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect(Routes.Login);
   }
 
-  return {};
+  return null;
 };
 
 export const action: ActionFunction = async ({ request }) => {

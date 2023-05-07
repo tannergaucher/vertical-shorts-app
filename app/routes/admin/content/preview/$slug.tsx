@@ -1,9 +1,9 @@
 import invariant from "tiny-invariant";
-import type { LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useTransition, Form } from "@remix-run/react";
 
-import { getContent } from "~/models/content.server";
+import { getContent, deleteContent } from "~/models/content.server";
 import { getUser } from "~/session.server";
 import { Routes } from "~/routes";
 
@@ -34,8 +34,32 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   });
 };
 
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const slug = formData.get("slug");
+  const projectId = formData.get("projectId");
+
+  console.log("slug", slug);
+  console.log("projectId", projectId);
+
+  invariant(typeof slug === "string", "slug is required");
+  invariant(typeof projectId === "string", "projectId is required");
+
+  await deleteContent({
+    slug,
+    projectId,
+  });
+
+  return redirect(Routes.Index);
+};
+
 export default function Page() {
   const { content } = useLoaderData<LoaderData>();
+
+  const transition = useTransition();
+
+  const disabled =
+    transition.state === "loading" || transition.state === "submitting";
 
   return (
     <main>
@@ -54,6 +78,14 @@ export default function Page() {
           width: `500px`,
         }}
       />
+
+      <fieldset disabled={disabled}>
+        <Form method="post">
+          <input type="hidden" name="slug" value={content.slug} />
+          <input type="hidden" name="projectId" value={content.projectId} />
+          <button type="submit">Delete This Post</button>
+        </Form>
+      </fieldset>
     </main>
   );
 }

@@ -65,3 +65,19 @@ export async function upsertContent(content: UpsertContentParams) {
     },
   });
 }
+
+export async function deleteContent(params: {
+  slug: string;
+  projectId: string;
+}) {
+  const { slug, projectId } = params;
+
+  return prisma.content.delete({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+  });
+}
