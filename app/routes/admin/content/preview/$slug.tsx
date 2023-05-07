@@ -75,7 +75,6 @@ export default function Page() {
           width: `500px`,
         }}
       />
-
       <fieldset disabled={disabled}>
         <Form method="post">
           <input type="hidden" name="slug" value={content.slug} />
