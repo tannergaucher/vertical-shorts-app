@@ -1,11 +1,21 @@
 import { Form, useTransition } from "@remix-run/react";
-import type { LoaderFunction, ActionFunction } from "@remix-run/node";
+import type {
+  LoaderFunction,
+  ActionFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import { Routes } from "~/routes";
 import { prisma } from "~/db.server";
 import { getUser } from "~/session.server";
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Create Project",
+  };
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
