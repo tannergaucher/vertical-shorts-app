@@ -98,80 +98,78 @@ export default function Page() {
 
   return (
     <div>
-      <div>
-        <fieldset disabled={disabled}>
-          <Form method="post">
-            <div>
-              <label htmlFor="email">Email address</label>
-              <div className="mt-1">
-                <input
-                  ref={emailRef}
-                  id="email"
-                  required
-                  autoFocus={true}
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  aria-invalid={actionData?.errors?.email ? true : undefined}
-                  aria-describedby="email-error"
-                  style={{
-                    width: `calc(100% - 8px)`,
-                    marginBlockStart: "8px",
-                  }}
-                />
-                {actionData?.errors?.email && (
-                  <div>{actionData.errors.email}</div>
-                )}
-              </div>
+      <fieldset disabled={disabled}>
+        <Form method="post">
+          <div>
+            <label htmlFor="email">Email address</label>
+            <div className="mt-1">
+              <input
+                ref={emailRef}
+                id="email"
+                required
+                autoFocus={true}
+                name="email"
+                type="email"
+                autoComplete="email"
+                aria-invalid={actionData?.errors?.email ? true : undefined}
+                aria-describedby="email-error"
+                style={{
+                  width: `calc(100% - 8px)`,
+                  marginBlockStart: "8px",
+                }}
+              />
+              {actionData?.errors?.email && (
+                <div>{actionData.errors.email}</div>
+              )}
             </div>
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
             <div>
-              <label htmlFor="password">Password</label>
-              <div>
-                <input
-                  id="password"
-                  ref={passwordRef}
-                  name="password"
-                  type="password"
-                  autoComplete="new-password"
-                  aria-invalid={actionData?.errors?.password ? true : undefined}
-                  aria-describedby="password-error"
-                  style={{
-                    width: `calc(100% - 8px)`,
-                    marginBlockStart: "8px",
-                  }}
-                />
-                {actionData?.errors?.password && (
-                  <div>{actionData.errors.password}</div>
-                )}
-              </div>
+              <input
+                id="password"
+                ref={passwordRef}
+                name="password"
+                type="password"
+                autoComplete="new-password"
+                aria-invalid={actionData?.errors?.password ? true : undefined}
+                aria-describedby="password-error"
+                style={{
+                  width: `calc(100% - 8px)`,
+                  marginBlockStart: "8px",
+                }}
+              />
+              {actionData?.errors?.password && (
+                <div>{actionData.errors.password}</div>
+              )}
             </div>
-            <input type="hidden" name="redirectTo" value={redirectTo} />
-            <button
-              type="submit"
-              style={{
-                width: `100%`,
-                marginBlockStart: "16px",
-                marginBlockEnd: "16px",
-              }}
-            >
-              Create Account
-            </button>
+          </div>
+          <input type="hidden" name="redirectTo" value={redirectTo} />
+          <button
+            type="submit"
+            style={{
+              width: `100%`,
+              marginBlockStart: "16px",
+              marginBlockEnd: "16px",
+            }}
+          >
+            Create Account
+          </button>
+          <div>
             <div>
-              <div>
-                Already have an account?{" "}
-                <Link
-                  to={{
-                    pathname: "/login",
-                    search: searchParams.toString(),
-                  }}
-                >
-                  Log in
-                </Link>
-              </div>
+              Already have an account?{" "}
+              <Link
+                to={{
+                  pathname: "/login",
+                  search: searchParams.toString(),
+                }}
+              >
+                Log in
+              </Link>
             </div>
-          </Form>
-        </fieldset>
-      </div>
+          </div>
+        </Form>
+      </fieldset>
     </div>
   );
 }
