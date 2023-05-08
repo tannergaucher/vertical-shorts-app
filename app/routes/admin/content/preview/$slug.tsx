@@ -1,11 +1,21 @@
 import invariant from "tiny-invariant";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useTransition, Form } from "@remix-run/react";
 
 import { getContent, deleteContent } from "~/models/content.server";
 import { getUser } from "~/session.server";
 import { Routes } from "~/routes";
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Create Post - Preview",
+  };
+};
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
