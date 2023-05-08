@@ -1,10 +1,20 @@
 import { Form, useTransition } from "@remix-run/react";
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import invariant from "tiny-invariant";
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Create Post - Title",
+  };
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
