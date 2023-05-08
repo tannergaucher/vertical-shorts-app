@@ -1,4 +1,8 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   json,
   redirect,
@@ -22,6 +26,12 @@ type LoaderData = {
 interface Video {
   filepath: string;
 }
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Create Post - Video",
+  };
+};
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const slug = params.slug;
