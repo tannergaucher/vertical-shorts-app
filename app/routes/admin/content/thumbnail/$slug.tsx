@@ -1,4 +1,8 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import {
   json,
   redirect,
@@ -24,6 +28,12 @@ interface Thubmnail {
   filepath: string;
   name: string;
 }
+
+export const meta: MetaFunction = () => {
+  return {
+    title: "Create Post - Thumbnail",
+  };
+};
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const slug = params.slug;
