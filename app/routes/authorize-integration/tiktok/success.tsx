@@ -49,7 +49,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   );
 
-  return json(response);
+  return json(response.json());
 };
 
 export default function Page() {
