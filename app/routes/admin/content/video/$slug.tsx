@@ -99,7 +99,7 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  pubsub.topic("upload-youtube-short").publishMessage({
+  pubsub.topic("handle-gcs-video-upload").publishMessage({
     json: {
       slug,
       projectId: user.currentProjectId,

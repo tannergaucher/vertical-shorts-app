@@ -80,13 +80,9 @@ export async function uploadTikTokVideo(cloudEvent: any) {
       id: user.currentProjectId,
     },
     select: {
-      youtubeCredentials: true,
+      tikTokCredentials: true,
     },
   });
-
-  if (!currentProject?.youtubeCredentials) {
-    throw new Error("NO_YOUTUBE_CREDENTIALS");
-  }
 
   const videoFilePath = `${content.slug}.mp4`;
 
@@ -97,21 +93,51 @@ export async function uploadTikTokVideo(cloudEvent: any) {
       .createReadStream()
       .pipe(fs.createWriteStream(videoFilePath))
       .on("finish", async () => {
-        const OPEN_ID = "";
-        const ACCESS_TOKEN = "";
-
         const res = await fetch(
-          `https://open-api.tiktok.com/share/video/upload?open_id=${OPEN_ID}&access_token=${ACCESS_TOKEN}`,
+          `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
           {
             method: "POST",
+            headers: {
+              Authorization: `Bearer ${currentProject?.tikTokCredentials?.accessToken}`,
+            },
             body: JSON.stringify({
-              video: videoFilePath,
+              source: videoFilePath,
+              total_chunk_count: 1,
             }),
           }
         );
 
-        const data = await res.json();
-        console.log(data, "__data__");
+        if (res.ok) {
+          const data = await res.json();
+          // using put reeust, upload video to tiktok
+          await fetch(data.data.upload_url, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "video/mp4",
+            },
+            body: JSON.stringify({
+              data: videoFilePath,
+            }),
+          });
+
+          // check video status
+
+          const statusRes = await fetch(
+            `https://open.tiktokapis.com/v2/post/publish/status/fetch/`,
+            {
+              headers: {
+                Authorization: `Bearer ${currentProject?.tikTokCredentials?.accessToken}`,
+              },
+              body: JSON.stringify({
+                publish_id: data.data.publish_id,
+              }),
+            }
+          );
+
+          const statusData = await statusRes.json();
+
+          console.log(statusData, "statusData");
+        }
       });
   } catch (error) {
     console.log(error);

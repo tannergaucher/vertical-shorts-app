@@ -31,7 +31,7 @@ export const loader = async ({ request }: LoaderArgs) => {
     process.env.YOUTUBE_CLIENT_SECRET,
     process.env.YOUTUBE_REDIRECT_URI
   );
-  
+
   const { tokens } = await oauth2Client.getToken(authorizationCode);
 
   oauth2Client.setCredentials(tokens);
@@ -107,50 +107,7 @@ export const loader = async ({ request }: LoaderArgs) => {
         },
       },
     });
-
-    return null;
   }
 
-  // handle refresh token
-  oauth2Client.on("tokens", async (tokens) => {
-    if (tokens.refresh_token && user.currentProjectId) {
-      await prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          projects: {
-            update: {
-              where: {
-                id: user.currentProjectId,
-              },
-              data: {
-                youtubeCredentials: {
-                  upsert: {
-                    create: {
-                      accessToken: tokens.access_token,
-                      refreshToken: tokens.refresh_token,
-                      userId: user.id,
-                    },
-                    update: {
-                      accessToken: tokens.access_token,
-                      refreshToken: tokens.refresh_token,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      });
-    }
-  });
+  return redirect(Routes.Admin);
 };
-
-export default function Page() {
-  return (
-    <main>
-      <h1>Success!</h1>
-    </main>
-  );
-}
