@@ -7,13 +7,6 @@ import { getUser } from "~/session.server";
 import { prisma } from "~/db.server";
 import { Routes } from "~/routes";
 
-/* 
-In the loader function
-1. Get the code from the query params
-2. Fetch the access token from TikTok using the authorization code: https://open-api.tiktok.com/oauth/access_token/
-3. Store the access token and associated values in the database
-*/
-
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
 
