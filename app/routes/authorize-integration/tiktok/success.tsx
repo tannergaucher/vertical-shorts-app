@@ -42,44 +42,74 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   );
 
-  const data = await response.json();
+  if (response.ok) {
+    const data = await response.json();
 
-  console.log(data, "_data");
+    const channelResponse = await fetch(
+      `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
+      {
+        headers: {
+          Authorization: `Bearer ${data.data.access_token}`,
+        },
+      }
+    );
 
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      projects: {
-        update: {
-          where: {
-            id: user.currentProjectId,
-          },
-          data: {
-            tikTokCredentials: {
-              upsert: {
-                create: {
-                  accessToken: data.data.access_token,
-                  refreshToken: data.data.refresh_token,
-                  refreshTokenExpiresIn: data.data.refresh_expires_in,
-                  scope: data.data.scope,
-                  openId: data.data.open_id,
+    const channelResponseData = await channelResponse.json();
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        projects: {
+          update: {
+            where: {
+              id: user.currentProjectId,
+            },
+            data: {
+              tikTokCredentials: {
+                upsert: {
+                  create: {
+                    accessToken: data.data.access_token,
+                    refreshToken: data.data.refresh_token,
+                    refreshTokenExpiresIn: data.data.refresh_expires_in,
+                    scope: data.data.scope,
+                    openId: data.data.open_id,
+                  },
+                  update: {
+                    accessToken: data.data.access_token,
+                    refreshToken: data.data.refresh_token,
+                    refreshTokenExpiresIn: data.data.refresh_expires_in,
+                    scope: data.data.scope,
+                    openId: data.data.open_id,
+                  },
                 },
-                update: {
-                  accessToken: data.data.access_token,
-                  refreshToken: data.data.refresh_token,
-                  refreshTokenExpiresIn: data.data.refresh_expires_in,
-                  scope: data.data.scope,
-                  openId: data.data.open_id,
+              },
+              channels: {
+                upsert: {
+                  where: {
+                    projectId_channelType: {
+                      projectId: user.currentProjectId,
+                      channelType: "TIKTOK",
+                    },
+                  },
+                  create: {
+                    channelType: "TIKTOK",
+                    name: channelResponseData.data.user.display_name,
+                    subscribers: channelResponseData.data.user.follower_count,
+                  },
+                  update: {
+                    name: channelResponseData.data.user.display_name,
+                    subscribers: channelResponseData.data.user.follower_count,
+                  },
                 },
               },
             },
           },
         },
       },
-    },
-  });
+    });
+  }
 
   return redirect(Routes.Admin);
 };
