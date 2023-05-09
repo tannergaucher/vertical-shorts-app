@@ -135,7 +135,7 @@ model Channel {
   channelType ChannelType
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  projectId   String      @unique
+  projectId   String
   project     Project     @relation(fields: [projectId], references: [id])
 
   @@unique([projectId, channelType])

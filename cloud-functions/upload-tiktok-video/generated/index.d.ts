@@ -11345,7 +11345,6 @@ export namespace Prisma {
   }
 
   export type ChannelWhereUniqueInput = {
-    projectId?: string
     projectId_channelType?: ChannelProjectIdChannelTypeCompoundUniqueInput
   }
 
