@@ -56,6 +56,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     const channelResponseData = await channelResponse.json();
 
+    console.log(channelResponseData, "channelResponseData");
+
     await prisma.user.update({
       where: {
         id: user.id,
