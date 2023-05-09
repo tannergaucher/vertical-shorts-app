@@ -57,8 +57,6 @@ export async function handleGcsVideoUpload(cloudEvent: any) {
   if (content?.project.youtubeCredentials) {
     console.log("_publishing to youtube");
 
-    // publism message to upload-youtube-short topic
-
     pubsub.topic("upload-youtube-short").publishMessage({
       json: {
         slug,
