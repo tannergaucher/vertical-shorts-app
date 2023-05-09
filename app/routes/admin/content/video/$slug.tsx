@@ -99,19 +99,16 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  // pubsub.topic("handle-gcs-video-upload").publishMessage({
-  //   json: {
-  //     slug,
-  //     projectId: user.currentProjectId,
-  //   },
-  // });
-
-  pubsub.topic("upload-tiktok-video").publishMessage({
-    json: {
-      slug,
-      projectId: user.currentProjectId,
-    },
-  });
+  Promise.all(
+    ["upload-tiktok-video", "upload-youtube-short"].map((topic) =>
+      pubsub.topic(topic).publishMessage({
+        json: {
+          slug,
+          projectId: user.currentProjectId,
+        },
+      })
+    )
+  );
 
   return redirect(Routes.AdminContentPreview(slug));
 };
