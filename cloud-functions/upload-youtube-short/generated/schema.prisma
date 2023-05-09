@@ -60,15 +60,16 @@ model InstagramCredentials {
 }
 
 model TikTokCredentials {
-  id          String   @id @default(cuid())
-  clientKey   String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  accessToken String
-  openId      String
-  username    String
-  projectId   String   @unique
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id                    String   @id @default(cuid())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  accessToken           String
+  refreshToken          String
+  refreshTokenExpiresIn Int
+  scope                 String
+  openId                String
+  projectId             String   @unique
+  project               Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model FacebookCredentials {

@@ -65,12 +65,13 @@ export type InstagramCredentials = {
  */
 export type TikTokCredentials = {
   id: string
-  clientKey: string
   createdAt: Date
   updatedAt: Date
   accessToken: string
+  refreshToken: string
+  refreshTokenExpiresIn: number
+  scope: string
   openId: string
-  username: string
   projectId: string
 }
 
@@ -4875,75 +4876,99 @@ export namespace Prisma {
 
   export type AggregateTikTokCredentials = {
     _count: TikTokCredentialsCountAggregateOutputType | null
+    _avg: TikTokCredentialsAvgAggregateOutputType | null
+    _sum: TikTokCredentialsSumAggregateOutputType | null
     _min: TikTokCredentialsMinAggregateOutputType | null
     _max: TikTokCredentialsMaxAggregateOutputType | null
   }
 
+  export type TikTokCredentialsAvgAggregateOutputType = {
+    refreshTokenExpiresIn: number | null
+  }
+
+  export type TikTokCredentialsSumAggregateOutputType = {
+    refreshTokenExpiresIn: number | null
+  }
+
   export type TikTokCredentialsMinAggregateOutputType = {
     id: string | null
-    clientKey: string | null
     createdAt: Date | null
     updatedAt: Date | null
     accessToken: string | null
+    refreshToken: string | null
+    refreshTokenExpiresIn: number | null
+    scope: string | null
     openId: string | null
-    username: string | null
     projectId: string | null
   }
 
   export type TikTokCredentialsMaxAggregateOutputType = {
     id: string | null
-    clientKey: string | null
     createdAt: Date | null
     updatedAt: Date | null
     accessToken: string | null
+    refreshToken: string | null
+    refreshTokenExpiresIn: number | null
+    scope: string | null
     openId: string | null
-    username: string | null
     projectId: string | null
   }
 
   export type TikTokCredentialsCountAggregateOutputType = {
     id: number
-    clientKey: number
     createdAt: number
     updatedAt: number
     accessToken: number
+    refreshToken: number
+    refreshTokenExpiresIn: number
+    scope: number
     openId: number
-    username: number
     projectId: number
     _all: number
   }
 
 
+  export type TikTokCredentialsAvgAggregateInputType = {
+    refreshTokenExpiresIn?: true
+  }
+
+  export type TikTokCredentialsSumAggregateInputType = {
+    refreshTokenExpiresIn?: true
+  }
+
   export type TikTokCredentialsMinAggregateInputType = {
     id?: true
-    clientKey?: true
     createdAt?: true
     updatedAt?: true
     accessToken?: true
+    refreshToken?: true
+    refreshTokenExpiresIn?: true
+    scope?: true
     openId?: true
-    username?: true
     projectId?: true
   }
 
   export type TikTokCredentialsMaxAggregateInputType = {
     id?: true
-    clientKey?: true
     createdAt?: true
     updatedAt?: true
     accessToken?: true
+    refreshToken?: true
+    refreshTokenExpiresIn?: true
+    scope?: true
     openId?: true
-    username?: true
     projectId?: true
   }
 
   export type TikTokCredentialsCountAggregateInputType = {
     id?: true
-    clientKey?: true
     createdAt?: true
     updatedAt?: true
     accessToken?: true
+    refreshToken?: true
+    refreshTokenExpiresIn?: true
+    scope?: true
     openId?: true
-    username?: true
     projectId?: true
     _all?: true
   }
@@ -4986,6 +5011,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: TikTokCredentialsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TikTokCredentialsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: TikTokCredentialsMinAggregateInputType
@@ -5016,6 +5053,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: TikTokCredentialsCountAggregateInputType | true
+    _avg?: TikTokCredentialsAvgAggregateInputType
+    _sum?: TikTokCredentialsSumAggregateInputType
     _min?: TikTokCredentialsMinAggregateInputType
     _max?: TikTokCredentialsMaxAggregateInputType
   }
@@ -5023,14 +5062,17 @@ export namespace Prisma {
 
   export type TikTokCredentialsGroupByOutputType = {
     id: string
-    clientKey: string
     createdAt: Date
     updatedAt: Date
     accessToken: string
+    refreshToken: string
+    refreshTokenExpiresIn: number
+    scope: string
     openId: string
-    username: string
     projectId: string
     _count: TikTokCredentialsCountAggregateOutputType | null
+    _avg: TikTokCredentialsAvgAggregateOutputType | null
+    _sum: TikTokCredentialsSumAggregateOutputType | null
     _min: TikTokCredentialsMinAggregateOutputType | null
     _max: TikTokCredentialsMaxAggregateOutputType | null
   }
@@ -5051,12 +5093,13 @@ export namespace Prisma {
 
   export type TikTokCredentialsSelect = {
     id?: boolean
-    clientKey?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     accessToken?: boolean
+    refreshToken?: boolean
+    refreshTokenExpiresIn?: boolean
+    scope?: boolean
     openId?: boolean
-    username?: boolean
     projectId?: boolean
     project?: boolean | ProjectArgs
   }
@@ -10735,12 +10778,13 @@ export namespace Prisma {
 
   export const TikTokCredentialsScalarFieldEnum: {
     id: 'id',
-    clientKey: 'clientKey',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     accessToken: 'accessToken',
+    refreshToken: 'refreshToken',
+    refreshTokenExpiresIn: 'refreshTokenExpiresIn',
+    scope: 'scope',
     openId: 'openId',
-    username: 'username',
     projectId: 'projectId'
   };
 
@@ -11000,24 +11044,26 @@ export namespace Prisma {
     OR?: Enumerable<TikTokCredentialsWhereInput>
     NOT?: Enumerable<TikTokCredentialsWhereInput>
     id?: StringFilter | string
-    clientKey?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     accessToken?: StringFilter | string
+    refreshToken?: StringFilter | string
+    refreshTokenExpiresIn?: IntFilter | number
+    scope?: StringFilter | string
     openId?: StringFilter | string
-    username?: StringFilter | string
     projectId?: StringFilter | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
   export type TikTokCredentialsOrderByWithRelationInput = {
     id?: SortOrder
-    clientKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     accessToken?: SortOrder
+    refreshToken?: SortOrder
+    refreshTokenExpiresIn?: SortOrder
+    scope?: SortOrder
     openId?: SortOrder
-    username?: SortOrder
     projectId?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
@@ -11029,16 +11075,19 @@ export namespace Prisma {
 
   export type TikTokCredentialsOrderByWithAggregationInput = {
     id?: SortOrder
-    clientKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     accessToken?: SortOrder
+    refreshToken?: SortOrder
+    refreshTokenExpiresIn?: SortOrder
+    scope?: SortOrder
     openId?: SortOrder
-    username?: SortOrder
     projectId?: SortOrder
     _count?: TikTokCredentialsCountOrderByAggregateInput
+    _avg?: TikTokCredentialsAvgOrderByAggregateInput
     _max?: TikTokCredentialsMaxOrderByAggregateInput
     _min?: TikTokCredentialsMinOrderByAggregateInput
+    _sum?: TikTokCredentialsSumOrderByAggregateInput
   }
 
   export type TikTokCredentialsScalarWhereWithAggregatesInput = {
@@ -11046,12 +11095,13 @@ export namespace Prisma {
     OR?: Enumerable<TikTokCredentialsScalarWhereWithAggregatesInput>
     NOT?: Enumerable<TikTokCredentialsScalarWhereWithAggregatesInput>
     id?: StringWithAggregatesFilter | string
-    clientKey?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     accessToken?: StringWithAggregatesFilter | string
+    refreshToken?: StringWithAggregatesFilter | string
+    refreshTokenExpiresIn?: IntWithAggregatesFilter | number
+    scope?: StringWithAggregatesFilter | string
     openId?: StringWithAggregatesFilter | string
-    username?: StringWithAggregatesFilter | string
     projectId?: StringWithAggregatesFilter | string
   }
 
@@ -11567,77 +11617,84 @@ export namespace Prisma {
 
   export type TikTokCredentialsCreateInput = {
     id?: string
-    clientKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
     accessToken: string
+    refreshToken: string
+    refreshTokenExpiresIn: number
+    scope: string
     openId: string
-    username: string
     project: ProjectCreateNestedOneWithoutTikTokCredentialsInput
   }
 
   export type TikTokCredentialsUncheckedCreateInput = {
     id?: string
-    clientKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
     accessToken: string
+    refreshToken: string
+    refreshTokenExpiresIn: number
+    scope: string
     openId: string
-    username: string
     projectId: string
   }
 
   export type TikTokCredentialsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
+    scope?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutTikTokCredentialsNestedInput
   }
 
   export type TikTokCredentialsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
+    scope?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type TikTokCredentialsCreateManyInput = {
     id?: string
-    clientKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
     accessToken: string
+    refreshToken: string
+    refreshTokenExpiresIn: number
+    scope: string
     openId: string
-    username: string
     projectId: string
   }
 
   export type TikTokCredentialsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
+    scope?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
   }
 
   export type TikTokCredentialsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
+    scope?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -12199,37 +12256,75 @@ export namespace Prisma {
     projectId?: SortOrder
   }
 
+  export type IntFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntFilter | number
+  }
+
   export type TikTokCredentialsCountOrderByAggregateInput = {
     id?: SortOrder
-    clientKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     accessToken?: SortOrder
+    refreshToken?: SortOrder
+    refreshTokenExpiresIn?: SortOrder
+    scope?: SortOrder
     openId?: SortOrder
-    username?: SortOrder
     projectId?: SortOrder
+  }
+
+  export type TikTokCredentialsAvgOrderByAggregateInput = {
+    refreshTokenExpiresIn?: SortOrder
   }
 
   export type TikTokCredentialsMaxOrderByAggregateInput = {
     id?: SortOrder
-    clientKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     accessToken?: SortOrder
+    refreshToken?: SortOrder
+    refreshTokenExpiresIn?: SortOrder
+    scope?: SortOrder
     openId?: SortOrder
-    username?: SortOrder
     projectId?: SortOrder
   }
 
   export type TikTokCredentialsMinOrderByAggregateInput = {
     id?: SortOrder
-    clientKey?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     accessToken?: SortOrder
+    refreshToken?: SortOrder
+    refreshTokenExpiresIn?: SortOrder
+    scope?: SortOrder
     openId?: SortOrder
-    username?: SortOrder
     projectId?: SortOrder
+  }
+
+  export type TikTokCredentialsSumOrderByAggregateInput = {
+    refreshTokenExpiresIn?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntWithAggregatesFilter | number
+    _count?: NestedIntFilter
+    _avg?: NestedFloatFilter
+    _sum?: NestedIntFilter
+    _min?: NestedIntFilter
+    _max?: NestedIntFilter
   }
 
   export type FacebookCredentialsCountOrderByAggregateInput = {
@@ -12652,6 +12747,14 @@ export namespace Prisma {
     create?: XOR<ProjectCreateWithoutTikTokCredentialsInput, ProjectUncheckedCreateWithoutTikTokCredentialsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutTikTokCredentialsInput
     connect?: ProjectWhereUniqueInput
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
   }
 
   export type ProjectUpdateOneRequiredWithoutTikTokCredentialsNestedInput = {
@@ -13112,6 +13215,33 @@ export namespace Prisma {
     _count?: NestedIntFilter
     _min?: NestedDateTimeFilter
     _max?: NestedDateTimeFilter
+  }
+
+  export type NestedIntWithAggregatesFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntWithAggregatesFilter | number
+    _count?: NestedIntFilter
+    _avg?: NestedFloatFilter
+    _sum?: NestedIntFilter
+    _min?: NestedIntFilter
+    _max?: NestedIntFilter
+  }
+
+  export type NestedFloatFilter = {
+    equals?: number
+    in?: Enumerable<number>
+    notIn?: Enumerable<number>
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedFloatFilter | number
   }
 
   export type NestedBoolNullableFilter = {
@@ -13860,22 +13990,24 @@ export namespace Prisma {
 
   export type TikTokCredentialsCreateWithoutProjectInput = {
     id?: string
-    clientKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
     accessToken: string
+    refreshToken: string
+    refreshTokenExpiresIn: number
+    scope: string
     openId: string
-    username: string
   }
 
   export type TikTokCredentialsUncheckedCreateWithoutProjectInput = {
     id?: string
-    clientKey: string
     createdAt?: Date | string
     updatedAt?: Date | string
     accessToken: string
+    refreshToken: string
+    refreshTokenExpiresIn: number
+    scope: string
     openId: string
-    username: string
   }
 
   export type TikTokCredentialsCreateOrConnectWithoutProjectInput = {
@@ -14055,22 +14187,24 @@ export namespace Prisma {
 
   export type TikTokCredentialsUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
+    scope?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
   }
 
   export type TikTokCredentialsUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
-    clientKey?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    refreshToken?: StringFieldUpdateOperationsInput | string
+    refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
+    scope?: StringFieldUpdateOperationsInput | string
     openId?: StringFieldUpdateOperationsInput | string
-    username?: StringFieldUpdateOperationsInput | string
   }
 
   export type FacebookCredentialsUpsertWithoutProjectInput = {

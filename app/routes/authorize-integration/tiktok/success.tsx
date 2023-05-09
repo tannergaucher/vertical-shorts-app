@@ -1,11 +1,11 @@
 import type { LoaderFunction } from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import { fetch } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import { getUser } from "~/session.server";
+import { prisma } from "~/db.server";
 import { Routes } from "~/routes";
-import { useLoaderData } from "@remix-run/react";
 
 /* 
 In the loader function
@@ -51,17 +51,40 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const data = await response.json();
 
-  return json(data);
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      projects: {
+        update: {
+          where: {
+            id: user.currentProjectId,
+          },
+          data: {
+            tikTokCredentials: {
+              upsert: {
+                create: {
+                  accessToken: data.access_token,
+                  refreshToken: data.refresh_token,
+                  refreshTokenExpiresIn: data.refresh_expires_in,
+                  scope: data.scope,
+                  openId: data.open_id,
+                },
+                update: {
+                  accessToken: data.access_token,
+                  refreshToken: data.refresh_token,
+                  refreshTokenExpiresIn: data.refresh_expires_in,
+                  scope: data.scope,
+                  openId: data.open_id,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  return redirect(Routes.Admin);
 };
-
-export default function Page() {
-  const data = useLoaderData();
-
-  console.log(data);
-
-  return (
-    <>
-      <h1>Success!</h1>
-    </>
-  );
-}

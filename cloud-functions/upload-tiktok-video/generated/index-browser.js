@@ -153,12 +153,13 @@ exports.Prisma.SortOrder = makeEnum({
 
 exports.Prisma.TikTokCredentialsScalarFieldEnum = makeEnum({
   id: 'id',
-  clientKey: 'clientKey',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   accessToken: 'accessToken',
+  refreshToken: 'refreshToken',
+  refreshTokenExpiresIn: 'refreshTokenExpiresIn',
+  scope: 'scope',
   openId: 'openId',
-  username: 'username',
   projectId: 'projectId'
 });
 
