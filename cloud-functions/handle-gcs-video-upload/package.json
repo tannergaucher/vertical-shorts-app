@@ -1,5 +1,5 @@
 {
-  "name": "process-content-video",
+  "name": "handle-gcs-video-upload",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

@@ -24,6 +24,8 @@ functions.cloudEvent<HandleGcsVideoUpload>(
 );
 
 export async function handleGcsVideoUpload(cloudEvent: any) {
+  console.log("_here");
+
   const parsedData = JSON.parse(
     Buffer.from(cloudEvent.data, "base64").toString("utf8")
   ) as HandleGcsVideoUpload;
@@ -50,8 +52,14 @@ export async function handleGcsVideoUpload(cloudEvent: any) {
     },
   });
 
+  console.log("_content", content);
+
   if (content?.project.youtubeCredentials) {
-    await pubsub.topic("upload-youtube-short").publishMessage({
+    console.log("_publishing to youtube");
+
+    // publism message to upload-youtube-short topic
+
+    pubsub.topic("upload-youtube-short").publishMessage({
       json: {
         slug,
         projectId,
@@ -60,7 +68,9 @@ export async function handleGcsVideoUpload(cloudEvent: any) {
   }
 
   if (content?.project.tikTokCredentials) {
-    await pubsub.topic("upload-tiktok-video").publishMessage({
+    console.log("_publishing to tiktok");
+
+    pubsub.topic("upload-tiktok-video").publishMessage({
       json: {
         slug,
         projectId,

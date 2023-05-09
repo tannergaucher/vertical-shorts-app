@@ -60,6 +60,7 @@ function handleGcsVideoUpload(cloudEvent) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    console.log("_here");
                     parsedData = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8"));
                     slug = parsedData.slug, projectId = parsedData.projectId;
                     return [4 /*yield*/, prisma.content.findUnique({
@@ -83,28 +84,17 @@ function handleGcsVideoUpload(cloudEvent) {
                         })];
                 case 1:
                     content = _a.sent();
-                    if (!(content === null || content === void 0 ? void 0 : content.project.youtubeCredentials)) return [3 /*break*/, 3];
-                    return [4 /*yield*/, exports.pubsub.topic("upload-youtube-short").publishMessage({
-                            json: {
-                                slug: slug,
-                                projectId: projectId
-                            }
-                        })];
-                case 2:
-                    _a.sent();
-                    _a.label = 3;
-                case 3:
-                    if (!(content === null || content === void 0 ? void 0 : content.project.tikTokCredentials)) return [3 /*break*/, 5];
-                    return [4 /*yield*/, exports.pubsub.topic("upload-tiktok-video").publishMessage({
-                            json: {
-                                slug: slug,
-                                projectId: projectId
-                            }
-                        })];
-                case 4:
-                    _a.sent();
-                    _a.label = 5;
-                case 5: return [2 /*return*/];
+                    console.log("_content", content);
+                    if (content === null || content === void 0 ? void 0 : content.project.youtubeCredentials) {
+                        console.log("_publishing to youtube");
+                        return [2 /*return*/, exports.pubsub.topic("upload-youtube-short").publishMessage({
+                                json: {
+                                    slug: slug,
+                                    projectId: projectId
+                                }
+                            })];
+                    }
+                    return [2 /*return*/];
             }
         });
     });

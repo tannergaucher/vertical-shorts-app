@@ -57,7 +57,6 @@ functions.cloudEvent("upload-youtube-short", function (cloudEvent) { return __aw
 function uploadYoutubeShort(cloudEvent) {
     return __awaiter(this, void 0, void 0, function () {
         var parsedData, slug, projectId, content, user, oauth2Client, currentProject, videoFilePath;
-        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -112,30 +111,6 @@ function uploadYoutubeShort(cloudEvent) {
                         throw new Error("NO_CURRENT_PROJECT");
                     }
                     oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
-                    oauth2Client.on("tokens", function (tokens) { return __awaiter(_this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    if (!(tokens.refresh_token && user.currentProjectId)) return [3 /*break*/, 2];
-                                    return [4 /*yield*/, prisma.project.update({
-                                            where: {
-                                                id: user.currentProjectId
-                                            },
-                                            data: {
-                                                youtubeCredentials: {
-                                                    update: {
-                                                        refreshToken: tokens.refresh_token
-                                                    }
-                                                }
-                                            }
-                                        })];
-                                case 1:
-                                    _a.sent();
-                                    _a.label = 2;
-                                case 2: return [2 /*return*/];
-                            }
-                        });
-                    }); });
                     return [4 /*yield*/, prisma.project.findUnique({
                             where: {
                                 id: user.currentProjectId
@@ -146,7 +121,6 @@ function uploadYoutubeShort(cloudEvent) {
                         })];
                 case 3:
                     currentProject = _a.sent();
-                    console.log(currentProject, "CURRENT PROJECT");
                     if (!(currentProject === null || currentProject === void 0 ? void 0 : currentProject.youtubeCredentials)) {
                         throw new Error("NO_YOUTUBE_CREDENTIALS");
                     }
@@ -190,7 +164,7 @@ function uploadYoutubeShort(cloudEvent) {
                     }
                     catch (error) {
                         console.log(error);
-                        throw new Error("ERROR_UPLOADING_YOUTUBE");
+                        throw new Error("ERROR_INSERTING_YOUTUBE_VIDEO");
                     }
                     return [2 /*return*/];
             }
