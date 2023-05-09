@@ -49,7 +49,9 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   );
 
-  return json(response.json());
+  const data = await response.json();
+
+  return json(data);
 };
 
 export default function Page() {
