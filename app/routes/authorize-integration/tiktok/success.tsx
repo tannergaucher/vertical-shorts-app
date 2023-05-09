@@ -60,18 +60,18 @@ export const loader: LoaderFunction = async ({ request }) => {
             tikTokCredentials: {
               upsert: {
                 create: {
-                  accessToken: data.access_token,
-                  refreshToken: data.refresh_token,
-                  refreshTokenExpiresIn: data.refresh_expires_in,
-                  scope: data.scope,
-                  openId: data.open_id,
+                  accessToken: data.data.access_token,
+                  refreshToken: data.data.refresh_token,
+                  refreshTokenExpiresIn: data.data.refresh_expires_in,
+                  scope: data.data.scope,
+                  openId: data.data.open_id,
                 },
                 update: {
-                  accessToken: data.access_token,
-                  refreshToken: data.refresh_token,
-                  refreshTokenExpiresIn: data.refresh_expires_in,
-                  scope: data.scope,
-                  openId: data.open_id,
+                  accessToken: data.data.access_token,
+                  refreshToken: data.data.refresh_token,
+                  refreshTokenExpiresIn: data.data.refresh_expires_in,
+                  scope: data.data.scope,
+                  openId: data.data.open_id,
                 },
               },
             },
