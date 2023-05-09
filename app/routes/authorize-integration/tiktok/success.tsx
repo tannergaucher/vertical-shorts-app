@@ -44,6 +44,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const data = await response.json();
 
+  console.log(data, "_data");
+
   await prisma.user.update({
     where: {
       id: user.id,
