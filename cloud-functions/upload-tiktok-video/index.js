@@ -121,70 +121,78 @@ function uploadTikTokVideo(cloudEvent) {
                 case 3:
                     currentProject = _a.sent();
                     videoFilePath = "".concat(content.slug, ".mp4");
-                    try {
-                        storage
-                            .bucket(user.currentProjectId)
-                            .file(videoFilePath)
-                            .createReadStream()
-                            .pipe(fs.createWriteStream(videoFilePath))
-                            .on("finish", function () { return __awaiter(_this, void 0, void 0, function () {
-                            var res, data, statusRes, statusData;
-                            var _a, _b;
-                            return __generator(this, function (_c) {
-                                switch (_c.label) {
-                                    case 0: return [4 /*yield*/, fetch("https://open.tiktokapis.com/v2/post/publish/inbox/video/init/", {
+                    storage
+                        .bucket(user.currentProjectId)
+                        .file(videoFilePath)
+                        .createReadStream()
+                        .pipe(fs.createWriteStream(videoFilePath))
+                        .on("finish", function () { return __awaiter(_this, void 0, void 0, function () {
+                        var videoStats, res, data, statusRes, statusData, error_1;
+                        var _a, _b;
+                        return __generator(this, function (_c) {
+                            switch (_c.label) {
+                                case 0:
+                                    videoStats = fs.statSync(videoFilePath);
+                                    _c.label = 1;
+                                case 1:
+                                    _c.trys.push([1, 7, , 8]);
+                                    return [4 /*yield*/, fetch("https://open.tiktokapis.com/v2/post/publish/inbox/video/init/", {
                                             method: "POST",
                                             headers: {
                                                 Authorization: "Bearer ".concat((_a = currentProject === null || currentProject === void 0 ? void 0 : currentProject.tikTokCredentials) === null || _a === void 0 ? void 0 : _a.accessToken)
                                             },
                                             body: JSON.stringify({
-                                                source: videoFilePath,
+                                                source_info: "FILE_UPLOAD",
+                                                video_size: videoStats.size,
+                                                chunk_size: videoStats.size,
                                                 total_chunk_count: 1
                                             })
                                         })];
-                                    case 1:
-                                        res = _c.sent();
-                                        if (!res.ok) return [3 /*break*/, 6];
-                                        return [4 /*yield*/, res.json()];
-                                    case 2:
-                                        data = _c.sent();
-                                        // using put reeust, upload video to tiktok
-                                        return [4 /*yield*/, fetch(data.data.upload_url, {
-                                                method: "PUT",
-                                                headers: {
-                                                    "Content-Type": "video/mp4"
-                                                },
-                                                body: JSON.stringify({
-                                                    data: videoFilePath
-                                                })
-                                            })];
-                                    case 3:
-                                        // using put reeust, upload video to tiktok
-                                        _c.sent();
-                                        return [4 /*yield*/, fetch("https://open.tiktokapis.com/v2/post/publish/status/fetch/", {
-                                                headers: {
-                                                    Authorization: "Bearer ".concat((_b = currentProject === null || currentProject === void 0 ? void 0 : currentProject.tikTokCredentials) === null || _b === void 0 ? void 0 : _b.accessToken)
-                                                },
-                                                body: JSON.stringify({
-                                                    publish_id: data.data.publish_id
-                                                })
-                                            })];
-                                    case 4:
-                                        statusRes = _c.sent();
-                                        return [4 /*yield*/, statusRes.json()];
-                                    case 5:
-                                        statusData = _c.sent();
-                                        console.log(statusData, "statusData");
-                                        _c.label = 6;
-                                    case 6: return [2 /*return*/];
-                                }
-                            });
-                        }); });
-                    }
-                    catch (error) {
-                        console.log(error);
-                        throw new Error("ERROR_INSERTING_YOUTUBE_VIDEO");
-                    }
+                                case 2:
+                                    res = _c.sent();
+                                    console.log(res, "_res");
+                                    return [4 /*yield*/, res.json()];
+                                case 3:
+                                    data = _c.sent();
+                                    console.log(data, "_data");
+                                    // using put reeust, upload video to tiktok
+                                    return [4 /*yield*/, fetch(data.data.upload_url, {
+                                            method: "PUT",
+                                            headers: {
+                                                "Content-Type": "video/mp4",
+                                                "Content-Length": videoStats.size.toString(),
+                                                "Content-Range": "bytes 0-".concat(videoStats.size - 1, "/").concat(videoStats.size)
+                                            },
+                                            body: JSON.stringify({
+                                                data: videoFilePath
+                                            })
+                                        })];
+                                case 4:
+                                    // using put reeust, upload video to tiktok
+                                    _c.sent();
+                                    return [4 /*yield*/, fetch("https://open.tiktokapis.com/v2/post/publish/status/fetch/", {
+                                            headers: {
+                                                Authorization: "Bearer ".concat((_b = currentProject === null || currentProject === void 0 ? void 0 : currentProject.tikTokCredentials) === null || _b === void 0 ? void 0 : _b.accessToken)
+                                            },
+                                            body: JSON.stringify({
+                                                publish_id: data.data.publish_id
+                                            })
+                                        })];
+                                case 5:
+                                    statusRes = _c.sent();
+                                    return [4 /*yield*/, statusRes.json()];
+                                case 6:
+                                    statusData = _c.sent();
+                                    console.log(statusData, "_statusData");
+                                    return [3 /*break*/, 8];
+                                case 7:
+                                    error_1 = _c.sent();
+                                    console.log(error_1, "_error");
+                                    return [3 /*break*/, 8];
+                                case 8: return [2 /*return*/];
+                            }
+                        });
+                    }); });
                     return [2 /*return*/];
             }
         });

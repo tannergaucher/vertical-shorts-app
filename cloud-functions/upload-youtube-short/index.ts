@@ -5,11 +5,7 @@ import { Storage } from "@google-cloud/storage";
 import { google } from "googleapis";
 
 import { PrismaClient } from "./generated";
-
-export type UploadVideoEvent = {
-  slug: string;
-  projectId: string;
-};
+import type { UploadVideoEvent } from "../types";
 
 const prisma = new PrismaClient();
 

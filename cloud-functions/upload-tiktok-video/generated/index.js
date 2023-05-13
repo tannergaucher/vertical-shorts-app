@@ -229,7 +229,7 @@ exports.Prisma.dmmf = JSON.parse(dmmfString)
  */
 const config = {
   "generator": {
-    "name": "cloudTiktokClient",
+    "name": "cloudTiktokUploadClient",
     "provider": {
       "fromEnvVar": null,
       "value": "prisma-client-js"

@@ -3,15 +3,11 @@ import * as fs from "fs";
 import { Storage } from "@google-cloud/storage";
 
 import { PrismaClient } from "./generated";
+import type { UploadVideoEvent } from "../types";
 
 const prisma = new PrismaClient();
 
 const storage = new Storage();
-
-export type UploadVideoEvent = {
-  slug: string;
-  projectId: string;
-};
 
 functions.cloudEvent("upload-tiktok-video", async (cloudEvent) => {
   await uploadTikTokVideo(cloudEvent);
@@ -86,13 +82,16 @@ export async function uploadTikTokVideo(cloudEvent: any) {
 
   const videoFilePath = `${content.slug}.mp4`;
 
-  try {
-    storage
-      .bucket(user.currentProjectId)
-      .file(videoFilePath)
-      .createReadStream()
-      .pipe(fs.createWriteStream(videoFilePath))
-      .on("finish", async () => {
+  storage
+    .bucket(user.currentProjectId)
+    .file(videoFilePath)
+    .createReadStream()
+    .pipe(fs.createWriteStream(videoFilePath))
+    .on("finish", async () => {
+      const videoStats = fs.statSync(videoFilePath);
+
+      try {
+        // get uploadUrl
         const res = await fetch(
           `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
           {
@@ -101,47 +100,34 @@ export async function uploadTikTokVideo(cloudEvent: any) {
               Authorization: `Bearer ${currentProject?.tikTokCredentials?.accessToken}`,
             },
             body: JSON.stringify({
-              source: videoFilePath,
+              source_info: "FILE_UPLOAD",
+              video_size: videoStats.size,
+              chunk_size: videoStats.size,
               total_chunk_count: 1,
             }),
           }
         );
 
-        if (res.ok) {
-          const data = await res.json();
-          // using put reeust, upload video to tiktok
-          await fetch(data.data.upload_url, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "video/mp4",
-            },
-            body: JSON.stringify({
-              data: videoFilePath,
-            }),
-          });
+        const { data } = await res.json();
 
-          // check video status
-
-          const statusRes = await fetch(
-            `https://open.tiktokapis.com/v2/post/publish/status/fetch/`,
-            {
-              headers: {
-                Authorization: `Bearer ${currentProject?.tikTokCredentials?.accessToken}`,
-              },
-              body: JSON.stringify({
-                publish_id: data.data.publish_id,
-              }),
-            }
-          );
-
-          const statusData = await statusRes.json();
-
-          console.log(statusData, "statusData");
-        }
-      });
-  } catch (error) {
-    console.log(error);
-
-    throw new Error("ERROR_INSERTING_YOUTUBE_VIDEO");
-  }
+        await fetch(data.upload_url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "video/mp4",
+            "Content-Length": videoStats.size.toString(),
+            "Content-Range": `bytes 0-${videoStats.size - 1}/${
+              videoStats.size
+            }`,
+          },
+          body: JSON.stringify({
+            data: videoFilePath,
+          }),
+        });
+      } catch (error) {
+        console.log(error, "_error");
+        throw new Error("ERROR_UPLOADING_TIKTOK");
+      } finally {
+        fs.unlinkSync(videoFilePath);
+      }
+    });
 }
