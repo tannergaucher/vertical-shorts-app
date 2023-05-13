@@ -91,7 +91,6 @@ export async function uploadTikTokVideo(cloudEvent: any) {
       const videoStats = fs.statSync(videoFilePath);
 
       try {
-        // get uploadUrl
         const res = await fetch(
           `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
           {
