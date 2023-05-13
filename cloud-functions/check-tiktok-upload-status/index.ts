@@ -31,6 +31,7 @@ export async function checkTikTokUploadStatus(cloudEvent: any) {
     {
       headers: {
         Authorization: `Bearer ${currentProject?.tikTokCredentials?.accessToken}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         publish_id: publishId,
