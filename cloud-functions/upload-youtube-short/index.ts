@@ -138,8 +138,6 @@ export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
     .createReadStream()
     .pipe(fs.createWriteStream(videoFilePath))
     .on("finish", () => {
-      console.log("FINISHED");
-
       const bodyStream = fs.createReadStream(videoFilePath);
 
       const youtube = google.youtube({
