@@ -125,7 +125,8 @@ function uploadYoutubeShort(cloudEvent) {
                         throw new Error("NO_YOUTUBE_CREDENTIALS");
                     }
                     oauth2Client.setCredentials({
-                        access_token: currentProject.youtubeCredentials.accessToken
+                        access_token: currentProject.youtubeCredentials.accessToken,
+                        refresh_token: currentProject.youtubeCredentials.refreshToken
                     });
                     videoFilePath = "".concat(content.slug, ".mp4");
                     storage

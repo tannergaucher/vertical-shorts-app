@@ -101,6 +101,7 @@ export async function uploadYoutubeShort(cloudEvent: any) {
 
   oauth2Client.setCredentials({
     access_token: currentProject.youtubeCredentials.accessToken,
+    refresh_token: currentProject.youtubeCredentials.refreshToken,
   });
 
   const videoFilePath = `${content.slug}.mp4`;
