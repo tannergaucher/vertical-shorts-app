@@ -1,26 +1,34 @@
 import * as functions from "@google-cloud/functions-framework";
+import type { CloudEvent } from "@google-cloud/functions-framework/build/src/functions";
 import * as fs from "fs";
 import { Storage } from "@google-cloud/storage";
 
 import { PrismaClient } from "./generated";
-import type { UploadVideoEvent } from "../types";
 
 const prisma = new PrismaClient();
 
 const storage = new Storage();
 
-functions.cloudEvent("upload-tiktok-video", async (cloudEvent) => {
-  await uploadTikTokVideo(cloudEvent);
+functions.cloudEvent(
+  "upload-tiktok-video",
+  async (cloudEvent: CloudEvent<string>) => {
+    await uploadTikTokVideo(cloudEvent);
 
-  return { message: "success" };
-});
+    return { message: "success" };
+  }
+);
 
-export async function uploadTikTokVideo(cloudEvent: any) {
-  const parsedData = JSON.parse(
+export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
+  if (!cloudEvent.data) {
+    throw new Error("NO_DATA");
+  }
+
+  const { slug, projectId } = JSON.parse(
     Buffer.from(cloudEvent.data, "base64").toString("utf8")
-  ) as UploadVideoEvent;
-
-  const { slug, projectId } = parsedData;
+  ) as {
+    slug: string;
+    projectId: string;
+  };
 
   const content = await prisma.content.findUnique({
     where: {

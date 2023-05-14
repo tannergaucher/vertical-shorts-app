@@ -6,30 +6,30 @@ import { google } from "googleapis";
 
 import { PrismaClient } from "./generated";
 
-export interface UploadYoutubeShortEvent {
-  slug: string;
-  projectId: string;
-}
-
 const prisma = new PrismaClient();
 
 const storage = new Storage();
 
 functions.cloudEvent(
   "upload-youtube-short",
-  async (cloudEvent: CloudEvent<UploadYoutubeShortEvent>) => {
+  async (cloudEvent: CloudEvent<string>) => {
     await uploadYoutubeShort(cloudEvent);
 
     return { message: "success" };
   }
 );
 
-export async function uploadYoutubeShort(cloudEvent: any) {
-  const parsedData = JSON.parse(
-    Buffer.from(cloudEvent.data, "base64").toString("utf8")
-  ) as UploadYoutubeShortEvent;
+export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
+  if (!cloudEvent.data) {
+    throw new Error("NO_DATA");
+  }
 
-  const { slug, projectId } = parsedData;
+  const { slug, projectId } = JSON.parse(
+    Buffer.from(cloudEvent.data, "base64").toString("utf8")
+  ) as {
+    slug: string;
+    projectId: string;
+  };
 
   const content = await prisma.content.findUnique({
     where: {
@@ -99,13 +99,16 @@ export async function uploadYoutubeShort(cloudEvent: any) {
     throw new Error("NO_YOUTUBE_CREDENTIALS");
   }
 
+  console.log(
+    currentProject.youtubeCredentials,
+    "_currentProject.youtubeCredentials"
+  );
+
   oauth2Client.setCredentials({
     access_token: currentProject.youtubeCredentials.accessToken,
     refresh_token: currentProject.youtubeCredentials.refreshToken,
   });
 
-  // check if the access token is expired
-  // the expiry date is currentProject.youtubeCredentials.updatedAt + 1 hour
   const now = new Date();
   const expiryDate = new Date(
     currentProject.youtubeCredentials.updatedAt.getTime() + 3600000
@@ -114,7 +117,11 @@ export async function uploadYoutubeShort(cloudEvent: any) {
   const timeUntilExpiryInSeconds = timeUntilExpiry / 1000;
 
   if (timeUntilExpiryInSeconds < 60) {
+    console.log("TOKEN EXPIRED");
+
     const { credentials } = await oauth2Client.refreshAccessToken();
+
+    console.log(credentials, "_credentials");
 
     await prisma.project.update({
       where: {
@@ -144,6 +151,8 @@ export async function uploadYoutubeShort(cloudEvent: any) {
     .createReadStream()
     .pipe(fs.createWriteStream(videoFilePath))
     .on("finish", () => {
+      console.log("FINISHED");
+
       const bodyStream = fs.createReadStream(videoFilePath);
 
       const youtube = google.youtube({
@@ -170,7 +179,7 @@ export async function uploadYoutubeShort(cloudEvent: any) {
           },
         })
         .catch((error) => {
-          console.error(error);
+          console.log(error, "_error");
         })
         .finally(() => {
           fs.unlinkSync(videoFilePath);

@@ -56,12 +56,14 @@ functions.cloudEvent("upload-youtube-short", function (cloudEvent) { return __aw
 }); });
 function uploadYoutubeShort(cloudEvent) {
     return __awaiter(this, void 0, void 0, function () {
-        var parsedData, slug, projectId, content, user, oauth2Client, currentProject, now, expiryDate, timeUntilExpiry, timeUntilExpiryInSeconds, credentials, videoFilePath;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var _a, slug, projectId, content, user, oauth2Client, currentProject, now, expiryDate, timeUntilExpiry, timeUntilExpiryInSeconds, credentials, videoFilePath;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    parsedData = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8"));
-                    slug = parsedData.slug, projectId = parsedData.projectId;
+                    if (!cloudEvent.data) {
+                        throw new Error("NO_DATA");
+                    }
+                    _a = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8")), slug = _a.slug, projectId = _a.projectId;
                     return [4 /*yield*/, prisma.content.findUnique({
                             where: {
                                 projectId_slug: {
@@ -89,7 +91,7 @@ function uploadYoutubeShort(cloudEvent) {
                             }
                         })];
                 case 1:
-                    content = _a.sent();
+                    content = _b.sent();
                     if (!content) {
                         throw new Error("NO_CONTENT");
                     }
@@ -103,7 +105,7 @@ function uploadYoutubeShort(cloudEvent) {
                             }
                         })];
                 case 2:
-                    user = _a.sent();
+                    user = _b.sent();
                     if (!user) {
                         throw new Error("NO_USER");
                     }
@@ -120,10 +122,11 @@ function uploadYoutubeShort(cloudEvent) {
                             }
                         })];
                 case 3:
-                    currentProject = _a.sent();
+                    currentProject = _b.sent();
                     if (!(currentProject === null || currentProject === void 0 ? void 0 : currentProject.youtubeCredentials)) {
                         throw new Error("NO_YOUTUBE_CREDENTIALS");
                     }
+                    console.log(currentProject.youtubeCredentials, "_currentProject.youtubeCredentials");
                     oauth2Client.setCredentials({
                         access_token: currentProject.youtubeCredentials.accessToken,
                         refresh_token: currentProject.youtubeCredentials.refreshToken
@@ -133,9 +136,11 @@ function uploadYoutubeShort(cloudEvent) {
                     timeUntilExpiry = expiryDate.getTime() - now.getTime();
                     timeUntilExpiryInSeconds = timeUntilExpiry / 1000;
                     if (!(timeUntilExpiryInSeconds < 60)) return [3 /*break*/, 6];
+                    console.log("TOKEN EXPIRED");
                     return [4 /*yield*/, oauth2Client.refreshAccessToken()];
                 case 4:
-                    credentials = (_a.sent()).credentials;
+                    credentials = (_b.sent()).credentials;
+                    console.log(credentials, "_credentials");
                     return [4 /*yield*/, prisma.project.update({
                             where: {
                                 id: user.currentProjectId
@@ -150,12 +155,12 @@ function uploadYoutubeShort(cloudEvent) {
                             }
                         })];
                 case 5:
-                    _a.sent();
+                    _b.sent();
                     oauth2Client.setCredentials({
                         access_token: credentials.access_token,
                         refresh_token: credentials.refresh_token
                     });
-                    _a.label = 6;
+                    _b.label = 6;
                 case 6:
                     videoFilePath = "".concat(content.slug, ".mp4");
                     storage
@@ -164,6 +169,7 @@ function uploadYoutubeShort(cloudEvent) {
                         .createReadStream()
                         .pipe(fs.createWriteStream(videoFilePath))
                         .on("finish", function () {
+                        console.log("FINISHED");
                         var bodyStream = fs.createReadStream(videoFilePath);
                         var youtube = googleapis_1.google.youtube({
                             version: "v3",
@@ -187,7 +193,7 @@ function uploadYoutubeShort(cloudEvent) {
                                 body: bodyStream
                             }
                         })["catch"](function (error) {
-                            console.error(error);
+                            console.log(error, "_error");
                         })["finally"](function () {
                             fs.unlinkSync(videoFilePath);
                         });
