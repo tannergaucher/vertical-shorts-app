@@ -56,7 +56,7 @@ functions.cloudEvent("upload-youtube-short", function (cloudEvent) { return __aw
 }); });
 function uploadYoutubeShort(cloudEvent) {
     return __awaiter(this, void 0, void 0, function () {
-        var parsedData, slug, projectId, content, user, oauth2Client, currentProject, videoFilePath;
+        var parsedData, slug, projectId, content, user, oauth2Client, currentProject, now, expiryDate, timeUntilExpiry, timeUntilExpiryInSeconds, credentials, videoFilePath;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -128,6 +128,35 @@ function uploadYoutubeShort(cloudEvent) {
                         access_token: currentProject.youtubeCredentials.accessToken,
                         refresh_token: currentProject.youtubeCredentials.refreshToken
                     });
+                    now = new Date();
+                    expiryDate = new Date(currentProject.youtubeCredentials.updatedAt.getTime() + 3600000);
+                    timeUntilExpiry = expiryDate.getTime() - now.getTime();
+                    timeUntilExpiryInSeconds = timeUntilExpiry / 1000;
+                    if (!(timeUntilExpiryInSeconds < 60)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, oauth2Client.refreshAccessToken()];
+                case 4:
+                    credentials = (_a.sent()).credentials;
+                    return [4 /*yield*/, prisma.project.update({
+                            where: {
+                                id: user.currentProjectId
+                            },
+                            data: {
+                                youtubeCredentials: {
+                                    update: {
+                                        accessToken: credentials.access_token,
+                                        refreshToken: credentials.refresh_token
+                                    }
+                                }
+                            }
+                        })];
+                case 5:
+                    _a.sent();
+                    oauth2Client.setCredentials({
+                        access_token: credentials.access_token,
+                        refresh_token: credentials.refresh_token
+                    });
+                    _a.label = 6;
+                case 6:
                     videoFilePath = "".concat(content.slug, ".mp4");
                     storage
                         .bucket(user.currentProjectId)

@@ -104,6 +104,38 @@ export async function uploadYoutubeShort(cloudEvent: any) {
     refresh_token: currentProject.youtubeCredentials.refreshToken,
   });
 
+  // check if the access token is expired
+  // the expiry date is currentProject.youtubeCredentials.updatedAt + 1 hour
+  const now = new Date();
+  const expiryDate = new Date(
+    currentProject.youtubeCredentials.updatedAt.getTime() + 3600000
+  );
+  const timeUntilExpiry = expiryDate.getTime() - now.getTime();
+  const timeUntilExpiryInSeconds = timeUntilExpiry / 1000;
+
+  if (timeUntilExpiryInSeconds < 60) {
+    const { credentials } = await oauth2Client.refreshAccessToken();
+
+    await prisma.project.update({
+      where: {
+        id: user.currentProjectId,
+      },
+      data: {
+        youtubeCredentials: {
+          update: {
+            accessToken: credentials.access_token,
+            refreshToken: credentials.refresh_token,
+          },
+        },
+      },
+    });
+
+    oauth2Client.setCredentials({
+      access_token: credentials.access_token,
+      refresh_token: credentials.refresh_token,
+    });
+  }
+
   const videoFilePath = `${content.slug}.mp4`;
 
   storage
