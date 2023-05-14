@@ -128,44 +128,40 @@ function uploadYoutubeShort(cloudEvent) {
                         access_token: currentProject.youtubeCredentials.accessToken
                     });
                     videoFilePath = "".concat(content.slug, ".mp4");
-                    try {
-                        storage
-                            .bucket(user.currentProjectId)
-                            .file(videoFilePath)
-                            .createReadStream()
-                            .pipe(fs.createWriteStream(videoFilePath))
-                            .on("finish", function () {
-                            var bodyStream = fs.createReadStream(videoFilePath);
-                            var youtube = googleapis_1.google.youtube({
-                                version: "v3",
-                                auth: oauth2Client
-                            });
-                            youtube.videos
-                                .insert({
-                                part: ["snippet", "status"],
-                                requestBody: {
-                                    snippet: {
-                                        title: content.title,
-                                        description: content.description,
-                                        tags: content.tags
-                                    },
-                                    status: {
-                                        privacyStatus: "private"
-                                    }
-                                },
-                                media: {
-                                    mimeType: "video/mp4",
-                                    body: bodyStream
-                                }
-                            })["finally"](function () {
-                                fs.unlinkSync(videoFilePath);
-                            });
+                    storage
+                        .bucket(user.currentProjectId)
+                        .file(videoFilePath)
+                        .createReadStream()
+                        .pipe(fs.createWriteStream(videoFilePath))
+                        .on("finish", function () {
+                        var bodyStream = fs.createReadStream(videoFilePath);
+                        var youtube = googleapis_1.google.youtube({
+                            version: "v3",
+                            auth: oauth2Client
                         });
-                    }
-                    catch (error) {
-                        console.log(error);
-                        throw new Error("ERROR_INSERTING_YOUTUBE_VIDEO");
-                    }
+                        youtube.videos
+                            .insert({
+                            part: ["snippet", "status"],
+                            requestBody: {
+                                snippet: {
+                                    title: content.title,
+                                    description: content.description,
+                                    tags: content.tags
+                                },
+                                status: {
+                                    privacyStatus: "private"
+                                }
+                            },
+                            media: {
+                                mimeType: "video/mp4",
+                                body: bodyStream
+                            }
+                        })["catch"](function (error) {
+                            console.error(error);
+                        })["finally"](function () {
+                            fs.unlinkSync(videoFilePath);
+                        });
+                    });
                     return [2 /*return*/];
             }
         });

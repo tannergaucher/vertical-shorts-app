@@ -5,7 +5,11 @@ import { Storage } from "@google-cloud/storage";
 import { google } from "googleapis";
 
 import { PrismaClient } from "./generated";
-import type { UploadVideoEvent } from "../types";
+
+export interface UploadYoutubeShortEvent {
+  slug: string;
+  projectId: string;
+}
 
 const prisma = new PrismaClient();
 
@@ -13,7 +17,7 @@ const storage = new Storage();
 
 functions.cloudEvent(
   "upload-youtube-short",
-  async (cloudEvent: CloudEvent<UploadVideoEvent>) => {
+  async (cloudEvent: CloudEvent<UploadYoutubeShortEvent>) => {
     await uploadYoutubeShort(cloudEvent);
 
     return { message: "success" };
@@ -23,7 +27,7 @@ functions.cloudEvent(
 export async function uploadYoutubeShort(cloudEvent: any) {
   const parsedData = JSON.parse(
     Buffer.from(cloudEvent.data, "base64").toString("utf8")
-  ) as UploadVideoEvent;
+  ) as UploadYoutubeShortEvent;
 
   const { slug, projectId } = parsedData;
 
