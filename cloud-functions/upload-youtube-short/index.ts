@@ -31,7 +31,7 @@ export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
     projectId: string;
   };
 
-  const content = await prisma.content.findUnique({
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
       projectId_slug: {
         projectId,
@@ -58,11 +58,7 @@ export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
     },
   });
 
-  if (!content) {
-    throw new Error("NO_CONTENT");
-  }
-
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findUniqueOrThrow({
     where: {
       id: content.project.user.id,
     },
@@ -71,10 +67,6 @@ export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
       currentProjectId: true,
     },
   });
-
-  if (!user) {
-    throw new Error("NO_USER");
-  }
 
   if (!user.currentProjectId) {
     throw new Error("NO_CURRENT_PROJECT");
@@ -86,7 +78,7 @@ export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
     process.env.YOUTUBE_REDIRECT_URL
   );
 
-  const currentProject = await prisma.project.findUnique({
+  const currentProject = await prisma.project.findUniqueOrThrow({
     where: {
       id: user.currentProjectId,
     },
@@ -95,14 +87,9 @@ export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
     },
   });
 
-  if (!currentProject?.youtubeCredentials) {
+  if (!currentProject.youtubeCredentials) {
     throw new Error("NO_YOUTUBE_CREDENTIALS");
   }
-
-  console.log(
-    currentProject.youtubeCredentials,
-    "_currentProject.youtubeCredentials"
-  );
 
   oauth2Client.setCredentials({
     access_token: currentProject.youtubeCredentials.accessToken,
