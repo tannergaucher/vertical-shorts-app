@@ -30,7 +30,7 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
     projectId: string;
   };
 
-  const content = await prisma.content.findUnique({
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
       projectId_slug: {
         projectId,
@@ -57,11 +57,7 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
     },
   });
 
-  if (!content) {
-    throw new Error("NO_CONTENT");
-  }
-
-  const user = await prisma.user.findUnique({
+  const user = await prisma.user.findUniqueOrThrow({
     where: {
       id: content.project.user.id,
     },
@@ -71,15 +67,11 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
     },
   });
 
-  if (!user) {
-    throw new Error("NO_USER");
-  }
-
   if (!user.currentProjectId) {
     throw new Error("NO_CURRENT_PROJECT");
   }
 
-  const currentProject = await prisma.project.findUnique({
+  const currentProject = await prisma.project.findUniqueOrThrow({
     where: {
       id: user.currentProjectId,
     },
@@ -104,7 +96,7 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
           {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${currentProject?.tikTokCredentials?.accessToken}`,
+              Authorization: `Bearer ${currentProject.tikTokCredentials?.accessToken}`,
             },
             body: JSON.stringify({
               source_info: "FILE_UPLOAD",
