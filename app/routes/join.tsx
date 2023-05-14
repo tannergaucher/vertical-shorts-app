@@ -97,7 +97,8 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <div>
+    <div className="padding">
+      <h1>Sign Up</h1>
       <fieldset disabled={disabled}>
         <Form method="post">
           <div>
