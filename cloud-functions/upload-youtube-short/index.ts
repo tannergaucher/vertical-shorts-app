@@ -101,45 +101,42 @@ export async function uploadYoutubeShort(cloudEvent: any) {
 
   const videoFilePath = `${content.slug}.mp4`;
 
-  try {
-    storage
-      .bucket(user.currentProjectId)
-      .file(videoFilePath)
-      .createReadStream()
-      .pipe(fs.createWriteStream(videoFilePath))
-      .on("finish", () => {
-        const bodyStream = fs.createReadStream(videoFilePath);
+  storage
+    .bucket(user.currentProjectId)
+    .file(videoFilePath)
+    .createReadStream()
+    .pipe(fs.createWriteStream(videoFilePath))
+    .on("finish", () => {
+      const bodyStream = fs.createReadStream(videoFilePath);
 
-        const youtube = google.youtube({
-          version: "v3",
-          auth: oauth2Client,
-        });
-
-        youtube.videos
-          .insert({
-            part: ["snippet", "status"],
-            requestBody: {
-              snippet: {
-                title: content.title,
-                description: content.description,
-                tags: content.tags,
-              },
-              status: {
-                privacyStatus: "private",
-              },
-            },
-            media: {
-              mimeType: "video/mp4",
-              body: bodyStream,
-            },
-          })
-          .finally(() => {
-            fs.unlinkSync(videoFilePath);
-          });
+      const youtube = google.youtube({
+        version: "v3",
+        auth: oauth2Client,
       });
-  } catch (error) {
-    console.log(error);
 
-    throw new Error("ERROR_INSERTING_YOUTUBE_VIDEO");
-  }
+      youtube.videos
+        .insert({
+          part: ["snippet", "status"],
+          requestBody: {
+            snippet: {
+              title: content.title,
+              description: content.description,
+              tags: content.tags,
+            },
+            status: {
+              privacyStatus: "private",
+            },
+          },
+          media: {
+            mimeType: "video/mp4",
+            body: bodyStream,
+          },
+        })
+        .catch((error) => {
+          console.error(error);
+        })
+        .finally(() => {
+          fs.unlinkSync(videoFilePath);
+        });
+    });
 }
