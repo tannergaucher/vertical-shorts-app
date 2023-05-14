@@ -23,7 +23,7 @@ curl -m 70 -X POST https://upload-youtube-short-yzmezs2csa-ue.a.run.app \
 -H "ce-source: //pubsub.googleapis.com/projects/homerice/topics/upload-youtube-short" \
 -d '{
   "message": {
-    "data": "ewogICAgInNsdWciOiAic29tZS1uZXciLAogICAgInByb2plY3RJZCI6ImNsaGZ6eDNpYjAwMDhtazA4aXBmMW5hYzIiCn0="
+    "data": "ewogICAgInByb2plY3RJZCI6ICJjbGhuYm4za2kwMDAyeXh0ZHl3cDRlZnl6IiwKICAgICJzbHVnIjogInNkZHNmIgp9Cg=="
   }
 }'
 
