@@ -63,6 +63,14 @@ export async function upsertContent(content: UpsertContentParams) {
     update: {
       ...content,
     },
+    include: {
+      project: {
+        include: {
+          youtubeCredentials: true,
+          tikTokCredentials: true,
+        },
+      },
+    },
   });
 }
 
