@@ -55,14 +55,18 @@ functions.cloudEvent("upload-tiktok-video", function (cloudEvent) { return __awa
 }); });
 function uploadTikTokVideo(cloudEvent) {
     return __awaiter(this, void 0, void 0, function () {
-        var parsedData, slug, projectId, content, user, currentProject, videoFilePath;
+        var _a, slug, projectId, content, user, currentProject, videoFilePath;
         var _this = this;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
-                    parsedData = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8"));
-                    slug = parsedData.slug, projectId = parsedData.projectId;
-                    return [4 /*yield*/, prisma.content.findUnique({
+                    if (!cloudEvent.data) {
+                        throw new Error("NO_DATA");
+                    }
+                    _a = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8")), slug = _a.slug, projectId = _a.projectId;
+                    console.log(slug, "_slug");
+                    console.log(projectId, "_projectId");
+                    return [4 /*yield*/, prisma.content.findUniqueOrThrow({
                             where: {
                                 projectId_slug: {
                                     projectId: projectId,
@@ -89,11 +93,9 @@ function uploadTikTokVideo(cloudEvent) {
                             }
                         })];
                 case 1:
-                    content = _a.sent();
-                    if (!content) {
-                        throw new Error("NO_CONTENT");
-                    }
-                    return [4 /*yield*/, prisma.user.findUnique({
+                    content = _b.sent();
+                    console.log(content, "_content");
+                    return [4 /*yield*/, prisma.user.findUniqueOrThrow({
                             where: {
                                 id: content.project.user.id
                             },
@@ -103,14 +105,12 @@ function uploadTikTokVideo(cloudEvent) {
                             }
                         })];
                 case 2:
-                    user = _a.sent();
-                    if (!user) {
-                        throw new Error("NO_USER");
-                    }
+                    user = _b.sent();
+                    console.log(user, "_user");
                     if (!user.currentProjectId) {
                         throw new Error("NO_CURRENT_PROJECT");
                     }
-                    return [4 /*yield*/, prisma.project.findUnique({
+                    return [4 /*yield*/, prisma.project.findUniqueOrThrow({
                             where: {
                                 id: user.currentProjectId
                             },
@@ -119,27 +119,34 @@ function uploadTikTokVideo(cloudEvent) {
                             }
                         })];
                 case 3:
-                    currentProject = _a.sent();
+                    currentProject = _b.sent();
+                    console.log(currentProject, "_currentProject");
+                    if (!currentProject.tikTokCredentials) {
+                        throw new Error("NO_CURRENT_PROJECT_TIKTOK_CREDENTIALS");
+                    }
                     videoFilePath = "".concat(content.slug, ".mp4");
+                    console.log(videoFilePath, "_videoFilePath");
                     storage
                         .bucket(user.currentProjectId)
                         .file(videoFilePath)
                         .createReadStream()
                         .pipe(fs.createWriteStream(videoFilePath))
+                        .on("error", function (err) {
+                        console.log(err, "_err");
+                        throw new Error("ERROR_DOWNLOADING_VIDEO_FROM_STORAGE");
+                    })
                         .on("finish", function () { return __awaiter(_this, void 0, void 0, function () {
-                        var videoStats, res, data, statusRes, statusData, error_1;
-                        var _a, _b;
-                        return __generator(this, function (_c) {
-                            switch (_c.label) {
+                        var videoStats, res, data;
+                        var _a;
+                        return __generator(this, function (_b) {
+                            switch (_b.label) {
                                 case 0:
+                                    console.log("finished downloading video");
                                     videoStats = fs.statSync(videoFilePath);
-                                    _c.label = 1;
-                                case 1:
-                                    _c.trys.push([1, 7, , 8]);
                                     return [4 /*yield*/, fetch("https://open.tiktokapis.com/v2/post/publish/inbox/video/init/", {
                                             method: "POST",
                                             headers: {
-                                                Authorization: "Bearer ".concat((_a = currentProject === null || currentProject === void 0 ? void 0 : currentProject.tikTokCredentials) === null || _a === void 0 ? void 0 : _a.accessToken)
+                                                Authorization: "Bearer ".concat((_a = currentProject.tikTokCredentials) === null || _a === void 0 ? void 0 : _a.accessToken)
                                             },
                                             body: JSON.stringify({
                                                 source_info: "FILE_UPLOAD",
@@ -148,15 +155,17 @@ function uploadTikTokVideo(cloudEvent) {
                                                 total_chunk_count: 1
                                             })
                                         })];
-                                case 2:
-                                    res = _c.sent();
-                                    console.log(res, "_res");
+                                case 1:
+                                    res = _b.sent();
+                                    if (!res.ok) {
+                                        console.log(res, "_res");
+                                        throw new Error("ERROR_REQUESTING_TIKTOK_UPLOAD_URL");
+                                    }
                                     return [4 /*yield*/, res.json()];
-                                case 3:
-                                    data = _c.sent();
+                                case 2:
+                                    data = (_b.sent()).data;
                                     console.log(data, "_data");
-                                    // using put reeust, upload video to tiktok
-                                    return [4 /*yield*/, fetch(data.data.upload_url, {
+                                    return [4 /*yield*/, fetch(data.upload_url, {
                                             method: "PUT",
                                             headers: {
                                                 "Content-Type": "video/mp4",
@@ -167,29 +176,9 @@ function uploadTikTokVideo(cloudEvent) {
                                                 data: videoFilePath
                                             })
                                         })];
-                                case 4:
-                                    // using put reeust, upload video to tiktok
-                                    _c.sent();
-                                    return [4 /*yield*/, fetch("https://open.tiktokapis.com/v2/post/publish/status/fetch/", {
-                                            headers: {
-                                                Authorization: "Bearer ".concat((_b = currentProject === null || currentProject === void 0 ? void 0 : currentProject.tikTokCredentials) === null || _b === void 0 ? void 0 : _b.accessToken)
-                                            },
-                                            body: JSON.stringify({
-                                                publish_id: data.data.publish_id
-                                            })
-                                        })];
-                                case 5:
-                                    statusRes = _c.sent();
-                                    return [4 /*yield*/, statusRes.json()];
-                                case 6:
-                                    statusData = _c.sent();
-                                    console.log(statusData, "_statusData");
-                                    return [3 /*break*/, 8];
-                                case 7:
-                                    error_1 = _c.sent();
-                                    console.log(error_1, "_error");
-                                    return [3 /*break*/, 8];
-                                case 8: return [2 /*return*/];
+                                case 3:
+                                    _b.sent();
+                                    return [2 /*return*/];
                             }
                         });
                     }); });

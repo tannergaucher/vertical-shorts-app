@@ -30,6 +30,9 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
     projectId: string;
   };
 
+  console.log(slug, "_slug");
+  console.log(projectId, "_projectId");
+
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       projectId_slug: {
@@ -57,6 +60,8 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
     },
   });
 
+  console.log(content, "_content");
+
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       id: content.project.user.id,
@@ -66,6 +71,8 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
       currentProjectId: true,
     },
   });
+
+  console.log(user, "_user");
 
   if (!user.currentProjectId) {
     throw new Error("NO_CURRENT_PROJECT");
@@ -80,53 +87,67 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
     },
   });
 
+  console.log(currentProject, "_currentProject");
+
+  if (!currentProject.tikTokCredentials) {
+    throw new Error("NO_CURRENT_PROJECT_TIKTOK_CREDENTIALS");
+  }
+
   const videoFilePath = `${content.slug}.mp4`;
+
+  console.log(videoFilePath, "_videoFilePath");
 
   storage
     .bucket(user.currentProjectId)
     .file(videoFilePath)
     .createReadStream()
     .pipe(fs.createWriteStream(videoFilePath))
+    .on("error", (err) => {
+      console.log(err, "_err");
+      throw new Error("ERROR_DOWNLOADING_VIDEO_FROM_STORAGE");
+    })
     .on("finish", async () => {
+      console.log("finished downloading video");
+
       const videoStats = fs.statSync(videoFilePath);
 
-      try {
-        const res = await fetch(
-          `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${currentProject.tikTokCredentials?.accessToken}`,
-            },
-            body: JSON.stringify({
-              source_info: "FILE_UPLOAD",
-              video_size: videoStats.size,
-              chunk_size: videoStats.size,
-              total_chunk_count: 1,
-            }),
-          }
-        );
-
-        const { data } = await res.json();
-
-        await fetch(data.upload_url, {
-          method: "PUT",
+      const res = await fetch(
+        `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
+        {
+          method: "POST",
           headers: {
-            "Content-Type": "video/mp4",
-            "Content-Length": videoStats.size.toString(),
-            "Content-Range": `bytes 0-${videoStats.size - 1}/${
-              videoStats.size
-            }`,
+            Authorization: `Bearer ${currentProject.tikTokCredentials?.accessToken}`,
           },
           body: JSON.stringify({
-            data: videoFilePath,
+            source_info: "FILE_UPLOAD",
+            video_size: videoStats.size,
+            chunk_size: videoStats.size,
+            total_chunk_count: 1,
           }),
-        });
-      } catch (error) {
-        console.log(error, "_error");
-        throw new Error("ERROR_UPLOADING_TIKTOK");
-      } finally {
-        fs.unlinkSync(videoFilePath);
+        }
+      );
+
+      if (!res.ok) {
+        console.log(res, "_res");
+        throw new Error("ERROR_REQUESTING_TIKTOK_UPLOAD_URL");
       }
+
+      const { data } = await res.json();
+
+      console.log(data, "_data");
+
+      await fetch(data.upload_url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "video/mp4",
+          "Content-Length": videoStats.size.toString(),
+          "Content-Range": `bytes 0-${videoStats.size - 1}/${videoStats.size}`,
+        },
+        body: JSON.stringify({
+          data: videoFilePath,
+        }),
+      });
+
+      // and finally,  return the upload Id
     });
 }
