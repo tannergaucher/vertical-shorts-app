@@ -2,12 +2,17 @@ import * as functions from "@google-cloud/functions-framework";
 import type { CloudEvent } from "@google-cloud/functions-framework/build/src/functions";
 import * as fs from "fs";
 import { Storage } from "@google-cloud/storage";
+import { PubSub } from "@google-cloud/pubsub";
 
 import { PrismaClient } from "./generated";
 
 const prisma = new PrismaClient();
 
 const storage = new Storage();
+
+export const pubsub = new PubSub({
+  servicePath: "./service-account.json",
+});
 
 functions.cloudEvent(
   "upload-tiktok-video",
@@ -116,10 +121,10 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
         {
           method: "POST",
           headers: {
-            Authorization: `Bearer ${currentProject.tikTokCredentials?.accessToken}`,
+            Authorization: `${currentProject.tikTokCredentials?.accessToken}`,
           },
           body: JSON.stringify({
-            source_info: "FILE_UPLOAD",
+            source: "FILE_UPLOAD",
             video_size: videoStats.size,
             chunk_size: videoStats.size,
             total_chunk_count: 1,
@@ -134,20 +139,26 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
 
       const { data } = await res.json();
 
+      const videoBinary = fs.readFileSync(videoFilePath);
+
       console.log(data, "_data");
 
+      // eventually support chunked uploads
       await fetch(data.upload_url, {
         method: "PUT",
         headers: {
-          "Content-Type": "video/mp4",
           "Content-Length": videoStats.size.toString(),
           "Content-Range": `bytes 0-${videoStats.size - 1}/${videoStats.size}`,
+          "Content-Type": "video/mp4",
         },
-        body: JSON.stringify({
-          data: videoFilePath,
-        }),
+        body: videoBinary,
       });
 
-      // and finally,  return the upload Id
+      pubsub.topic("check-tiktok-upload-status").publishMessage({
+        json: {
+          uploadId: data.publish_id,
+          projectId: user.currentProjectId,
+        },
+      });
     });
 }

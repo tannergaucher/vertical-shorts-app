@@ -1,45 +1,59 @@
 import * as functions from "@google-cloud/functions-framework";
+import type { CloudEvent } from "@google-cloud/functions-framework/build/src/functions";
 
 import { PrismaClient } from "./generated";
 
 const prisma = new PrismaClient();
 
-functions.cloudEvent("check-tiktok-upload-status", async (cloudEvent) => {
-  await checkTikTokUploadStatus(cloudEvent);
+functions.cloudEvent(
+  "check-tiktok-upload-status",
+  async (cloudEvent: CloudEvent<string>) => {
+    await checkTikTokUploadStatus(cloudEvent);
 
-  return { message: "success" };
-});
+    return { message: "success" };
+  }
+);
 
-export async function checkTikTokUploadStatus(cloudEvent: any) {
-  const parsedData = JSON.parse(
+export async function checkTikTokUploadStatus(cloudEvent: CloudEvent<string>) {
+  if (!cloudEvent.data) {
+    throw new Error("NO_DATA");
+  }
+
+  const { projectId, publishId } = JSON.parse(
     Buffer.from(cloudEvent.data, "base64").toString("utf8")
-  );
-
-  const { currentProjectId, publishId } = parsedData;
+  ) as {
+    projectId: string;
+    publishId: string;
+  };
 
   const currentProject = await prisma.project.findUnique({
     where: {
-      id: currentProjectId,
+      id: projectId,
     },
     select: {
       tikTokCredentials: true,
     },
   });
 
-  const statusRes = await fetch(
+  const res = await fetch(
     `https://open.tiktokapis.com/v2/post/publish/status/fetch/`,
     {
       headers: {
-        Authorization: `Bearer ${currentProject?.tikTokCredentials?.accessToken}`,
+        Authorization: `${currentProject?.tikTokCredentials?.accessToken}`,
         "Content-Type": "application/json",
       },
+      method: "POST",
       body: JSON.stringify({
         publish_id: publishId,
       }),
     }
   );
 
-  const status = await statusRes.json();
+  if (!res.ok) {
+    throw new Error("TIKTOK_UPLOAD_STATUS_CHECK_FAILED");
+  }
+
+  const status = await res.json();
 
   console.log(status, "_status");
 }

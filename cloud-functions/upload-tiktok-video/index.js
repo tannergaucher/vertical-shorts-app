@@ -146,10 +146,10 @@ function uploadTikTokVideo(cloudEvent) {
                                     return [4 /*yield*/, fetch("https://open.tiktokapis.com/v2/post/publish/inbox/video/init/", {
                                             method: "POST",
                                             headers: {
-                                                Authorization: "Bearer ".concat((_a = currentProject.tikTokCredentials) === null || _a === void 0 ? void 0 : _a.accessToken)
+                                                Authorization: "".concat((_a = currentProject.tikTokCredentials) === null || _a === void 0 ? void 0 : _a.accessToken)
                                             },
                                             body: JSON.stringify({
-                                                source_info: "FILE_UPLOAD",
+                                                source: "FILE_UPLOAD",
                                                 video_size: videoStats.size,
                                                 chunk_size: videoStats.size,
                                                 total_chunk_count: 1
