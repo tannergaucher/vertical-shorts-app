@@ -144,7 +144,7 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
       console.log(data, "_data");
 
       // eventually support chunked uploads
-      await fetch(data.upload_url, {
+      const uploadResJson = await fetch(data.upload_url, {
         method: "PUT",
         headers: {
           "Content-Length": videoStats.size.toString(),
@@ -154,9 +154,16 @@ export async function uploadTikTokVideo(cloudEvent: CloudEvent<string>) {
         body: videoBinary,
       });
 
+      console.log(uploadResJson, "_uploadResJson");
+
+      if (!uploadResJson.ok) {
+        console.log(uploadResJson, "_uploadResJson");
+        throw new Error("ERROR_UPLOADING_VIDEO_TO_TIKTOK");
+      }
+
       pubsub.topic("check-tiktok-upload-status").publishMessage({
         json: {
-          uploadId: data.publish_id,
+          publishId: data.publish_id,
           projectId: user.currentProjectId,
         },
       });
