@@ -64,7 +64,7 @@ function uploadYoutubeShort(cloudEvent) {
                         throw new Error("NO_DATA");
                     }
                     _a = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8")), slug = _a.slug, projectId = _a.projectId;
-                    return [4 /*yield*/, prisma.content.findUnique({
+                    return [4 /*yield*/, prisma.content.findUniqueOrThrow({
                             where: {
                                 projectId_slug: {
                                     projectId: projectId,
@@ -92,10 +92,7 @@ function uploadYoutubeShort(cloudEvent) {
                         })];
                 case 1:
                     content = _b.sent();
-                    if (!content) {
-                        throw new Error("NO_CONTENT");
-                    }
-                    return [4 /*yield*/, prisma.user.findUnique({
+                    return [4 /*yield*/, prisma.user.findUniqueOrThrow({
                             where: {
                                 id: content.project.user.id
                             },
@@ -106,14 +103,11 @@ function uploadYoutubeShort(cloudEvent) {
                         })];
                 case 2:
                     user = _b.sent();
-                    if (!user) {
-                        throw new Error("NO_USER");
-                    }
                     if (!user.currentProjectId) {
                         throw new Error("NO_CURRENT_PROJECT");
                     }
                     oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
-                    return [4 /*yield*/, prisma.project.findUnique({
+                    return [4 /*yield*/, prisma.project.findUniqueOrThrow({
                             where: {
                                 id: user.currentProjectId
                             },
@@ -123,10 +117,9 @@ function uploadYoutubeShort(cloudEvent) {
                         })];
                 case 3:
                     currentProject = _b.sent();
-                    if (!(currentProject === null || currentProject === void 0 ? void 0 : currentProject.youtubeCredentials)) {
+                    if (!currentProject.youtubeCredentials) {
                         throw new Error("NO_YOUTUBE_CREDENTIALS");
                     }
-                    console.log(currentProject.youtubeCredentials, "_currentProject.youtubeCredentials");
                     oauth2Client.setCredentials({
                         access_token: currentProject.youtubeCredentials.accessToken,
                         refresh_token: currentProject.youtubeCredentials.refreshToken
@@ -169,7 +162,6 @@ function uploadYoutubeShort(cloudEvent) {
                         .createReadStream()
                         .pipe(fs.createWriteStream(videoFilePath))
                         .on("finish", function () {
-                        console.log("FINISHED");
                         var bodyStream = fs.createReadStream(videoFilePath);
                         var youtube = googleapis_1.google.youtube({
                             version: "v3",
