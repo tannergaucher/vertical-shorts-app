@@ -56,25 +56,14 @@ functions.cloudEvent("upload-youtube-short", function (cloudEvent) { return __aw
 }); });
 function uploadYoutubeShort(cloudEvent) {
     return __awaiter(this, void 0, void 0, function () {
-        var data, _a, slug, projectId, content, user, oauth2Client, currentProject, now, expiryDate, timeUntilExpiry, timeUntilExpiryInSeconds, credentials, videoFilePath;
+        var _a, slug, projectId, content, user, oauth2Client, currentProject, now, expiryDate, timeUntilExpiry, timeUntilExpiryInSeconds, credentials, videoFilePath;
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    if (typeof cloudEvent.data === "string") {
-                        data = cloudEvent.data;
-                    }
-                    else if (typeof cloudEvent.data === "object" && cloudEvent.data !== null) {
-                        // Assuming the `cloudEvent.data` object has a property named 'data'
-                        data = cloudEvent.data.data;
-                    }
-                    else {
-                        // Handle the case where `cloudEvent.data` is neither a string nor an object
-                        // You can throw an error, set a default value, or handle it based on your use case
-                    }
                     if (!cloudEvent.data) {
                         throw new Error("NO_DATA");
                     }
-                    _a = JSON.parse(Buffer.from(data, "base64").toString("utf8")), slug = _a.slug, projectId = _a.projectId;
+                    _a = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8")), slug = _a.slug, projectId = _a.projectId;
                     return [4 /*yield*/, prisma.content.findUniqueOrThrow({
                             where: {
                                 projectId_slug: {
