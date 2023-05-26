@@ -10,7 +10,6 @@ import {
 import * as React from "react";
 
 import { getUserId, createUserSession } from "~/session.server";
-
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
 
@@ -103,7 +102,7 @@ export default function Page() {
         <Form method="post">
           <div>
             <label htmlFor="email">Email address</label>
-            <div className="mt-1">
+            <div>
               <input
                 ref={emailRef}
                 id="email"
@@ -114,10 +113,6 @@ export default function Page() {
                 autoComplete="email"
                 aria-invalid={actionData?.errors?.email ? true : undefined}
                 aria-describedby="email-error"
-                style={{
-                  width: `calc(100% - 8px)`,
-                  marginBlockStart: "8px",
-                }}
               />
               {actionData?.errors?.email && (
                 <div>{actionData.errors.email}</div>
@@ -135,10 +130,6 @@ export default function Page() {
                 autoComplete="new-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
-                style={{
-                  width: `calc(100% - 8px)`,
-                  marginBlockStart: "8px",
-                }}
               />
               {actionData?.errors?.password && (
                 <div>{actionData.errors.password}</div>
@@ -146,16 +137,7 @@ export default function Page() {
             </div>
           </div>
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            style={{
-              width: `100%`,
-              marginBlockStart: "16px",
-              marginBlockEnd: "16px",
-            }}
-          >
-            Create Account
-          </button>
+          <button type="submit">Create Account</button>
           <div>
             <div>
               Already have an account?{" "}
