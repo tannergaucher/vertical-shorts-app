@@ -60,7 +60,6 @@ export default function App() {
             display: "flex",
             justifyContent: "space-between",
             backgroundColor: `var(--bg-2)`,
-            borderBottom: `var(--thickness) solid var(--text-color)`,
             boxShadow: `var(--elevation-3)`,
           }}
         >
