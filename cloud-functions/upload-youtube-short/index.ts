@@ -132,42 +132,71 @@ export async function uploadYoutubeShort(cloudEvent: CloudEvent<string>) {
 
   const videoFilePath = `${content.slug}.mp4`;
 
-  storage
-    .bucket(user.currentProjectId)
-    .file(videoFilePath)
-    .createReadStream()
-    .pipe(fs.createWriteStream(videoFilePath))
-    .on("finish", () => {
-      const bodyStream = fs.createReadStream(videoFilePath);
+  try {
+    console.log("STARTING DOWNLOAD OF VIDEO");
+    storage
+      .bucket(user.currentProjectId)
+      .file(videoFilePath)
+      .createReadStream()
+      .pipe(fs.createWriteStream(videoFilePath))
+      .on("open", () => {
+        console.log("OPEN");
+      })
+      .on("close", () => {
+        console.log("CLOSE");
+      })
+      .on("error", (error) => {
+        console.log(error, "_error");
+      })
+      .on("finish", () => {
+        console.log("FINISHED");
+        const bodyStream = fs.createReadStream(videoFilePath);
 
-      const youtube = google.youtube({
-        version: "v3",
-        auth: oauth2Client,
-      });
-
-      youtube.videos
-        .insert({
-          part: ["snippet", "status"],
-          requestBody: {
-            snippet: {
-              title: content.title,
-              description: content.description,
-              tags: content.tags,
-            },
-            status: {
-              privacyStatus: "private",
-            },
-          },
-          media: {
-            mimeType: "video/mp4",
-            body: bodyStream,
-          },
-        })
-        .catch((error) => {
-          console.log(error, "_error");
-        })
-        .finally(() => {
-          fs.unlinkSync(videoFilePath);
+        const youtube = google.youtube({
+          version: "v3",
+          auth: oauth2Client,
         });
-    });
+
+        youtube.videos
+          .insert({
+            part: ["snippet", "status"],
+            requestBody: {
+              snippet: {
+                title: content.title,
+                description: content.description,
+                tags: content.tags,
+              },
+              status: {
+                privacyStatus: "private",
+              },
+            },
+            media: {
+              mimeType: "video/mp4",
+              body: bodyStream,
+            },
+          })
+          .then((response) => {
+            console.log(response, "yt_response");
+
+            // update that contents youtube status to uploaded: true, visibility: private, youtubeId: response.data.id
+            // return prisma.content.update({
+            //   where: {
+            //     projectId_slug: {
+            //       projectId,
+            //       slug,
+            //     },
+            //   },
+            //   data: {},
+            // });
+          })
+          .catch((error) => {
+            console.log(error, "_error");
+          })
+          .finally(() => {
+            fs.unlinkSync(videoFilePath);
+          });
+      });
+  } catch (error) {
+    console.log(error, "_error_uploading_video_to_youtube");
+  }
 }

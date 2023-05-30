@@ -17,7 +17,7 @@ import invariant from "tiny-invariant";
 import { getUser } from "~/session.server";
 import { getContent, upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
-import { storage, pubsub } from "~/entry.server";
+import { storage } from "~/entry.server";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -99,23 +99,27 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  if (content.project.tikTokCredentials) {
-    pubsub.topic("upload-tiktok-video").publishMessage({
-      json: {
-        slug,
-        projectId: user.currentProjectId,
-      },
-    });
+  const uploadServiceBaseUrl =
+    process.env.NODE_ENV === "production"
+      ? `https://upload-service-yzmezs2csa-ue.a.run.app`
+      : `http://localhost:8080`;
+
+  const res = await fetch(`${uploadServiceBaseUrl}/upload`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      projectId: user.currentProjectId,
+      slug,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to upload video");
   }
 
-  if (content.project.youtubeCredentials) {
-    pubsub.topic("upload-youtube-short").publishMessage({
-      json: {
-        slug,
-        projectId: user.currentProjectId,
-      },
-    });
-  }
+  console.log(res, "res");
 
   return redirect(Routes.AdminContentStatus(slug));
 };

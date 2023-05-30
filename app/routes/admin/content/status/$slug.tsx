@@ -89,7 +89,7 @@ export default function Page() {
         <Form method="post">
           <input type="hidden" name="slug" value={content.slug} />
           <input type="hidden" name="projectId" value={content.projectId} />
-          <button type="submit">Delete This Post</button>
+          <button type="submit">Delete</button>
         </Form>
       </fieldset>
     </main>

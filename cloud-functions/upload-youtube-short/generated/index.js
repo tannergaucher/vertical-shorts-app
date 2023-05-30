@@ -80,8 +80,8 @@ const regularDirname = hasDirname && fs.existsSync(path.join(__dirname, 'schema.
 
 // if the client has been bundled, we need to look for the folders
 const foundDirname = !regularDirname && findSync(process.cwd(), [
+    "../cloud-functions/upload-youtube-short/generated",
     "cloud-functions/upload-youtube-short/generated",
-    "upload-youtube-short/generated",
 ], ['d'], ['d'], 1)[0]
 
 const dirname = regularDirname || foundDirname || __dirname
@@ -259,8 +259,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../../prisma",
   "clientVersion": "4.11.0",
@@ -290,12 +289,12 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "cloud-functions/upload-youtube-short/generated/libquery_engine-darwin-arm64.dylib.node")
+path.join(process.cwd(), "../cloud-functions/upload-youtube-short/generated/libquery_engine-darwin-arm64.dylib.node")
 
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
-path.join(process.cwd(), "cloud-functions/upload-youtube-short/generated/libquery_engine-debian-openssl-3.0.x.so.node")
+path.join(process.cwd(), "../cloud-functions/upload-youtube-short/generated/libquery_engine-debian-openssl-3.0.x.so.node")
 
 path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
-path.join(process.cwd(), "cloud-functions/upload-youtube-short/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
+path.join(process.cwd(), "../cloud-functions/upload-youtube-short/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "cloud-functions/upload-youtube-short/generated/schema.prisma")
+path.join(process.cwd(), "../cloud-functions/upload-youtube-short/generated/schema.prisma")

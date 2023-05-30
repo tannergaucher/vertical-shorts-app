@@ -7,7 +7,9 @@ gcloud functions deploy upload-youtube-short \
 --runtime=nodejs18 \
 --source=./cloud-functions/upload-youtube-short \
 --entry-point=uploadYoutubeShort \
---trigger-topic=upload-youtube-short
+--trigger-topic=upload-youtube-short \
+--timeout=540s \
+--memory=2048MB
 ```
 
 ## Test Locally VIA CURL
