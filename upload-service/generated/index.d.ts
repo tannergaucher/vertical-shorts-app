@@ -106,6 +106,7 @@ export type Content = {
   slug: string
   title: string
   description: string | null
+  thumbnail: string | null
   tags: string[]
   published: boolean | null
   createdAt: Date | null
@@ -7735,6 +7736,7 @@ export namespace Prisma {
     slug: string | null
     title: string | null
     description: string | null
+    thumbnail: string | null
     published: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7745,6 +7747,7 @@ export namespace Prisma {
     slug: string | null
     title: string | null
     description: string | null
+    thumbnail: string | null
     published: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -7755,6 +7758,7 @@ export namespace Prisma {
     slug: number
     title: number
     description: number
+    thumbnail: number
     tags: number
     published: number
     createdAt: number
@@ -7768,6 +7772,7 @@ export namespace Prisma {
     slug?: true
     title?: true
     description?: true
+    thumbnail?: true
     published?: true
     createdAt?: true
     updatedAt?: true
@@ -7778,6 +7783,7 @@ export namespace Prisma {
     slug?: true
     title?: true
     description?: true
+    thumbnail?: true
     published?: true
     createdAt?: true
     updatedAt?: true
@@ -7788,6 +7794,7 @@ export namespace Prisma {
     slug?: true
     title?: true
     description?: true
+    thumbnail?: true
     tags?: true
     published?: true
     createdAt?: true
@@ -7873,6 +7880,7 @@ export namespace Prisma {
     slug: string
     title: string
     description: string | null
+    thumbnail: string | null
     tags: string[]
     published: boolean | null
     createdAt: Date | null
@@ -7901,6 +7909,7 @@ export namespace Prisma {
     slug?: boolean
     title?: boolean
     description?: boolean
+    thumbnail?: boolean
     tags?: boolean
     published?: boolean
     createdAt?: boolean
@@ -10708,6 +10717,7 @@ export namespace Prisma {
     slug: 'slug',
     title: 'title',
     description: 'description',
+    thumbnail: 'thumbnail',
     tags: 'tags',
     published: 'published',
     createdAt: 'createdAt',
@@ -11204,6 +11214,7 @@ export namespace Prisma {
     slug?: StringFilter | string
     title?: StringFilter | string
     description?: StringNullableFilter | string | null
+    thumbnail?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
     createdAt?: DateTimeNullableFilter | Date | string | null
@@ -11216,6 +11227,7 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    thumbnail?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -11232,6 +11244,7 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    thumbnail?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -11249,6 +11262,7 @@ export namespace Prisma {
     slug?: StringWithAggregatesFilter | string
     title?: StringWithAggregatesFilter | string
     description?: StringNullableWithAggregatesFilter | string | null
+    thumbnail?: StringNullableWithAggregatesFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableWithAggregatesFilter | boolean | null
     createdAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
@@ -11804,6 +11818,7 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
+    thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -11815,6 +11830,7 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
+    thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -11826,6 +11842,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11837,6 +11854,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11848,6 +11866,7 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
+    thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -11859,6 +11878,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11869,6 +11889,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12404,6 +12425,7 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    thumbnail?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
@@ -12415,6 +12437,7 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    thumbnail?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12425,6 +12448,7 @@ export namespace Prisma {
     slug?: SortOrder
     title?: SortOrder
     description?: SortOrder
+    thumbnail?: SortOrder
     published?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13885,6 +13909,7 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
+    thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -13895,6 +13920,7 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
+    thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -14096,6 +14122,7 @@ export namespace Prisma {
     slug?: StringFilter | string
     title?: StringFilter | string
     description?: StringNullableFilter | string | null
+    thumbnail?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
     createdAt?: DateTimeNullableFilter | Date | string | null
@@ -14354,6 +14381,7 @@ export namespace Prisma {
     slug: string
     title: string
     description?: string | null
+    thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     createdAt?: Date | string | null
@@ -14374,6 +14402,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14384,6 +14413,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14394,6 +14424,7 @@ export namespace Prisma {
     slug?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
+    thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

@@ -137,7 +137,7 @@ export default function Page() {
       <h1>Draft Post: {content.title}</h1>
       <img
         alt={content.title}
-        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.jpg`}
+        src={`https://storage.googleapis.com/${content.projectId}/${content.thumbnail}`}
       />
       <h2>Upload Video</h2>
       <fieldset disabled={disabled}>
@@ -145,20 +145,10 @@ export default function Page() {
           <label>
             <span>Video</span>
             <br />
-            <input
-              type="file"
-              name="video"
-              required
-              style={{ width: `100%` }}
-            />
+            <input type="file" name="video" required />
           </label>
           <input type="hidden" name="slug" value={content.slug} />
-          <button
-            type="submit"
-            style={{ width: `100%`, position: `sticky`, bottom: 0 }}
-          >
-            Next
-          </button>
+          <button type="submit">Next</button>
         </Form>
       </fieldset>
     </main>

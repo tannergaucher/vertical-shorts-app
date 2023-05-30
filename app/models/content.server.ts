@@ -44,6 +44,7 @@ interface UpsertContentParams {
   description?: string | null;
   published?: boolean | null;
   tags?: string[];
+  thumbnail?: string | null;
 }
 
 export async function upsertContent(content: UpsertContentParams) {
