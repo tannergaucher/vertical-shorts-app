@@ -5,9 +5,11 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { getContents } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
+import { prisma } from "~/db.server";
 
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
+  projectTitle: string;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -21,15 +23,29 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect(Routes.AdminCreateProject);
   }
 
+  const project = await prisma.project.findUnique({
+    where: {
+      id: user.currentProjectId,
+    },
+    select: {
+      title: true,
+    },
+  });
+
+  if (!project?.title) {
+    return redirect(Routes.AdminCreateProject);
+  }
+
   return json<LoaderData>({
     contents: await getContents({
       projectId: user.currentProjectId,
     }),
+    projectTitle: project.title,
   });
 };
 
 export default function Page() {
-  const { contents } = useLoaderData<LoaderData>();
+  const { contents, projectTitle } = useLoaderData<LoaderData>();
 
   return (
     <main className="padding">
@@ -50,7 +66,7 @@ export default function Page() {
         </section>
       ) : (
         <>
-          <h2>No content yet for this project</h2>
+          <h2>{`No content yet for project: ${projectTitle}`}</h2>
           <Link to={Routes.AdminContentTitle}>
             <h3>Create Post</h3>
           </Link>
