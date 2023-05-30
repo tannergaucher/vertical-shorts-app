@@ -1,12 +1,14 @@
 const express = require("express");
 const { Storage } = require("@google-cloud/storage");
-const app = express();
 const fs = require("fs");
 const { google } = require("googleapis");
 require("dotenv").config();
+
+const app = express();
 app.use(express.json());
 
 const { PrismaClient } = require("./generated");
+
 const prisma = new PrismaClient();
 const storage = new Storage();
 
