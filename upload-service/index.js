@@ -63,8 +63,6 @@ app.post("/upload", async (req, res) => {
 });
 
 app.post("/upload-youtube-short", async (req, res) => {
-  console.log("uploading to youtube", req.body);
-
   const { projectId, slug } = req.body;
 
   const oauth2Client = new google.auth.OAuth2(
