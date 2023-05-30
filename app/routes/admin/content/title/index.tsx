@@ -56,7 +56,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className="padding">
+    <main>
       <h2>Create a New Post</h2>
       <fieldset disabled={disabled}>
         <Form method="post">

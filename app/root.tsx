@@ -10,8 +10,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import styles from "semantic-styles/index.css";
-
+import styles from "./styles/index.css";
 import { getUser } from "./session.server";
 import { Routes } from "./routes";
 

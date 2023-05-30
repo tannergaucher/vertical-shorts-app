@@ -110,7 +110,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className="padding">
+    <main>
       <h1>Draft Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
       <fieldset disabled={disabled}>

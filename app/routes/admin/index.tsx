@@ -64,7 +64,7 @@ export default function Page() {
   if (!user) return null;
 
   return (
-    <main className="padding" style={{ marginBlockStart: `var(--space-lg)` }}>
+    <main>
       <fieldset>
         <Form method="post">
           <label htmlFor="currentProjectId">Select Currrent Project</label>
@@ -72,9 +72,6 @@ export default function Page() {
           <select
             id="currentProjectId"
             name="currentProjectId"
-            style={{
-              fontSize: "x-large",
-            }}
             onChange={(event) => {
               submit(
                 {
@@ -99,46 +96,37 @@ export default function Page() {
           </select>
         </Form>
         <Link to={Routes.AdminCreateProject}>
-          <h3
-            style={{
-              marginBlockEnd: `var(--space-md)`,
-            }}
-          >
-            New Project
-          </h3>
+          <h3>New Project</h3>
         </Link>
       </fieldset>
       <br />
-      {channels?.length ? (
-        <details open>
-          <summary
-            style={{
-              fontSize: "xx-large",
-            }}
-          >
-            {`${
-              channels.length === 1
-                ? `1 Channel`
-                : `${channels.length} Channels`
-            }`}
-          </summary>
-          <ChannelsGrid channels={channels} />
-        </details>
-      ) : null}
-      <section className="content-grid" style={{ marginBlockStart: `0` }}>
-        <Link className="card" to={Routes.AuthorizeYoutube}>
+
+      <section
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          justifyItems: "start",
+        }}
+      >
+        {channels?.map((channel) => (
+          <ChannelItem key={channel.channelType} channel={channel} />
+        ))}
+      </section>
+
+      <section>
+        <Link to={Routes.AuthorizeYoutube}>
           <h2 className="card-heading">Add Youtube</h2>
         </Link>
-        <Link className="card" to={Routes.AuthorizeTikTok}>
+        <Link to={Routes.AuthorizeTikTok}>
           <h2 className="card-heading">Add TikTok</h2>
         </Link>
-        <Link className="card" to={Routes.AuthorizeInstagram}>
+        <Link to={Routes.AuthorizeInstagram}>
           <h2 className="card-heading">Add Instagram</h2>
         </Link>
-        <Link className="card" to={Routes.AuthorizeTwitter}>
+        <Link to={Routes.AuthorizeTwitter}>
           <h2 className="card-heading">Add Twitter</h2>
         </Link>
-        <Link className="card" to={Routes.AuthorizeFacebook}>
+        <Link to={Routes.AuthorizeFacebook}>
           <h2 className="card-heading">Add Facebook</h2>
         </Link>
       </section>
@@ -153,39 +141,19 @@ type ChannelGridItem =
       href?: string;
     };
 
-function ChannelsGrid({ channels }: { channels?: ChannelGridItem[] }) {
-  return (
-    <div>
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          justifyItems: "start",
-        }}
-      >
-        {channels?.map((channel) => (
-          <ChannelItem key={channel.channelType} channel={channel} />
-        ))}
-      </section>
-    </div>
-  );
-}
-
 function ChannelItem({ channel }: { channel: ChannelGridItem }) {
   return "href" in channel && channel.href ? (
     <Link to={channel.href}>
-      <h3 className="card-heading">Add {channel.channelType}</h3>
+      <h3>Add {channel.channelType}</h3>
     </Link>
   ) : "name" in channel ? (
-    <div className="card">
-      <h3 className="card-heading">{channel.channelType}</h3>
-      <h4 className="card-text">{channel.name}</h4>
-      <section className="padding">
-        <ul>
-          <li>{`${channel.views} views`}</li>
-          <li>{`${channel.subscribers} subscribers`}</li>
-        </ul>
-      </section>
+    <div>
+      <h3>{channel.channelType}</h3>
+      <h4>{channel.name}</h4>
+      <ul>
+        <li>{`${channel.views} views`}</li>
+        <li>{`${channel.subscribers} subscribers`}</li>
+      </ul>
     </div>
   ) : null;
 }
