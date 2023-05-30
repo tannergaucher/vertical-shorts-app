@@ -48,15 +48,12 @@ export default function Page() {
   const { contents, projectTitle } = useLoaderData<LoaderData>();
 
   return (
-    <main className="padding">
+    <main>
       {contents?.length ? (
-        <section className="content-grid">
+        <section>
           {contents.map((content) => (
-            <div key={content.slug} className="card">
-              <Link
-                to={Routes.AdminContentPreview(content.slug)}
-                className="card-heading"
-              >{`${
+            <div key={content.slug}>
+              <Link to={Routes.AdminContentPreview(content.slug)}>{`${
                 content.published
                   ? `${content.title}`
                   : `Draft - ${content.title}`
