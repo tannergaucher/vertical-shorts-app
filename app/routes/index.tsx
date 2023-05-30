@@ -53,7 +53,7 @@ export default function Page() {
         <section>
           {contents.map((content) => (
             <div key={content.slug}>
-              <Link to={Routes.AdminContentPreview(content.slug)}>{`${
+              <Link to={Routes.AdminContentStatus(content.slug)}>{`${
                 content.published
                   ? `${content.title}`
                   : `Draft - ${content.title}`

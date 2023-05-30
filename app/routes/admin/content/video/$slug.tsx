@@ -117,7 +117,7 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  return redirect(Routes.AdminContentPreview(slug));
+  return redirect(Routes.AdminContentStatus(slug));
 };
 
 export default function Page() {

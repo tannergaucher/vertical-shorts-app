@@ -100,7 +100,6 @@ export default function Page() {
         </Link>
       </fieldset>
       <br />
-
       <section
         style={{
           display: "grid",
@@ -112,36 +111,35 @@ export default function Page() {
           <ChannelItem key={channel.channelType} channel={channel} />
         ))}
       </section>
-
       <section>
         <Link to={Routes.AuthorizeYoutube}>
-          <h2 className="card-heading">Add Youtube</h2>
+          <h2>Add Youtube</h2>
         </Link>
         <Link to={Routes.AuthorizeTikTok}>
-          <h2 className="card-heading">Add TikTok</h2>
+          <h2>Add TikTok</h2>
         </Link>
         <Link to={Routes.AuthorizeInstagram}>
-          <h2 className="card-heading">Add Instagram</h2>
+          <h2>Add Instagram</h2>
         </Link>
         <Link to={Routes.AuthorizeTwitter}>
-          <h2 className="card-heading">Add Twitter</h2>
+          <h2>Add Twitter</h2>
         </Link>
         <Link to={Routes.AuthorizeFacebook}>
-          <h2 className="card-heading">Add Facebook</h2>
+          <h2>Add Facebook</h2>
         </Link>
       </section>
     </main>
   );
 }
 
-type ChannelGridItem =
+type ChannelItemType =
   | Pick<Channel, "name" | "channelType" | "views" | "subscribers">
   | {
       channelType: ChannelType;
       href?: string;
     };
 
-function ChannelItem({ channel }: { channel: ChannelGridItem }) {
+function ChannelItem({ channel }: { channel: ChannelItemType }) {
   return "href" in channel && channel.href ? (
     <Link to={channel.href}>
       <h3>Add {channel.channelType}</h3>
