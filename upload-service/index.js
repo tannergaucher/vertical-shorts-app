@@ -7,7 +7,7 @@ require("dotenv").config();
 const app = express();
 app.use(express.json());
 
-const { PrismaClient } = require("./generated");
+const { PrismaClient, UploadStatus } = require("./generated");
 
 const prisma = new PrismaClient();
 const storage = new Storage();
@@ -93,7 +93,7 @@ app.post("/upload-youtube-short", async (req, res) => {
   const filePath = `${req.body.slug}.mp4`;
   const bodyStream = fs.createReadStream(filePath);
 
-  const content = await prisma.content.findUniqueOrThrow({
+  const content = await prisma.content.update({
     where: {
       projectId_slug: {
         projectId,
@@ -104,6 +104,9 @@ app.post("/upload-youtube-short", async (req, res) => {
       title: true,
       description: true,
       tags: true,
+    },
+    data: {
+      youtubeStatus: UploadStatus.UPLOADING,
     },
   });
 
@@ -125,11 +128,35 @@ app.post("/upload-youtube-short", async (req, res) => {
         body: bodyStream,
       },
     })
-    .then((response) => {
+    .then(async (response) => {
       console.log(response, "yt_response");
+
+      await prisma.content.update({
+        where: {
+          projectId_slug: {
+            projectId,
+            slug,
+          },
+        },
+        data: {
+          youtubeStatus: UploadStatus.UPLOADED,
+        },
+      });
     })
-    .catch((error) => {
-      console.log(error, "error");
+    .catch(async (error) => {
+      console.log(error, "yt_error");
+
+      await prisma.content.update({
+        where: {
+          projectId_slug: {
+            projectId,
+            slug,
+          },
+        },
+        data: {
+          youtubeStatus: UploadStatus.NOT_STARTED,
+        },
+      });
     });
 });
 

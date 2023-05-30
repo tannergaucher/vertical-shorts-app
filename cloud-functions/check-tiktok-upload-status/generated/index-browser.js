@@ -109,7 +109,12 @@ exports.Prisma.ContentScalarFieldEnum = makeEnum({
   published: 'published',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  projectId: 'projectId'
+  projectId: 'projectId',
+  youtubeStatus: 'youtubeStatus',
+  tikTokStatus: 'tikTokStatus',
+  instagramStatus: 'instagramStatus',
+  facebookStatus: 'facebookStatus',
+  twitterStatus: 'twitterStatus'
 });
 
 exports.Prisma.FacebookCredentialsScalarFieldEnum = makeEnum({
@@ -202,6 +207,13 @@ exports.ChannelType = makeEnum({
   TIKTOK: 'TIKTOK',
   FACEBOOK: 'FACEBOOK',
   TWITTER: 'TWITTER'
+});
+
+exports.UploadStatus = makeEnum({
+  NOT_STARTED: 'NOT_STARTED',
+  UPLOADING: 'UPLOADING',
+  PRIVATE: 'PRIVATE',
+  PUBLIC: 'PUBLIC'
 });
 
 exports.Prisma.ModelName = makeEnum({

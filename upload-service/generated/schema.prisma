@@ -37,6 +37,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum ChannelType {
+  YOUTUBE
+  INSTAGRAM
+  TIKTOK
+  FACEBOOK
+  TWITTER
+}
+
+enum UploadStatus {
+  NOT_STARTED
+  UPLOADING
+  PRIVATE
+  PUBLIC
+}
+
 model User {
   id               String    @id @default(cuid())
   email            String    @unique
@@ -108,16 +123,21 @@ model TwitterCredentials {
 }
 
 model Content {
-  slug        String
-  title       String
-  description String?
-  thumbnail   String?
-  tags        String[]
-  published   Boolean?  @default(false)
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
-  projectId   String
-  project     Project   @relation(fields: [projectId], references: [id])
+  slug            String
+  title           String
+  description     String?
+  thumbnail       String?
+  tags            String[]
+  published       Boolean?      @default(false)
+  createdAt       DateTime?     @default(now())
+  updatedAt       DateTime?     @updatedAt
+  projectId       String
+  project         Project       @relation(fields: [projectId], references: [id])
+  youtubeStatus   UploadStatus? @default(NOT_STARTED)
+  tikTokStatus    UploadStatus? @default(NOT_STARTED)
+  instagramStatus UploadStatus? @default(NOT_STARTED)
+  facebookStatus  UploadStatus? @default(NOT_STARTED)
+  twitterStatus   UploadStatus? @default(NOT_STARTED)
 
   @@unique([projectId, slug])
 }
@@ -136,14 +156,6 @@ model Project {
   tikTokCredentials    TikTokCredentials?
   facebookCredentials  FacebookCredentials?
   twitterCredentials   TwitterCredentials?
-}
-
-enum ChannelType {
-  YOUTUBE
-  INSTAGRAM
-  TIKTOK
-  FACEBOOK
-  TWITTER
 }
 
 model Channel {

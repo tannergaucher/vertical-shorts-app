@@ -112,6 +112,11 @@ export type Content = {
   createdAt: Date | null
   updatedAt: Date | null
   projectId: string
+  youtubeStatus: UploadStatus | null
+  tikTokStatus: UploadStatus | null
+  instagramStatus: UploadStatus | null
+  facebookStatus: UploadStatus | null
+  twitterStatus: UploadStatus | null
 }
 
 /**
@@ -158,6 +163,16 @@ export const ChannelType: {
 };
 
 export type ChannelType = (typeof ChannelType)[keyof typeof ChannelType]
+
+
+export const UploadStatus: {
+  NOT_STARTED: 'NOT_STARTED',
+  UPLOADING: 'UPLOADING',
+  PRIVATE: 'PRIVATE',
+  PUBLIC: 'PUBLIC'
+};
+
+export type UploadStatus = (typeof UploadStatus)[keyof typeof UploadStatus]
 
 
 /**
@@ -7741,6 +7756,11 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
+    youtubeStatus: UploadStatus | null
+    tikTokStatus: UploadStatus | null
+    instagramStatus: UploadStatus | null
+    facebookStatus: UploadStatus | null
+    twitterStatus: UploadStatus | null
   }
 
   export type ContentMaxAggregateOutputType = {
@@ -7752,6 +7772,11 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
+    youtubeStatus: UploadStatus | null
+    tikTokStatus: UploadStatus | null
+    instagramStatus: UploadStatus | null
+    facebookStatus: UploadStatus | null
+    twitterStatus: UploadStatus | null
   }
 
   export type ContentCountAggregateOutputType = {
@@ -7764,6 +7789,11 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     projectId: number
+    youtubeStatus: number
+    tikTokStatus: number
+    instagramStatus: number
+    facebookStatus: number
+    twitterStatus: number
     _all: number
   }
 
@@ -7777,6 +7807,11 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     projectId?: true
+    youtubeStatus?: true
+    tikTokStatus?: true
+    instagramStatus?: true
+    facebookStatus?: true
+    twitterStatus?: true
   }
 
   export type ContentMaxAggregateInputType = {
@@ -7788,6 +7823,11 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     projectId?: true
+    youtubeStatus?: true
+    tikTokStatus?: true
+    instagramStatus?: true
+    facebookStatus?: true
+    twitterStatus?: true
   }
 
   export type ContentCountAggregateInputType = {
@@ -7800,6 +7840,11 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     projectId?: true
+    youtubeStatus?: true
+    tikTokStatus?: true
+    instagramStatus?: true
+    facebookStatus?: true
+    twitterStatus?: true
     _all?: true
   }
 
@@ -7886,6 +7931,11 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string
+    youtubeStatus: UploadStatus | null
+    tikTokStatus: UploadStatus | null
+    instagramStatus: UploadStatus | null
+    facebookStatus: UploadStatus | null
+    twitterStatus: UploadStatus | null
     _count: ContentCountAggregateOutputType | null
     _min: ContentMinAggregateOutputType | null
     _max: ContentMaxAggregateOutputType | null
@@ -7915,6 +7965,11 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     projectId?: boolean
+    youtubeStatus?: boolean
+    tikTokStatus?: boolean
+    instagramStatus?: boolean
+    facebookStatus?: boolean
+    twitterStatus?: boolean
     project?: boolean | ProjectArgs
   }
 
@@ -10722,7 +10777,12 @@ export namespace Prisma {
     published: 'published',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    projectId: 'projectId'
+    projectId: 'projectId',
+    youtubeStatus: 'youtubeStatus',
+    tikTokStatus: 'tikTokStatus',
+    instagramStatus: 'instagramStatus',
+    facebookStatus: 'facebookStatus',
+    twitterStatus: 'twitterStatus'
   };
 
   export type ContentScalarFieldEnum = (typeof ContentScalarFieldEnum)[keyof typeof ContentScalarFieldEnum]
@@ -11220,6 +11280,11 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter | Date | string | null
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
+    youtubeStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    tikTokStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    instagramStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    facebookStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    twitterStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
@@ -11233,6 +11298,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeStatus?: SortOrder
+    tikTokStatus?: SortOrder
+    instagramStatus?: SortOrder
+    facebookStatus?: SortOrder
+    twitterStatus?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
 
@@ -11250,6 +11320,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeStatus?: SortOrder
+    tikTokStatus?: SortOrder
+    instagramStatus?: SortOrder
+    facebookStatus?: SortOrder
+    twitterStatus?: SortOrder
     _count?: ContentCountOrderByAggregateInput
     _max?: ContentMaxOrderByAggregateInput
     _min?: ContentMinOrderByAggregateInput
@@ -11268,6 +11343,11 @@ export namespace Prisma {
     createdAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     updatedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     projectId?: StringWithAggregatesFilter | string
+    youtubeStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    tikTokStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    instagramStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    facebookStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    twitterStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
   }
 
   export type ProjectWhereInput = {
@@ -11823,6 +11903,11 @@ export namespace Prisma {
     published?: boolean | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeStatus?: UploadStatus | null
+    tikTokStatus?: UploadStatus | null
+    instagramStatus?: UploadStatus | null
+    facebookStatus?: UploadStatus | null
+    twitterStatus?: UploadStatus | null
     project: ProjectCreateNestedOneWithoutContentInput
   }
 
@@ -11836,6 +11921,11 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     projectId: string
+    youtubeStatus?: UploadStatus | null
+    tikTokStatus?: UploadStatus | null
+    instagramStatus?: UploadStatus | null
+    facebookStatus?: UploadStatus | null
+    twitterStatus?: UploadStatus | null
   }
 
   export type ContentUpdateInput = {
@@ -11847,6 +11937,11 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
     project?: ProjectUpdateOneRequiredWithoutContentNestedInput
   }
 
@@ -11860,6 +11955,11 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: StringFieldUpdateOperationsInput | string
+    youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
   export type ContentCreateManyInput = {
@@ -11872,6 +11972,11 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     projectId: string
+    youtubeStatus?: UploadStatus | null
+    tikTokStatus?: UploadStatus | null
+    instagramStatus?: UploadStatus | null
+    facebookStatus?: UploadStatus | null
+    twitterStatus?: UploadStatus | null
   }
 
   export type ContentUpdateManyMutationInput = {
@@ -11883,6 +11988,11 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
   export type ContentUncheckedUpdateManyInput = {
@@ -11895,6 +12005,11 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: StringFieldUpdateOperationsInput | string
+    youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
   export type ProjectCreateInput = {
@@ -12416,6 +12531,13 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter | Date | string | null
   }
 
+  export type EnumUploadStatusNullableFilter = {
+    equals?: UploadStatus | null
+    in?: Enumerable<UploadStatus> | null
+    notIn?: Enumerable<UploadStatus> | null
+    not?: NestedEnumUploadStatusNullableFilter | UploadStatus | null
+  }
+
   export type ContentProjectIdSlugCompoundUniqueInput = {
     projectId: string
     slug: string
@@ -12431,6 +12553,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeStatus?: SortOrder
+    tikTokStatus?: SortOrder
+    instagramStatus?: SortOrder
+    facebookStatus?: SortOrder
+    twitterStatus?: SortOrder
   }
 
   export type ContentMaxOrderByAggregateInput = {
@@ -12442,6 +12569,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeStatus?: SortOrder
+    tikTokStatus?: SortOrder
+    instagramStatus?: SortOrder
+    facebookStatus?: SortOrder
+    twitterStatus?: SortOrder
   }
 
   export type ContentMinOrderByAggregateInput = {
@@ -12453,6 +12585,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeStatus?: SortOrder
+    tikTokStatus?: SortOrder
+    instagramStatus?: SortOrder
+    facebookStatus?: SortOrder
+    twitterStatus?: SortOrder
   }
 
   export type BoolNullableWithAggregatesFilter = {
@@ -12475,6 +12612,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter
     _min?: NestedDateTimeNullableFilter
     _max?: NestedDateTimeNullableFilter
+  }
+
+  export type EnumUploadStatusNullableWithAggregatesFilter = {
+    equals?: UploadStatus | null
+    in?: Enumerable<UploadStatus> | null
+    notIn?: Enumerable<UploadStatus> | null
+    not?: NestedEnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedEnumUploadStatusNullableFilter
+    _max?: NestedEnumUploadStatusNullableFilter
   }
 
   export type ContentListRelationFilter = {
@@ -12837,6 +12984,10 @@ export namespace Prisma {
 
   export type NullableDateTimeFieldUpdateOperationsInput = {
     set?: Date | string | null
+  }
+
+  export type NullableEnumUploadStatusFieldUpdateOperationsInput = {
+    set?: UploadStatus | null
   }
 
   export type ProjectUpdateOneRequiredWithoutContentNestedInput = {
@@ -13283,6 +13434,13 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter | Date | string | null
   }
 
+  export type NestedEnumUploadStatusNullableFilter = {
+    equals?: UploadStatus | null
+    in?: Enumerable<UploadStatus> | null
+    notIn?: Enumerable<UploadStatus> | null
+    not?: NestedEnumUploadStatusNullableFilter | UploadStatus | null
+  }
+
   export type NestedBoolNullableWithAggregatesFilter = {
     equals?: boolean | null
     not?: NestedBoolNullableWithAggregatesFilter | boolean | null
@@ -13303,6 +13461,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter
     _min?: NestedDateTimeNullableFilter
     _max?: NestedDateTimeNullableFilter
+  }
+
+  export type NestedEnumUploadStatusNullableWithAggregatesFilter = {
+    equals?: UploadStatus | null
+    in?: Enumerable<UploadStatus> | null
+    notIn?: Enumerable<UploadStatus> | null
+    not?: NestedEnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedEnumUploadStatusNullableFilter
+    _max?: NestedEnumUploadStatusNullableFilter
   }
 
   export type NestedEnumChannelTypeFilter = {
@@ -13914,6 +14082,11 @@ export namespace Prisma {
     published?: boolean | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeStatus?: UploadStatus | null
+    tikTokStatus?: UploadStatus | null
+    instagramStatus?: UploadStatus | null
+    facebookStatus?: UploadStatus | null
+    twitterStatus?: UploadStatus | null
   }
 
   export type ContentUncheckedCreateWithoutProjectInput = {
@@ -13925,6 +14098,11 @@ export namespace Prisma {
     published?: boolean | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeStatus?: UploadStatus | null
+    tikTokStatus?: UploadStatus | null
+    instagramStatus?: UploadStatus | null
+    facebookStatus?: UploadStatus | null
+    twitterStatus?: UploadStatus | null
   }
 
   export type ContentCreateOrConnectWithoutProjectInput = {
@@ -14128,6 +14306,11 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter | Date | string | null
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
+    youtubeStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    tikTokStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    instagramStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    facebookStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    twitterStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
   }
 
   export type ChannelUpsertWithWhereUniqueWithoutProjectInput = {
@@ -14386,6 +14569,11 @@ export namespace Prisma {
     published?: boolean | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeStatus?: UploadStatus | null
+    tikTokStatus?: UploadStatus | null
+    instagramStatus?: UploadStatus | null
+    facebookStatus?: UploadStatus | null
+    twitterStatus?: UploadStatus | null
   }
 
   export type ChannelCreateManyProjectInput = {
@@ -14407,6 +14595,11 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
   export type ContentUncheckedUpdateWithoutProjectInput = {
@@ -14418,6 +14611,11 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
   export type ContentUncheckedUpdateManyWithoutContentInput = {
@@ -14429,6 +14627,11 @@ export namespace Prisma {
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
   export type ChannelUpdateWithoutProjectInput = {
