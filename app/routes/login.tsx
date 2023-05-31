@@ -133,10 +133,6 @@ export default function Page() {
                   autoComplete="current-password"
                   aria-invalid={actionData?.errors?.password ? true : undefined}
                   aria-describedby="password-error"
-                  style={{
-                    width: `calc(100% - 8px)`,
-                    marginBlockStart: `8px`,
-                  }}
                 />
                 {actionData?.errors?.password && (
                   <div
@@ -151,15 +147,7 @@ export default function Page() {
               </div>
             </div>
             <input type="hidden" name="redirectTo" value={redirectTo} />
-            <button
-              type="submit"
-              style={{
-                marginBlockStart: `8px`,
-                width: `100% - 8px)`,
-              }}
-            >
-              Log in
-            </button>
+            <button type="submit">Log in</button>
             <div>
               <input id="remember" name="remember" type="checkbox" />
               <label htmlFor="remember">Remember me</label>
