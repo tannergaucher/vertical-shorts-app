@@ -1,6 +1,6 @@
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 
 import invariant from "tiny-invariant";
 
@@ -70,6 +70,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 export default function Page() {
   const { content, signedUrl } = useLoaderData<LoaderData>();
 
+  const navigate = useNavigate();
+
   async function handleGcpSignedUpload() {
     console.log("handleGcpSignedUpload");
 
@@ -97,7 +99,7 @@ export default function Page() {
           });
 
           if (res.ok) {
-            console.log(res, "res");
+            navigate(Routes.AdminContentVideo(content.slug));
           }
         } catch (error) {
           console.log(error, "error");
@@ -115,7 +117,6 @@ export default function Page() {
           onSubmit={async (e) => {
             e.preventDefault();
             await handleGcpSignedUpload();
-            // return redirect(Routes.AdminContenVideo(content.slug));
           }}
         >
           <input type="file" name="thumbnail" required />
