@@ -71,10 +71,15 @@ export const action: ActionFunction = async ({ request }) => {
           await storage.createBucket(user.currentProjectId);
         }
 
+        console.log(bucket, "bucket");
+
         const writeStream = storage
           .bucket(user.currentProjectId)
           .file(filename ?? "thumbnail.jpg")
-          .createWriteStream();
+          .createWriteStream()
+          .on("error", (err) => {
+            console.log(err, "error");
+          });
 
         for await (const chunk of data) {
           console.log(chunk, "chunk");
