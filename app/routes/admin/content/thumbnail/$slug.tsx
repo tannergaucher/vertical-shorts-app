@@ -53,11 +53,15 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  console.log(request, "request");
+
   const user = await getUser(request);
 
   const uploadHandler = unstable_composeUploadHandlers(
     async ({ name, data, filename }) => {
       try {
+        console.log("trying", name, data, filename);
+
         if (name !== "thumbnail") {
           return undefined;
         }
@@ -76,13 +80,11 @@ export const action: ActionFunction = async ({ request }) => {
         const writeStream = storage
           .bucket(user.currentProjectId)
           .file(filename ?? "thumbnail.jpg")
-          .createWriteStream()
-          .on("error", (err) => {
-            console.log(err, "error");
-          });
+          .createWriteStream();
 
         for await (const chunk of data) {
           console.log(chunk, "chunk");
+
           writeStream.write(chunk);
         }
 
