@@ -57,42 +57,47 @@ export const action: ActionFunction = async ({ request }) => {
 
   const uploadHandler = unstable_composeUploadHandlers(
     async ({ name, data, filename }) => {
-      if (name !== "thumbnail") {
-        return undefined;
-      }
+      try {
+        if (name !== "thumbnail") {
+          return undefined;
+        }
 
-      invariant(user, "user is required");
-      invariant(user.currentProjectId, "user must have a current project");
+        invariant(user, "user is required");
+        invariant(user.currentProjectId, "user must have a current project");
 
-      const [bucket] = await storage.bucket(user.currentProjectId).exists();
+        const [bucket] = await storage.bucket(user.currentProjectId).exists();
 
-      if (!bucket) {
-        await storage.createBucket(user.currentProjectId);
-      }
+        if (!bucket) {
+          await storage.createBucket(user.currentProjectId);
+        }
 
-      const writeStream = storage
-        .bucket(user.currentProjectId)
-        .file(filename ?? "thumbnail.jpg")
-        .createWriteStream();
+        const writeStream = storage
+          .bucket(user.currentProjectId)
+          .file(filename ?? "thumbnail.jpg")
+          .createWriteStream();
 
-      for await (const chunk of data) {
-        console.log(chunk, "chunk");
-        writeStream.write(chunk);
-      }
+        for await (const chunk of data) {
+          console.log(chunk, "chunk");
+          writeStream.write(chunk);
+        }
 
-      // and make file public
+        // and make file public
 
-      writeStream.end();
+        writeStream.end();
 
-      return new Promise((resolve, reject) => {
-        writeStream.on("finish", () => {
-          resolve(filename);
+        return new Promise((resolve, reject) => {
+          writeStream.on("finish", () => {
+            resolve(filename);
+          });
+
+          writeStream.on("error", (err) => {
+            reject(err);
+          });
         });
-
-        writeStream.on("error", (err) => {
-          reject(err);
-        });
-      });
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
     },
     unstable_createMemoryUploadHandler()
   );
