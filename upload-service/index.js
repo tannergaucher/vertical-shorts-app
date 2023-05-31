@@ -10,6 +10,7 @@ app.use(express.json());
 const { PrismaClient, UploadStatus } = require("./generated");
 
 const prisma = new PrismaClient();
+
 const storage = new Storage();
 
 app.post("/upload", async (req, res) => {
@@ -65,34 +66,6 @@ app.post("/upload", async (req, res) => {
 app.post("/upload-youtube-short", async (req, res) => {
   const { projectId, slug } = req.body;
 
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.YOUTUBE_CLIENT_ID,
-    process.env.YOUTUBE_CLIENT_SECRET,
-    process.env.YOUTUBE_REDIRECT_URL
-  );
-
-  const project = await prisma.project.findUnique({
-    where: {
-      id: projectId,
-    },
-    select: {
-      youtubeCredentials: true,
-    },
-  });
-
-  oauth2Client.setCredentials({
-    access_token: project.youtubeCredentials.accessToken,
-    refresh_token: project.youtubeCredentials.refreshToken,
-  });
-
-  const youtube = google.youtube({
-    version: "v3",
-    auth: oauth2Client,
-  });
-
-  const filePath = `${req.body.slug}.mp4`;
-  const bodyStream = fs.createReadStream(filePath);
-
   const content = await prisma.content.update({
     where: {
       projectId_slug: {
@@ -109,6 +82,34 @@ app.post("/upload-youtube-short", async (req, res) => {
       youtubeStatus: UploadStatus.UPLOADING,
     },
   });
+
+  const project = await prisma.project.findUnique({
+    where: {
+      id: projectId,
+    },
+    select: {
+      youtubeCredentials: true,
+    },
+  });
+
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.YOUTUBE_CLIENT_ID,
+    process.env.YOUTUBE_CLIENT_SECRET,
+    process.env.YOUTUBE_REDIRECT_URL
+  );
+
+  oauth2Client.setCredentials({
+    access_token: project.youtubeCredentials.accessToken,
+    refresh_token: project.youtubeCredentials.refreshToken,
+  });
+
+  const youtube = google.youtube({
+    version: "v3",
+    auth: oauth2Client,
+  });
+
+  const filePath = `${req.body.slug}.mp4`;
+  const bodyStream = fs.createReadStream(filePath);
 
   youtube.videos
     .insert({
