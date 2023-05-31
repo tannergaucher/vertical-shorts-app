@@ -142,6 +142,8 @@ app.post("/upload-youtube-short", async (req, res) => {
           youtubeStatus: UploadStatus.UPLOADING,
         },
       });
+
+      res.send("Video uploaded to youtube");
     })
     .catch(async (error) => {
       console.log(error, "yt_error");
