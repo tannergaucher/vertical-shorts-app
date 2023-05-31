@@ -139,7 +139,7 @@ app.post("/upload-youtube-short", async (req, res) => {
           },
         },
         data: {
-          youtubeStatus: UploadStatus.UPLOADED,
+          youtubeStatus: UploadStatus.UPLOADING,
         },
       });
     })
