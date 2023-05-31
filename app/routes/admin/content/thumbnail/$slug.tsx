@@ -75,16 +75,12 @@ export const action: ActionFunction = async ({ request }) => {
         .file(filename ?? "thumbnail.jpg")
         .createWriteStream();
 
-      writeStream.on("error", (err) => {
-        console.log(err, "err");
-      });
-
       for await (const chunk of data) {
         console.log(chunk, "chunk");
         writeStream.write(chunk);
       }
 
-      // and make public
+      // and make file public
 
       writeStream.end();
 
