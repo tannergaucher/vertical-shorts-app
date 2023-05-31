@@ -109,6 +109,7 @@ export type Content = {
   thumbnail: string | null
   tags: string[]
   published: boolean | null
+  publishAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
   projectId: string
@@ -7753,6 +7754,7 @@ export namespace Prisma {
     description: string | null
     thumbnail: string | null
     published: boolean | null
+    publishAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
@@ -7769,6 +7771,7 @@ export namespace Prisma {
     description: string | null
     thumbnail: string | null
     published: boolean | null
+    publishAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
@@ -7786,6 +7789,7 @@ export namespace Prisma {
     thumbnail: number
     tags: number
     published: number
+    publishAt: number
     createdAt: number
     updatedAt: number
     projectId: number
@@ -7804,6 +7808,7 @@ export namespace Prisma {
     description?: true
     thumbnail?: true
     published?: true
+    publishAt?: true
     createdAt?: true
     updatedAt?: true
     projectId?: true
@@ -7820,6 +7825,7 @@ export namespace Prisma {
     description?: true
     thumbnail?: true
     published?: true
+    publishAt?: true
     createdAt?: true
     updatedAt?: true
     projectId?: true
@@ -7837,6 +7843,7 @@ export namespace Prisma {
     thumbnail?: true
     tags?: true
     published?: true
+    publishAt?: true
     createdAt?: true
     updatedAt?: true
     projectId?: true
@@ -7928,6 +7935,7 @@ export namespace Prisma {
     thumbnail: string | null
     tags: string[]
     published: boolean | null
+    publishAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string
@@ -7962,6 +7970,7 @@ export namespace Prisma {
     thumbnail?: boolean
     tags?: boolean
     published?: boolean
+    publishAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     projectId?: boolean
@@ -10775,6 +10784,7 @@ export namespace Prisma {
     thumbnail: 'thumbnail',
     tags: 'tags',
     published: 'published',
+    publishAt: 'publishAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     projectId: 'projectId',
@@ -11277,6 +11287,7 @@ export namespace Prisma {
     thumbnail?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
+    publishAt?: DateTimeNullableFilter | Date | string | null
     createdAt?: DateTimeNullableFilter | Date | string | null
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
@@ -11295,6 +11306,7 @@ export namespace Prisma {
     thumbnail?: SortOrder
     tags?: SortOrder
     published?: SortOrder
+    publishAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -11317,6 +11329,7 @@ export namespace Prisma {
     thumbnail?: SortOrder
     tags?: SortOrder
     published?: SortOrder
+    publishAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -11340,6 +11353,7 @@ export namespace Prisma {
     thumbnail?: StringNullableWithAggregatesFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableWithAggregatesFilter | boolean | null
+    publishAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     createdAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     updatedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     projectId?: StringWithAggregatesFilter | string
@@ -11901,6 +11915,7 @@ export namespace Prisma {
     thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
+    publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     youtubeStatus?: UploadStatus | null
@@ -11918,6 +11933,7 @@ export namespace Prisma {
     thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
+    publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     projectId: string
@@ -11935,6 +11951,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
@@ -11952,6 +11969,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: StringFieldUpdateOperationsInput | string
@@ -11969,6 +11987,7 @@ export namespace Prisma {
     thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
+    publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     projectId: string
@@ -11986,6 +12005,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
@@ -12002,6 +12022,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: StringFieldUpdateOperationsInput | string
@@ -12550,6 +12571,7 @@ export namespace Prisma {
     thumbnail?: SortOrder
     tags?: SortOrder
     published?: SortOrder
+    publishAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -12566,6 +12588,7 @@ export namespace Prisma {
     description?: SortOrder
     thumbnail?: SortOrder
     published?: SortOrder
+    publishAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -12582,6 +12605,7 @@ export namespace Prisma {
     description?: SortOrder
     thumbnail?: SortOrder
     published?: SortOrder
+    publishAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
@@ -14080,6 +14104,7 @@ export namespace Prisma {
     thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
+    publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     youtubeStatus?: UploadStatus | null
@@ -14096,6 +14121,7 @@ export namespace Prisma {
     thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
+    publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     youtubeStatus?: UploadStatus | null
@@ -14303,6 +14329,7 @@ export namespace Prisma {
     thumbnail?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
+    publishAt?: DateTimeNullableFilter | Date | string | null
     createdAt?: DateTimeNullableFilter | Date | string | null
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
@@ -14567,6 +14594,7 @@ export namespace Prisma {
     thumbnail?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
+    publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     youtubeStatus?: UploadStatus | null
@@ -14593,6 +14621,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
@@ -14609,6 +14638,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
@@ -14625,6 +14655,7 @@ export namespace Prisma {
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null

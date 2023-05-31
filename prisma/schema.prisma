@@ -129,6 +129,7 @@ model Content {
   thumbnail       String?
   tags            String[]
   published       Boolean?      @default(false)
+  publishAt       DateTime?
   createdAt       DateTime?     @default(now())
   updatedAt       DateTime?     @updatedAt
   projectId       String

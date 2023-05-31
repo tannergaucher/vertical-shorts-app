@@ -43,6 +43,7 @@ interface UpsertContentParams {
   title?: string;
   description?: string | null;
   published?: boolean | null;
+  publishAt?: Date | null;
   tags?: string[];
   thumbnail?: string | null;
 }
@@ -60,6 +61,7 @@ export async function upsertContent(content: UpsertContentParams) {
       projectId: content.projectId,
       title: content.title || "Untitled Content",
       published: content.published || false,
+      publishAt: content.publishAt || null,
     },
     update: {
       ...content,

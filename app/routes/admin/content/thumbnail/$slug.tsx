@@ -31,7 +31,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return redirect(Routes.Login);
   }
 
-  const projectId = user?.currentProjectId;
+  const projectId = user.currentProjectId;
 
   invariant(typeof projectId === "string", "user must have a current project");
 
@@ -110,7 +110,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Draft Post: {content.title}</h1>
+      <h1>Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
       <fieldset>
         <form

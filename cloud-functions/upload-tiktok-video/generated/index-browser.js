@@ -107,6 +107,7 @@ exports.Prisma.ContentScalarFieldEnum = makeEnum({
   thumbnail: 'thumbnail',
   tags: 'tags',
   published: 'published',
+  publishAt: 'publishAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   projectId: 'projectId',
