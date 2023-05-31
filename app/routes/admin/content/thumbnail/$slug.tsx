@@ -1,26 +1,17 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/node";
-import {
-  json,
-  redirect,
-  unstable_parseMultipartFormData,
-  unstable_createMemoryUploadHandler,
-  unstable_composeUploadHandlers,
-} from "@remix-run/node";
-import { Form, useLoaderData, useTransition } from "@remix-run/react";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 
 import invariant from "tiny-invariant";
 
 import { getUser } from "~/session.server";
-import { getContent, upsertContent } from "~/models/content.server";
+import { getContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { storage } from "~/entry.server";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
+  signedUrl: string;
 };
 
 export const meta: MetaFunction = () => {
@@ -44,110 +35,91 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   invariant(typeof projectId === "string", "user must have a current project");
 
+  const [bucket] = await storage.bucket(projectId).exists();
+
+  if (!bucket) {
+    await storage.createBucket(projectId);
+  }
+
+  storage.bucket(projectId).setCorsConfiguration([
+    {
+      origin: ["*"],
+      method: ["PUT"],
+      responseHeader: ["Content-Type"],
+    },
+  ]);
+
+  const [signedUrl] = await storage
+    .bucket(projectId)
+    .file(`${slug}.jpg`)
+    .getSignedUrl({
+      version: "v4",
+      action: "write",
+      expires: Date.now() + 10 * 60 * 1000, // 10 minutes in milliseconds
+      contentType: "application/octet-stream",
+    });
+
   const content = await getContent({
     slug,
     projectId,
   });
 
-  return json({ content });
-};
-
-export const action: ActionFunction = async ({ request }) => {
-  console.log(request, "request");
-
-  const user = await getUser(request);
-
-  const uploadHandler = unstable_composeUploadHandlers(
-    async ({ name, data, filename }) => {
-      try {
-        console.log("trying", name, data, filename);
-
-        if (name !== "thumbnail") {
-          return undefined;
-        }
-
-        invariant(user, "user is required");
-        invariant(user.currentProjectId, "user must have a current project");
-
-        const [bucket] = await storage.bucket(user.currentProjectId).exists();
-
-        if (!bucket) {
-          await storage.createBucket(user.currentProjectId);
-        }
-
-        console.log(bucket, "bucket");
-
-        const writeStream = storage
-          .bucket(user.currentProjectId)
-          .file(filename ?? "thumbnail.jpg")
-          .createWriteStream();
-
-        for await (const chunk of data) {
-          console.log(chunk, "chunk");
-
-          writeStream.write(chunk);
-        }
-
-        // and make file public
-
-        writeStream.end();
-
-        return new Promise((resolve, reject) => {
-          writeStream.on("finish", () => {
-            resolve(filename);
-          });
-
-          writeStream.on("error", (err) => {
-            reject(err);
-          });
-        });
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    },
-    unstable_createMemoryUploadHandler()
-  );
-
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler
-  );
-
-  const slug = formData.get("slug");
-  const thumbnail = formData.get("thumbnail");
-
-  invariant(typeof slug === "string", "slug is required");
-  invariant(typeof thumbnail === "string", "thumbnail is required");
-  invariant(user?.currentProjectId, "user must have a current project");
-
-  await upsertContent({
-    slug: slug.toString(),
-    projectId: user.currentProjectId,
-    thumbnail,
-  });
-
-  return redirect(Routes.AdminContenVideo(slug));
+  return json({ content, signedUrl });
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, signedUrl } = useLoaderData<LoaderData>();
 
-  const transition = useTransition();
+  async function handleGcpSignedUpload() {
+    console.log("handleGcpSignedUpload");
 
-  const disabled =
-    transition.state === "loading" || transition.state === "submitting";
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+
+    if (input?.files?.length) {
+      const file = input.files[0];
+
+      const reader = new FileReader();
+
+      reader.readAsArrayBuffer(file);
+
+      reader.onload = async (e) => {
+        const imageData = e.target?.result;
+
+        try {
+          const res = await fetch(signedUrl, {
+            method: "PUT",
+            body: imageData,
+            headers: {
+              "Content-Type": "application/octet-stream",
+            },
+          });
+
+          if (res.ok) {
+            console.log(res, "res");
+          }
+        } catch (error) {
+          console.log(error, "error");
+        }
+      };
+    }
+  }
 
   return (
     <main>
       <h1>Draft Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
-      <fieldset disabled={disabled}>
-        <Form method="post" encType="multipart/form-data">
+      <fieldset>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await handleGcpSignedUpload();
+          }}
+        >
           <input type="file" name="thumbnail" required />
-          <input type="hidden" name="slug" value={content.slug} />
           <button type="submit">Next</button>
-        </Form>
+        </form>
       </fieldset>
     </main>
   );
