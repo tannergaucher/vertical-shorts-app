@@ -1,31 +1,17 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/node";
-import {
-  json,
-  redirect,
-  unstable_composeUploadHandlers,
-  unstable_createMemoryUploadHandler,
-  unstable_createFileUploadHandler,
-  unstable_parseMultipartFormData,
-} from "@remix-run/node";
-import { Form, useLoaderData, useTransition } from "@remix-run/react";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { useLoaderData, useNavigate } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getUser } from "~/session.server";
-import { getContent, upsertContent } from "~/models/content.server";
+import { getContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { storage } from "~/entry.server";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
+  signedUrl: string;
 };
-
-interface Video {
-  filepath: string;
-}
 
 export const meta: MetaFunction = () => {
   return {
@@ -48,108 +34,79 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   invariant(typeof projectId === "string", "user must have a current project");
 
+  const [signedUrl] = await storage
+    .bucket(projectId)
+    .file(`${slug}.mp4`)
+    .getSignedUrl({
+      version: "v4",
+      action: "write",
+      expires: Date.now() + 10 * 60 * 1000, // 10 minutes in milliseconds
+      contentType: "application/octet-stream",
+    });
+
   const content = await getContent({
     slug,
     projectId,
   });
 
-  return json({ content });
-};
-
-export const action: ActionFunction = async ({ request }) => {
-  const user = await getUser(request);
-
-  invariant(user?.currentProjectId, "user must have a current project");
-
-  const uploadHandler = unstable_composeUploadHandlers(
-    unstable_createFileUploadHandler({
-      maxPartSize: 500_000_000,
-      file: ({ filename }) => filename,
-    }),
-    unstable_createMemoryUploadHandler()
-  );
-
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler
-  );
-
-  const slug = formData.get("slug");
-  const video = formData.get("video") as Video | null;
-
-  invariant(typeof slug === "string", "slug is required");
-  invariant(video, "video is required");
-
-  const [bucket] = await storage.bucket(user.currentProjectId).exists();
-
-  if (!bucket) {
-    await storage.createBucket(user.currentProjectId);
-  }
-
-  await storage.bucket(user.currentProjectId).upload(video.filepath, {
-    destination: `${slug}.mp4`,
-    public: true,
-    onUploadProgress: (progress) => {
-      console.log(progress, "progress");
-    },
-  });
-
-  const content = await upsertContent({
-    slug,
-    projectId: user.currentProjectId,
-  });
-
-  const uploadServiceBaseUrl =
-    process.env.NODE_ENV === "production"
-      ? `https://upload-service-yzmezs2csa-ue.a.run.app`
-      : `http://localhost:8080`;
-
-  const res = await fetch(`${uploadServiceBaseUrl}/upload`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      projectId: user.currentProjectId,
-      slug,
-    }),
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to upload video");
-  }
-
-  console.log(res, "res");
-
-  return redirect(Routes.AdminContentStatus(slug));
+  return json({ content, signedUrl });
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, signedUrl } = useLoaderData<LoaderData>();
 
-  const transition = useTransition();
+  const navigate = useNavigate();
 
-  const disabled =
-    transition.state === "loading" || transition.state === "submitting";
+  async function handleGcpSignedUpload() {
+    console.log("handleGcpSignedUpload");
+
+    const input = document.querySelector(
+      "input[type=file]"
+    ) as HTMLInputElement;
+
+    if (input?.files?.length) {
+      const file = input.files[0];
+
+      const reader = new FileReader();
+
+      reader.readAsArrayBuffer(file);
+
+      reader.onload = async (e) => {
+        const videoData = e.target?.result;
+
+        try {
+          const res = await fetch(signedUrl, {
+            method: "PUT",
+            body: videoData,
+            headers: {
+              "Content-Type": "application/octet-stream",
+            },
+          });
+
+          if (res.ok) {
+            navigate(Routes.AdminContentScheduler(content.slug));
+          }
+        } catch (error) {
+          console.log(error, "error");
+        }
+      };
+    }
+  }
 
   return (
     <main>
-      <h1>Draft Post: {content.title}</h1>
-      <img
-        alt={content.title}
-        src={`https://storage.googleapis.com/${content.projectId}/${content.thumbnail}`}
-      />
+      <h1>Post: {content.title}</h1>
       <h2>Upload Video</h2>
-      <fieldset disabled={disabled}>
-        <Form method="post" encType="multipart/form-data">
-          <label>
-            <span>Video</span>
-            <br />
-            <input type="file" name="video" required />
-          </label>
-          <input type="hidden" name="slug" value={content.slug} />
+      <fieldset>
+        <form
+          onSubmit={async (e) => {
+            e.preventDefault();
+            await handleGcpSignedUpload();
+          }}
+        >
+          <input type="file" name="thumbnail" required />
           <button type="submit">Next</button>
-        </Form>
+        </form>
       </fieldset>
     </main>
   );

@@ -12,6 +12,7 @@ export const Routes = {
   AdminContentTitle: `/admin/content/title`,
   AdminContentThumbnail: (slug: string) => `/admin/content/thumbnail/${slug}`,
   AdminContentVideo: (slug: string) => `/admin/content/video/${slug}`,
+  AdminContentScheduler: (slug: string) => `/admin/content/scheduler/${slug}`,
   Login: `/login`,
   Logout: `/logout`,
 };
