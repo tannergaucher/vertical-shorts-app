@@ -115,6 +115,7 @@ export default function Page() {
           onSubmit={async (e) => {
             e.preventDefault();
             await handleGcpSignedUpload();
+            return redirect(Routes.AdminContenVideo(content.slug));
           }}
         >
           <input type="file" name="thumbnail" required />
