@@ -7,6 +7,7 @@ import { Routes } from "~/routes";
 import { getContent } from "~/models/content.server";
 import { getUser } from "~/session.server";
 import { upsertContent } from "~/models/content.server";
+import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -54,7 +55,21 @@ export const action: ActionFunction = async ({ request }) => {
     publishAt: new Date(`${date} ${time}`),
   });
 
-  return redirect(Routes.Admin);
+  const res = await fetch(`${UPLOAD_SERVICE_BASE_URL}/upload`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      slug,
+      projectId,
+    }),
+  });
+
+  if (res.ok) {
+    console.log(res, "res");
+    return redirect(Routes.Admin);
+  }
 };
 
 export default function Page() {

@@ -4,10 +4,11 @@ const fs = require("fs");
 const { google } = require("googleapis");
 require("dotenv").config();
 
+const { PrismaClient, UploadStatus } = require("./generated");
+const { UPLOAD_SERVICE_BASE_URL } = require("./utils/constants");
+
 const app = express();
 app.use(express.json());
-
-const { PrismaClient, UploadStatus } = require("./generated");
 
 const prisma = new PrismaClient();
 
@@ -29,6 +30,7 @@ app.post("/upload", async (req, res) => {
       project: {
         select: {
           youtubeCredentials: true,
+          tikTokCredentials: true,
         },
       },
     },
@@ -41,9 +43,12 @@ app.post("/upload", async (req, res) => {
     .file(filePath)
     .createReadStream()
     .pipe(fs.createWriteStream(filePath))
+    .on("open", () => {
+      res.send("Processing started");
+    })
     .on("finish", () => {
       if (content.project.youtubeCredentials) {
-        fetch(`http://localhost:8080/upload-youtube-short`, {
+        fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -55,7 +60,9 @@ app.post("/upload", async (req, res) => {
         });
       }
 
-      res.send("File downloaded successfully, uploading to social channels");
+      if (content.project.tikTokCredentials) {
+        console.log("todo call tiktok endpoint");
+      }
     })
     .on("error", (err) => {
       console.log(err);
