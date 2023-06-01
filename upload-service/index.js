@@ -18,6 +18,8 @@ app.post("/upload", async (req, res) => {
   console.log("getting file");
   const { projectId, slug } = req.body;
 
+  console.log(projectId, "projectId", slug, "slug");
+
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       projectId_slug: {
@@ -37,41 +39,41 @@ app.post("/upload", async (req, res) => {
     },
   });
 
-  console.log(content, "content");
+  console.log(content, "_content");
 
-  const filePath = `${content.slug}.mp4`;
+  // const filePath = `${content.slug}.mp4`;
 
-  storage
-    .bucket(content.projectId)
-    .file(filePath)
-    .createReadStream()
-    .pipe(fs.createWriteStream(filePath))
-    .on("open", () => {
-      res.send("dl started");
-    })
-    .on("finish", () => {
-      console.log("dl finished");
-      if (content.project.youtubeCredentials) {
-        fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId,
-            slug,
-          }),
-        });
-      }
+  // storage
+  //   .bucket(content.projectId)
+  //   .file(filePath)
+  //   .createReadStream()
+  //   .pipe(fs.createWriteStream(filePath))
+  //   .on("open", () => {
+  //     res.send("dl started");
+  //   })
+  //   .on("finish", () => {
+  //     console.log("dl finished");
+  //     if (content.project.youtubeCredentials) {
+  //       fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           projectId,
+  //           slug,
+  //         }),
+  //       });
+  //     }
 
-      if (content.project.tikTokCredentials) {
-        console.log("todo call tiktok endpoint");
-      }
-    })
-    .on("error", (err) => {
-      console.log(err);
-      res.status(500).send("Something went wrong!");
-    });
+  //     if (content.project.tikTokCredentials) {
+  //       console.log("todo call tiktok endpoint");
+  //     }
+  //   })
+  //   .on("error", (err) => {
+  //     console.log(err);
+  //     res.status(500).send("Something went wrong!");
+  //   });
 });
 
 app.post("/upload-youtube-short", async (req, res) => {

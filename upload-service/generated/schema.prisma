@@ -5,7 +5,7 @@ generator client {
 generator uploadService {
   provider      = "prisma-client-js"
   output        = "../upload-service/generated"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x", "debian-openssl-1.1.x"]
+  binaryTargets = ["native", "darwin-arm64", "debian-openssl-1.1.x"]
 }
 
 generator handleGcsVideoUpload {
