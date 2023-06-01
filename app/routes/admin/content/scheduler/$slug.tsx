@@ -48,12 +48,10 @@ export const action: ActionFunction = async ({ request }) => {
   invariant(typeof slug === "string", "slug is required");
   invariant(typeof projectId === "string", "projectId is required");
 
-  // update content with scheduled publish date
-
   await upsertContent({
-    projectId: "projectId",
-    slug: "slug",
-    publishAt: new Date(`${date}-${time}`),
+    projectId,
+    slug,
+    publishAt: new Date(`${date} ${time}`),
   });
 
   return redirect(Routes.Admin);

@@ -38,8 +38,8 @@ export async function getContents(params: { projectId: string }) {
 }
 
 interface UpsertContentParams {
-  projectId: string;
   slug: string;
+  projectId: string;
   title?: string;
   description?: string | null;
   published?: boolean | null;
