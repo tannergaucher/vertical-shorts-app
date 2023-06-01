@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useNavigate } from "@remix-run/react";
@@ -68,13 +69,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export default function Page() {
+  const [disabled, setDisabled] = useState(false);
   const { content, signedUrl } = useLoaderData<LoaderData>();
 
   const navigate = useNavigate();
 
   async function handleGcpSignedUpload() {
-    console.log("handleGcpSignedUpload");
-
+    setDisabled(true);
     const input = document.querySelector(
       "input[type=file]"
     ) as HTMLInputElement;
@@ -103,6 +104,8 @@ export default function Page() {
           }
         } catch (error) {
           console.log(error, "error");
+        } finally {
+          setDisabled(false);
         }
       };
     }
@@ -112,7 +115,7 @@ export default function Page() {
     <main>
       <h1>Post: {content.title}</h1>
       <h2>Upload Thubmnail</h2>
-      <fieldset>
+      <fieldset disabled={disabled}>
         <form
           onSubmit={async (e) => {
             e.preventDefault();
