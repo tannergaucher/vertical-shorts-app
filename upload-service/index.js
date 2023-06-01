@@ -156,7 +156,7 @@ app.post("/upload-youtube-short", async (req, res) => {
           },
         },
         data: {
-          youtubeStatus: UploadStatus.UPLOADING,
+          youtubeStatus: UploadStatus.PRIVATE,
         },
       });
 
