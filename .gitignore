@@ -6,3 +6,5 @@ node_modules
 .env
 
 service-account.json
+
+NOTES.md
