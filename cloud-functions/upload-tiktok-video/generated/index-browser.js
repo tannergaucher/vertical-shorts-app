@@ -13,11 +13,11 @@ const Prisma = {}
 exports.Prisma = Prisma
 
 /**
- * Prisma Client JS version: 4.11.0
+ * Prisma Client JS version: 4.15.0
  * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
  */
 Prisma.prismaVersion = {
-  client: "4.11.0",
+  client: "4.15.0",
   engine: "8fde8fef4033376662cad983758335009d522acb"
 }
 
@@ -85,11 +85,8 @@ Prisma.NullTypes = {
 /**
  * Enums
  */
-// Based on
-// https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
-function makeEnum(x) { return x; }
 
-exports.Prisma.ChannelScalarFieldEnum = makeEnum({
+exports.Prisma.ChannelScalarFieldEnum = {
   name: 'name',
   views: 'views',
   subscribers: 'subscribers',
@@ -98,9 +95,9 @@ exports.Prisma.ChannelScalarFieldEnum = makeEnum({
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   projectId: 'projectId'
-});
+};
 
-exports.Prisma.ContentScalarFieldEnum = makeEnum({
+exports.Prisma.ContentScalarFieldEnum = {
   slug: 'slug',
   title: 'title',
   description: 'description',
@@ -116,49 +113,49 @@ exports.Prisma.ContentScalarFieldEnum = makeEnum({
   instagramStatus: 'instagramStatus',
   facebookStatus: 'facebookStatus',
   twitterStatus: 'twitterStatus'
-});
+};
 
-exports.Prisma.FacebookCredentialsScalarFieldEnum = makeEnum({
+exports.Prisma.FacebookCredentialsScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   pageId: 'pageId',
   projectId: 'projectId'
-});
+};
 
-exports.Prisma.InstagramCredentialsScalarFieldEnum = makeEnum({
+exports.Prisma.InstagramCredentialsScalarFieldEnum = {
   id: 'id',
   accessToken: 'accessToken',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   username: 'username',
   projectId: 'projectId'
-});
+};
 
-exports.Prisma.PasswordScalarFieldEnum = makeEnum({
+exports.Prisma.PasswordScalarFieldEnum = {
   hash: 'hash',
   userId: 'userId'
-});
+};
 
-exports.Prisma.ProjectScalarFieldEnum = makeEnum({
+exports.Prisma.ProjectScalarFieldEnum = {
   id: 'id',
   title: 'title',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
-});
+};
 
-exports.Prisma.QueryMode = makeEnum({
+exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
-});
+};
 
-exports.Prisma.SortOrder = makeEnum({
+exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
-});
+};
 
-exports.Prisma.TikTokCredentialsScalarFieldEnum = makeEnum({
+exports.Prisma.TikTokCredentialsScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
@@ -168,7 +165,7 @@ exports.Prisma.TikTokCredentialsScalarFieldEnum = makeEnum({
   scope: 'scope',
   openId: 'openId',
   projectId: 'projectId'
-});
+};
 
 exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   ReadUncommitted: 'ReadUncommitted',
@@ -177,22 +174,22 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.TwitterCredentialsScalarFieldEnum = makeEnum({
+exports.Prisma.TwitterCredentialsScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   projectId: 'projectId'
-});
+};
 
-exports.Prisma.UserScalarFieldEnum = makeEnum({
+exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   currentProjectId: 'currentProjectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-});
+};
 
-exports.Prisma.YoutubeCredentialsScalarFieldEnum = makeEnum({
+exports.Prisma.YoutubeCredentialsScalarFieldEnum = {
   id: 'id',
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
@@ -201,23 +198,23 @@ exports.Prisma.YoutubeCredentialsScalarFieldEnum = makeEnum({
   channelId: 'channelId',
   userId: 'userId',
   projectId: 'projectId'
-});
-exports.ChannelType = makeEnum({
+};
+exports.ChannelType = {
   YOUTUBE: 'YOUTUBE',
   INSTAGRAM: 'INSTAGRAM',
   TIKTOK: 'TIKTOK',
   FACEBOOK: 'FACEBOOK',
   TWITTER: 'TWITTER'
-});
+};
 
-exports.UploadStatus = makeEnum({
+exports.UploadStatus = {
   NOT_STARTED: 'NOT_STARTED',
   UPLOADING: 'UPLOADING',
   PRIVATE: 'PRIVATE',
   PUBLIC: 'PUBLIC'
-});
+};
 
-exports.Prisma.ModelName = makeEnum({
+exports.Prisma.ModelName = {
   User: 'User',
   Password: 'Password',
   YoutubeCredentials: 'YoutubeCredentials',
@@ -228,7 +225,7 @@ exports.Prisma.ModelName = makeEnum({
   Content: 'Content',
   Project: 'Project',
   Channel: 'Channel'
-});
+};
 
 /**
  * Create the Client

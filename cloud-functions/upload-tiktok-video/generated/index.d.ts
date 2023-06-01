@@ -9,6 +9,8 @@ type UnwrapTuple<Tuple extends readonly unknown[]> = {
   [K in keyof Tuple]: K extends `${number}` ? Tuple[K] extends Prisma.PrismaPromise<infer X> ? X : UnwrapPromise<Tuple[K]> : UnwrapPromise<Tuple[K]>
 };
 
+export type PrismaPromise<T> = runtime.Types.Public.PrismaPromise<T>
+
 
 /**
  * Model User
@@ -151,9 +153,6 @@ export type Channel = {
 /**
  * Enums
  */
-
-// Based on
-// https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
 export const ChannelType: {
   YOUTUBE: 'YOUTUBE',
@@ -435,7 +434,7 @@ export namespace Prisma {
 
 
   /**
-   * Prisma Client JS version: 4.11.0
+   * Prisma Client JS version: 4.15.0
    * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
    */
   export type PrismaVersion = {
@@ -10759,9 +10758,6 @@ export namespace Prisma {
   /**
    * Enums
    */
-
-  // Based on
-  // https://github.com/microsoft/TypeScript/issues/3192#issuecomment-261720275
 
   export const ChannelScalarFieldEnum: {
     name: 'name',
