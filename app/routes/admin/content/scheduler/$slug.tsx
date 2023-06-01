@@ -68,6 +68,11 @@ export const action: ActionFunction = async ({ request }) => {
 
   console.log(res, "res");
 
+  if (res.ok) {
+    const json = await res.json();
+    console.log(json, "json");
+  }
+
   // return redirect(Routes.Admin);
   return null;
 };

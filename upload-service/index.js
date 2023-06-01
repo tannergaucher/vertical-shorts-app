@@ -28,8 +28,6 @@ app.post("/upload", async (req, res) => {
       },
     },
     select: {
-      projectId: true,
-      slug: true,
       project: {
         select: {
           youtubeCredentials: true,
@@ -39,39 +37,46 @@ app.post("/upload", async (req, res) => {
     },
   });
 
-  const filePath = `${content.slug}.mp4`;
+  console.log(content, "content");
 
-  storage
-    .bucket(content.projectId)
-    .file(filePath)
-    .createReadStream()
-    .pipe(fs.createWriteStream(filePath))
-    .on("open", () => {
-      res.send("dl started");
-    })
-    .on("finish", () => {
-      console.log("dl finished");
-      if (content.project.youtubeCredentials) {
-        fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId,
-            slug,
-          }),
-        });
-      }
+  const filePath = `${slug}.mp4`;
 
-      if (content.project.tikTokCredentials) {
-        console.log("todo call tiktok endpoint");
-      }
-    })
-    .on("error", (err) => {
-      console.log(err);
-      res.status(500).send("Something went wrong!");
-    });
+  try {
+    storage
+      .bucket(projectId)
+      .file(filePath)
+      .createReadStream()
+      .pipe(fs.createWriteStream(filePath))
+      .on("open", () => {
+        res.send("dl started");
+      })
+      .on("finish", () => {
+        console.log("dl finished");
+        if (content.project.youtubeCredentials) {
+          fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              projectId,
+              slug,
+            }),
+          });
+        }
+
+        if (content.project.tikTokCredentials) {
+          console.log("todo call tiktok endpoint");
+        }
+      })
+      .on("error", (err) => {
+        console.log(err);
+        res.status(500).send("Something went wrong!");
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Error downloading file");
+  }
 });
 
 app.post("/upload-youtube-short", async (req, res) => {
