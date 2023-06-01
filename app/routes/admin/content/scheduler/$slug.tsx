@@ -66,11 +66,10 @@ export const action: ActionFunction = async ({ request }) => {
     }),
   });
 
-  if (res.ok) {
-    console.log(res, "res");
-  }
+  console.log(res, "res");
 
-  return redirect(Routes.Admin);
+  // return redirect(Routes.Admin);
+  return null;
 };
 
 export default function Page() {

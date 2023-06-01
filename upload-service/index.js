@@ -15,6 +15,7 @@ const prisma = new PrismaClient();
 const storage = new Storage();
 
 app.post("/upload", async (req, res) => {
+  console.log("getting file");
   const { projectId, slug } = req.body;
 
   const content = await prisma.content.findUniqueOrThrow({
@@ -36,6 +37,8 @@ app.post("/upload", async (req, res) => {
     },
   });
 
+  console.log(content, "content");
+
   const filePath = `${content.slug}.mp4`;
 
   storage
@@ -44,9 +47,10 @@ app.post("/upload", async (req, res) => {
     .createReadStream()
     .pipe(fs.createWriteStream(filePath))
     .on("open", () => {
-      res.send("Processing started");
+      res.send("dl started");
     })
     .on("finish", () => {
+      console.log("dl finished");
       if (content.project.youtubeCredentials) {
         fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
           method: "POST",
