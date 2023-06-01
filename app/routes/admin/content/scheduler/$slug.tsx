@@ -68,8 +68,9 @@ export const action: ActionFunction = async ({ request }) => {
 
   if (res.ok) {
     console.log(res, "res");
-    return redirect(Routes.Admin);
   }
+
+  return redirect(Routes.Admin);
 };
 
 export default function Page() {

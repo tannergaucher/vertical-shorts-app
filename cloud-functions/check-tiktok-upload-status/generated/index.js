@@ -311,5 +311,8 @@ path.join(process.cwd(), "cloud-functions/check-tiktok-upload-status/generated/l
 
 path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
 path.join(process.cwd(), "cloud-functions/check-tiktok-upload-status/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
+
+path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
+path.join(process.cwd(), "cloud-functions/check-tiktok-upload-status/generated/libquery_engine-debian-openssl-1.1.x.so.node")
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "cloud-functions/check-tiktok-upload-status/generated/schema.prisma")

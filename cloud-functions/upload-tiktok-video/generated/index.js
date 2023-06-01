@@ -311,5 +311,8 @@ path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/libquery
 
 path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
 path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
+
+path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
+path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/libquery_engine-debian-openssl-1.1.x.so.node")
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/schema.prisma")

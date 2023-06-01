@@ -311,5 +311,8 @@ path.join(process.cwd(), "cloud-functions/handle-gcs-video-upload/generated/libq
 
 path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
 path.join(process.cwd(), "cloud-functions/handle-gcs-video-upload/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
+
+path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
+path.join(process.cwd(), "cloud-functions/handle-gcs-video-upload/generated/libquery_engine-debian-openssl-1.1.x.so.node")
 path.join(__dirname, "schema.prisma");
 path.join(process.cwd(), "cloud-functions/handle-gcs-video-upload/generated/schema.prisma")
