@@ -263,7 +263,7 @@ app.post("/upload-tiktok", async (req, res) => {
 
     await Promise.all(
       videoChunks.map(async (chunk, index) => {
-        const header = getTikTokRequestHeaders({
+        const headers = getTikTokRequestHeaders({
           chunk,
           index,
           chunkSize,
@@ -271,11 +271,9 @@ app.post("/upload-tiktok", async (req, res) => {
           videoSize,
         });
 
-        console.log(header, "header");
-
         const chunkUploadRes = await fetch(upload_url, {
           method: "PUT",
-          headers: header,
+          headers,
           body: chunk,
         });
 
