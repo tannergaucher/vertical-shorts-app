@@ -5,7 +5,6 @@ import { prisma } from "~/db.server";
 import { ChannelType } from "@prisma/client";
 
 import { getChannels } from "~/models/chanel.server";
-import type { ProjectWithChannels } from "~/models/project.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
@@ -83,8 +82,6 @@ export default function Page() {
 
   const allChannelTypes = Object.keys(ChannelType) as ChannelType[];
 
-  console.log(project, "project");
-
   return (
     <main>
       <fieldset>
@@ -127,7 +124,11 @@ export default function Page() {
             <ChannelItem
               key={channelType}
               channelType={channelType}
-              project={project}
+              isSelected={Boolean(
+                project?.channels.find(
+                  (channel) => channel.channelType === channelType
+                )
+              )}
             />
           );
         })}
@@ -153,15 +154,11 @@ function getRouteFromChannelType(channelType: ChannelType) {
 
 function ChannelItem({
   channelType,
-  project,
+  isSelected,
 }: {
   channelType: ChannelType;
-  project?: ProjectWithChannels | null;
+  isSelected: boolean;
 }) {
-  const isSelected = project?.channels.find(
-    (channel) => channel.channelType === channelType
-  );
-
   return (
     <Link
       className="channel"
