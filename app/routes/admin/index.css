@@ -1,0 +1,54 @@
+main {
+  max-width: var(--container);
+  margin: 0 auto;
+}
+
+select {
+  width: 100%;
+  font-size: xx-large;
+  margin-block-start: var(--space-4);
+  margin-block-end: var(--space-2);
+}
+
+fieldset {
+  margin-block-start: var(--space-3);
+  margin-block-end: var(--space-3);
+  padding: var(--space-2);
+}
+
+.channels-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+  border-radius: var(--radius);
+}
+
+.channel {
+  border: var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.channel[data-selected="true"] {
+  border-color: var(--accent);
+  background-color: var(--bg-2);
+  transition: border-color background-color var(--duration);
+}
+
+.channel:hover {
+  border-color: var(--accent);
+  background-color: var(--bg-2);
+  transition: border-color background-color var(--duration);
+}
+
+.channel-title {
+  font-size: x-large;
+  font-weight: bold;
+  margin-block-start: var(--space-3);
+  margin-block-end: var(--space-3);
+  padding: var(--space-3);
+  text-align: center;
+}

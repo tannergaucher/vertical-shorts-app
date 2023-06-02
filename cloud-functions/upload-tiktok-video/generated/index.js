@@ -30,11 +30,11 @@ exports.Prisma = Prisma
 
 /**
  * Prisma Client JS version: 4.15.0
- * Query Engine version: 8fde8fef4033376662cad983758335009d522acb
+ * Query Engine version: 8fbc245156db7124f997f4cecdd8d1219e360944
  */
 Prisma.prismaVersion = {
   client: "4.15.0",
-  engine: "8fde8fef4033376662cad983758335009d522acb"
+  engine: "8fbc245156db7124f997f4cecdd8d1219e360944"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -235,7 +235,8 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "darwin-arm64"
+        "value": "darwin-arm64",
+        "native": true
       },
       {
         "fromEnvVar": null,
@@ -255,12 +256,13 @@ const config = {
   },
   "relativePath": "../../../prisma",
   "clientVersion": "4.15.0",
-  "engineVersion": "8fde8fef4033376662cad983758335009d522acb",
+  "engineVersion": "8fbc245156db7124f997f4cecdd8d1219e360944",
   "datasourceNames": [
     "db"
   ],
   "activeProvider": "postgresql",
-  "dataProxy": false
+  "dataProxy": false,
+  "postinstall": false
 }
 
 const fs = require('fs')
@@ -290,11 +292,11 @@ const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
-path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
-path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/libquery_engine-debian-openssl-1.1.x.so.node")
-
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
 path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/libquery_engine-darwin-arm64.dylib.node")
+
+path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
+path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/libquery_engine-debian-openssl-1.1.x.so.node")
 
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
 path.join(process.cwd(), "cloud-functions/upload-tiktok-video/generated/libquery_engine-debian-openssl-3.0.x.so.node")

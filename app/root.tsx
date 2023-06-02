@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
@@ -10,9 +10,12 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import styles from "./styles/index.css";
+
+import stylesheet from "./styles/index.css";
 import { getUser } from "./session.server";
 import { Routes } from "./routes";
+
+import root from "./root.css";
 
 export const links: LinksFunction = () => {
   return [
@@ -23,7 +26,12 @@ export const links: LinksFunction = () => {
     },
     {
       rel: "stylesheet",
-      href: styles,
+      href: stylesheet,
+      type: "text/css",
+    },
+    {
+      rel: "stylesheet",
+      href: root,
       type: "text/css",
     },
   ];
@@ -42,8 +50,6 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 export default function App() {
-  const navigate = useNavigate();
-
   return (
     <html lang="en">
       <head>
@@ -51,64 +57,29 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <nav
-          className="padding"
-          style={{
-            position: "sticky",
-            top: 0,
-            display: "flex",
-            justifyContent: "space-between",
-            backgroundColor: `var(--bg-2)`,
-            boxShadow: `var(--elevation-3)`,
-          }}
-        >
+        <nav>
           <Link to={Routes.Index}>
-            <h3
-              style={{
-                marginBlockEnd: `var(--space-sm)`,
-              }}
-            >
-              Shorts Publisher
-            </h3>
+            <h1>Shorts Publisher</h1>
           </Link>
-          <section
-            style={{
-              display: `grid`,
-              gridTemplateColumns: `1fr 1fr`,
-              alignItems: `center`,
-            }}
-          >
-            <button
-              style={{
-                textTransform: `initial`,
-                marginBlockEnd: `0`,
-              }}
-              onClick={() => {
-                navigate(Routes.Admin);
-              }}
-            >
-              Admin
-            </button>
-            <button
-              className="primary"
-              style={{
-                textTransform: `initial`,
-                marginBlockEnd: `0`,
-              }}
-              onClick={() => {
-                navigate(Routes.AdminContentTitle);
-              }}
-            >
-              Create
-            </button>
-          </section>
+          <menu>
+            <ul>
+              <li>
+                <Link to={Routes.Admin}>
+                  <h3>Admin</h3>
+                </Link>
+              </li>
+              <li>
+                <Link to={Routes.AdminContentTitle}>
+                  <h3>Create</h3>
+                </Link>
+              </li>
+            </ul>
+          </menu>
         </nav>
-        <div className="container">
-          <Outlet />
-          <ScrollRestoration />
-          <Scripts />
-          <LiveReload />
-        </div>
+        <Outlet />
+        <ScrollRestoration />
+        <Scripts />
+        <LiveReload />
       </body>
     </html>
   );
