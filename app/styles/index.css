@@ -1,2 +1,121 @@
+/* import fira sans */
 
+@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700;700&display=swap");
 
+:root {
+  --bg-1: #f5f5f5;
+  --bg-2: #fff;
+  --text: #000;
+  --border-color: #fff;
+  --border: 0.25rem solid var(--border-color);
+  --accent: dodgerblue;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --radius: 0.25rem;
+  --duration: 0.15s ease-in-out;
+  --container: 80%;
+}
+
+html {
+  background-color: var(--bg-1);
+  color: var(--text);
+  font-family: "Fira Sans", sans-serif;
+}
+
+input,
+button,
+textarea {
+  font-family: "Fira Sans", sans-serif;
+}
+
+a {
+  color: var(--accent);
+}
+
+fieldset,
+select {
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-1: #000;
+    --bg-2: #1a1a1a;
+    --text: #fff;
+    --border-color: #1a1a1a;
+    --accent: palevioletred;
+  }
+}
+
+/*
+  1. Use a more-intuitive box-sizing model.
+*/
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+/*
+  2. Remove default margin
+*/
+* {
+  margin: 0;
+}
+/*
+  3. Allow percentage-based heights in the application
+*/
+html,
+body {
+  height: 100%;
+}
+/*
+  Typographic tweaks!
+  4. Add accessible line-height
+  5. Improve text rendering
+*/
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+/*
+  6. Improve media defaults
+*/
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+/*
+  7. Remove built-in form typography styles
+*/
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+/*
+  8. Avoid text overflows
+*/
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+/*
+  9. Create a root stacking context
+*/
+#root,
+#__next {
+  isolation: isolate;
+}

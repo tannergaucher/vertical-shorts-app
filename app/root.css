@@ -1,0 +1,25 @@
+nav {
+  background-color: var(--bg-2);
+  display: grid;
+  gap: var(--space-1);
+  grid-template-columns: 1fr auto;
+  padding: var(--space-2);
+  margin-block-end: var(--space-3);
+}
+
+ul {
+  display: flex;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}

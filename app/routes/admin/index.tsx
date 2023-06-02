@@ -2,16 +2,29 @@ import type { LoaderArgs, ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Form, useLoaderData, useSubmit, Link } from "@remix-run/react";
 import { prisma } from "~/db.server";
-import type { ChannelType } from "@prisma/client";
+import { ChannelType } from "@prisma/client";
 
-import type { Channel } from "~/models/chanel.server";
 import { getChannels } from "~/models/chanel.server";
+import type { ProjectWithChannels } from "~/models/project.server";
+import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
+import styles from "./index.css";
 
 type LoaderData = {
   user?: Awaited<ReturnType<typeof getUser>>;
   channels?: Awaited<ReturnType<typeof getChannels>>;
+  project?: Awaited<ReturnType<typeof getProject>>;
+};
+
+export const links = () => {
+  return [
+    {
+      rel: "stylesheet",
+      href: styles,
+      type: "text/css",
+    },
+  ];
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -25,8 +38,13 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect(Routes.AdminCreateProject);
   }
 
+  const project = await getProject({
+    id: user.currentProjectId,
+  });
+
   return json<LoaderData>({
     user,
+    project,
     channels: await getChannels({
       projectId: user.currentProjectId,
     }),
@@ -57,17 +75,21 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { user, channels } = useLoaderData<LoaderData>();
+  const { user, project } = useLoaderData<LoaderData>();
 
   const submit = useSubmit();
 
   if (!user) return null;
 
+  const allChannelTypes = Object.keys(ChannelType) as ChannelType[];
+
+  console.log(project, "project");
+
   return (
     <main>
       <fieldset>
         <Form method="post">
-          <label htmlFor="currentProjectId">Select Currrent Project</label>
+          <label htmlFor="currentProjectId">Current Project</label>
           <br />
           <select
             id="currentProjectId"
@@ -99,59 +121,59 @@ export default function Page() {
           <h3>New Project</h3>
         </Link>
       </fieldset>
-      <br />
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(2, 1fr)",
-          justifyItems: "start",
-        }}
-      >
-        {channels?.map((channel) => (
-          <ChannelItem key={channel.channelType} channel={channel} />
-        ))}
-      </section>
-      <section>
-        <Link to={Routes.AuthorizeYoutube}>
-          <h2>Add Youtube</h2>
-        </Link>
-        <Link to={Routes.AuthorizeTikTok}>
-          <h2>Add TikTok</h2>
-        </Link>
-        <Link to={Routes.AuthorizeInstagram}>
-          <h2>Add Instagram</h2>
-        </Link>
-        <Link to={Routes.AuthorizeTwitter}>
-          <h2>Add Twitter</h2>
-        </Link>
-        <Link to={Routes.AuthorizeFacebook}>
-          <h2>Add Facebook</h2>
-        </Link>
+      <section className="channels-grid">
+        {allChannelTypes.map((channelType) => {
+          return (
+            <ChannelItem
+              key={channelType}
+              channelType={channelType}
+              project={project}
+            />
+          );
+        })}
       </section>
     </main>
   );
 }
 
-type ChannelItemType =
-  | Pick<Channel, "name" | "channelType" | "views" | "subscribers">
-  | {
-      channelType: ChannelType;
-      href?: string;
-    };
+function getRouteFromChannelType(channelType: ChannelType) {
+  switch (channelType) {
+    case "YOUTUBE":
+      return Routes.AuthorizeYoutube;
+    case "TIKTOK":
+      return Routes.AuthorizeTikTok;
+    case "INSTAGRAM":
+      return Routes.AuthorizeInstagram;
+    case "TWITTER":
+      return Routes.AuthorizeTwitter;
+    case "FACEBOOK":
+      return Routes.AuthorizeFacebook;
+  }
+}
 
-function ChannelItem({ channel }: { channel: ChannelItemType }) {
-  return "href" in channel && channel.href ? (
-    <Link to={channel.href}>
-      <h3>Add {channel.channelType}</h3>
+function ChannelItem({
+  channelType,
+  project,
+}: {
+  channelType: ChannelType;
+  project?: ProjectWithChannels | null;
+}) {
+  const isSelected = project?.channels.find(
+    (channel) => channel.channelType === channelType
+  );
+
+  return (
+    <Link
+      className="channel"
+      key={channelType}
+      to={getRouteFromChannelType(channelType)}
+      data-selected={isSelected ? "true" : "false"}
+    >
+      <h3 className="channel-title">{`${
+        isSelected
+          ? `UPDATE ${channelType} CHANNEL`
+          : `ADD ${channelType} CHANNEL`
+      }`}</h3>
     </Link>
-  ) : "name" in channel ? (
-    <div>
-      <h3>{channel.channelType}</h3>
-      <h4>{channel.name}</h4>
-      <ul>
-        <li>{`${channel.views} views`}</li>
-        <li>{`${channel.subscribers} subscribers`}</li>
-      </ul>
-    </div>
-  ) : null;
+  );
 }
