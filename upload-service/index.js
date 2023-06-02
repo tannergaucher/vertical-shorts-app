@@ -6,6 +6,10 @@ require("dotenv").config();
 
 const { PrismaClient, UploadStatus } = require("./generated");
 const { UPLOAD_SERVICE_BASE_URL } = require("./utils/constants");
+const {
+  getTikTokVideoChunks,
+  getTikTokRequestHeaders,
+} = require("./utils/tiktok");
 
 const app = express();
 app.use(express.json());
@@ -216,64 +220,30 @@ app.post("/upload-tiktok", async (req, res) => {
   const totalChunkCount = Math.ceil(videoSize / maxChunkSize);
   const chunkSize = Math.floor(videoSize / totalChunkCount);
 
-  const getVideoChunks = () => {
-    if (videoSize < minChunkSize) {
-      // Upload the entire video as a single chunk
-      return [videoBinary];
-    } else if (videoSize <= maxChunkSize) {
-      // Upload the entire video as a single chunk, since it's less than or equal to the maximum chunk size
-      return [videoBinary];
-    } else {
-      const chunks = [];
-      let remainingBytes = videoSize;
-      let offset = 0;
-
-      for (let i = 0; i < totalChunkCount; i++) {
-        let currentChunkSize = chunkSize;
-
-        if (i === totalChunkCount - 1) {
-          // Last chunk can be greater to accommodate any trailing bytes
-          currentChunkSize = Math.min(remainingBytes, maxFinalChunkSize);
-        }
-
-        const chunk = videoBinary.slice(offset, offset + currentChunkSize);
-        chunks.push(chunk);
-
-        offset += currentChunkSize;
-        remainingBytes -= currentChunkSize;
-      }
-
-      return chunks;
-    }
-  };
-
-  const videoChunks = getVideoChunks();
-
   try {
+    const body = JSON.stringify({
+      source: "FILE_UPLOAD",
+      video_size: videoStats.size,
+      chunk_size: chunkSize,
+      total_chunk_count: totalChunkCount,
+    });
+
+    const headers = {
+      Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
+      "Content-Type": "application/json;",
+    };
+
     const initRes = await fetch(
       `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
       {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify({
-          source: "FILE_UPLOAD",
-          video_size: videoStats.size,
-          chunk_size: chunkSize,
-          total_chunk_count: totalChunkCount,
-        }),
+        headers,
+        body,
       }
     );
 
     if (!initRes.ok) {
       console.log(initRes, "initRes.error");
-      // get response body
-      const initResJson = await initRes.json();
-
-      console.log(initResJson, "initResJson");
-
       throw new Error("ERROR_INITIALIZING_TIKTOK_UPLOAD");
     }
 
@@ -281,22 +251,25 @@ app.post("/upload-tiktok", async (req, res) => {
 
     const { upload_url, publish_id } = data;
 
-    console.log(upload_url, "upload_url");
-    console.log(publish_id, "publish_id");
+    const videoChunks = getTikTokVideoChunks({
+      videoSize,
+      videoBinary,
+      minChunkSize,
+      maxChunkSize,
+      maxFinalChunkSize,
+      totalChunkCount,
+      chunkSize,
+    });
 
     await Promise.all(
       videoChunks.map(async (chunk, index) => {
-        console.log(chunk.size, "chunk.size");
-
-        const headers = {
-          "Content-Type": "video/mp4",
-          "Content-Length": chunk.length,
-          "Content-Range": `bytes ${index * chunkSize}-${
-            index * chunkSize + chunk.length - 1
-          }/${videoSize}`,
-        };
-
-        console.log(headers, "headers");
+        const headers = getTikTokRequestHeaders({
+          chunk,
+          index,
+          chunkSize,
+          totalChunkCount,
+          videoSize,
+        });
 
         const chunkUploadRes = await fetch(upload_url, {
           method: "PUT",
@@ -309,8 +282,7 @@ app.post("/upload-tiktok", async (req, res) => {
           throw new Error("ERROR_UPLOADING_TIKTOK_CHUNK");
         }
 
-        console.log(chunkUploadRes, "chunkUploadRes");
-
+        console.log(chunkUploadRes, index, "chunkUploadRes Index");
         return chunkUploadRes;
       })
     );
