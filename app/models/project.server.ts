@@ -10,5 +10,11 @@ export async function getProject({ id }: { id: string }) {
     },
   });
 
-  return project;
+  return {
+    ...project,
+    channels: project.channels.map((channel) => ({
+      ...channel,
+      createdAt: channel.createdAt.toISOString(),
+    })),
+  };
 }

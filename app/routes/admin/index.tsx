@@ -2,13 +2,14 @@ import type { LoaderArgs, ActionFunction } from "@remix-run/node";
 import { redirect, json } from "@remix-run/node";
 import { Form, useLoaderData, useSubmit, Link } from "@remix-run/react";
 import { prisma } from "~/db.server";
+import type { Channel } from "@prisma/client";
 import { ChannelType } from "@prisma/client";
 
 import { getChannels } from "~/models/chanel.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "./index.css";
+import styles from "~/styles/admin.css";
 
 type LoaderData = {
   user?: Awaited<ReturnType<typeof getUser>>;
@@ -124,11 +125,15 @@ export default function Page() {
             <ChannelItem
               key={channelType}
               channelType={channelType}
-              isSelected={Boolean(
-                project?.channels.find(
-                  (channel) => channel.channelType === channelType
-                )
+              projectChannel={project?.channels.find(
+                (channel) => channel.channelType === channelType
               )}
+              // channelType={channelType}
+              // isSelected={Boolean(
+              //   project?.channels.find(
+              //     (channel) => channel.channelType === channelType
+              //   )
+              // )}
             />
           );
         })}
@@ -154,21 +159,24 @@ function getRouteFromChannelType(channelType: ChannelType) {
 
 function ChannelItem({
   channelType,
-  isSelected,
+  projectChannel,
 }: {
   channelType: ChannelType;
-  isSelected: boolean;
+  projectChannel?: Omit<Channel, "createdAt" | "updatedAt"> & {
+    createdAt: string;
+    updatedAt: string;
+  };
 }) {
+  console.log(projectChannel, "projectChannel");
   return (
     <Link
       className="channel"
-      key={channelType}
       to={getRouteFromChannelType(channelType)}
-      data-selected={isSelected ? "true" : "false"}
+      data-selected={projectChannel ? "true" : "false"}
     >
       <h3 className="channel-title">{`${
-        isSelected
-          ? `UPDATE ${channelType} CHANNEL`
+        projectChannel
+          ? `${channelType} | ${projectChannel.name}`
           : `ADD ${channelType} CHANNEL`
       }`}</h3>
     </Link>

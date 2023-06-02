@@ -35,9 +35,19 @@ a {
 }
 
 fieldset,
-select {
+select,
+input {
   border: var(--border);
   border-radius: var(--radius);
+  background-color: var(--bg-2);
+  padding: var(--space-1);
+  color: var(--text);
+  border-radius: var(--radius);
+}
+
+input,
+select {
+  background-color: var(--bg-1);
 }
 
 @media (prefers-color-scheme: dark) {
