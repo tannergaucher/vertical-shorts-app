@@ -66,7 +66,16 @@ app.post("/upload", async (req, res) => {
         }
 
         if (content.project.tikTokCredentials) {
-          console.log("todo call tiktok endpoint");
+          fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              projectId,
+              slug,
+            }),
+          });
         }
       })
       .on("error", (err) => {
@@ -277,6 +286,8 @@ app.post("/upload-tiktok", async (req, res) => {
 
     await Promise.all(
       videoChunks.map(async (chunk, index) => {
+        console.log(chunk.size, "chunk.size");
+
         const headers = {
           "Content-Type": "video/mp4",
           "Content-Length": chunk.length,
@@ -284,6 +295,8 @@ app.post("/upload-tiktok", async (req, res) => {
             index * chunkSize + chunk.length - 1
           }/${videoSize}`,
         };
+
+        console.log(headers, "headers");
 
         const chunkUploadRes = await fetch(upload_url, {
           method: "PUT",
@@ -296,17 +309,55 @@ app.post("/upload-tiktok", async (req, res) => {
           throw new Error("ERROR_UPLOADING_TIKTOK_CHUNK");
         }
 
-        const json = await chunkUploadRes.json();
-        console.log(json, "chunkUploadRes json");
+        console.log(chunkUploadRes, "chunkUploadRes");
 
         return chunkUploadRes;
       })
     );
 
-    // call check titkok upload status endpoint with publish_id
+    fetch(
+      `${UPLOAD_SERVICE_BASE_URL}/tiktok-upload-status?publish_id=${publish_id}&project_id=${projectId}`
+    );
   } catch (error) {
     console.log(error, "error initializing tiktok upload");
   }
+});
+
+app.get("/tiktok-upload-status", async (req, res) => {
+  const { publish_id, project_id } = req.query;
+
+  const project = await prisma.project.findUnique({
+    where: {
+      id: project_id,
+    },
+    select: {
+      tikTokCredentials: true,
+    },
+  });
+
+  const statusRes = await fetch(
+    "https://open.tiktokapis.com/v2/post/publish/status/fetch/",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        publish_id,
+      }),
+    }
+  );
+
+  if (!statusRes.ok) {
+    const { status, statusText } = statusRes;
+    console.log(status, "status");
+    console.log(statusText, "statusText");
+    throw new Error("ERROR_GETTING_TIKTOK_UPLOAD_STATUS");
+  }
+
+  const statusResJson = await statusRes.json();
+  console.log(statusResJson, "resJson");
 });
 
 const port = parseInt(process.env.PORT) || 8080;
