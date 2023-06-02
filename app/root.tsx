@@ -15,7 +15,7 @@ import stylesheet from "./styles/index.css";
 import { getUser } from "./session.server";
 import { Routes } from "./routes";
 
-import root from "./root.css";
+import root from "./styles/root.css";
 
 export const links: LinksFunction = () => {
   return [
