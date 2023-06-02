@@ -6,6 +6,10 @@ require("dotenv").config();
 
 const { PrismaClient, UploadStatus } = require("./generated");
 const { UPLOAD_SERVICE_BASE_URL } = require("./utils/constants");
+const {
+  getTikTokVideoChunks,
+  getTikTokRequestHeaders,
+} = require("./utils/tiktok");
 
 const app = express();
 app.use(express.json());
@@ -52,18 +56,18 @@ app.post("/upload", async (req, res) => {
       })
       .on("finish", () => {
         console.log("dl finished");
-        if (content.project.youtubeCredentials) {
-          fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              projectId,
-              slug,
-            }),
-          });
-        }
+        // if (content.project.youtubeCredentials) {
+        //   fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       projectId,
+        //       slug,
+        //     }),
+        //   });
+        // }
 
         if (content.project.tikTokCredentials) {
           fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
@@ -206,7 +210,6 @@ app.post("/upload-tiktok", async (req, res) => {
 
   const videoFilePath = `${slug}.mp4`;
 
-  const videoStats = fs.statSync(videoFilePath);
   const videoBinary = fs.readFileSync(videoFilePath);
 
   const videoSize = videoBinary.length;
@@ -216,38 +219,17 @@ app.post("/upload-tiktok", async (req, res) => {
   const totalChunkCount = Math.ceil(videoSize / maxChunkSize);
   const chunkSize = Math.floor(videoSize / totalChunkCount);
 
-  const getVideoChunks = () => {
-    if (videoSize < minChunkSize) {
-      // Upload the entire video as a single chunk
-      return [videoBinary];
-    } else if (videoSize <= maxChunkSize) {
-      // Upload the entire video as a single chunk, since it's less than or equal to the maximum chunk size
-      return [videoBinary];
-    } else {
-      const chunks = [];
-      let remainingBytes = videoSize;
-      let offset = 0;
+  const videoChunks = getTikTokVideoChunks({
+    videoSize,
+    videoBinary,
+    minChunkSize,
+    maxChunkSize,
+    maxFinalChunkSize,
+    totalChunkCount,
+    chunkSize,
+  });
 
-      for (let i = 0; i < totalChunkCount; i++) {
-        let currentChunkSize = chunkSize;
-
-        if (i === totalChunkCount - 1) {
-          // Last chunk can be greater to accommodate any trailing bytes
-          currentChunkSize = Math.min(remainingBytes, maxFinalChunkSize);
-        }
-
-        const chunk = videoBinary.slice(offset, offset + currentChunkSize);
-        chunks.push(chunk);
-
-        offset += currentChunkSize;
-        remainingBytes -= currentChunkSize;
-      }
-
-      return chunks;
-    }
-  };
-
-  const videoChunks = getVideoChunks();
+  console.log(videoChunks, "videoChunks");
 
   try {
     const initRes = await fetch(
@@ -260,7 +242,7 @@ app.post("/upload-tiktok", async (req, res) => {
         },
         body: JSON.stringify({
           source: "FILE_UPLOAD",
-          video_size: videoStats.size,
+          video_size: videoSize,
           chunk_size: chunkSize,
           total_chunk_count: totalChunkCount,
         }),
@@ -269,11 +251,6 @@ app.post("/upload-tiktok", async (req, res) => {
 
     if (!initRes.ok) {
       console.log(initRes, "initRes.error");
-      // get response body
-      const initResJson = await initRes.json();
-
-      console.log(initResJson, "initResJson");
-
       throw new Error("ERROR_INITIALIZING_TIKTOK_UPLOAD");
     }
 
@@ -281,26 +258,23 @@ app.post("/upload-tiktok", async (req, res) => {
 
     const { upload_url, publish_id } = data;
 
-    console.log(upload_url, "upload_url");
     console.log(publish_id, "publish_id");
 
     await Promise.all(
       videoChunks.map(async (chunk, index) => {
-        console.log(chunk.size, "chunk.size");
+        const header = getTikTokRequestHeaders({
+          chunk,
+          index,
+          chunkSize,
+          totalChunkCount,
+          videoSize,
+        });
 
-        const headers = {
-          "Content-Type": "video/mp4",
-          "Content-Length": chunk.length,
-          "Content-Range": `bytes ${index * chunkSize}-${
-            index * chunkSize + chunk.length - 1
-          }/${videoSize}`,
-        };
-
-        console.log(headers, "headers");
+        console.log(header, "header");
 
         const chunkUploadRes = await fetch(upload_url, {
           method: "PUT",
-          headers,
+          headers: header,
           body: chunk,
         });
 
@@ -309,15 +283,14 @@ app.post("/upload-tiktok", async (req, res) => {
           throw new Error("ERROR_UPLOADING_TIKTOK_CHUNK");
         }
 
-        console.log(chunkUploadRes, "chunkUploadRes");
-
+        console.log(chunkUploadRes, index, "chunkUploadRes Index");
         return chunkUploadRes;
       })
     );
 
-    fetch(
-      `${UPLOAD_SERVICE_BASE_URL}/tiktok-upload-status?publish_id=${publish_id}&project_id=${projectId}`
-    );
+    // fetch(
+    //   `${UPLOAD_SERVICE_BASE_URL}/tiktok-upload-status?publish_id=${publish_id}&project_id=${projectId}`
+    // );
   } catch (error) {
     console.log(error, "error initializing tiktok upload");
   }
@@ -365,3 +338,19 @@ const port = parseInt(process.env.PORT) || 8080;
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
+
+// {
+//   'Content-Type': 'video/mp4',
+//   'Content-Length': 58722799,
+//   'Content-Range': 'bytes 0-58722798/176168399'
+// } header
+// {
+//   'Content-Type': 'video/mp4',
+//   'Content-Length': 58722799,
+//   'Content-Range': 'bytes 58722799-117445598/176168399'
+// } header
+// {
+//   'Content-Type': 'video/mp4',
+//   'Content-Length': 58722801,
+//   'Content-Range': 'bytes 117445599-176168398/176168399'
+// }
