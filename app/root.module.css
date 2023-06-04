@@ -1,4 +1,4 @@
-nav {
+.nav {
   background-color: var(--bg-2);
   display: grid;
   gap: var(--space-1);
@@ -9,7 +9,7 @@ nav {
   top: 0;
 }
 
-ul {
+.ul {
   display: flex;
   gap: var(--space-1);
   list-style: none;
@@ -17,7 +17,7 @@ ul {
   padding: 0;
 }
 
-menu {
+.menu {
   display: flex;
   align-items: center;
   gap: var(--space-1);

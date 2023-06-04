@@ -8,14 +8,15 @@
   --text: #000;
   --border-color: #fff;
   --border: 0.25rem solid var(--border-color);
-  --accent: dodgerblue;
+  --accent: darkblue;
   --space-1: 0.5rem;
   --space-2: 1rem;
   --space-3: 1.5rem;
   --space-4: 2rem;
   --radius: 0.25rem;
   --duration: 0.15s ease-in-out;
-  --container: 80%;
+  --container: 75%;
+  --header-height: 68px;
 }
 
 html {
@@ -37,7 +38,7 @@ a {
 fieldset,
 select,
 input {
-  border: var(--border);
+  border: var(--bg-1);
   border-radius: var(--radius);
   background-color: var(--bg-2);
   padding: var(--space-1);
@@ -48,6 +49,18 @@ input {
 input,
 select {
   background-color: var(--bg-1);
+  width: 100%;
+}
+
+button {
+  background-color: var(--accent);
+  color: var(--bg-2);
+  border: none;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  cursor: pointer;
+  width: 100%;
+  transition: background-color var(--duration);
 }
 
 @media (prefers-color-scheme: dark) {

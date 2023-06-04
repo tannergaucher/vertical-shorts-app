@@ -9,22 +9,13 @@ import { getChannels } from "~/models/chanel.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/admin.css";
+
+import styles from "~/styles/adminContent.module.css";
 
 type LoaderData = {
   user?: Awaited<ReturnType<typeof getUser>>;
   channels?: Awaited<ReturnType<typeof getChannels>>;
   project?: Awaited<ReturnType<typeof getProject>>;
-};
-
-export const links = () => {
-  return [
-    {
-      rel: "stylesheet",
-      href: styles,
-      type: "text/css",
-    },
-  ];
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -84,14 +75,15 @@ export default function Page() {
   const allChannelTypes = Object.keys(ChannelType) as ChannelType[];
 
   return (
-    <main>
-      <fieldset>
+    <main className={styles.main}>
+      <fieldset className={styles.fieldset}>
         <Form method="post">
           <label htmlFor="currentProjectId">Current Project</label>
           <br />
           <select
             id="currentProjectId"
             name="currentProjectId"
+            className={styles.select}
             onChange={(event) => {
               submit(
                 {
@@ -119,7 +111,7 @@ export default function Page() {
           <h3>New Project</h3>
         </Link>
       </fieldset>
-      <section className="channels-grid">
+      <section className={styles.channelsGrid}>
         {allChannelTypes.map((channelType) => {
           return (
             <ChannelItem
@@ -128,12 +120,6 @@ export default function Page() {
               projectChannel={project?.channels.find(
                 (channel) => channel.channelType === channelType
               )}
-              // channelType={channelType}
-              // isSelected={Boolean(
-              //   project?.channels.find(
-              //     (channel) => channel.channelType === channelType
-              //   )
-              // )}
             />
           );
         })}
@@ -167,14 +153,13 @@ function ChannelItem({
     updatedAt: string;
   };
 }) {
-  console.log(projectChannel, "projectChannel");
   return (
     <Link
-      className="channel"
+      className={styles.channel}
       to={getRouteFromChannelType(channelType)}
       data-selected={projectChannel ? "true" : "false"}
     >
-      <h3 className="channel-title">{`${
+      <h3 className={styles.channelTitle}>{`${
         projectChannel
           ? `${channelType} | ${projectChannel.name}`
           : `ADD ${channelType} CHANNEL`

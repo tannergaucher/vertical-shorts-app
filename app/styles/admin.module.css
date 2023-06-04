@@ -1,9 +1,9 @@
-main {
+.main {
   max-width: var(--container);
   margin: 0 auto;
 }
 
-select {
+.select {
   width: 100%;
   font-size: xx-large;
   margin-block-start: var(--space-3);
@@ -12,14 +12,14 @@ select {
   text-align: center;
 }
 
-fieldset {
+.fieldset {
   margin-block-start: var(--space-3);
   margin-block-end: var(--space-3);
   padding: var(--space-2);
   text-align: center;
 }
 
-.channels-grid {
+.channelsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--space-4);
@@ -47,7 +47,7 @@ fieldset {
   transition: border-color background-color var(--duration);
 }
 
-.channel-title {
+.channelTitle {
   font-size: x-large;
   font-weight: bold;
   margin-block-start: var(--space-3);
