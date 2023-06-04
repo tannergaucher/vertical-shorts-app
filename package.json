@@ -31,7 +31,7 @@
     "@google-cloud/pubsub": "^3.3.0",
     "@google-cloud/storage": "^6.9.1",
     "@prisma/client": "4.15.0",
-    "@remix-run/css-bundle": "^1.16.1",
+    "@remix-run/css-bundle": "1.16.1",
     "@remix-run/node": "1.16.1",
     "@remix-run/react": "1.16.1",
     "@remix-run/serve": "1.16.1",
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^7.5.0",
-    "@remix-run/dev": "1.13.0",
+    "@remix-run/dev": "1.16.1",
     "@remix-run/eslint-config": "1.13.0",
     "@remix-run/netlify": "1.14.3",
     "@testing-library/cypress": "^8.0.3",

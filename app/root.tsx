@@ -10,12 +10,13 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { cssBundleHref } from "@remix-run/css-bundle";
 
-import stylesheet from "./styles/index.css";
 import { getUser } from "./session.server";
 import { Routes } from "./routes";
 
-import root from "./root.css";
+import stylesheet from "./styles/index.css";
+import styles from "./root.module.css";
 
 export const links: LinksFunction = () => {
   return [
@@ -29,11 +30,7 @@ export const links: LinksFunction = () => {
       href: stylesheet,
       type: "text/css",
     },
-    {
-      rel: "stylesheet",
-      href: root,
-      type: "text/css",
-    },
+    ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
   ];
 };
 
@@ -57,12 +54,12 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <nav>
+        <nav className={styles.nav}>
           <Link to={Routes.Index}>
             <h1>Shorts Publisher</h1>
           </Link>
-          <menu>
-            <ul>
+          <menu className={styles.menu}>
+            <ul className={styles.ul}>
               <li>
                 <Link to={Routes.Admin}>
                   <h3>Admin</h3>

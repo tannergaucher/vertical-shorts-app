@@ -5,10 +5,14 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import invariant from "tiny-invariant";
+import { Breadcrumb } from "~/components/breadcrumb";
+
+import styles from "~/styles/adminContent.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -56,13 +60,17 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
-      <h2>Create a New Post</h2>
-      <fieldset disabled={disabled}>
+    <main className={styles.main}>
+      <fieldset disabled={disabled} className={styles.fieldset}>
+        <Breadcrumb />
         <Form method="post">
-          <label>Title</label>
-          <br />
-          <input type="text" name="title" required />
+          <input
+            type="text"
+            name="title"
+            placeholder="Title"
+            required
+            className={styles.input}
+          />
           <button type="submit">Next</button>
         </Form>
       </fieldset>

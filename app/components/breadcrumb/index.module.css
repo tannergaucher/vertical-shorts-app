@@ -1,0 +1,23 @@
+.menu {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-1);
+}
+
+.menu > ul > li > a {
+  text-decoration: none;
+  font-weight: bold;
+  padding: var(--space-1);
+  color: var(--text);
+}
+
+.menu > ul > li > a:active,
+menu > ul > li > a:hover,
+menu > ul > li > a:focus,
+menu > ul > li > a[data-current] {
+  color: var(--accent);
+  text-decoration: underline;
+}
