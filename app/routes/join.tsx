@@ -133,6 +133,7 @@ export default function Page() {
                 autoComplete="new-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
+                className={styles.input}
               />
               {actionData?.errors?.password && (
                 <div>{actionData.errors.password}</div>
