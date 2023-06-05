@@ -72,9 +72,7 @@ export default function Page() {
         <Form method="post">
           <label htmlFor="name">Project Name</label>
           <input type="text" id="name" name="name" className={styles.input} />
-          <button type="submit" className={styles.button}>
-            Create Project
-          </button>
+          <button type="submit">Create Project</button>
         </Form>
       </fieldset>
     </main>
