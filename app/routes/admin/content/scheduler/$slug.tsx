@@ -71,9 +71,8 @@ export const action: ActionFunction = async ({ request }) => {
 
   console.log(res, "res");
 
-  if (res.ok) {
-    const json = await res.json();
-    console.log(json, "json");
+  if (!res.ok) {
+    throw new Error("Failed to upload to upload service");
   }
 
   return redirect(Routes.Admin);
