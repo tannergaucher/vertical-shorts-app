@@ -11,6 +11,8 @@ import { Routes } from "~/routes";
 import { prisma } from "~/db.server";
 import { getUser } from "~/session.server";
 
+import styles from "~/styles/admin.module.css";
+
 export const meta: MetaFunction = () => {
   return {
     title: "Create Project",
@@ -65,16 +67,15 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
-      <fieldset>
-        <fieldset disabled={disabled}>
-          <Form method="post">
-            <label htmlFor="name">Project Name</label>
-            <br />
-            <input type="text" id="name" name="name" />
-            <button type="submit">Create Project</button>
-          </Form>
-        </fieldset>
+    <main className={styles.main}>
+      <fieldset disabled={disabled} className={styles.fieldset}>
+        <Form method="post">
+          <label htmlFor="name">Project Name</label>
+          <input type="text" id="name" name="name" className={styles.input} />
+          <button type="submit" className={styles.button}>
+            Create Project
+          </button>
+        </Form>
       </fieldset>
     </main>
   );

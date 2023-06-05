@@ -7,6 +7,8 @@ import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import { prisma } from "~/db.server";
 
+import styles from "~/styles/admin.module.css";
+
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
   projectTitle: string;
@@ -48,11 +50,11 @@ export default function Page() {
   const { contents, projectTitle } = useLoaderData<LoaderData>();
 
   return (
-    <main>
+    <main className={styles.main}>
       {contents?.length ? (
-        <section>
+        <section className={styles.contentGrid}>
           {contents.map((content) => (
-            <div key={content.slug}>
+            <div key={content.slug} className={styles.content}>
               <Link to={Routes.AdminContentStatus(content.slug)}>{`${
                 content.published
                   ? `${content.title}`

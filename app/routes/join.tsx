@@ -13,6 +13,8 @@ import { getUserId, createUserSession } from "~/session.server";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { safeRedirect, validateEmail } from "~/utils";
 
+import styles from "~/styles/login.module.css";
+
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
@@ -96,9 +98,9 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <div className="padding">
+    <main className={styles.main}>
       <h1>Sign Up</h1>
-      <fieldset disabled={disabled}>
+      <fieldset disabled={disabled} className={styles.fieldset}>
         <Form method="post">
           <div>
             <label htmlFor="email">Email address</label>
@@ -113,6 +115,7 @@ export default function Page() {
                 autoComplete="email"
                 aria-invalid={actionData?.errors?.email ? true : undefined}
                 aria-describedby="email-error"
+                className={styles.input}
               />
               {actionData?.errors?.email && (
                 <div>{actionData.errors.email}</div>
@@ -137,11 +140,14 @@ export default function Page() {
             </div>
           </div>
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button type="submit">Create Account</button>
+          <button type="submit" className={styles.button}>
+            Create Account
+          </button>
           <div>
             <div>
               Already have an account?{" "}
               <Link
+                className={styles.login}
                 to={{
                   pathname: "/login",
                   search: searchParams.toString(),
@@ -153,6 +159,6 @@ export default function Page() {
           </div>
         </Form>
       </fieldset>
-    </div>
+    </main>
   );
 }

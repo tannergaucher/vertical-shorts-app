@@ -2,52 +2,73 @@ import { useLocation } from "@remix-run/react";
 import { Link } from "@remix-run/react";
 
 import styles from "./index.module.css";
-// import { Routes } from "~/routes";
+import { Routes } from "~/routes";
 
-export function Breadcrumb() {
+export function Breadcrumb({ slug }: { slug?: string }) {
   const location = useLocation();
 
-  console.log(location);
-  console.log(location.pathname.includes("/admin/content/thumbnail"));
-
   return (
-    <menu className={styles.menu}>
-      <ul>
+    <menu className={styles.breadcrumbMenu}>
+      <ul className={styles.breadcrumbList}>
         <li>
           <Link
-            to="#"
+            to={Routes.AdminContentTitle}
+            className={styles.breadcrumbLink}
             data-current={
-              location.pathname.includes("/admin/content/title")
+              location.pathname.includes(Routes.AdminContentTitle)
                 ? "true"
                 : "false"
             }
-          >{`Title >`}</Link>
+          >
+            Title
+          </Link>
         </li>
         <li>
           <Link
-            to="#"
+            to={
+              slug
+                ? Routes.AdminContentThumbnail(slug)
+                : Routes.AdminContentTitle
+            }
+            className={styles.breadcrumbLink}
             data-current={
-              location.pathname.includes("/admin/content/thumbnail")
+              location.pathname.includes(
+                Routes.AdminContentThumbnail(slug ?? "")
+              )
                 ? "true"
                 : "false"
             }
-          >{`Thumbnail >`}</Link>
+          >
+            Thumbnail
+          </Link>
         </li>
         <li>
           <Link
-            to="#"
+            to={
+              slug ? Routes.AdminContentVideo(slug) : Routes.AdminContentTitle
+            }
+            className={styles.breadcrumbLink}
             data-current={
-              location.pathname.includes("/admin/content/video")
+              location.pathname.includes(Routes.AdminContentVideo(slug ?? ""))
                 ? "true"
                 : "false"
             }
-          >{`Video >`}</Link>
+          >
+            Video
+          </Link>
         </li>
         <li>
           <Link
-            to="#"
+            to={
+              slug
+                ? Routes.AdminContentScheduler(slug)
+                : Routes.AdminContentTitle
+            }
+            className={styles.breadcrumbLink}
             data-current={
-              location.pathname.includes("/admin/content/schedule")
+              location.pathname.includes(
+                Routes.AdminContentScheduler(slug ?? "")
+              )
                 ? "true"
                 : "false"
             }

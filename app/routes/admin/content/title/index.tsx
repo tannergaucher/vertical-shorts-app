@@ -1,4 +1,4 @@
-import { Form, useTransition } from "@remix-run/react";
+import { Form, useTransition, useParams } from "@remix-run/react";
 import type {
   ActionFunction,
   LoaderFunction,
@@ -56,13 +56,15 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const transition = useTransition();
 
+  const { slug } = useParams();
+
   const disabled =
     transition.state === "loading" || transition.state === "submitting";
 
   return (
     <main className={styles.main}>
       <fieldset disabled={disabled} className={styles.fieldset}>
-        <Breadcrumb />
+        <Breadcrumb slug={slug} />
         <Form method="post">
           <input
             type="text"

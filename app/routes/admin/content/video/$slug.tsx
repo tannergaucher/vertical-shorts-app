@@ -1,13 +1,16 @@
 import { useState } from "react";
 import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData, useNavigate } from "@remix-run/react";
+import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { getUser } from "~/session.server";
 import { getContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { storage } from "~/entry.server";
+
+import styles from "~/styles/adminContent.module.css";
+import { Breadcrumb } from "~/components/breadcrumb";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -60,6 +63,8 @@ export default function Page() {
 
   const navigate = useNavigate();
 
+  const { slug } = useParams();
+
   async function handleGcpSignedUpload() {
     setDisabled(true);
 
@@ -99,17 +104,21 @@ export default function Page() {
   }
 
   return (
-    <main>
-      <h1>Post: {content.title}</h1>
-      <h2>Upload Video</h2>
+    <main className={styles.main}>
       <fieldset disabled={disabled}>
+        <Breadcrumb slug={slug} />
         <form
           onSubmit={async (e) => {
             e.preventDefault();
             await handleGcpSignedUpload();
           }}
         >
-          <input type="file" name="thumbnail" required />
+          <input
+            type="file"
+            name="thumbnail"
+            required
+            className={styles.input}
+          />
           <button type="submit">Next</button>
         </form>
       </fieldset>

@@ -1,4 +1,4 @@
-import { Form, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData, useParams } from "@remix-run/react";
 import { redirect, json } from "@remix-run/node";
 import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -8,6 +8,9 @@ import { getContent } from "~/models/content.server";
 import { getUser } from "~/session.server";
 import { upsertContent } from "~/models/content.server";
 import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
+import { Breadcrumb } from "~/components/breadcrumb";
+
+import styles from "~/styles/adminContent.module.css";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -80,16 +83,17 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
+  const { slug } = useParams();
+
   return (
-    <main>
-      <h1>Post: {content.title}</h1>
-      <h2>Schedule Publishing</h2>
+    <main className={styles.main}>
       <fieldset>
+        <Breadcrumb slug={slug} />
         <Form method="post">
           <label htmlFor="date">Date</label>
-          <input type="date" name="date" />
+          <input type="date" name="date" className={styles.input} />
           <label htmlFor="time">Time</label>
-          <input type="time" name="time" />
+          <input type="time" name="time" className={styles.input} />
           <input type="hidden" name="slug" value={content.slug} />
           <input type="hidden" name="projectId" value={content.projectId} />
           <button type="submit">Schedule</button>

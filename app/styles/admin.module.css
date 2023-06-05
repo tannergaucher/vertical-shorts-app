@@ -1,6 +1,11 @@
 .main {
   max-width: var(--container);
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: calc((100vh - var(--header-height)) - calc(var(--space-4) * 4));
 }
 
 .select {
@@ -13,20 +18,24 @@
 }
 
 .fieldset {
+  width: 100%;
   margin-block-start: var(--space-3);
   margin-block-end: var(--space-3);
   padding: var(--space-2);
   text-align: center;
 }
 
-.channelsGrid {
+.channelsGrid,
+.contentGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: var(--space-4);
   border-radius: var(--radius);
+  width: 100%;
 }
 
-.channel {
+.channel,
+.content {
   border: var(--border);
   border-radius: var(--radius);
   display: flex;
@@ -36,9 +45,10 @@
 }
 
 .channel[data-selected="true"] {
-  border-color: var(--accent);
+  /* border-color: var(--accent); */
   background-color: var(--bg-2);
   transition: border-color background-color var(--duration);
+  box-shadow: var(--elevation-2);
 }
 
 .channel:hover {
@@ -54,4 +64,14 @@
   margin-block-end: var(--space-3);
   padding: var(--space-3);
   text-align: center;
+}
+
+.button {
+  margin-block-start: var(--space-2);
+  margin-block-end: var(--space-2);
+}
+
+.input {
+  margin-block-start: var(--space-2);
+  margin-block-end: var(--space-2);
 }

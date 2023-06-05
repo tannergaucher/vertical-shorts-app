@@ -56,7 +56,7 @@ export default function App() {
       <body>
         <nav className={styles.nav}>
           <Link to={Routes.Index}>
-            <h1>Shorts Publisher</h1>
+            <h2>Shorts Publisher</h2>
           </Link>
           <menu className={styles.menu}>
             <ul className={styles.ul}>

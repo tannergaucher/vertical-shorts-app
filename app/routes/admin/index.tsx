@@ -10,7 +10,7 @@ import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
-import styles from "~/styles/adminContent.module.css";
+import styles from "~/styles/admin.module.css";
 
 type LoaderData = {
   user?: Awaited<ReturnType<typeof getUser>>;

@@ -8,21 +8,29 @@
   min-height: calc((100vh - var(--header-height)) - calc(var(--space-4) * 4));
 }
 
+.fieldset {
+  width: 100%;
+  margin-block-start: var(--space-2);
+}
+
 .input {
   margin-block-start: var(--space-2);
   margin-block-end: var(--space-2);
 }
 
-.input::file-selector-button {
-  border: 3px solid var(--accent);
-  border-radius: var(--radius);
-  padding: var(--space-1) var(--space-2);
+.button {
+  margin-block-start: var(--space-2);
+  margin-block-end: var(--space-2);
+}
+
+.checkbox {
+  margin-block-start: var(--space-2);
+  margin-block-end: var(--space-2);
+  width: initial;
   margin-right: var(--space-1);
 }
 
-.input::file-selector-button:hover {
-  background-color: var(--accent);
-  color: var(--bg-2);
-  transition: background-color color var(--duration);
-  cursor: pointer;
+.login,
+.signUp {
+  margin-left: var(--space-1);
 }
