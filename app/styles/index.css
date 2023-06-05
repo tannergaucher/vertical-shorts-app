@@ -103,6 +103,19 @@ select {
   width: 100%;
 }
 
+::-webkit-datetime-edit-fields-wrapper {
+  background-color: var(--bg-2);
+  border-radius: var(--radius);
+  padding: var(--space-1);
+  box-shadow: var(--elevation-3);
+}
+
+::-webkit-calendar-picker-indicator {
+  background-color: var(--bg-2);
+  border-radius: var(--radius);
+  padding: var(--space-1);
+}
+
 button {
   background-color: var(--accent);
   color: var(--bg-2);
@@ -121,6 +134,13 @@ button {
     --text: #fff;
     --border-color: #1a1a1a;
     --accent: palevioletred;
+  }
+
+  input[type="date"],
+  input[type="time"],
+  input[type="datetime-local"],
+  input[type="month"] {
+    color-scheme: dark;
   }
 }
 
