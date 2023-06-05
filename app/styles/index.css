@@ -1,6 +1,4 @@
-/* import fira sans */
-
-@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Recursive:wght@400;700&display=swap");
 
 :root {
   --bg-1: #f5f5f5;
@@ -21,12 +19,13 @@
   --elevation-1: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   --elevation-2: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.075);
   --elevation-3: 0 0.5rem 1rem rgba(0, 0, 0, 0.075);
+  --font-family: "Recursive", sans-serif;
 }
 
 html {
   background-color: var(--bg-1);
   color: var(--text);
-  font-family: "Fira Sans", sans-serif;
+  font-family: var(--font-family);
   accent-color: var(--accent);
   font-size: x-large;
 }
@@ -34,7 +33,7 @@ html {
 input,
 button,
 textarea {
-  font-family: "Fira Sans", sans-serif;
+  font-family: var(--font-family);
 }
 
 input[type="checkbox"] {
@@ -119,6 +118,15 @@ select {
   background-color: var(--bg-2);
   border-radius: var(--radius);
   padding: var(--space-1);
+  width: fill-available;
+  border: var(--border);
+}
+
+::-webkit-calendar-picker-indicator:hover {
+  border: var(--border);
+  border-color: var(--accent);
+  color: var(--bg-2);
+  cursor: pointer;
 }
 
 button {
@@ -156,6 +164,7 @@ button {
   input[type="datetime-local"],
   input[type="month"] {
     color-scheme: dark;
+    font-family: var(--font-family);
   }
 }
 

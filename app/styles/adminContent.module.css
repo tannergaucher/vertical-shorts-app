@@ -13,17 +13,17 @@
 }
 
 .input::file-selector-button {
-  border: 3px solid var(--accent);
+  border: var(--border);
   border-radius: var(--radius);
   padding: var(--space-1) var(--space-2);
   margin-right: var(--space-1);
   background-color: var(--bg-2);
   color: var(--text);
+  font-family: var(--font-family);
 }
 
 .input::file-selector-button:hover {
-  background-color: var(--accent);
-  color: var(--bg-2);
+  border-color: var(--accent);
   transition: background-color color var(--duration);
   cursor: pointer;
 }
