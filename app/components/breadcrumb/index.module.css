@@ -21,6 +21,12 @@
   border-radius: 1rem;
   margin: var(--space-1);
   padding: calc(var(--space-1) / 2);
+  border: var(--border);
+  border-color: var(--bg-1);
+}
+
+.breadcrumbList li:hover {
+  border-color: var(--accent);
 }
 
 .breadcrumbLink {
