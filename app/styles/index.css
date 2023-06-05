@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Recursive:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Recursive&display=swap");
 
 :root {
   --bg-1: #f5f5f5;
@@ -6,7 +6,7 @@
   --text: #000;
   --border-color: #fff;
   --border: 0.25rem solid var(--border-color);
-  --accent: darkblue;
+  --accent: rgb(0, 80, 255);
   --grey: grey;
   --space-1: 0.5rem;
   --space-2: 1rem;
