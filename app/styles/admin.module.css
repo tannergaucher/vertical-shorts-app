@@ -32,6 +32,8 @@
   gap: var(--space-4);
   border-radius: var(--radius);
   width: 100%;
+  margin-block-start: var(--space-3);
+  margin-block-end: var(--space-3);
 }
 
 .channel,

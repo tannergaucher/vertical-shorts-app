@@ -76,8 +76,7 @@ export const action: ActionFunction = async ({ request }) => {
     console.log(json, "json");
   }
 
-  // return redirect(Routes.Admin);
-  return null;
+  return redirect(Routes.Admin);
 };
 
 export default function Page() {

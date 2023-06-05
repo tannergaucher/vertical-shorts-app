@@ -18,6 +18,8 @@
   border-radius: var(--radius);
   padding: var(--space-1) var(--space-2);
   margin-right: var(--space-1);
+  background-color: var(--bg-2);
+  color: var(--text);
 }
 
 .input::file-selector-button:hover {
