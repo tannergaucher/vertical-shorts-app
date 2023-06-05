@@ -132,6 +132,16 @@ button {
   transition: background-color var(--duration);
 }
 
+@media (max-width: 768px) {
+  :root {
+    --container: 100%;
+  }
+
+  main {
+    padding: var(--space-1);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-1: #000;
