@@ -149,7 +149,6 @@ export default function Page() {
           <button type="submit" className={styles.button}>
             Log in
           </button>
-
           <input
             id="remember"
             name="remember"
