@@ -59,12 +59,24 @@ input {
   border-radius: var(--radius);
 }
 
+fieldset:hover,
+select:hover,
+input:hover {
+  border-color: var(--accent);
+}
+
 input:autofill {
   background-color: var(--bg-2);
   color: var(--text);
 }
 
-button[type="submit"] {
+button[type="submit"],
+input[type="checkbox"] {
+  transition: transform var(--duration);
+}
+
+input[type="checkbox"]:hover {
+  transform: scale(1.7);
   transition: transform var(--duration);
 }
 
