@@ -64,6 +64,16 @@ input:autofill {
   color: var(--text);
 }
 
+button[type="submit"] {
+  transition: transform var(--duration);
+}
+
+button[type="submit"]:hover,
+button[type="submit"]:focus {
+  transform: scale(1.01);
+  transition: transform var(--duration);
+}
+
 /* loading */
 fieldset:disabled {
   opacity: 0.8;
