@@ -1,15 +1,14 @@
-import type { LoaderArgs, ActionFunction } from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
-import { Form, useLoaderData, useSubmit, Link } from "@remix-run/react";
-import { prisma } from "~/db.server";
 import type { Channel } from "@prisma/client";
 import { ChannelType } from "@prisma/client";
+import type { ActionFunction,LoaderArgs } from "@remix-run/node";
+import { json,redirect } from "@remix-run/node";
+import { Form, Link,useLoaderData, useSubmit } from "@remix-run/react";
 
+import { prisma } from "~/db.server";
 import { getChannels } from "~/models/chanel.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-
 import styles from "~/styles/admin.module.css";
 
 type LoaderData = {

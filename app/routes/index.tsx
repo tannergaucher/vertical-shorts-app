@@ -1,12 +1,11 @@
 import type { LoaderArgs } from "@remix-run/node";
-import { redirect, json } from "@remix-run/node";
+import { json,redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
+import { prisma } from "~/db.server";
 import { getContents } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import { prisma } from "~/db.server";
-
 import styles from "~/styles/admin.module.css";
 
 type LoaderData = {

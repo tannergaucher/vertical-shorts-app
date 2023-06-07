@@ -1,6 +1,6 @@
-import { prisma } from "~/db.server";
-
 import type { Channel, ChannelType } from "@prisma/client";
+
+import { prisma } from "~/db.server";
 export type { Channel };
 
 export async function getChannel(params: {

@@ -1,15 +1,15 @@
-import invariant from "tiny-invariant";
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useLoaderData, useTransition, Form } from "@remix-run/react";
+import { Form,useLoaderData, useTransition } from "@remix-run/react";
+import invariant from "tiny-invariant";
 
-import { getContent, deleteContent } from "~/models/content.server";
-import { getUser } from "~/session.server";
+import { deleteContent,getContent } from "~/models/content.server";
 import { Routes } from "~/routes";
+import { getUser } from "~/session.server";
 
 export const meta: MetaFunction = () => {
   return {

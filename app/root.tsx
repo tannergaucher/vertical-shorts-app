@@ -1,7 +1,8 @@
-import { Link } from "@remix-run/react";
+import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { Link } from "@remix-run/react";
 import {
   Links,
   LiveReload,
@@ -10,13 +11,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
-import { cssBundleHref } from "@remix-run/css-bundle";
 
-import { getUser } from "./session.server";
-import { Routes } from "./routes";
-
-import stylesheet from "./styles/index.css";
 import styles from "./root.module.css";
+import { Routes } from "./routes";
+import { getUser } from "./session.server";
+import stylesheet from "./styles/index.css";
 
 export const links: LinksFunction = () => {
   return [

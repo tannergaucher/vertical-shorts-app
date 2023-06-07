@@ -1,16 +1,15 @@
+import type { ActionFunction,LoaderFunction } from "@remix-run/node";
+import { json,redirect } from "@remix-run/node";
 import { Form, useLoaderData, useParams } from "@remix-run/react";
-import { redirect, json } from "@remix-run/node";
-import type { LoaderFunction, ActionFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
-import { Routes } from "~/routes";
-import { getContent } from "~/models/content.server";
-import { getUser } from "~/session.server";
-import { upsertContent } from "~/models/content.server";
-import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 import { Breadcrumb } from "~/components/breadcrumb";
-
+import { getContent } from "~/models/content.server";
+import { upsertContent } from "~/models/content.server";
+import { Routes } from "~/routes";
+import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
+import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;

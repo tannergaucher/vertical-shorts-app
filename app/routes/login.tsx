@@ -9,12 +9,11 @@ import {
 } from "@remix-run/react";
 import * as React from "react";
 
-import { createUserSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
-import { safeRedirect, validateEmail } from "~/utils";
 import { Routes } from "~/routes";
-
+import { createUserSession, getUserId } from "~/session.server";
 import styles from "~/styles/login.module.css";
+import { safeRedirect, validateEmail } from "~/utils";
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
