@@ -1,18 +1,24 @@
-const express = require("express");
-const { Storage } = require("@google-cloud/storage");
-const fs = require("fs");
-const { google } = require("googleapis");
-require("dotenv").config();
+import express, { json } from "express";
+import { Storage } from "@google-cloud/storage";
+import {
+  createWriteStream,
+  createReadStream,
+  statSync,
+  readFileSync,
+} from "fs";
+import { google } from "googleapis";
+import dotenv from "dotenv";
+dotenv.config();
 
-const { PrismaClient, UploadStatus } = require("./generated");
-const { UPLOAD_SERVICE_BASE_URL } = require("./utils/constants");
-const {
+import { PrismaClient, UploadStatus } from "./generated/index.js";
+import { UPLOAD_SERVICE_BASE_URL } from "./utils/constants.js";
+import {
   getTikTokVideoChunks,
   getTikTokRequestHeaders,
-} = require("./utils/tiktok");
+} from "./utils/tiktok.js";
 
 const app = express();
-app.use(express.json());
+app.use(json());
 
 const prisma = new PrismaClient();
 
@@ -50,7 +56,7 @@ app.post("/upload", async (req, res) => {
       .bucket(projectId)
       .file(filePath)
       .createReadStream()
-      .pipe(fs.createWriteStream(filePath))
+      .pipe(createWriteStream(filePath))
       .on("open", () => {
         res.send("dl started");
       })
@@ -138,7 +144,7 @@ app.post("/upload-youtube-short", async (req, res) => {
   });
 
   const filePath = `${req.body.slug}.mp4`;
-  const bodyStream = fs.createReadStream(filePath);
+  const bodyStream = createReadStream(filePath);
 
   youtube.videos
     .insert({
@@ -210,8 +216,8 @@ app.post("/upload-tiktok", async (req, res) => {
 
   const videoFilePath = `${slug}.mp4`;
 
-  const videoStats = fs.statSync(videoFilePath);
-  const videoBinary = fs.readFileSync(videoFilePath);
+  const videoStats = statSync(videoFilePath);
+  const videoBinary = readFileSync(videoFilePath);
 
   const videoSize = videoBinary.length;
   const minChunkSize = 5 * 1024 * 1024; // 5 MB in bytes

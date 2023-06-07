@@ -1,4 +1,4 @@
-function getTikTokVideoChunks({
+export function getTikTokVideoChunks({
   videoSize,
   videoBinary,
   minChunkSize,
@@ -33,7 +33,7 @@ function getTikTokVideoChunks({
   return chunks;
 }
 
-function getTikTokRequestHeaders({
+export function getTikTokRequestHeaders({
   chunk,
   index,
   chunkSize,
@@ -54,8 +54,3 @@ function getTikTokRequestHeaders({
 
   return headers;
 }
-
-module.exports = {
-  getTikTokVideoChunks,
-  getTikTokRequestHeaders,
-};

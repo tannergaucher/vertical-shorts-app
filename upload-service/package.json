@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js",
     "start:dev": "nodemon index.js",
@@ -24,6 +25,5 @@
   "devDependencies": {
     "nodemon": "^2.0.22",
     "vitest": "^0.23.4"
-
   }
 }
