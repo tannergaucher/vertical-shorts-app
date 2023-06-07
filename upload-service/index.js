@@ -1,21 +1,21 @@
-import express, { json } from "express";
 import { Storage } from "@google-cloud/storage";
+import dotenv from "dotenv";
+import express, { json } from "express";
 import {
-  createWriteStream,
   createReadStream,
-  statSync,
+  createWriteStream,
   readFileSync,
+  statSync,
 } from "fs";
 import { google } from "googleapis";
-import dotenv from "dotenv";
-dotenv.config();
 
 import { PrismaClient, UploadStatus } from "./generated/index.js";
 import { UPLOAD_SERVICE_BASE_URL } from "./utils/constants.js";
 import {
-  getTikTokVideoChunks,
   getTikTokRequestHeaders,
+  getTikTokVideoChunks,
 } from "./utils/tiktok.js";
+dotenv.config();
 
 const app = express();
 app.use(json());
