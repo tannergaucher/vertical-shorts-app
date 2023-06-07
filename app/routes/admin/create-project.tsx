@@ -1,16 +1,15 @@
-import { Form, useTransition } from "@remix-run/react";
 import type {
-  LoaderFunction,
   ActionFunction,
+  LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import { Form, useTransition } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { Routes } from "~/routes";
 import { prisma } from "~/db.server";
+import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-
 import styles from "~/styles/admin.module.css";
 
 export const meta: MetaFunction = () => {

@@ -1,6 +1,6 @@
-import { prisma } from "~/db.server";
-
 import type { Content } from "@prisma/client";
+
+import { prisma } from "~/db.server";
 export type { Content };
 
 export async function getContent(params: { slug: string; projectId: string }) {

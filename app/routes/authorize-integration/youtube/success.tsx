@@ -3,9 +3,9 @@ import { redirect } from "@remix-run/node";
 import { google } from "googleapis";
 import invariant from "tiny-invariant";
 
-import { getUser } from "~/session.server";
 import { prisma } from "~/db.server";
 import { Routes } from "~/routes";
+import { getUser } from "~/session.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const user = await getUser(request);

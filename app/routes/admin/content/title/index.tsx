@@ -1,17 +1,16 @@
-import { Form, useTransition, useParams } from "@remix-run/react";
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
+import { Form, useParams,useTransition } from "@remix-run/react";
+import invariant from "tiny-invariant";
 
+import { Breadcrumb } from "~/components/breadcrumb";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import invariant from "tiny-invariant";
-import { Breadcrumb } from "~/components/breadcrumb";
-
 import styles from "~/styles/adminContent.module.css";
 
 export const meta: MetaFunction = () => {

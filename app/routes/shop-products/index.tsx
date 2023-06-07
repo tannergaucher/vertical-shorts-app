@@ -1,6 +1,6 @@
-import { Stripe } from "stripe";
 import { json } from "@remix-run/node";
-import { useLoaderData, Link } from "@remix-run/react";
+import { Link,useLoaderData } from "@remix-run/react";
+import { Stripe } from "stripe";
 
 type LoaderData = {
   products: Stripe.Product[];

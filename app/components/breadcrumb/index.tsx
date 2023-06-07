@@ -1,8 +1,9 @@
 import { useLocation } from "@remix-run/react";
 import { Link } from "@remix-run/react";
 
-import styles from "./index.module.css";
 import { Routes } from "~/routes";
+
+import styles from "./index.module.css";
 
 export function Breadcrumb({ slug }: { slug?: string }) {
   const location = useLocation();
