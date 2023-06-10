@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import express, { json } from "express";
 import { createReadStream, createWriteStream, statSync } from "fs";
 import { google } from "googleapis";
+import path from "path";
 
 import { PrismaClient, UploadStatus } from "./generated/index.js";
 import { UPLOAD_SERVICE_BASE_URL } from "./utils/constants.js";
@@ -222,7 +223,7 @@ app.post("/upload-tiktok", async (req, res) => {
           source: "PULL_FROM_URL",
           video_url:
             "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
-          // video_url: `${UPLOAD_SERVICE_BASE_URL}/tiktok-pull-from-url?project_id=${projectId}$slug=${slug}`,
+          // video_url: `${UPLOAD_SERVICE_BASE_URL}/serve-video&slug=${slug}`,
         }),
       }
     );
@@ -241,26 +242,12 @@ app.post("/upload-tiktok", async (req, res) => {
   }
 });
 
-app.get(`/upload-tiktok-pull-from-url`, async (req, res) => {
-  const { projectId, slug } = req.query;
+app.get(`/serve-video`, async (req, res) => {
+  const { slug } = req.query;
 
-  const content = await prisma.content.findUnique({
-    where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
-    },
-    select: {
-      id: true,
-    },
-  });
+  const __dirname = path.resolve();
 
-  if (!content) {
-    throw new Error("content not found");
-  }
-
-  const filePath = `${slug}.mp4`;
+  const filePath = path.join(__dirname, `${slug}.mp4`);
   const fileSizeInBytes = statSync(filePath).size;
 
   res.setHeader("Content-Type", "video/mp4");
