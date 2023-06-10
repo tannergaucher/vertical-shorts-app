@@ -191,7 +191,10 @@ app.post("/upload-youtube-short", async (req, res) => {
 });
 
 app.post("/upload-tiktok", async (req, res) => {
-  const { projectId, slug } = req.body;
+  const {
+    projectId,
+    // slug
+  } = req.body;
 
   const project = await prisma.project.findUnique({
     where: {
@@ -217,7 +220,9 @@ app.post("/upload-tiktok", async (req, res) => {
         },
         body: JSON.stringify({
           source: "PULL_FROM_URL",
-          video_url: `${UPLOAD_SERVICE_BASE_URL}/tiktok-pull-from-url?project_id=${projectId}$slug=${slug}`,
+          video_url:
+            "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
+          // video_url: `${UPLOAD_SERVICE_BASE_URL}/tiktok-pull-from-url?project_id=${projectId}$slug=${slug}`,
         }),
       }
     );
@@ -299,7 +304,7 @@ app.get("/tiktok-upload-status", async (req, res) => {
   }
 
   const statusResJson = await statusRes.json();
-  console.log(statusResJson, "resJson");
+  res.send(statusResJson);
 });
 
 const port = parseInt(process.env.PORT) || 8080;
