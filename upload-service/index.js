@@ -1,20 +1,12 @@
 import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
 import express, { json } from "express";
-import {
-  createReadStream,
-  createWriteStream,
-  readFileSync,
-  statSync,
-} from "fs";
+import { createReadStream, createWriteStream, statSync } from "fs";
 import { google } from "googleapis";
 
 import { PrismaClient, UploadStatus } from "./generated/index.js";
 import { UPLOAD_SERVICE_BASE_URL } from "./utils/constants.js";
-import {
-  getTikTokRequestHeaders,
-  getTikTokVideoChunks,
-} from "./utils/tiktok.js";
+
 dotenv.config();
 
 const app = express();
@@ -214,37 +206,19 @@ app.post("/upload-tiktok", async (req, res) => {
     throw new Error("no tiktok credentials");
   }
 
-  const videoFilePath = `${slug}.mp4`;
-
-  const videoStats = statSync(videoFilePath);
-  const videoBinary = readFileSync(videoFilePath);
-
-  const videoSize = videoBinary.length;
-  const minChunkSize = 5 * 1024 * 1024; // 5 MB in bytes
-  const maxChunkSize = 64 * 1024 * 1024; // 64 MB in bytes
-  const maxFinalChunkSize = 128 * 1024 * 1024; // 128 MB in bytes
-  const totalChunkCount = Math.ceil(videoSize / maxChunkSize);
-  const chunkSize = Math.floor(videoSize / totalChunkCount);
-
   try {
-    const body = JSON.stringify({
-      source: "FILE_UPLOAD",
-      video_size: videoStats.size,
-      chunk_size: chunkSize,
-      total_chunk_count: totalChunkCount,
-    });
-
-    const headers = {
-      Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
-      "Content-Type": "application/json;",
-    };
-
     const initRes = await fetch(
       `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
       {
         method: "POST",
-        headers,
-        body,
+        headers: {
+          Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
+          "Content-Type": "application/json;",
+        },
+        body: JSON.stringify({
+          source: "PULL_FROM_URL",
+          video_url: `${UPLOAD_SERVICE_BASE_URL}/tiktok-pull-from-url?project_id=${projectId}$slug=${slug}`,
+        }),
       }
     );
 
@@ -255,50 +229,40 @@ app.post("/upload-tiktok", async (req, res) => {
 
     const { data } = await initRes.json();
 
-    const { upload_url, publish_id } = data;
-
-    const videoChunks = getTikTokVideoChunks({
-      videoSize,
-      videoBinary,
-      minChunkSize,
-      maxChunkSize,
-      maxFinalChunkSize,
-      totalChunkCount,
-      chunkSize,
-    });
-
-    await Promise.all(
-      videoChunks.map(async (chunk, index) => {
-        const headers = getTikTokRequestHeaders({
-          chunk,
-          index,
-          chunkSize,
-          totalChunkCount,
-          videoSize,
-        });
-
-        const chunkUploadRes = await fetch(upload_url, {
-          method: "PUT",
-          headers,
-          body: chunk,
-        });
-
-        if (!chunkUploadRes.ok) {
-          console.log(chunkUploadRes, "chunkUploadRes error");
-          throw new Error("ERROR_UPLOADING_TIKTOK_CHUNK");
-        }
-
-        console.log(chunkUploadRes, index, "chunkUploadRes Index");
-        return chunkUploadRes;
-      })
-    );
-
-    fetch(
-      `${UPLOAD_SERVICE_BASE_URL}/tiktok-upload-status?publish_id=${publish_id}&project_id=${projectId}`
-    );
+    return res.send(data);
   } catch (error) {
-    console.log(error, "error initializing tiktok upload");
+    console.log(error, "error");
+    return res.status(500).send("Error initializing tiktok upload");
   }
+});
+
+app.get(`/upload-tiktok-pull-from-url`, async (req, res) => {
+  const { projectId, slug } = req.query;
+
+  const content = await prisma.content.findUnique({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  if (!content) {
+    throw new Error("content not found");
+  }
+
+  const filePath = `${slug}.mp4`;
+  const fileSizeInBytes = statSync(filePath).size;
+
+  res.setHeader("Content-Type", "video/mp4");
+  res.setHeader("Content-Length", fileSizeInBytes);
+  res.setHeader("Content-Disposition", "inline");
+
+  res.sendFile(filePath);
 });
 
 app.get("/tiktok-upload-status", async (req, res) => {
