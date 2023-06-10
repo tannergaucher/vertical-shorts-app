@@ -6,7 +6,7 @@ import { google } from "googleapis";
 import path from "path";
 
 import { PrismaClient, UploadStatus } from "./generated/index.js";
-import { UPLOAD_SERVICE_BASE_URL } from "./utils/constants.js";
+import { APP_BASE_URL, UPLOAD_SERVICE_BASE_URL } from "./utils/constants.js";
 
 dotenv.config();
 
@@ -218,8 +218,7 @@ app.post("/upload-tiktok", async (req, res) => {
         },
         body: JSON.stringify({
           source: "PULL_FROM_URL",
-          video_url: `${UPLOAD_SERVICE_BASE_URL}/serve-video&slug=${slug}`,
-          // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
+          video_url: `${APP_BASE_URL}/resource/serve-video/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
         }),
       }
     );
