@@ -44,7 +44,8 @@ fieldset {
 
 fieldset,
 select,
-input {
+input,
+textarea {
   border: var(--bg-1);
   border-radius: var(--radius);
   background-color: var(--bg-2);
@@ -55,7 +56,7 @@ input {
 }
 
 input,
-textarea {
+select {
   background-color: var(--bg-1);
 }
 
