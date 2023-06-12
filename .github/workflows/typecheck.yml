@@ -2,8 +2,7 @@ name: Typecheck
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: ["*"]
 
 jobs:
   typecheck:
