@@ -1,8 +1,8 @@
 import type { Channel } from "@prisma/client";
 import { ChannelType } from "@prisma/client";
-import type { ActionFunction,LoaderArgs } from "@remix-run/node";
-import { json,redirect } from "@remix-run/node";
-import { Form, Link,useLoaderData, useSubmit } from "@remix-run/react";
+import type { ActionFunction, LoaderArgs } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 
 import { prisma } from "~/db.server";
 import { getChannels } from "~/models/chanel.server";
@@ -28,13 +28,11 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect(Routes.AdminCreateProject);
   }
 
-  const project = await getProject({
-    id: user.currentProjectId,
-  });
-
   return json<LoaderData>({
     user,
-    project,
+    project: await getProject({
+      id: user.currentProjectId,
+    }),
     channels: await getChannels({
       projectId: user.currentProjectId,
     }),
