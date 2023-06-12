@@ -1,5 +1,5 @@
 import type { LoaderArgs } from "@remix-run/node";
-import { json,redirect } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
 import { prisma } from "~/db.server";

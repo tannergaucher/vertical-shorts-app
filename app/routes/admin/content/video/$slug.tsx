@@ -44,7 +44,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       version: "v4",
       action: "write",
       expires: Date.now() + 10 * 60 * 1000, // 10 minutes in milliseconds
-      contentType: "application/octet-stream",
+      contentType: "video/mp4",
     });
 
   const content = await getContent({
