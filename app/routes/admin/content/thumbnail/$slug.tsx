@@ -46,7 +46,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   storage.bucket(projectId).setCorsConfiguration([
     {
       origin: ["*"],
-      method: ["PUT"],
+      method: ["PUT", "GET"],
       responseHeader: ["Content-Type"],
     },
   ]);

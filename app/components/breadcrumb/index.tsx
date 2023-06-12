@@ -33,9 +33,8 @@ export function Breadcrumb({ slug }: { slug?: string }) {
             }
             className={styles.breadcrumbLink}
             data-current={
-              location.pathname.includes(
-                Routes.AdminContentThumbnail(slug ?? "")
-              )
+              slug &&
+              location.pathname.includes(Routes.AdminContentThumbnail(slug))
                 ? "true"
                 : "false"
             }
@@ -50,7 +49,7 @@ export function Breadcrumb({ slug }: { slug?: string }) {
             }
             className={styles.breadcrumbLink}
             data-current={
-              location.pathname.includes(Routes.AdminContentVideo(slug ?? ""))
+              slug && location.pathname.includes(Routes.AdminContentVideo(slug))
                 ? "true"
                 : "false"
             }
@@ -67,9 +66,8 @@ export function Breadcrumb({ slug }: { slug?: string }) {
             }
             className={styles.breadcrumbLink}
             data-current={
-              location.pathname.includes(
-                Routes.AdminContentScheduler(slug ?? "")
-              )
+              slug &&
+              location.pathname.includes(Routes.AdminContentScheduler(slug))
                 ? "true"
                 : "false"
             }
