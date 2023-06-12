@@ -1,0 +1,15 @@
+name: Typecheck
+
+on:
+  push:
+    branches: ["*"]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: npm install
+      - name: Typecheck
+        run: npm run typecheck
