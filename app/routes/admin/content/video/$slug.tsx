@@ -86,7 +86,7 @@ export default function Page() {
             method: "PUT",
             body: videoData,
             headers: {
-              "Content-Type": "application/octet-stream",
+              "Content-Type": "video/mp4",
             },
           });
 
