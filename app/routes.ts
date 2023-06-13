@@ -10,7 +10,6 @@ export const Routes = {
   AdminContent: (slug: string) => `/admin/content/${slug}`,
   AdminContentStatus: (slug: string) => `/admin/content/status/${slug}`,
   AdminContentTitle: `/admin/content/title`,
-  AdminContentThumbnail: (slug: string) => `/admin/content/thumbnail/${slug}`,
   AdminContentVideo: (slug: string) => `/admin/content/video/${slug}`,
   AdminContentScheduler: (slug: string) => `/admin/content/scheduler/${slug}`,
   Login: `/login`,

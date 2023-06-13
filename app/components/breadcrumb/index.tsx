@@ -27,24 +27,6 @@ export function Breadcrumb({ slug }: { slug?: string }) {
         <li>
           <Link
             to={
-              slug
-                ? Routes.AdminContentThumbnail(slug)
-                : Routes.AdminContentTitle
-            }
-            className={styles.breadcrumbLink}
-            data-current={
-              slug &&
-              location.pathname.includes(Routes.AdminContentThumbnail(slug))
-                ? "true"
-                : "false"
-            }
-          >
-            Thumbnail
-          </Link>
-        </li>
-        <li>
-          <Link
-            to={
               slug ? Routes.AdminContentVideo(slug) : Routes.AdminContentTitle
             }
             className={styles.breadcrumbLink}

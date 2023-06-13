@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Form, useParams,useTransition } from "@remix-run/react";
+import { Form, useParams, useTransition } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -49,7 +49,7 @@ export const action: ActionFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
-  return redirect(Routes.AdminContentThumbnail(slug));
+  return redirect(Routes.AdminContentVideo(slug));
 };
 
 export default function Page() {
