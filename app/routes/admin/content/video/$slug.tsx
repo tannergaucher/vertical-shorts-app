@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const [bucket] = await storage.bucket(projectId).exists();
 
   if (!bucket) {
-    await storage.createBucket(projectId).then(async (res) => {
+    await storage.createBucket(projectId).then(async () => {
       await storage
         .bucket(projectId)
         .makePublic()
