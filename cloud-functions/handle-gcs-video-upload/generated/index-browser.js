@@ -102,6 +102,7 @@ exports.Prisma.ContentScalarFieldEnum = {
   title: 'title',
   description: 'description',
   thumbnail: 'thumbnail',
+  gif: 'gif',
   tags: 'tags',
   published: 'published',
   publishAt: 'publishAt',

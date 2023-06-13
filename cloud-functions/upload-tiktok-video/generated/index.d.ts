@@ -109,6 +109,7 @@ export type Content = {
   title: string
   description: string | null
   thumbnail: string | null
+  gif: string | null
   tags: string[]
   published: boolean | null
   publishAt: Date | null
@@ -7752,6 +7753,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     thumbnail: string | null
+    gif: string | null
     published: boolean | null
     publishAt: Date | null
     createdAt: Date | null
@@ -7769,6 +7771,7 @@ export namespace Prisma {
     title: string | null
     description: string | null
     thumbnail: string | null
+    gif: string | null
     published: boolean | null
     publishAt: Date | null
     createdAt: Date | null
@@ -7786,6 +7789,7 @@ export namespace Prisma {
     title: number
     description: number
     thumbnail: number
+    gif: number
     tags: number
     published: number
     publishAt: number
@@ -7806,6 +7810,7 @@ export namespace Prisma {
     title?: true
     description?: true
     thumbnail?: true
+    gif?: true
     published?: true
     publishAt?: true
     createdAt?: true
@@ -7823,6 +7828,7 @@ export namespace Prisma {
     title?: true
     description?: true
     thumbnail?: true
+    gif?: true
     published?: true
     publishAt?: true
     createdAt?: true
@@ -7840,6 +7846,7 @@ export namespace Prisma {
     title?: true
     description?: true
     thumbnail?: true
+    gif?: true
     tags?: true
     published?: true
     publishAt?: true
@@ -7932,6 +7939,7 @@ export namespace Prisma {
     title: string
     description: string | null
     thumbnail: string | null
+    gif: string | null
     tags: string[]
     published: boolean | null
     publishAt: Date | null
@@ -7967,6 +7975,7 @@ export namespace Prisma {
     title?: boolean
     description?: boolean
     thumbnail?: boolean
+    gif?: boolean
     tags?: boolean
     published?: boolean
     publishAt?: boolean
@@ -10778,6 +10787,7 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     thumbnail: 'thumbnail',
+    gif: 'gif',
     tags: 'tags',
     published: 'published',
     publishAt: 'publishAt',
@@ -11281,6 +11291,7 @@ export namespace Prisma {
     title?: StringFilter | string
     description?: StringNullableFilter | string | null
     thumbnail?: StringNullableFilter | string | null
+    gif?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
     publishAt?: DateTimeNullableFilter | Date | string | null
@@ -11300,6 +11311,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
+    gif?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     publishAt?: SortOrder
@@ -11323,6 +11335,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
+    gif?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     publishAt?: SortOrder
@@ -11347,6 +11360,7 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter | string
     description?: StringNullableWithAggregatesFilter | string | null
     thumbnail?: StringNullableWithAggregatesFilter | string | null
+    gif?: StringNullableWithAggregatesFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableWithAggregatesFilter | boolean | null
     publishAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
@@ -11909,6 +11923,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     thumbnail?: string | null
+    gif?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     publishAt?: Date | string | null
@@ -11927,6 +11942,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     thumbnail?: string | null
+    gif?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     publishAt?: Date | string | null
@@ -11945,6 +11961,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    gif?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11963,6 +11980,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    gif?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -11981,6 +11999,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     thumbnail?: string | null
+    gif?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     publishAt?: Date | string | null
@@ -11999,6 +12018,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    gif?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12016,6 +12036,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    gif?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -12565,6 +12586,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
+    gif?: SortOrder
     tags?: SortOrder
     published?: SortOrder
     publishAt?: SortOrder
@@ -12583,6 +12605,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
+    gif?: SortOrder
     published?: SortOrder
     publishAt?: SortOrder
     createdAt?: SortOrder
@@ -12600,6 +12623,7 @@ export namespace Prisma {
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
+    gif?: SortOrder
     published?: SortOrder
     publishAt?: SortOrder
     createdAt?: SortOrder
@@ -14098,6 +14122,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     thumbnail?: string | null
+    gif?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     publishAt?: Date | string | null
@@ -14115,6 +14140,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     thumbnail?: string | null
+    gif?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     publishAt?: Date | string | null
@@ -14323,6 +14349,7 @@ export namespace Prisma {
     title?: StringFilter | string
     description?: StringNullableFilter | string | null
     thumbnail?: StringNullableFilter | string | null
+    gif?: StringNullableFilter | string | null
     tags?: StringNullableListFilter
     published?: BoolNullableFilter | boolean | null
     publishAt?: DateTimeNullableFilter | Date | string | null
@@ -14588,6 +14615,7 @@ export namespace Prisma {
     title: string
     description?: string | null
     thumbnail?: string | null
+    gif?: string | null
     tags?: ContentCreatetagsInput | Enumerable<string>
     published?: boolean | null
     publishAt?: Date | string | null
@@ -14615,6 +14643,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    gif?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14632,6 +14661,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    gif?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -14649,6 +14679,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
+    gif?: NullableStringFieldUpdateOperationsInput | string | null
     tags?: ContentUpdatetagsInput | Enumerable<string>
     published?: NullableBoolFieldUpdateOperationsInput | boolean | null
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

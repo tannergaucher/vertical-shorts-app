@@ -68,6 +68,18 @@ app.post("/upload", async (req, res) => {
               await storage.bucket(projectId).upload(`${slug}.gif`, {
                 destination: `${slug}.gif`,
               });
+
+              await prisma.content.update({
+                where: {
+                  projectId_slug: {
+                    projectId,
+                    slug,
+                  },
+                },
+                data: {
+                  gif: `https://storage.googleapis.com/${projectId}/${slug}.gif`,
+                },
+              });
             }
           }
         );
