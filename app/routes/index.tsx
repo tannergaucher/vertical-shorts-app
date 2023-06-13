@@ -49,22 +49,25 @@ export default function Page() {
   const { contents, projectTitle } = useLoaderData<LoaderData>();
 
   return (
-    <main className={styles.main}>
+    <main>
       {contents?.length ? (
         <section className={styles.contentGrid}>
           {contents.map((content) => (
-            <div key={content.slug} className={styles.content}>
-              <Link to={Routes.AdminContentStatus(content.slug)}>
+            <Link
+              key={content.slug}
+              to={Routes.AdminContentStatus(content.slug)}
+            >
+              {content.gif ? (
+                <img src={content.gif} alt={content.title} />
+              ) : null}
+              <div className={styles.content}>
                 {`${
                   content.published
                     ? `${content.title}`
                     : `Draft - ${content.title}`
                 }`}
-                {content.gif ? (
-                  <img src={content.gif} alt={content.title} />
-                ) : null}
-              </Link>
-            </div>
+              </div>
+            </Link>
           ))}
         </section>
       ) : (
