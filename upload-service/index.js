@@ -65,21 +65,24 @@ app.post("/upload", async (req, res) => {
             if (error) {
               console.log("error creating gif", error);
             } else {
-              await storage.bucket(projectId).upload(`${slug}.gif`, {
-                destination: `${slug}.gif`,
-              });
+              console.log("gif created");
 
-              await prisma.content.update({
-                where: {
-                  projectId_slug: {
-                    projectId,
-                    slug,
-                  },
-                },
-                data: {
-                  gif: `https://storage.googleapis.com/${projectId}/${slug}.gif`,
-                },
-              });
+              await storage
+                .bucket(projectId)
+                .upload(`${slug}.gif`)
+                .then(async () => {
+                  await prisma.content.update({
+                    where: {
+                      projectId_slug: {
+                        projectId,
+                        slug,
+                      },
+                    },
+                    data: {
+                      gif: `https://storage.googleapis.com/${projectId}/${slug}.gif`,
+                    },
+                  });
+                });
             }
           }
         );
