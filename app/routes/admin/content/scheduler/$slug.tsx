@@ -1,6 +1,11 @@
-import type { ActionFunction,LoaderFunction } from "@remix-run/node";
-import { json,redirect } from "@remix-run/node";
-import { Form, useLoaderData, useParams } from "@remix-run/react";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import {
+  Form,
+  useLoaderData,
+  useParams,
+  useTransition,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -79,12 +84,16 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Page() {
   const { content } = useLoaderData<LoaderData>();
+  const transition = useTransition();
 
   const { slug } = useParams();
 
+  const disabled =
+    transition.state === "loading" || transition.state === "submitting";
+
   return (
     <main className={styles.main}>
-      <fieldset>
+      <fieldset disabled={disabled}>
         <Breadcrumb slug={slug} />
         <Form method="post">
           <label htmlFor="date">Date</label>
