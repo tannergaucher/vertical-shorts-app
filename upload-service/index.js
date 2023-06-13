@@ -1,4 +1,6 @@
+import { path as ffmpeg } from "@ffmpeg-installer/ffmpeg";
 import { Storage } from "@google-cloud/storage";
+import { exec } from "child_process";
 import dotenv from "dotenv";
 import express, { json } from "express";
 import { createReadStream, createWriteStream, statSync } from "fs";
@@ -55,6 +57,21 @@ app.post("/upload", async (req, res) => {
       })
       .on("finish", () => {
         console.log("dl finished");
+
+        exec(
+          `${ffmpeg} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
+
+          async (error) => {
+            if (error) {
+              console.log("error creating gif", error);
+            } else {
+              await storage.bucket(projectId).upload(`${slug}.gif`, {
+                destination: `${slug}.gif`,
+              });
+            }
+          }
+        );
+
         if (content.project.youtubeCredentials) {
           fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
             method: "POST",
