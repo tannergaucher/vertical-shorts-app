@@ -37,6 +37,25 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   invariant(typeof projectId === "string", "user must have a current project");
 
+  const [bucket] = await storage.bucket(projectId).exists();
+
+  if (!bucket) {
+    await storage.createBucket(projectId).then(async (res) => {
+      await storage
+        .bucket(projectId)
+        .makePublic()
+        .then(async () => {
+          await storage.bucket(projectId).setCorsConfiguration([
+            {
+              origin: ["*"],
+              method: ["PUT", "GET"],
+              responseHeader: ["Content-Type"],
+            },
+          ]);
+        });
+    });
+  }
+
   const [signedUrl] = await storage
     .bucket(projectId)
     .file(`${slug}.mp4`)
