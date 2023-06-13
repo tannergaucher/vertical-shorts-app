@@ -127,6 +127,7 @@ model Content {
   title           String
   description     String?
   thumbnail       String?
+  gif             String?
   tags            String[]
   published       Boolean?      @default(false)
   publishAt       DateTime?

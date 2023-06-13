@@ -54,11 +54,16 @@ export default function Page() {
         <section className={styles.contentGrid}>
           {contents.map((content) => (
             <div key={content.slug} className={styles.content}>
-              <Link to={Routes.AdminContentStatus(content.slug)}>{`${
-                content.published
-                  ? `${content.title}`
-                  : `Draft - ${content.title}`
-              }`}</Link>
+              <Link to={Routes.AdminContentStatus(content.slug)}>
+                {`${
+                  content.published
+                    ? `${content.title}`
+                    : `Draft - ${content.title}`
+                }`}
+                {content.gif ? (
+                  <img src={content.gif} alt={content.title} />
+                ) : null}
+              </Link>
             </div>
           ))}
         </section>
