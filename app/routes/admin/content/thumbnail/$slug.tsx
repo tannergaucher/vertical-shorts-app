@@ -40,7 +40,9 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   const [bucket] = await storage.bucket(projectId).exists();
 
   if (!bucket) {
-    await storage.createBucket(projectId);
+    await storage.createBucket(projectId).then(async (res) => {
+      await storage.bucket(projectId).makePublic();
+    });
   }
 
   storage.bucket(projectId).setCorsConfiguration([
@@ -98,7 +100,7 @@ export default function Page() {
             method: "PUT",
             body: imageData,
             headers: {
-              "Content-Type": "application/octet-stream",
+              "Content-Type": "image/jpeg",
             },
           });
 
