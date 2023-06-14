@@ -23,8 +23,6 @@ app.post("/upload", async (req, res) => {
   console.log("getting file");
   const { projectId, slug } = req.body;
 
-  console.log(projectId, "projectId", slug, "slug");
-
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       projectId_slug: {

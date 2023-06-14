@@ -1,6 +1,16 @@
+import type { Channel, Project } from "@prisma/client";
+
 import { prisma } from "~/db.server";
 
-export async function getProject({ id }: { id: string }) {
+export type ProjectWithChannels = Project & {
+  channels: Channel[];
+};
+
+export async function getProject({
+  id,
+}: {
+  id: string;
+}): Promise<ProjectWithChannels> {
   const project = await prisma.project.findUniqueOrThrow({
     where: {
       id: id,
@@ -14,7 +24,6 @@ export async function getProject({ id }: { id: string }) {
     ...project,
     channels: project.channels.map((channel) => ({
       ...channel,
-      createdAt: channel.createdAt.toISOString(),
     })),
   };
 }

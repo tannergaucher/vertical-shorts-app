@@ -2,15 +2,15 @@ import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
-import { prisma } from "~/db.server";
 import { getContents } from "~/models/content.server";
+import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/admin.module.css";
+import styles from "~/styles/index.module.css";
 
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
-  projectTitle: string;
+  project: Awaited<ReturnType<typeof getProject>>;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -24,29 +24,20 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect(Routes.AdminCreateProject);
   }
 
-  const project = await prisma.project.findUnique({
-    where: {
-      id: user.currentProjectId,
-    },
-    select: {
-      title: true,
-    },
-  });
-
-  if (!project?.title) {
-    return redirect(Routes.AdminCreateProject);
-  }
-
   return json<LoaderData>({
     contents: await getContents({
       projectId: user.currentProjectId,
     }),
-    projectTitle: project.title,
+    project: await getProject({
+      id: user.currentProjectId,
+    }),
   });
 };
 
 export default function Page() {
-  const { contents, projectTitle } = useLoaderData<LoaderData>();
+  const { contents, project } = useLoaderData<LoaderData>();
+
+  console.log(project, "project");
 
   return (
     <main>
@@ -56,23 +47,58 @@ export default function Page() {
             <Link
               key={content.slug}
               to={Routes.AdminContentStatus(content.slug)}
+              className={styles.content}
             >
               {content.gif ? (
                 <img src={content.gif} alt={content.title} />
               ) : null}
-              <div className={styles.content}>
-                {`${
-                  content.published
-                    ? `${content.title}`
-                    : `Draft - ${content.title}`
-                }`}
+              <div>
+                <h3>{content.title}</h3>
+                <ul>
+                  {project.channels.map((channel) => {
+                    switch (channel.channelType) {
+                      case "YOUTUBE":
+                        return (
+                          <li key={channel.channelType}>
+                            {channel.channelType}: {content.youtubeStatus}
+                          </li>
+                        );
+                      case "TIKTOK":
+                        return (
+                          <li key={channel.channelType}>
+                            {channel.channelType}: {content.tikTokStatus}
+                          </li>
+                        );
+                      case "TWITTER":
+                        return (
+                          <li key={channel.channelType}>
+                            {channel.channelType}: {content.twitterStatus}
+                          </li>
+                        );
+                      case "INSTAGRAM":
+                        return (
+                          <li key={channel.channelType}>
+                            {channel.channelType}: {content.instagramStatus}
+                          </li>
+                        );
+                      case "FACEBOOK":
+                        return (
+                          <li key={channel.channelType}>
+                            {channel.channelType}: {content.facebookStatus}
+                          </li>
+                        );
+                      default:
+                        return null;
+                    }
+                  })}
+                </ul>
               </div>
             </Link>
           ))}
         </section>
       ) : (
         <>
-          <h2>{`No content yet for project: ${projectTitle}`}</h2>
+          <h2>{`No content yet for project: ${project.title}`}</h2>
           <Link to={Routes.AdminContentTitle}>
             <h3>Create Post</h3>
           </Link>

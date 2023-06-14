@@ -1,5 +1,5 @@
 .main {
-  /* max-width: var(--container); */
+  max-width: var(--container);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -24,17 +24,6 @@
   text-align: center;
 }
 
-.contentGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 600px));
-  gap: var(--space-4);
-  border-radius: var(--radius);
-  width: 100%;
-  margin-block-start: var(--space-3);
-  margin-block-end: var(--space-3);
-  justify-content: center;
-}
-
 .channelsGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -46,8 +35,7 @@
   justify-content: center;
 }
 
-.channel,
-.content {
+.channel {
   border: var(--border);
   border-radius: var(--radius);
   display: flex;
