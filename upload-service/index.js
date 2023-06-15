@@ -199,6 +199,7 @@ app.post("/upload-youtube-short", async (req, res) => {
         },
         data: {
           youtubeStatus: UploadStatus.PRIVATE,
+          youtubeId: response.data.id,
         },
       });
 
@@ -259,6 +260,19 @@ app.post("/upload-tiktok", async (req, res) => {
     }
 
     const { data } = await initRes.json();
+
+    await prisma.content.update({
+      where: {
+        projectId_slug: {
+          projectId,
+          slug,
+        },
+      },
+      data: {
+        tiktokStatus: UploadStatus.UPLOADING,
+        tiktokId: data.publish_id,
+      },
+    });
 
     return res.send(data);
   } catch (error) {
