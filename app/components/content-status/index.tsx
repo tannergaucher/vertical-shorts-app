@@ -12,8 +12,6 @@ export function ContentStatus({
   content: Content;
   open?: boolean;
 }) {
-  console.log(content, "content");
-
   return (
     <details className={styles.details} open={open}>
       <summary className={styles.summary}>Status</summary>
@@ -21,11 +19,21 @@ export function ContentStatus({
         {project.channels.map((channel) => {
           switch (channel.channelType) {
             case "YOUTUBE":
-              return (
+              const youtubeItem = (
                 <li key={channel.channelType}>
                   {channel.channelType}: {content.youtubeStatus}
                 </li>
               );
+              return content.youtubeId ? (
+                <a
+                  href={`https://studio.youtube.com/video/${content.youtubeId}/edit`}
+                >
+                  {youtubeItem}
+                </a>
+              ) : (
+                youtubeItem
+              );
+
             case "TIKTOK":
               return (
                 <li key={channel.channelType}>
