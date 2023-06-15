@@ -2,8 +2,18 @@ import type { Channel, Project } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
-export type ProjectWithChannels = Project & {
-  channels: Channel[];
+type UpdatedChannel = Omit<Channel, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+type UpdatedProject = Omit<Project, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ProjectWithChannels = UpdatedProject & {
+  channels: UpdatedChannel[];
 };
 
 export async function getProject({
@@ -22,8 +32,12 @@ export async function getProject({
 
   return {
     ...project,
+    createdAt: project.createdAt.toISOString(),
+    updatedAt: project.updatedAt.toISOString(),
     channels: project.channels.map((channel) => ({
       ...channel,
+      createdAt: channel.createdAt.toISOString(),
+      updatedAt: channel.updatedAt.toISOString(),
     })),
   };
 }

@@ -1,7 +1,15 @@
-import type { Content } from "@prisma/client";
+import type { Content as ContentModel } from "@prisma/client";
 
 import { prisma } from "~/db.server";
-export type { Content };
+
+export type Content = Omit<
+  ContentModel,
+  "createdAt" | "updatedAt" | "publishAt"
+> & {
+  createdAt: string | null;
+  updatedAt: string | null;
+  publishAt: string | null;
+};
 
 export async function getContent(params: { slug: string; projectId: string }) {
   const { slug, projectId } = params;
@@ -27,14 +35,23 @@ export async function getContent(params: { slug: string; projectId: string }) {
   });
 }
 
-export async function getContents(params: { projectId: string }) {
+export async function getContents(params: {
+  projectId: string;
+}): Promise<Content[]> {
   const { projectId } = params;
 
-  return prisma.content.findMany({
+  const content = await prisma.content.findMany({
     where: {
       projectId,
     },
   });
+
+  return content.map((content) => ({
+    ...content,
+    createdAt: content.createdAt?.toISOString() || null,
+    updatedAt: content.updatedAt?.toISOString() || null,
+    publishAt: content.publishAt?.toISOString() || null,
+  }));
 }
 
 interface UpsertContentParams {

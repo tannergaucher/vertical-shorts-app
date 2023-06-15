@@ -2,6 +2,7 @@ import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
+import { ContentStatus } from "~/components/content-status";
 import { getContents } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
@@ -37,63 +38,22 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function Page() {
   const { contents, project } = useLoaderData<LoaderData>();
 
-  console.log(project, "project");
-
   return (
-    <main>
+    <main className={styles.main}>
       {contents?.length ? (
         <section className={styles.contentGrid}>
           {contents.map((content) => (
-            <Link
-              key={content.slug}
-              to={Routes.AdminContentStatus(content.slug)}
-              className={styles.content}
-            >
+            <div key={content.slug} className={styles.contentCard}>
               {content.gif ? (
                 <img src={content.gif} alt={content.title} />
               ) : null}
-              <div>
-                <h3>{content.title}</h3>
-                <ul>
-                  {project.channels.map((channel) => {
-                    switch (channel.channelType) {
-                      case "YOUTUBE":
-                        return (
-                          <li key={channel.channelType}>
-                            {channel.channelType}: {content.youtubeStatus}
-                          </li>
-                        );
-                      case "TIKTOK":
-                        return (
-                          <li key={channel.channelType}>
-                            {channel.channelType}: {content.tikTokStatus}
-                          </li>
-                        );
-                      case "TWITTER":
-                        return (
-                          <li key={channel.channelType}>
-                            {channel.channelType}: {content.twitterStatus}
-                          </li>
-                        );
-                      case "INSTAGRAM":
-                        return (
-                          <li key={channel.channelType}>
-                            {channel.channelType}: {content.instagramStatus}
-                          </li>
-                        );
-                      case "FACEBOOK":
-                        return (
-                          <li key={channel.channelType}>
-                            {channel.channelType}: {content.facebookStatus}
-                          </li>
-                        );
-                      default:
-                        return null;
-                    }
-                  })}
-                </ul>
+              <div className={styles.contentCardDetails}>
+                <Link to={Routes.AdminContentStatus(content.slug)}>
+                  <h3 className={styles.contentTitle}>{content.title}</h3>
+                </Link>
+                <ContentStatus project={project} content={content} />
               </div>
-            </Link>
+            </div>
           ))}
         </section>
       ) : (

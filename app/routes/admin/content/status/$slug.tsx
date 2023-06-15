@@ -4,12 +4,15 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form,useLoaderData, useTransition } from "@remix-run/react";
+import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import { deleteContent,getContent } from "~/models/content.server";
+import { ContentStatus } from "~/components/content-status";
+import { deleteContent, getContent } from "~/models/content.server";
+import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
+import styles from "~/styles/adminContentStatus.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -20,6 +23,7 @@ export const meta: MetaFunction = () => {
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
   user: Awaited<ReturnType<typeof getUser>>;
+  project: Awaited<ReturnType<typeof getProject>>;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -41,6 +45,9 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       slug,
       projectId: user.currentProjectId,
     }),
+    project: await getProject({
+      id: user.currentProjectId,
+    }),
   });
 };
 
@@ -61,7 +68,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, project } = useLoaderData<LoaderData>();
 
   const transition = useTransition();
 
@@ -69,23 +76,15 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
-      <h1>{content.title}</h1>
-      <video
-        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.mp4`}
-        controls
-        style={{
-          width: `500px`,
-        }}
-      ></video>
+    <main className={styles.main}>
+      <h1 className={styles.contentTitle}>{content.title}</h1>
       <img
-        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.jpg`}
-        alt="content thumbnail"
-        style={{
-          width: `500px`,
-        }}
+        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.gif`}
+        alt={content.title}
+        className={styles.gif}
       />
-      <fieldset disabled={disabled}>
+      <ContentStatus content={content} project={project} open={true} />
+      <fieldset disabled={disabled} className={styles.fieldset}>
         <Form method="post">
           <input type="hidden" name="slug" value={content.slug} />
           <input type="hidden" name="projectId" value={content.projectId} />

@@ -1,0 +1,7 @@
+.summary:hover {
+  cursor: pointer;
+}
+
+.details {
+  padding: var(--space-1);
+}
