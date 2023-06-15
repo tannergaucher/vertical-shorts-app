@@ -1,0 +1,19 @@
+.main {
+  margin-block-start: var(--space-4);
+  margin: 0 auto;
+  max-width: var(--container);
+}
+
+.gif {
+  width: 100%;
+  margin-block-end: var(--space-2);
+}
+
+.fieldset {
+  margin-block-start: var(--space-2);
+}
+
+.contentTitle {
+  text-align: center;
+  margin-block-end: var(--space-2);
+}

@@ -1,3 +1,7 @@
+.main {
+  margin-block-start: var(--space-4);
+}
+
 .contentGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 600px));
@@ -9,9 +13,18 @@
   justify-content: center;
 }
 
-.content {
+.contentCard {
   border: var(--border);
   border-radius: var(--radius);
   text-decoration: none;
+  height: max-content;
+}
+
+.contentCardDetails {
   padding: var(--space-1);
+  text-decoration: none;
+}
+
+.contentTitle {
+  margin-block-end: var(--space-1);
 }
