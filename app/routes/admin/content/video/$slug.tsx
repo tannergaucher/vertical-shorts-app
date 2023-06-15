@@ -103,19 +103,16 @@ export default function Page() {
         const videoData = e.target?.result;
 
         try {
-          const res = await fetch(signedUrl, {
+          await fetch(signedUrl, {
             method: "PUT",
             body: videoData,
             headers: {
               "Content-Type": "video/mp4",
             },
           });
-
-          if (res.ok) {
-            navigate(Routes.AdminContentScheduler(content.slug));
-          }
         } catch (error) {
           console.log(error, "error");
+          setDisabled(false);
         } finally {
           const uploadContentRes = await fetch(
             `${UPLOAD_SERVICE_BASE_URL}/upload-content`,
