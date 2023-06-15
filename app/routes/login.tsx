@@ -154,8 +154,12 @@ export default function Page() {
             type="checkbox"
             className={styles.checkbox}
           />
-          <label htmlFor="remember">Remember me</label>
-          <div>
+
+          <label htmlFor="remember">
+            <small>Remember me</small>
+          </label>
+          <br />
+          <small>
             Don't have an account?{" "}
             <Link
               className={styles.signUp}
@@ -166,7 +170,7 @@ export default function Page() {
             >
               Sign up
             </Link>
-          </div>
+          </small>
         </Form>
       </fieldset>
     </main>
