@@ -69,6 +69,7 @@ export type TikTokCredentials = {
   id: string
   createdAt: Date
   updatedAt: Date
+  handle: string
   accessToken: string
   refreshToken: string
   refreshTokenExpiresIn: number
@@ -4916,6 +4917,7 @@ export namespace Prisma {
     id: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    handle: string | null
     accessToken: string | null
     refreshToken: string | null
     refreshTokenExpiresIn: number | null
@@ -4928,6 +4930,7 @@ export namespace Prisma {
     id: string | null
     createdAt: Date | null
     updatedAt: Date | null
+    handle: string | null
     accessToken: string | null
     refreshToken: string | null
     refreshTokenExpiresIn: number | null
@@ -4940,6 +4943,7 @@ export namespace Prisma {
     id: number
     createdAt: number
     updatedAt: number
+    handle: number
     accessToken: number
     refreshToken: number
     refreshTokenExpiresIn: number
@@ -4962,6 +4966,7 @@ export namespace Prisma {
     id?: true
     createdAt?: true
     updatedAt?: true
+    handle?: true
     accessToken?: true
     refreshToken?: true
     refreshTokenExpiresIn?: true
@@ -4974,6 +4979,7 @@ export namespace Prisma {
     id?: true
     createdAt?: true
     updatedAt?: true
+    handle?: true
     accessToken?: true
     refreshToken?: true
     refreshTokenExpiresIn?: true
@@ -4986,6 +4992,7 @@ export namespace Prisma {
     id?: true
     createdAt?: true
     updatedAt?: true
+    handle?: true
     accessToken?: true
     refreshToken?: true
     refreshTokenExpiresIn?: true
@@ -5086,6 +5093,7 @@ export namespace Prisma {
     id: string
     createdAt: Date
     updatedAt: Date
+    handle: string
     accessToken: string
     refreshToken: string
     refreshTokenExpiresIn: number
@@ -5117,6 +5125,7 @@ export namespace Prisma {
     id?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    handle?: boolean
     accessToken?: boolean
     refreshToken?: boolean
     refreshTokenExpiresIn?: boolean
@@ -10916,6 +10925,7 @@ export namespace Prisma {
     id: 'id',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    handle: 'handle',
     accessToken: 'accessToken',
     refreshToken: 'refreshToken',
     refreshTokenExpiresIn: 'refreshTokenExpiresIn',
@@ -11182,6 +11192,7 @@ export namespace Prisma {
     id?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
+    handle?: StringFilter | string
     accessToken?: StringFilter | string
     refreshToken?: StringFilter | string
     refreshTokenExpiresIn?: IntFilter | number
@@ -11195,6 +11206,7 @@ export namespace Prisma {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    handle?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     refreshTokenExpiresIn?: SortOrder
@@ -11213,6 +11225,7 @@ export namespace Prisma {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    handle?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     refreshTokenExpiresIn?: SortOrder
@@ -11233,6 +11246,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
+    handle?: StringWithAggregatesFilter | string
     accessToken?: StringWithAggregatesFilter | string
     refreshToken?: StringWithAggregatesFilter | string
     refreshTokenExpiresIn?: IntWithAggregatesFilter | number
@@ -11806,6 +11820,7 @@ export namespace Prisma {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    handle: string
     accessToken: string
     refreshToken: string
     refreshTokenExpiresIn: number
@@ -11818,6 +11833,7 @@ export namespace Prisma {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    handle: string
     accessToken: string
     refreshToken: string
     refreshTokenExpiresIn: number
@@ -11830,6 +11846,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handle?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
     refreshToken?: StringFieldUpdateOperationsInput | string
     refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
@@ -11842,6 +11859,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handle?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
     refreshToken?: StringFieldUpdateOperationsInput | string
     refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
@@ -11854,6 +11872,7 @@ export namespace Prisma {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    handle: string
     accessToken: string
     refreshToken: string
     refreshTokenExpiresIn: number
@@ -11866,6 +11885,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handle?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
     refreshToken?: StringFieldUpdateOperationsInput | string
     refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
@@ -11877,6 +11897,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handle?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
     refreshToken?: StringFieldUpdateOperationsInput | string
     refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
@@ -12549,6 +12570,7 @@ export namespace Prisma {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    handle?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     refreshTokenExpiresIn?: SortOrder
@@ -12565,6 +12587,7 @@ export namespace Prisma {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    handle?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     refreshTokenExpiresIn?: SortOrder
@@ -12577,6 +12600,7 @@ export namespace Prisma {
     id?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    handle?: SortOrder
     accessToken?: SortOrder
     refreshToken?: SortOrder
     refreshTokenExpiresIn?: SortOrder
@@ -14373,6 +14397,7 @@ export namespace Prisma {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    handle: string
     accessToken: string
     refreshToken: string
     refreshTokenExpiresIn: number
@@ -14384,6 +14409,7 @@ export namespace Prisma {
     id?: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    handle: string
     accessToken: string
     refreshToken: string
     refreshTokenExpiresIn: number
@@ -14583,6 +14609,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handle?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
     refreshToken?: StringFieldUpdateOperationsInput | string
     refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number
@@ -14594,6 +14621,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handle?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
     refreshToken?: StringFieldUpdateOperationsInput | string
     refreshTokenExpiresIn?: IntFieldUpdateOperationsInput | number

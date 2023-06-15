@@ -261,6 +261,19 @@ app.post("/upload-tiktok", async (req, res) => {
 
     const { data } = await initRes.json();
 
+    await prisma.content.update({
+      where: {
+        projectId_slug: {
+          projectId,
+          slug,
+        },
+      },
+      data: {
+        tiktokStatus: UploadStatus.UPLOADING,
+        tiktokId: data.publish_id,
+      },
+    });
+
     return res.send(data);
   } catch (error) {
     console.log(error, "error");

@@ -165,6 +165,7 @@ exports.Prisma.TikTokCredentialsScalarFieldEnum = {
   id: 'id',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  handle: 'handle',
   accessToken: 'accessToken',
   refreshToken: 'refreshToken',
   refreshTokenExpiresIn: 'refreshTokenExpiresIn',

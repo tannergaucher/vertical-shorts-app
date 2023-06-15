@@ -1,5 +1,5 @@
 import type { Content } from "~/models/content.server";
-import type { ProjectWithChannels } from "~/models/project.server";
+import type { Project } from "~/models/project.server";
 
 import styles from "./index.module.css";
 
@@ -8,7 +8,7 @@ export function ContentStatus({
   content,
   open,
 }: {
-  project: ProjectWithChannels;
+  project: Project;
   content: Content;
   open?: boolean;
 }) {
@@ -33,12 +33,20 @@ export function ContentStatus({
               ) : (
                 youtubeItem
               );
-
             case "TIKTOK":
-              return (
+              const tikTokItem = (
                 <li key={channel.channelType}>
                   {channel.channelType}: {content.tikTokStatus}
                 </li>
+              );
+              return content.tikTokId && project.tikTokCredentials?.handle ? (
+                <a
+                  href={`https://www.tiktok.com/${project.tikTokCredentials.handle}/video/${content.tikTokId}}`}
+                >
+                  {tikTokItem}
+                </a>
+              ) : (
+                tikTokItem
               );
             case "TWITTER":
               return (
