@@ -19,6 +19,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google-cloud/storage": "^6.10.1",
     "@prisma/client": "^4.15.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.1.3",
     "express": "^4.17.1",
     "googleapis": "^118.0.0"

@@ -1,6 +1,7 @@
 import { path as ffmpeg } from "@ffmpeg-installer/ffmpeg";
 import { Storage } from "@google-cloud/storage";
 import { exec } from "child_process";
+import cors from "cors";
 import dotenv from "dotenv";
 import express, { json } from "express";
 import { createReadStream, createWriteStream, statSync } from "fs";
@@ -14,6 +15,12 @@ dotenv.config();
 
 const app = express();
 app.use(json());
+
+app.use(
+  cors({
+    origin: APP_BASE_URL,
+  })
+);
 
 const prisma = new PrismaClient();
 
