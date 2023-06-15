@@ -199,6 +199,7 @@ app.post("/upload-youtube-short", async (req, res) => {
         },
         data: {
           youtubeStatus: UploadStatus.PRIVATE,
+          youtubeId: response.data.id,
         },
       });
 
