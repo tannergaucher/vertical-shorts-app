@@ -19,7 +19,7 @@ const prisma = new PrismaClient();
 
 const storage = new Storage();
 
-app.post("/upload", async (req, res) => {
+app.post("/upload-content", async (req, res) => {
   console.log("getting file");
   const { projectId, slug } = req.body;
 
@@ -51,8 +51,10 @@ app.post("/upload", async (req, res) => {
       .createReadStream()
       .pipe(createWriteStream(filePath))
       .on("open", () => {
-        res.send("dl started");
+        console.log("dl started");
+        res.send("started uploading content");
       })
+
       .on("finish", () => {
         console.log("dl finished");
 

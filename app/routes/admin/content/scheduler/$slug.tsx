@@ -14,7 +14,6 @@ import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
-import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -61,23 +60,6 @@ export const action: ActionFunction = async ({ request }) => {
     slug,
     publishAt: new Date(`${date} ${time}`),
   });
-
-  const res = await fetch(`${UPLOAD_SERVICE_BASE_URL}/upload`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      slug,
-      projectId,
-    }),
-  });
-
-  console.log(res, "res");
-
-  if (!res.ok) {
-    throw new Error("Failed to upload to upload service");
-  }
 
   return redirect(Routes.Admin);
 };
