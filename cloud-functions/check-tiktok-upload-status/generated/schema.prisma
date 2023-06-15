@@ -135,10 +135,15 @@ model Content {
   updatedAt       DateTime?     @updatedAt
   projectId       String
   project         Project       @relation(fields: [projectId], references: [id])
+  youtubeId       String?
   youtubeStatus   UploadStatus? @default(NOT_STARTED)
+  tikTokId        String?
   tikTokStatus    UploadStatus? @default(NOT_STARTED)
+  instagramId     String?
   instagramStatus UploadStatus? @default(NOT_STARTED)
+  facebookId      String?
   facebookStatus  UploadStatus? @default(NOT_STARTED)
+  twitterId       String?
   twitterStatus   UploadStatus? @default(NOT_STARTED)
 
   @@unique([projectId, slug])

@@ -109,10 +109,15 @@ exports.Prisma.ContentScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   projectId: 'projectId',
+  youtubeId: 'youtubeId',
   youtubeStatus: 'youtubeStatus',
+  tikTokId: 'tikTokId',
   tikTokStatus: 'tikTokStatus',
+  instagramId: 'instagramId',
   instagramStatus: 'instagramStatus',
+  facebookId: 'facebookId',
   facebookStatus: 'facebookStatus',
+  twitterId: 'twitterId',
   twitterStatus: 'twitterStatus'
 };
 

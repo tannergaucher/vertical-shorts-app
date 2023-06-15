@@ -116,10 +116,15 @@ export type Content = {
   createdAt: Date | null
   updatedAt: Date | null
   projectId: string
+  youtubeId: string | null
   youtubeStatus: UploadStatus | null
+  tikTokId: string | null
   tikTokStatus: UploadStatus | null
+  instagramId: string | null
   instagramStatus: UploadStatus | null
+  facebookId: string | null
   facebookStatus: UploadStatus | null
+  twitterId: string | null
   twitterStatus: UploadStatus | null
 }
 
@@ -7759,10 +7764,15 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
+    youtubeId: string | null
     youtubeStatus: UploadStatus | null
+    tikTokId: string | null
     tikTokStatus: UploadStatus | null
+    instagramId: string | null
     instagramStatus: UploadStatus | null
+    facebookId: string | null
     facebookStatus: UploadStatus | null
+    twitterId: string | null
     twitterStatus: UploadStatus | null
   }
 
@@ -7777,10 +7787,15 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string | null
+    youtubeId: string | null
     youtubeStatus: UploadStatus | null
+    tikTokId: string | null
     tikTokStatus: UploadStatus | null
+    instagramId: string | null
     instagramStatus: UploadStatus | null
+    facebookId: string | null
     facebookStatus: UploadStatus | null
+    twitterId: string | null
     twitterStatus: UploadStatus | null
   }
 
@@ -7796,10 +7811,15 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     projectId: number
+    youtubeId: number
     youtubeStatus: number
+    tikTokId: number
     tikTokStatus: number
+    instagramId: number
     instagramStatus: number
+    facebookId: number
     facebookStatus: number
+    twitterId: number
     twitterStatus: number
     _all: number
   }
@@ -7816,10 +7836,15 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     projectId?: true
+    youtubeId?: true
     youtubeStatus?: true
+    tikTokId?: true
     tikTokStatus?: true
+    instagramId?: true
     instagramStatus?: true
+    facebookId?: true
     facebookStatus?: true
+    twitterId?: true
     twitterStatus?: true
   }
 
@@ -7834,10 +7859,15 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     projectId?: true
+    youtubeId?: true
     youtubeStatus?: true
+    tikTokId?: true
     tikTokStatus?: true
+    instagramId?: true
     instagramStatus?: true
+    facebookId?: true
     facebookStatus?: true
+    twitterId?: true
     twitterStatus?: true
   }
 
@@ -7853,10 +7883,15 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     projectId?: true
+    youtubeId?: true
     youtubeStatus?: true
+    tikTokId?: true
     tikTokStatus?: true
+    instagramId?: true
     instagramStatus?: true
+    facebookId?: true
     facebookStatus?: true
+    twitterId?: true
     twitterStatus?: true
     _all?: true
   }
@@ -7946,10 +7981,15 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     projectId: string
+    youtubeId: string | null
     youtubeStatus: UploadStatus | null
+    tikTokId: string | null
     tikTokStatus: UploadStatus | null
+    instagramId: string | null
     instagramStatus: UploadStatus | null
+    facebookId: string | null
     facebookStatus: UploadStatus | null
+    twitterId: string | null
     twitterStatus: UploadStatus | null
     _count: ContentCountAggregateOutputType | null
     _min: ContentMinAggregateOutputType | null
@@ -7982,10 +8022,15 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     projectId?: boolean
+    youtubeId?: boolean
     youtubeStatus?: boolean
+    tikTokId?: boolean
     tikTokStatus?: boolean
+    instagramId?: boolean
     instagramStatus?: boolean
+    facebookId?: boolean
     facebookStatus?: boolean
+    twitterId?: boolean
     twitterStatus?: boolean
     project?: boolean | ProjectArgs
   }
@@ -10794,10 +10839,15 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     projectId: 'projectId',
+    youtubeId: 'youtubeId',
     youtubeStatus: 'youtubeStatus',
+    tikTokId: 'tikTokId',
     tikTokStatus: 'tikTokStatus',
+    instagramId: 'instagramId',
     instagramStatus: 'instagramStatus',
+    facebookId: 'facebookId',
     facebookStatus: 'facebookStatus',
+    twitterId: 'twitterId',
     twitterStatus: 'twitterStatus'
   };
 
@@ -11298,10 +11348,15 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter | Date | string | null
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
+    youtubeId?: StringNullableFilter | string | null
     youtubeStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    tikTokId?: StringNullableFilter | string | null
     tikTokStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    instagramId?: StringNullableFilter | string | null
     instagramStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    facebookId?: StringNullableFilter | string | null
     facebookStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    twitterId?: StringNullableFilter | string | null
     twitterStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
@@ -11318,10 +11373,15 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeId?: SortOrder
     youtubeStatus?: SortOrder
+    tikTokId?: SortOrder
     tikTokStatus?: SortOrder
+    instagramId?: SortOrder
     instagramStatus?: SortOrder
+    facebookId?: SortOrder
     facebookStatus?: SortOrder
+    twitterId?: SortOrder
     twitterStatus?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
@@ -11342,10 +11402,15 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeId?: SortOrder
     youtubeStatus?: SortOrder
+    tikTokId?: SortOrder
     tikTokStatus?: SortOrder
+    instagramId?: SortOrder
     instagramStatus?: SortOrder
+    facebookId?: SortOrder
     facebookStatus?: SortOrder
+    twitterId?: SortOrder
     twitterStatus?: SortOrder
     _count?: ContentCountOrderByAggregateInput
     _max?: ContentMaxOrderByAggregateInput
@@ -11367,10 +11432,15 @@ export namespace Prisma {
     createdAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     updatedAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     projectId?: StringWithAggregatesFilter | string
+    youtubeId?: StringNullableWithAggregatesFilter | string | null
     youtubeStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    tikTokId?: StringNullableWithAggregatesFilter | string | null
     tikTokStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    instagramId?: StringNullableWithAggregatesFilter | string | null
     instagramStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    facebookId?: StringNullableWithAggregatesFilter | string | null
     facebookStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
+    twitterId?: StringNullableWithAggregatesFilter | string | null
     twitterStatus?: EnumUploadStatusNullableWithAggregatesFilter | UploadStatus | null
   }
 
@@ -11929,10 +11999,15 @@ export namespace Prisma {
     publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeId?: string | null
     youtubeStatus?: UploadStatus | null
+    tikTokId?: string | null
     tikTokStatus?: UploadStatus | null
+    instagramId?: string | null
     instagramStatus?: UploadStatus | null
+    facebookId?: string | null
     facebookStatus?: UploadStatus | null
+    twitterId?: string | null
     twitterStatus?: UploadStatus | null
     project: ProjectCreateNestedOneWithoutContentInput
   }
@@ -11949,10 +12024,15 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     projectId: string
+    youtubeId?: string | null
     youtubeStatus?: UploadStatus | null
+    tikTokId?: string | null
     tikTokStatus?: UploadStatus | null
+    instagramId?: string | null
     instagramStatus?: UploadStatus | null
+    facebookId?: string | null
     facebookStatus?: UploadStatus | null
+    twitterId?: string | null
     twitterStatus?: UploadStatus | null
   }
 
@@ -11967,10 +12047,15 @@ export namespace Prisma {
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeId?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokId?: NullableStringFieldUpdateOperationsInput | string | null
     tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramId?: NullableStringFieldUpdateOperationsInput | string | null
     instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterId?: NullableStringFieldUpdateOperationsInput | string | null
     twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
     project?: ProjectUpdateOneRequiredWithoutContentNestedInput
   }
@@ -11987,10 +12072,15 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: StringFieldUpdateOperationsInput | string
+    youtubeId?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokId?: NullableStringFieldUpdateOperationsInput | string | null
     tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramId?: NullableStringFieldUpdateOperationsInput | string | null
     instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterId?: NullableStringFieldUpdateOperationsInput | string | null
     twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
@@ -12006,10 +12096,15 @@ export namespace Prisma {
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
     projectId: string
+    youtubeId?: string | null
     youtubeStatus?: UploadStatus | null
+    tikTokId?: string | null
     tikTokStatus?: UploadStatus | null
+    instagramId?: string | null
     instagramStatus?: UploadStatus | null
+    facebookId?: string | null
     facebookStatus?: UploadStatus | null
+    twitterId?: string | null
     twitterStatus?: UploadStatus | null
   }
 
@@ -12024,10 +12119,15 @@ export namespace Prisma {
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeId?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokId?: NullableStringFieldUpdateOperationsInput | string | null
     tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramId?: NullableStringFieldUpdateOperationsInput | string | null
     instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterId?: NullableStringFieldUpdateOperationsInput | string | null
     twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
@@ -12043,10 +12143,15 @@ export namespace Prisma {
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     projectId?: StringFieldUpdateOperationsInput | string
+    youtubeId?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokId?: NullableStringFieldUpdateOperationsInput | string | null
     tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramId?: NullableStringFieldUpdateOperationsInput | string | null
     instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterId?: NullableStringFieldUpdateOperationsInput | string | null
     twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
@@ -12593,10 +12698,15 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeId?: SortOrder
     youtubeStatus?: SortOrder
+    tikTokId?: SortOrder
     tikTokStatus?: SortOrder
+    instagramId?: SortOrder
     instagramStatus?: SortOrder
+    facebookId?: SortOrder
     facebookStatus?: SortOrder
+    twitterId?: SortOrder
     twitterStatus?: SortOrder
   }
 
@@ -12611,10 +12721,15 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeId?: SortOrder
     youtubeStatus?: SortOrder
+    tikTokId?: SortOrder
     tikTokStatus?: SortOrder
+    instagramId?: SortOrder
     instagramStatus?: SortOrder
+    facebookId?: SortOrder
     facebookStatus?: SortOrder
+    twitterId?: SortOrder
     twitterStatus?: SortOrder
   }
 
@@ -12629,10 +12744,15 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     projectId?: SortOrder
+    youtubeId?: SortOrder
     youtubeStatus?: SortOrder
+    tikTokId?: SortOrder
     tikTokStatus?: SortOrder
+    instagramId?: SortOrder
     instagramStatus?: SortOrder
+    facebookId?: SortOrder
     facebookStatus?: SortOrder
+    twitterId?: SortOrder
     twitterStatus?: SortOrder
   }
 
@@ -14128,10 +14248,15 @@ export namespace Prisma {
     publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeId?: string | null
     youtubeStatus?: UploadStatus | null
+    tikTokId?: string | null
     tikTokStatus?: UploadStatus | null
+    instagramId?: string | null
     instagramStatus?: UploadStatus | null
+    facebookId?: string | null
     facebookStatus?: UploadStatus | null
+    twitterId?: string | null
     twitterStatus?: UploadStatus | null
   }
 
@@ -14146,10 +14271,15 @@ export namespace Prisma {
     publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeId?: string | null
     youtubeStatus?: UploadStatus | null
+    tikTokId?: string | null
     tikTokStatus?: UploadStatus | null
+    instagramId?: string | null
     instagramStatus?: UploadStatus | null
+    facebookId?: string | null
     facebookStatus?: UploadStatus | null
+    twitterId?: string | null
     twitterStatus?: UploadStatus | null
   }
 
@@ -14356,10 +14486,15 @@ export namespace Prisma {
     createdAt?: DateTimeNullableFilter | Date | string | null
     updatedAt?: DateTimeNullableFilter | Date | string | null
     projectId?: StringFilter | string
+    youtubeId?: StringNullableFilter | string | null
     youtubeStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    tikTokId?: StringNullableFilter | string | null
     tikTokStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    instagramId?: StringNullableFilter | string | null
     instagramStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    facebookId?: StringNullableFilter | string | null
     facebookStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
+    twitterId?: StringNullableFilter | string | null
     twitterStatus?: EnumUploadStatusNullableFilter | UploadStatus | null
   }
 
@@ -14621,10 +14756,15 @@ export namespace Prisma {
     publishAt?: Date | string | null
     createdAt?: Date | string | null
     updatedAt?: Date | string | null
+    youtubeId?: string | null
     youtubeStatus?: UploadStatus | null
+    tikTokId?: string | null
     tikTokStatus?: UploadStatus | null
+    instagramId?: string | null
     instagramStatus?: UploadStatus | null
+    facebookId?: string | null
     facebookStatus?: UploadStatus | null
+    twitterId?: string | null
     twitterStatus?: UploadStatus | null
   }
 
@@ -14649,10 +14789,15 @@ export namespace Prisma {
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeId?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokId?: NullableStringFieldUpdateOperationsInput | string | null
     tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramId?: NullableStringFieldUpdateOperationsInput | string | null
     instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterId?: NullableStringFieldUpdateOperationsInput | string | null
     twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
@@ -14667,10 +14812,15 @@ export namespace Prisma {
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeId?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokId?: NullableStringFieldUpdateOperationsInput | string | null
     tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramId?: NullableStringFieldUpdateOperationsInput | string | null
     instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterId?: NullableStringFieldUpdateOperationsInput | string | null
     twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 
@@ -14685,10 +14835,15 @@ export namespace Prisma {
     publishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    youtubeId?: NullableStringFieldUpdateOperationsInput | string | null
     youtubeStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    tikTokId?: NullableStringFieldUpdateOperationsInput | string | null
     tikTokStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    instagramId?: NullableStringFieldUpdateOperationsInput | string | null
     instagramStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    facebookId?: NullableStringFieldUpdateOperationsInput | string | null
     facebookStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
+    twitterId?: NullableStringFieldUpdateOperationsInput | string | null
     twitterStatus?: NullableEnumUploadStatusFieldUpdateOperationsInput | UploadStatus | null
   }
 

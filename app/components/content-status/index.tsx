@@ -12,6 +12,8 @@ export function ContentStatus({
   content: Content;
   open?: boolean;
 }) {
+  console.log(content, "content");
+
   return (
     <details className={styles.details} open={open}>
       <summary className={styles.summary}>Status</summary>
