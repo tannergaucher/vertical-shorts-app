@@ -17,10 +17,26 @@ type UpdatedProject = Omit<ProjectModel, "createdAt" | "updatedAt"> & {
   updatedAt: string;
 };
 
+type UpdatedTikTokCredentials = Omit<
+  TikTokCredentials,
+  "createdAt" | "updatedAt"
+> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+type UpdatedYoutubeCredentials = Omit<
+  YoutubeCredentials,
+  "createdAt" | "updatedAt"
+> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Project = UpdatedProject & {
   channels: UpdatedChannel[];
-  youtubeCredentials: YoutubeCredentials | null;
-  tikTokCredentials: TikTokCredentials | null;
+  tikTokCredentials: UpdatedTikTokCredentials | null;
+  youtubeCredentials: UpdatedYoutubeCredentials | null;
 };
 
 export async function getProject({ id }: { id: string }): Promise<Project> {
@@ -44,5 +60,19 @@ export async function getProject({ id }: { id: string }): Promise<Project> {
       createdAt: channel.createdAt.toISOString(),
       updatedAt: channel.updatedAt.toISOString(),
     })),
+    tikTokCredentials: project.tikTokCredentials
+      ? {
+          ...project.tikTokCredentials,
+          createdAt: project.tikTokCredentials.createdAt.toISOString(),
+          updatedAt: project.tikTokCredentials.updatedAt.toISOString(),
+        }
+      : null,
+    youtubeCredentials: project.youtubeCredentials
+      ? {
+          ...project.youtubeCredentials,
+          createdAt: project.youtubeCredentials.createdAt.toISOString(),
+          updatedAt: project.youtubeCredentials.updatedAt.toISOString(),
+        }
+      : null,
   };
 }
