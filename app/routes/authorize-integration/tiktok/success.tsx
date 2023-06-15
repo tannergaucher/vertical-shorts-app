@@ -77,6 +77,7 @@ export const loader: LoaderFunction = async ({ request }) => {
                     refreshTokenExpiresIn: data.data.refresh_expires_in,
                     scope: data.data.scope,
                     openId: data.data.open_id,
+                    handle: channelResponseData.data.user.display_name,
                   },
                   update: {
                     accessToken: data.data.access_token,
@@ -84,6 +85,7 @@ export const loader: LoaderFunction = async ({ request }) => {
                     refreshTokenExpiresIn: data.data.refresh_expires_in,
                     scope: data.data.scope,
                     openId: data.data.open_id,
+                    handle: channelResponseData.data.user.display_name,
                   },
                 },
               },
