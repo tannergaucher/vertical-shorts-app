@@ -50,6 +50,10 @@ export async function publishYoutubeContent(cloudEvent: CloudEvent<string>) {
     return;
   }
 
+  if (content.youtubeStatus === UploadStatus.NOT_STARTED) {
+    console.log("HANDLE NOT STARTED");
+  }
+
   const project = await prisma.project.findUnique({
     where: {
       id: projectId,
