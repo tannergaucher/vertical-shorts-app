@@ -9,5 +9,5 @@ gcloud functions deploy fetch-youtube-content-for-publishing \
 --entry-point=fetchYoutubeContentForPublishing \
 --trigger-topic=fetch-youtube-content-for-publishing \
 --timeout=540s \
---memory=2048MB
+--memory=256MB
 ```

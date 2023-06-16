@@ -2,20 +2,20 @@ import * as functions from "@google-cloud/functions-framework";
 import type { CloudEvent } from "@google-cloud/functions-framework/build/src/functions";
 import { google } from "googleapis";
 
-import { PrismaClient } from "./generated";
+import { PrismaClient, UploadStatus } from "./generated";
 
 const prisma = new PrismaClient();
 
 functions.cloudEvent(
-  "publish-youtube-short",
+  "publish-youtube-content",
   async (cloudEvent: CloudEvent<string>) => {
-    await publishYoutubeShort(cloudEvent);
+    await publishYoutubeContent(cloudEvent);
 
     return { message: "success" };
   }
 );
 
-export async function publishYoutubeShort(cloudEvent: CloudEvent<string>) {
+export async function publishYoutubeContent(cloudEvent: CloudEvent<string>) {
   if (!cloudEvent.data) {
     throw new Error("NO_DATA");
   }
@@ -27,7 +27,7 @@ export async function publishYoutubeShort(cloudEvent: CloudEvent<string>) {
     projectId: string;
   };
 
-  const content = await prisma.content.findUniqueOrThrow({
+  const content = await prisma.content.findUnique({
     where: {
       projectId_slug: {
         projectId,
@@ -35,37 +35,32 @@ export async function publishYoutubeShort(cloudEvent: CloudEvent<string>) {
       },
     },
     select: {
-      slug: true,
-      title: true,
-      description: true,
-      tags: true,
-      published: true,
-      project: {
-        select: {
-          id: true,
-          youtubeCredentials: true,
-          user: {
-            select: {
-              id: true,
-            },
-          },
-        },
-      },
+      youtubeId: true,
+      youtubeStatus: true,
     },
   });
 
-  const user = await prisma.user.findUniqueOrThrow({
+  console.log(content, "__CONTENT__");
+
+  if (!content) {
+    throw new Error("NO_CONTENT");
+  }
+
+  if (content.youtubeStatus === UploadStatus.PUBLIC) {
+    return;
+  }
+
+  const project = await prisma.project.findUnique({
     where: {
-      id: content.project.user.id,
+      id: projectId,
     },
     select: {
-      id: true,
-      currentProjectId: true,
+      youtubeCredentials: true,
     },
   });
 
-  if (!user.currentProjectId) {
-    throw new Error("NO_CURRENT_PROJECT");
+  if (!project?.youtubeCredentials) {
+    throw new Error("NO_YOUTUBE_CREDENTIALS");
   }
 
   const oauth2Client = new google.auth.OAuth2(
@@ -74,66 +69,43 @@ export async function publishYoutubeShort(cloudEvent: CloudEvent<string>) {
     process.env.YOUTUBE_REDIRECT_URL
   );
 
-  const currentProject = await prisma.project.findUniqueOrThrow({
-    where: {
-      id: user.currentProjectId,
-    },
-    select: {
-      youtubeCredentials: true,
-    },
-  });
-
-  if (!currentProject.youtubeCredentials) {
-    throw new Error("NO_YOUTUBE_CREDENTIALS");
-  }
-
   oauth2Client.setCredentials({
-    access_token: currentProject.youtubeCredentials.accessToken,
-    refresh_token: currentProject.youtubeCredentials.refreshToken,
+    access_token: project.youtubeCredentials.accessToken,
+    refresh_token: project.youtubeCredentials.refreshToken,
   });
 
-  const now = new Date();
-  const expiryDate = new Date(
-    currentProject.youtubeCredentials.updatedAt.getTime() + 3600000
-  );
-  const timeUntilExpiry = expiryDate.getTime() - now.getTime();
-  const timeUntilExpiryInSeconds = timeUntilExpiry / 1000;
+  const youtube = google.youtube({
+    version: "v3",
+    auth: oauth2Client,
+  });
 
-  if (timeUntilExpiryInSeconds < 60) {
-    console.log("TOKEN EXPIRED");
-
-    const { credentials } = await oauth2Client.refreshAccessToken();
-
-    console.log(credentials, "_credentials");
-
-    await prisma.project.update({
-      where: {
-        id: user.currentProjectId,
+  const updatedVideo = await youtube.videos.update({
+    part: ["status"],
+    requestBody: {
+      id: slug,
+      status: {
+        privacyStatus: "public",
       },
-      data: {
-        youtubeCredentials: {
-          update: {
-            accessToken: credentials.access_token,
-            refreshToken: credentials.refresh_token,
-          },
-        },
-      },
-    });
+    },
+  });
 
-    oauth2Client.setCredentials({
-      access_token: credentials.access_token,
-      refresh_token: credentials.refresh_token,
-    });
+  if (updatedVideo.status !== 200) {
+    throw new Error("YOUTUBE_UPDATE_FAILED");
   }
 
-  try {
-    const youtube = google.youtube({
-      version: "v3",
-      auth: oauth2Client,
-    });
+  await prisma.content.update({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    data: {
+      youtubeStatus: UploadStatus.PUBLIC,
+    },
+  });
 
-    youtube.videos.update({});
-  } catch (error) {
-    console.log(error, "error publishing public youtube short");
-  }
+  return {
+    message: `YouTube video ${content.youtubeId} is now public`,
+  };
 }
