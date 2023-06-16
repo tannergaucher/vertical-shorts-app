@@ -2,10 +2,7 @@ import type { Content as ContentModel } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
-export type Content = Omit<
-  ContentModel,
-  "createdAt" | "updatedAt" | "publishAt"
-> & {
+export type Content = Omit<ContentModel, "createdAt" | "updatedAt"> & {
   createdAt: string | null;
   updatedAt: string | null;
 };
