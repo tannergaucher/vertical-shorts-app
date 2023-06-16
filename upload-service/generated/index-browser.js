@@ -104,21 +104,24 @@ exports.Prisma.ContentScalarFieldEnum = {
   thumbnail: 'thumbnail',
   gif: 'gif',
   tags: 'tags',
-  published: 'published',
-  publishAt: 'publishAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   projectId: 'projectId',
   youtubeId: 'youtubeId',
   youtubeStatus: 'youtubeStatus',
+  youtubePublishAt: 'youtubePublishAt',
   tikTokId: 'tikTokId',
   tikTokStatus: 'tikTokStatus',
+  tikTokPublishAt: 'tikTokPublishAt',
   instagramId: 'instagramId',
   instagramStatus: 'instagramStatus',
+  instagramPublishAt: 'instagramPublishAt',
   facebookId: 'facebookId',
   facebookStatus: 'facebookStatus',
+  facebookPublishAt: 'facebookPublishAt',
   twitterId: 'twitterId',
-  twitterStatus: 'twitterStatus'
+  twitterStatus: 'twitterStatus',
+  twitterPublishAt: 'twitterPublishAt'
 };
 
 exports.Prisma.FacebookCredentialsScalarFieldEnum = {

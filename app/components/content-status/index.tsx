@@ -44,49 +44,72 @@ export function ContentStatus({
                     <td>{content.youtubeStatus}</td>
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
-                        {content.publishAt ?? "NONE"}
+                        {content.youtubePublishAt
+                          ? content.youtubePublishAt.toString()
+                          : "NONE"}
                       </Link>
                     </td>
                   </tr>
                 );
               case "TIKTOK":
-                const tikTokItem = (
+                return (
                   <tr key={channel.channelType}>
                     <td>
-                      {channel.channelType}: {content.tikTokStatus}
+                      <a
+                        href={`https://www.tiktok.com/${project.tikTokCredentials?.handle}/video/${content.tikTokId}}`}
+                      >
+                        {channel.channelType}
+                      </a>
+                    </td>
+                    <td>{content.tikTokStatus}</td>
+                    <td>
+                      <Link to={Routes.AdminContentScheduler(content.slug)}>
+                        {content.tikTokPublishAt
+                          ? content.tikTokPublishAt.toString()
+                          : "NONE"}
+                      </Link>
                     </td>
                   </tr>
-                );
-                return content.tikTokId && project.tikTokCredentials?.handle ? (
-                  <a
-                    href={`https://www.tiktok.com/${project.tikTokCredentials.handle}/video/${content.tikTokId}}`}
-                  >
-                    {tikTokItem}
-                  </a>
-                ) : (
-                  tikTokItem
                 );
               case "TWITTER":
                 return (
                   <tr key={channel.channelType}>
+                    <td>{channel.channelType}</td>
+                    <td>{content.twitterStatus}</td>
                     <td>
-                      {channel.channelType}: {content.twitterStatus}
+                      <Link to={Routes.AdminContentScheduler(content.slug)}>
+                        {content.twitterPublishAt
+                          ? content.twitterPublishAt.toString()
+                          : "NONE"}
+                      </Link>
                     </td>
                   </tr>
                 );
               case "INSTAGRAM":
                 return (
                   <tr key={channel.channelType}>
+                    <td>{channel.channelType}</td>
+                    <td>{content.instagramStatus}</td>
                     <td>
-                      {channel.channelType}: {content.instagramStatus}
+                      <Link to={Routes.AdminContentScheduler(content.slug)}>
+                        {content.instagramPublishAt
+                          ? content.instagramPublishAt.toString()
+                          : "NONE"}
+                      </Link>
                     </td>
                   </tr>
                 );
               case "FACEBOOK":
                 return (
                   <tr key={channel.channelType}>
+                    <td>{channel.channelType}</td>
+                    <td>{content.facebookStatus}</td>
                     <td>
-                      {channel.channelType}: {content.facebookStatus}
+                      <Link to={Routes.AdminContentScheduler(content.slug)}>
+                        {content.facebookPublishAt
+                          ? content.facebookPublishAt.toString()
+                          : "NONE"}
+                      </Link>
                     </td>
                   </tr>
                 );

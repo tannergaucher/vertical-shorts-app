@@ -8,7 +8,6 @@ export type Content = Omit<
 > & {
   createdAt: string | null;
   updatedAt: string | null;
-  publishAt: string | null;
 };
 
 export async function getContent(params: { slug: string; projectId: string }) {
@@ -50,7 +49,6 @@ export async function getContents(params: {
     ...content,
     createdAt: content.createdAt?.toISOString() || null,
     updatedAt: content.updatedAt?.toISOString() || null,
-    publishAt: content.publishAt?.toISOString() || null,
   }));
 }
 
@@ -59,10 +57,13 @@ interface UpsertContentParams {
   projectId: string;
   title?: string;
   description?: string | null;
-  published?: boolean | null;
-  publishAt?: Date | null;
   tags?: string[];
   thumbnail?: string | null;
+  youtubePublishAt?: Date | null;
+  tiktokPublishAt?: Date | null;
+  instagramPublishAt?: Date | null;
+  facebookPublishAt?: Date | null;
+  twitterPublishAt?: Date | null;
 }
 
 export async function upsertContent(content: UpsertContentParams) {
@@ -77,7 +78,6 @@ export async function upsertContent(content: UpsertContentParams) {
       slug: content.slug,
       projectId: content.projectId,
       title: content.title || "Untitled Content",
-      published: content.published || false,
     },
     update: {
       ...content,

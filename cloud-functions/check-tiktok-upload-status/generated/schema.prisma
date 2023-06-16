@@ -130,22 +130,25 @@ model Content {
   thumbnail       String?
   gif             String?
   tags            String[]
-  published       Boolean?      @default(false)
-  publishAt       DateTime?
   createdAt       DateTime?     @default(now())
   updatedAt       DateTime?     @updatedAt
   projectId       String
   project         Project       @relation(fields: [projectId], references: [id])
   youtubeId       String?
   youtubeStatus   UploadStatus? @default(NOT_STARTED)
+  youtubePublishAt DateTime?
   tikTokId        String?
   tikTokStatus    UploadStatus? @default(NOT_STARTED)
+  tikTokPublishAt DateTime?
   instagramId     String?
   instagramStatus UploadStatus? @default(NOT_STARTED)
+  instagramPublishAt DateTime?
   facebookId      String?
   facebookStatus  UploadStatus? @default(NOT_STARTED)
+  facebookPublishAt DateTime?
   twitterId       String?
   twitterStatus   UploadStatus? @default(NOT_STARTED)
+  twitterPublishAt DateTime?
 
   @@unique([projectId, slug])
 }

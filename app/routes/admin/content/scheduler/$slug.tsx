@@ -1,3 +1,4 @@
+import { ChannelType, UploadStatus } from "@prisma/client";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
@@ -55,19 +56,42 @@ export const action: ActionFunction = async ({ request }) => {
   const time = formData.get("time");
   const slug = formData.get("slug");
   const projectId = formData.get("projectId");
+  const channelTypes = formData.getAll("channelType");
 
   invariant(typeof date === "string", "date is required");
   invariant(typeof time === "string", "time is required");
   invariant(typeof slug === "string", "slug is required");
   invariant(typeof projectId === "string", "projectId is required");
+  invariant(channelTypes.length > 0, "a channel is required");
+
+  channelTypes.forEach((channelType) => {
+    invariant(
+      Object.values(ChannelType).includes(channelType as ChannelType),
+      "channelType must be a valid ChannelType"
+    );
+  });
 
   await upsertContent({
     projectId,
     slug,
-    publishAt: new Date(`${date} ${time}`),
+    youtubePublishAt: channelTypes.includes(ChannelType.YOUTUBE)
+      ? new Date(`${date}T${time}`)
+      : undefined,
+    tiktokPublishAt: channelTypes.includes(ChannelType.TIKTOK)
+      ? new Date(`${date}T${time}`)
+      : undefined,
+    instagramPublishAt: channelTypes.includes(ChannelType.INSTAGRAM)
+      ? new Date(`${date}T${time}`)
+      : undefined,
+    facebookPublishAt: channelTypes.includes(ChannelType.FACEBOOK)
+      ? new Date(`${date}T${time}`)
+      : undefined,
+    twitterPublishAt: channelTypes.includes(ChannelType.TWITTER)
+      ? new Date(`${date}T${time}`)
+      : undefined,
   });
 
-  return redirect(Routes.Admin);
+  return redirect(Routes.Index);
 };
 
 export default function Page() {
@@ -86,24 +110,56 @@ export default function Page() {
       <fieldset disabled={disabled}>
         <Breadcrumb slug={slug} />
         <Form method="post">
-          <section>
+          <section className={styles.checkboxSection}>
             {channelTypes.map((channelType) => (
               <label htmlFor={channelType} key={channelType}>
                 <input
                   type="checkbox"
-                  name={channelType}
+                  name="channelType"
                   id={channelType}
                   value={channelType}
                   className={styles.checkbox}
+                  disabled={
+                    channelType === "YOUTUBE" &&
+                    content.youtubeStatus === UploadStatus.PUBLIC
+                      ? true
+                      : channelType === "TIKTOK" &&
+                        content.tikTokStatus === UploadStatus.PUBLIC
+                      ? true
+                      : channelType === "INSTAGRAM" &&
+                        content.instagramStatus === UploadStatus.PUBLIC
+                      ? true
+                      : channelType === "FACEBOOK" &&
+                        content.facebookStatus === UploadStatus.PUBLIC
+                      ? true
+                      : channelType === "TWITTER" &&
+                        content.twitterStatus === UploadStatus.PUBLIC
+                      ? true
+                      : false
+                  }
+                  defaultChecked={
+                    channelType === "YOUTUBE" && !content.youtubePublishAt
+                      ? true
+                      : channelType === "TIKTOK" && !content.tikTokPublishAt
+                      ? true
+                      : channelType === "INSTAGRAM" &&
+                        !content.instagramPublishAt
+                      ? true
+                      : channelType === "FACEBOOK" && !content.facebookPublishAt
+                      ? true
+                      : channelType === "TWITTER" && !content.twitterPublishAt
+                      ? true
+                      : false
+                  }
                 />
                 {channelType}
               </label>
             ))}
           </section>
           <label htmlFor="date">Date</label>
-          <input type="date" name="date" className={styles.input} />
+          <input type="date" name="date" className={styles.input} required />
           <label htmlFor="time">Time</label>
-          <input type="time" name="time" className={styles.input} />
+          <input type="time" name="time" className={styles.input} required />
           <input type="hidden" name="slug" value={content.slug} />
           <input type="hidden" name="projectId" value={content.projectId} />
           <button type="submit">Schedule</button>
