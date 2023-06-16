@@ -158,6 +158,19 @@ button {
   font: inherit;
 }
 
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table,
+thead,
+th,
+td {
+  border: var(--border);
+  padding: var(--space-1);
+}
+
 @media (max-width: 768px) {
   :root {
     --container: 100%;

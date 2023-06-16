@@ -10,10 +10,12 @@ import { getContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
+import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
   signedUrl: string;
+  projectId: string;
 };
 
 export const meta: MetaFunction = () => {
@@ -71,13 +73,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     projectId,
   });
 
-  return json({ content, signedUrl });
+  return json({ content, signedUrl, projectId });
 };
 
 export default function Page() {
-  const [disabled, setDisabled] = useState(false);
+  const { content, signedUrl, projectId } = useLoaderData<LoaderData>();
 
-  const { content, signedUrl } = useLoaderData<LoaderData>();
+  const [disabled, setDisabled] = useState(false);
 
   const navigate = useNavigate();
 
@@ -101,21 +103,35 @@ export default function Page() {
         const videoData = e.target?.result;
 
         try {
-          const res = await fetch(signedUrl, {
+          await fetch(signedUrl, {
             method: "PUT",
             body: videoData,
             headers: {
               "Content-Type": "video/mp4",
             },
           });
-
-          if (res.ok) {
-            navigate(Routes.AdminContentScheduler(content.slug));
-          }
         } catch (error) {
           console.log(error, "error");
-        } finally {
           setDisabled(false);
+        } finally {
+          const uploadContentRes = await fetch(
+            `${UPLOAD_SERVICE_BASE_URL}/upload-content`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                slug,
+                projectId,
+              }),
+            }
+          );
+
+          if (uploadContentRes.ok) {
+            setDisabled(false);
+            navigate(Routes.AdminContentScheduler(content.slug));
+          }
         }
       };
     }

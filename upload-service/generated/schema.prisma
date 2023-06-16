@@ -8,21 +8,15 @@ generator uploadService {
   binaryTargets = ["debian-openssl-1.1.x"]
 }
 
-generator handleGcsVideoUpload {
+generator cloudFetchYoutubeContentForPublishingClient {
   provider      = "prisma-client-js"
-  output        = "../cloud-functions/handle-gcs-video-upload/generated"
+  output        = "../cloud-functions/fetch-youtube-content-for-publishing/generated"
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
 }
 
-generator cloudYoutubeClient {
+generator cloudPublishYoutubeConentClient {
   provider      = "prisma-client-js"
-  output        = "../cloud-functions/upload-youtube-short/generated"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
-}
-
-generator cloudTiktokUploadClient {
-  provider      = "prisma-client-js"
-  output        = "../cloud-functions/upload-tiktok-video/generated"
+  output        = "../cloud-functions/publish-youtube-content/generated"
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
 }
 
@@ -130,22 +124,25 @@ model Content {
   thumbnail       String?
   gif             String?
   tags            String[]
-  published       Boolean?      @default(false)
-  publishAt       DateTime?
   createdAt       DateTime?     @default(now())
   updatedAt       DateTime?     @updatedAt
   projectId       String
   project         Project       @relation(fields: [projectId], references: [id])
   youtubeId       String?
   youtubeStatus   UploadStatus? @default(NOT_STARTED)
+  youtubePublishAt DateTime?
   tikTokId        String?
   tikTokStatus    UploadStatus? @default(NOT_STARTED)
+  tikTokPublishAt DateTime?
   instagramId     String?
   instagramStatus UploadStatus? @default(NOT_STARTED)
+  instagramPublishAt DateTime?
   facebookId      String?
   facebookStatus  UploadStatus? @default(NOT_STARTED)
+  facebookPublishAt DateTime?
   twitterId       String?
   twitterStatus   UploadStatus? @default(NOT_STARTED)
+  twitterPublishAt DateTime?
 
   @@unique([projectId, slug])
 }

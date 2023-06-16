@@ -10,7 +10,7 @@ import {
 import * as React from "react";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
-import { createUserSession,getUserId } from "~/session.server";
+import { createUserSession, getUserId } from "~/session.server";
 import styles from "~/styles/login.module.css";
 import { safeRedirect, validateEmail } from "~/utils";
 
@@ -144,7 +144,7 @@ export default function Page() {
             Create Account
           </button>
           <div>
-            <div>
+            <small>
               Already have an account?{" "}
               <Link
                 className={styles.login}
@@ -155,7 +155,7 @@ export default function Page() {
               >
                 Log in
               </Link>
-            </div>
+            </small>
           </div>
         </Form>
       </fieldset>

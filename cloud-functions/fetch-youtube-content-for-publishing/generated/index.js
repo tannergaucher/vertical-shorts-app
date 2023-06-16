@@ -230,13 +230,13 @@ exports.Prisma.ModelName = {
  */
 const config = {
   "generator": {
-    "name": "uploadService",
+    "name": "cloudFetchYoutubeContentForPublishingClient",
     "provider": {
       "fromEnvVar": null,
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tg/Documents/GitHub/remix-blog/upload-service/generated",
+      "value": "/Users/tg/Documents/GitHub/remix-blog/cloud-functions/fetch-youtube-content-for-publishing/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -245,7 +245,16 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "debian-openssl-1.1.x"
+        "value": "darwin-arm64",
+        "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "debian-openssl-3.0.x"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-1.0.x"
       }
     ],
     "previewFeatures": [],
@@ -254,7 +263,7 @@ const config = {
   "relativeEnvPaths": {
     "rootEnvPath": null
   },
-  "relativePath": "../../prisma",
+  "relativePath": "../../../prisma",
   "clientVersion": "4.15.0",
   "engineVersion": "8fbc245156db7124f997f4cecdd8d1219e360944",
   "datasourceNames": [
@@ -269,7 +278,7 @@ const fs = require('fs')
 
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
-  config.dirname = path.join(process.cwd(), "../../upload-service/generated")
+  config.dirname = path.join(process.cwd(), "generated")
   config.isBundled = true
 }
 
@@ -293,15 +302,15 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "../../upload-service/generated/libquery_engine-darwin-arm64.dylib.node")
+path.join(process.cwd(), "generated/libquery_engine-darwin-arm64.dylib.node")
 
 path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
-path.join(process.cwd(), "../../upload-service/generated/libquery_engine-debian-openssl-1.1.x.so.node")
+path.join(process.cwd(), "generated/libquery_engine-debian-openssl-1.1.x.so.node")
 
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
-path.join(process.cwd(), "../../upload-service/generated/libquery_engine-debian-openssl-3.0.x.so.node")
+path.join(process.cwd(), "generated/libquery_engine-debian-openssl-3.0.x.so.node")
 
 path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
-path.join(process.cwd(), "../../upload-service/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
+path.join(process.cwd(), "generated/libquery_engine-rhel-openssl-1.0.x.so.node")
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "../../upload-service/generated/schema.prisma")
+path.join(process.cwd(), "generated/schema.prisma")
