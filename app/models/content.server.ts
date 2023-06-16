@@ -2,9 +2,23 @@ import type { Content as ContentModel } from "@prisma/client";
 
 import { prisma } from "~/db.server";
 
-export type Content = Omit<ContentModel, "createdAt" | "updatedAt"> & {
+export type Content = Omit<
+  ContentModel,
+  | "createdAt"
+  | "updatedAt"
+  | "youtubePublishAt"
+  | "tikTokPublishAt"
+  | "instagramPublishAt"
+  | "facebookPublishAt"
+  | "twitterPublishAt"
+> & {
   createdAt: string | null;
   updatedAt: string | null;
+  youtubePublishAt: string | null;
+  tikTokPublishAt: string | null;
+  instagramPublishAt: string | null;
+  facebookPublishAt: string | null;
+  twitterPublishAt: string | null;
 };
 
 export async function getContent(params: { slug: string; projectId: string }) {
@@ -46,6 +60,11 @@ export async function getContents(params: {
     ...content,
     createdAt: content.createdAt?.toISOString() || null,
     updatedAt: content.updatedAt?.toISOString() || null,
+    youtubePublishAt: content.youtubePublishAt?.toISOString() || null,
+    tikTokPublishAt: content.tikTokPublishAt?.toISOString() || null,
+    instagramPublishAt: content.instagramPublishAt?.toISOString() || null,
+    facebookPublishAt: content.facebookPublishAt?.toISOString() || null,
+    twitterPublishAt: content.twitterPublishAt?.toISOString() || null,
   }));
 }
 
