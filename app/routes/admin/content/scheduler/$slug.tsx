@@ -11,12 +11,14 @@ import invariant from "tiny-invariant";
 import { Breadcrumb } from "~/components/breadcrumb";
 import { getContent } from "~/models/content.server";
 import { upsertContent } from "~/models/content.server";
+import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
+  project: Awaited<ReturnType<typeof getProject>>;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -39,7 +41,11 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     projectId,
   });
 
-  return json({ content });
+  const project = await getProject({
+    id: projectId,
+  });
+
+  return json({ content, project });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -65,7 +71,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, project } = useLoaderData<LoaderData>();
   const transition = useTransition();
 
   const { slug } = useParams();
@@ -73,11 +79,27 @@ export default function Page() {
   const disabled =
     transition.state === "loading" || transition.state === "submitting";
 
+  const channelTypes = project.channels.map((channel) => channel.channelType);
+
   return (
     <main className={styles.main}>
       <fieldset disabled={disabled}>
         <Breadcrumb slug={slug} />
         <Form method="post">
+          <section>
+            {channelTypes.map((channelType) => (
+              <label htmlFor={channelType} key={channelType}>
+                <input
+                  type="checkbox"
+                  name={channelType}
+                  id={channelType}
+                  value={channelType}
+                  className={styles.checkbox}
+                />
+                {channelType}
+              </label>
+            ))}
+          </section>
           <label htmlFor="date">Date</label>
           <input type="date" name="date" className={styles.input} />
           <label htmlFor="time">Time</label>

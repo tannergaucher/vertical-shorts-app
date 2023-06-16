@@ -5,3 +5,7 @@
 .details {
   padding: var(--space-1);
 }
+
+.table {
+  margin-block-start: var(--space-1);
+}
