@@ -77,7 +77,7 @@ export const action: ActionFunction = async ({ request }) => {
     youtubePublishAt: channelTypes.includes(ChannelType.YOUTUBE)
       ? new Date(`${date}T${time}`)
       : undefined,
-    tiktokPublishAt: channelTypes.includes(ChannelType.TIKTOK)
+    tikTokPublishAt: channelTypes.includes(ChannelType.TIKTOK)
       ? new Date(`${date}T${time}`)
       : undefined,
     instagramPublishAt: channelTypes.includes(ChannelType.INSTAGRAM)

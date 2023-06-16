@@ -76,7 +76,7 @@ interface UpsertContentParams {
   tags?: string[];
   thumbnail?: string | null;
   youtubePublishAt?: Date | null;
-  tiktokPublishAt?: Date | null;
+  tikTokPublishAt?: Date | null;
   instagramPublishAt?: Date | null;
   facebookPublishAt?: Date | null;
   twitterPublishAt?: Date | null;
