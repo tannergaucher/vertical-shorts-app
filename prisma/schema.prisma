@@ -8,21 +8,15 @@ generator uploadService {
   binaryTargets = ["debian-openssl-1.1.x"]
 }
 
-generator handleGcsVideoUpload {
+generator cloudFetchYoutubeContentForPublishingClient {
   provider      = "prisma-client-js"
-  output        = "../cloud-functions/handle-gcs-video-upload/generated"
+  output        = "../cloud-functions/fetch-youtube-content-for-publishing/generated"
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
 }
 
-generator cloudYoutubeClient {
+generator cloudPublishYoutubeConentClient {
   provider      = "prisma-client-js"
-  output        = "../cloud-functions/upload-youtube-short/generated"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
-}
-
-generator cloudTiktokUploadClient {
-  provider      = "prisma-client-js"
-  output        = "../cloud-functions/upload-tiktok-video/generated"
+  output        = "../cloud-functions/publish-youtube-content/generated"
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
 }
 
