@@ -1,7 +1,7 @@
 ## Deploy 2nd Gen Function Using Gcloud CLI
 
 ```
-gcloud functions fetch-youtube-content-for-publishing \
+gcloud functions deploy fetch-youtube-content-for-publishing \
 --gen2 \
 --region=us-east1 \
 --runtime=nodejs18 \
