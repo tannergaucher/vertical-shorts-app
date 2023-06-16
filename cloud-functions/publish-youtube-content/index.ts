@@ -102,6 +102,7 @@ export async function publishYoutubeContent(cloudEvent: CloudEvent<string>) {
     },
     data: {
       youtubeStatus: UploadStatus.PUBLIC,
+      youtubePublishAt: null,
     },
   });
 
