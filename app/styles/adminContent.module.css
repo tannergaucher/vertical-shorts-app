@@ -29,3 +29,13 @@
   transition: background-color color var(--duration);
   cursor: pointer;
 }
+
+.checkbox {
+  width: initial;
+  margin-right: var(--space-1);
+}
+
+.checkboxSection {
+  margin-left: var(--space-1);
+  margin-block-end: var(--space-2);
+}
