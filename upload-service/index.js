@@ -27,7 +27,6 @@ const prisma = new PrismaClient();
 const storage = new Storage();
 
 app.post("/upload-content", async (req, res) => {
-  console.log("getting file");
   const { projectId, slug } = req.body;
 
   const content = await prisma.content.findUniqueOrThrow({
@@ -46,8 +45,6 @@ app.post("/upload-content", async (req, res) => {
       },
     },
   });
-
-  console.log(content, "content");
 
   const filePath = `${slug}.mp4`;
 
@@ -215,8 +212,6 @@ app.post("/upload-youtube-short", async (req, res) => {
       res.send("Video uploaded to youtube");
     })
     .catch(async (error) => {
-      console.log(error, "yt_error");
-
       await prisma.content.update({
         where: {
           projectId_slug: {
@@ -229,7 +224,7 @@ app.post("/upload-youtube-short", async (req, res) => {
         },
       });
 
-      res.status(500).send("Error uploading video to youtube");
+      res.status(500).send("Error uploading video to youtube:", error);
     });
 });
 
