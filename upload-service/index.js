@@ -228,6 +228,8 @@ app.post("/upload-youtube-short", async (req, res) => {
           youtubeStatus: UploadStatus.NOT_STARTED,
         },
       });
+
+      res.status(500).send("Error uploading video to youtube");
     });
 });
 
@@ -264,7 +266,6 @@ app.post("/upload-tiktok", async (req, res) => {
     );
 
     if (!initRes.ok) {
-      console.log(initRes, "initRes.error");
       throw new Error("ERROR_INITIALIZING_TIKTOK_UPLOAD");
     }
 
@@ -333,12 +334,12 @@ app.get("/tiktok-upload-status", async (req, res) => {
 
   if (!statusRes.ok) {
     const { status, statusText } = statusRes;
-    console.log(status, "status");
-    console.log(statusText, "statusText");
-    throw new Error("ERROR_GETTING_TIKTOK_UPLOAD_STATUS");
+
+    res.status(status).send(statusText);
   }
 
   const statusResJson = await statusRes.json();
+
   res.send(statusResJson);
 });
 
