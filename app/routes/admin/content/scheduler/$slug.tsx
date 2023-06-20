@@ -33,20 +33,17 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return redirect(Routes.Login);
   }
 
-  const projectId = user.currentProjectId;
+  invariant(user.currentProjectId, "user must have a current project");
 
-  invariant(typeof projectId === "string", "user must have a current project");
-
-  const content = await getContent({
-    slug,
-    projectId,
+  return json({
+    content: await getContent({
+      slug,
+      projectId: user.currentProjectId,
+    }),
+    project: await getProject({
+      id: user.currentProjectId,
+    }),
   });
-
-  const project = await getProject({
-    id: projectId,
-  });
-
-  return json({ content, project });
 };
 
 export const action: ActionFunction = async ({ request }) => {
