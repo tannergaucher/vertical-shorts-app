@@ -1,0 +1,8 @@
+.main {
+  margin: 0 auto;
+}
+
+.heading {
+  text-align: center;
+  margin-block-end: var(--space-2);
+}

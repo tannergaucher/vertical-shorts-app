@@ -195,6 +195,7 @@ exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   email: 'email',
   currentProjectId: 'currentProjectId',
+  planType: 'planType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -215,6 +216,12 @@ exports.ChannelType = {
   TIKTOK: 'TIKTOK',
   FACEBOOK: 'FACEBOOK',
   TWITTER: 'TWITTER'
+};
+
+exports.PlanType = {
+  STARTER: 'STARTER',
+  GROWTH: 'GROWTH',
+  PROFESSIONAL: 'PROFESSIONAL'
 };
 
 exports.UploadStatus = {
