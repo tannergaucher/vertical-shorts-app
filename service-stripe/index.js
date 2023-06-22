@@ -36,7 +36,6 @@ app.listen(8080, () => console.log("Running on port 8080"));
 
 async function handleCheckoutSessionCompleted(checkoutSession) {
   console.log(`Payment received!`);
-  console.log(JSON.stringify(checkoutSession, null, 2));
 
   if (!checkoutSession.client_reference_id) {
     throw new Error("Checkout session missing client reference ID");
@@ -58,13 +57,9 @@ async function handleCheckoutSessionCompleted(checkoutSession) {
     checkoutSession.id
   );
 
-  console.log("_stripe checkout", stripeCheckout);
-
   const stripeSubscription = await stripe.subscriptions.retrieve(
     stripeCheckout.subscription
   );
-
-  console.log("_stripe subscription", stripeSubscription);
 
   await prisma.user.update({
     where: {
