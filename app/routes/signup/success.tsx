@@ -1,6 +1,5 @@
 import type { LoaderArgs } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import Stripe from "stripe";
+import { redirect } from "@remix-run/node";
 
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
@@ -11,13 +10,6 @@ export const loader = async ({ request }: LoaderArgs) => {
   if (!user?.id) {
     return redirect(Routes.Login);
   }
-
-  // check if the user has a subscription
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2022-11-15",
-  });
-
-  //
 };
 
 export default function Page() {
