@@ -35,6 +35,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return redirect(Routes.Login);
   }
 
+  if (!user.planType) {
+    return redirect(Routes.Signup);
+  }
+
   const projectId = user?.currentProjectId;
 
   invariant(typeof projectId === "string", "user must have a current project");
