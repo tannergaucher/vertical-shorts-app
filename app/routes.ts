@@ -14,4 +14,5 @@ export const Routes = {
   AdminContentScheduler: (slug: string) => `/admin/content/scheduler/${slug}`,
   Login: `/login`,
   Logout: `/logout`,
+  Signup: `/signup`,
 };
