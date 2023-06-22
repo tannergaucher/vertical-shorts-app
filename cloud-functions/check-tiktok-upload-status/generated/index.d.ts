@@ -21,6 +21,7 @@ export type User = {
   email: string
   currentProjectId: string | null
   planType: PlanType | null
+  stripeCustomerId: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -1158,6 +1159,7 @@ export namespace Prisma {
     email: string | null
     currentProjectId: string | null
     planType: PlanType | null
+    stripeCustomerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1167,6 +1169,7 @@ export namespace Prisma {
     email: string | null
     currentProjectId: string | null
     planType: PlanType | null
+    stripeCustomerId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1176,6 +1179,7 @@ export namespace Prisma {
     email: number
     currentProjectId: number
     planType: number
+    stripeCustomerId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1187,6 +1191,7 @@ export namespace Prisma {
     email?: true
     currentProjectId?: true
     planType?: true
+    stripeCustomerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1196,6 +1201,7 @@ export namespace Prisma {
     email?: true
     currentProjectId?: true
     planType?: true
+    stripeCustomerId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1205,6 +1211,7 @@ export namespace Prisma {
     email?: true
     currentProjectId?: true
     planType?: true
+    stripeCustomerId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1288,6 +1295,7 @@ export namespace Prisma {
     email: string
     currentProjectId: string | null
     planType: PlanType | null
+    stripeCustomerId: string | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1314,6 +1322,7 @@ export namespace Prisma {
     email?: boolean
     currentProjectId?: boolean
     planType?: boolean
+    stripeCustomerId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     password?: boolean | PasswordArgs
@@ -11010,6 +11019,7 @@ export namespace Prisma {
     email: 'email',
     currentProjectId: 'currentProjectId',
     planType: 'planType',
+    stripeCustomerId: 'stripeCustomerId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -11044,6 +11054,7 @@ export namespace Prisma {
     email?: StringFilter | string
     currentProjectId?: StringNullableFilter | string | null
     planType?: EnumPlanTypeNullableFilter | PlanType | null
+    stripeCustomerId?: StringNullableFilter | string | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     password?: XOR<PasswordRelationFilter, PasswordWhereInput> | null
@@ -11055,6 +11066,7 @@ export namespace Prisma {
     email?: SortOrder
     currentProjectId?: SortOrder
     planType?: SortOrder
+    stripeCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     password?: PasswordOrderByWithRelationInput
@@ -11071,6 +11083,7 @@ export namespace Prisma {
     email?: SortOrder
     currentProjectId?: SortOrder
     planType?: SortOrder
+    stripeCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -11086,6 +11099,7 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter | string
     currentProjectId?: StringNullableWithAggregatesFilter | string | null
     planType?: EnumPlanTypeNullableWithAggregatesFilter | PlanType | null
+    stripeCustomerId?: StringNullableWithAggregatesFilter | string | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -11650,6 +11664,7 @@ export namespace Prisma {
     email: string
     currentProjectId?: string | null
     planType?: PlanType | null
+    stripeCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordCreateNestedOneWithoutUserInput
@@ -11661,6 +11676,7 @@ export namespace Prisma {
     email: string
     currentProjectId?: string | null
     planType?: PlanType | null
+    stripeCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordUncheckedCreateNestedOneWithoutUserInput
@@ -11672,6 +11688,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUpdateOneWithoutUserNestedInput
@@ -11683,6 +11700,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
@@ -11694,6 +11712,7 @@ export namespace Prisma {
     email: string
     currentProjectId?: string | null
     planType?: PlanType | null
+    stripeCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11703,6 +11722,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11712,6 +11732,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12496,6 +12517,7 @@ export namespace Prisma {
     email?: SortOrder
     currentProjectId?: SortOrder
     planType?: SortOrder
+    stripeCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12505,6 +12527,7 @@ export namespace Prisma {
     email?: SortOrder
     currentProjectId?: SortOrder
     planType?: SortOrder
+    stripeCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12514,6 +12537,7 @@ export namespace Prisma {
     email?: SortOrder
     currentProjectId?: SortOrder
     planType?: SortOrder
+    stripeCustomerId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -13914,6 +13938,7 @@ export namespace Prisma {
     email: string
     currentProjectId?: string | null
     planType?: PlanType | null
+    stripeCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectCreateNestedManyWithoutUserInput
@@ -13924,6 +13949,7 @@ export namespace Prisma {
     email: string
     currentProjectId?: string | null
     planType?: PlanType | null
+    stripeCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -13944,6 +13970,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUpdateManyWithoutUserNestedInput
@@ -13954,6 +13981,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -14360,6 +14388,7 @@ export namespace Prisma {
     email: string
     currentProjectId?: string | null
     planType?: PlanType | null
+    stripeCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordCreateNestedOneWithoutUserInput
@@ -14370,6 +14399,7 @@ export namespace Prisma {
     email: string
     currentProjectId?: string | null
     planType?: PlanType | null
+    stripeCustomerId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordUncheckedCreateNestedOneWithoutUserInput
@@ -14593,6 +14623,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUpdateOneWithoutUserNestedInput
@@ -14603,6 +14634,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
     planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
+    stripeCustomerId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUncheckedUpdateOneWithoutUserNestedInput

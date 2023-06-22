@@ -196,6 +196,7 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   currentProjectId: 'currentProjectId',
   planType: 'planType',
+  stripeCustomerId: 'stripeCustomerId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };

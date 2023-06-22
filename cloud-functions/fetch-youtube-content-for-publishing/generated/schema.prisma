@@ -65,6 +65,7 @@ model User {
   projects         Project[]
   currentProjectId String?
   planType         PlanType?
+  stripeCustomerId String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }

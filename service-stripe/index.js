@@ -60,9 +60,11 @@ async function handleCheckoutSessionCompleted(checkoutSession) {
 
   console.log("_stripe checkout", stripeCheckout);
 
-  const stripeProduct = stripeCheckout?.line_items?.data.map(
-    (lineItem) => lineItem.price.product
+  const stripeSubscription = await stripe.subscriptions.retrieve(
+    stripeCheckout.subscription
   );
+
+  console.log("_stripe subscription", stripeSubscription);
 
   await prisma.user.update({
     where: {
@@ -70,7 +72,6 @@ async function handleCheckoutSessionCompleted(checkoutSession) {
     },
     data: {
       stripeCustomerId: checkoutSession.customer,
-      planType: STRIPE_PRODUCTS[stripeProduct[0]],
     },
   });
 }
