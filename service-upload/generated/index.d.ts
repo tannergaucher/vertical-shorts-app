@@ -20,6 +20,7 @@ export type User = {
   id: string
   email: string
   currentProjectId: string | null
+  planType: PlanType | null
   createdAt: Date
   updatedAt: Date
 }
@@ -173,6 +174,15 @@ export const ChannelType: {
 };
 
 export type ChannelType = (typeof ChannelType)[keyof typeof ChannelType]
+
+
+export const PlanType: {
+  STARTER: 'STARTER',
+  GROWTH: 'GROWTH',
+  PROFESSIONAL: 'PROFESSIONAL'
+};
+
+export type PlanType = (typeof PlanType)[keyof typeof PlanType]
 
 
 export const UploadStatus: {
@@ -1147,6 +1157,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     currentProjectId: string | null
+    planType: PlanType | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1155,6 +1166,7 @@ export namespace Prisma {
     id: string | null
     email: string | null
     currentProjectId: string | null
+    planType: PlanType | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1163,6 +1175,7 @@ export namespace Prisma {
     id: number
     email: number
     currentProjectId: number
+    planType: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1173,6 +1186,7 @@ export namespace Prisma {
     id?: true
     email?: true
     currentProjectId?: true
+    planType?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1181,6 +1195,7 @@ export namespace Prisma {
     id?: true
     email?: true
     currentProjectId?: true
+    planType?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1189,6 +1204,7 @@ export namespace Prisma {
     id?: true
     email?: true
     currentProjectId?: true
+    planType?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1271,6 +1287,7 @@ export namespace Prisma {
     id: string
     email: string
     currentProjectId: string | null
+    planType: PlanType | null
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1296,6 +1313,7 @@ export namespace Prisma {
     id?: boolean
     email?: boolean
     currentProjectId?: boolean
+    planType?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     password?: boolean | PasswordArgs
@@ -10991,6 +11009,7 @@ export namespace Prisma {
     id: 'id',
     email: 'email',
     currentProjectId: 'currentProjectId',
+    planType: 'planType',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -11024,6 +11043,7 @@ export namespace Prisma {
     id?: StringFilter | string
     email?: StringFilter | string
     currentProjectId?: StringNullableFilter | string | null
+    planType?: EnumPlanTypeNullableFilter | PlanType | null
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     password?: XOR<PasswordRelationFilter, PasswordWhereInput> | null
@@ -11034,6 +11054,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     currentProjectId?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     password?: PasswordOrderByWithRelationInput
@@ -11049,6 +11070,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     currentProjectId?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -11063,6 +11085,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter | string
     email?: StringWithAggregatesFilter | string
     currentProjectId?: StringNullableWithAggregatesFilter | string | null
+    planType?: EnumPlanTypeNullableWithAggregatesFilter | PlanType | null
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
   }
@@ -11626,6 +11649,7 @@ export namespace Prisma {
     id?: string
     email: string
     currentProjectId?: string | null
+    planType?: PlanType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordCreateNestedOneWithoutUserInput
@@ -11636,6 +11660,7 @@ export namespace Prisma {
     id?: string
     email: string
     currentProjectId?: string | null
+    planType?: PlanType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordUncheckedCreateNestedOneWithoutUserInput
@@ -11646,6 +11671,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUpdateOneWithoutUserNestedInput
@@ -11656,6 +11682,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
@@ -11666,6 +11693,7 @@ export namespace Prisma {
     id?: string
     email: string
     currentProjectId?: string | null
+    planType?: PlanType | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -11674,6 +11702,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -11682,6 +11711,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12428,6 +12458,13 @@ export namespace Prisma {
     not?: NestedStringNullableFilter | string | null
   }
 
+  export type EnumPlanTypeNullableFilter = {
+    equals?: PlanType | null
+    in?: Enumerable<PlanType> | null
+    notIn?: Enumerable<PlanType> | null
+    not?: NestedEnumPlanTypeNullableFilter | PlanType | null
+  }
+
   export type DateTimeFilter = {
     equals?: Date | string
     in?: Enumerable<Date> | Enumerable<string> | Date | string
@@ -12458,6 +12495,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     currentProjectId?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12466,6 +12504,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     currentProjectId?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12474,6 +12513,7 @@ export namespace Prisma {
     id?: SortOrder
     email?: SortOrder
     currentProjectId?: SortOrder
+    planType?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -12512,6 +12552,16 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter
     _min?: NestedStringNullableFilter
     _max?: NestedStringNullableFilter
+  }
+
+  export type EnumPlanTypeNullableWithAggregatesFilter = {
+    equals?: PlanType | null
+    in?: Enumerable<PlanType> | null
+    notIn?: Enumerable<PlanType> | null
+    not?: NestedEnumPlanTypeNullableWithAggregatesFilter | PlanType | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedEnumPlanTypeNullableFilter
+    _max?: NestedEnumPlanTypeNullableFilter
   }
 
   export type DateTimeWithAggregatesFilter = {
@@ -13066,6 +13116,10 @@ export namespace Prisma {
     set?: string | null
   }
 
+  export type NullableEnumPlanTypeFieldUpdateOperationsInput = {
+    set?: PlanType | null
+  }
+
   export type DateTimeFieldUpdateOperationsInput = {
     set?: Date | string
   }
@@ -13553,6 +13607,13 @@ export namespace Prisma {
     not?: NestedStringNullableFilter | string | null
   }
 
+  export type NestedEnumPlanTypeNullableFilter = {
+    equals?: PlanType | null
+    in?: Enumerable<PlanType> | null
+    notIn?: Enumerable<PlanType> | null
+    not?: NestedEnumPlanTypeNullableFilter | PlanType | null
+  }
+
   export type NestedDateTimeFilter = {
     equals?: Date | string
     in?: Enumerable<Date> | Enumerable<string> | Date | string
@@ -13618,6 +13679,16 @@ export namespace Prisma {
     gt?: number
     gte?: number
     not?: NestedIntNullableFilter | number | null
+  }
+
+  export type NestedEnumPlanTypeNullableWithAggregatesFilter = {
+    equals?: PlanType | null
+    in?: Enumerable<PlanType> | null
+    notIn?: Enumerable<PlanType> | null
+    not?: NestedEnumPlanTypeNullableWithAggregatesFilter | PlanType | null
+    _count?: NestedIntNullableFilter
+    _min?: NestedEnumPlanTypeNullableFilter
+    _max?: NestedEnumPlanTypeNullableFilter
   }
 
   export type NestedDateTimeWithAggregatesFilter = {
@@ -13842,6 +13913,7 @@ export namespace Prisma {
     id?: string
     email: string
     currentProjectId?: string | null
+    planType?: PlanType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectCreateNestedManyWithoutUserInput
@@ -13851,6 +13923,7 @@ export namespace Prisma {
     id?: string
     email: string
     currentProjectId?: string | null
+    planType?: PlanType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     projects?: ProjectUncheckedCreateNestedManyWithoutUserInput
@@ -13870,6 +13943,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUpdateManyWithoutUserNestedInput
@@ -13879,6 +13953,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     projects?: ProjectUncheckedUpdateManyWithoutUserNestedInput
@@ -14284,6 +14359,7 @@ export namespace Prisma {
     id?: string
     email: string
     currentProjectId?: string | null
+    planType?: PlanType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordCreateNestedOneWithoutUserInput
@@ -14293,6 +14369,7 @@ export namespace Prisma {
     id?: string
     email: string
     currentProjectId?: string | null
+    planType?: PlanType | null
     createdAt?: Date | string
     updatedAt?: Date | string
     password?: PasswordUncheckedCreateNestedOneWithoutUserInput
@@ -14515,6 +14592,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUpdateOneWithoutUserNestedInput
@@ -14524,6 +14602,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     currentProjectId?: NullableStringFieldUpdateOperationsInput | string | null
+    planType?: NullableEnumPlanTypeFieldUpdateOperationsInput | PlanType | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     password?: PasswordUncheckedUpdateOneWithoutUserNestedInput
