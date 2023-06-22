@@ -32,7 +32,7 @@ app.post(
   }
 );
 
-app.listen(8000, () => console.log("Running on port 8000"));
+app.listen(8080, () => console.log("Running on port 8080"));
 
 async function handleCheckoutSessionCompleted(checkoutSession) {
   console.log(`Payment received!`);

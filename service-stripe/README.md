@@ -22,3 +22,10 @@ stripe listen --forward-to localhost:8000/webhook
 stripe trigger checkout.session.completed
 
 ```
+
+## Deploy locally from source code
+
+```
+gcloud run deploy service-stripe --source .
+
+```

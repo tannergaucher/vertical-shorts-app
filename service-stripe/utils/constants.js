@@ -5,3 +5,6 @@ export const STRIPE_PRODUCTS = {
   prod_O7x1SUxDMMqwGl: PlanType.GROWTH,
   prod_O7x3lffVxBqBiA: PlanType.PROFESSIONAL,
 };
+
+export const SERVICE_STRIPE_BASE_URL =
+  process.env.NODE_ENV === "production" ? `https://` : `http://localhost:8000`;
