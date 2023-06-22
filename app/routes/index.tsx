@@ -25,10 +25,16 @@ export const loader = async ({ request }: LoaderArgs) => {
     return redirect(Routes.AdminCreateProject);
   }
 
+  const contents = await getContents({
+    projectId: user.currentProjectId,
+  });
+
+  if (!contents.length) {
+    return redirect(Routes.AdminContentTitle);
+  }
+
   return json<LoaderData>({
-    contents: await getContents({
-      projectId: user.currentProjectId,
-    }),
+    contents,
     project: await getProject({
       id: user.currentProjectId,
     }),
@@ -40,30 +46,19 @@ export default function Page() {
 
   return (
     <main className={styles.main}>
-      {contents?.length ? (
-        <section className={styles.contentGrid}>
-          {contents.map((content) => (
-            <div key={content.slug} className={styles.contentCard}>
-              {content.gif ? (
-                <img src={content.gif} alt={content.title} />
-              ) : null}
-              <div className={styles.contentCardDetails}>
-                <Link to={Routes.AdminContentStatus(content.slug)}>
-                  <h3 className={styles.contentTitle}>{content.title}</h3>
-                </Link>
-                <ContentStatus project={project} content={content} />
-              </div>
+      <section className={styles.contentGrid}>
+        {contents?.map((content) => (
+          <div key={content.slug} className={styles.contentCard}>
+            {content.gif ? <img src={content.gif} alt={content.title} /> : null}
+            <div className={styles.contentCardDetails}>
+              <Link to={Routes.AdminContentStatus(content.slug)}>
+                <h3 className={styles.contentTitle}>{content.title}</h3>
+              </Link>
+              <ContentStatus project={project} content={content} />
             </div>
-          ))}
-        </section>
-      ) : (
-        <>
-          <h2>{`No content yet for project: ${project.title}`}</h2>
-          <Link to={Routes.AdminContentTitle}>
-            <h3>Create Post</h3>
-          </Link>
-        </>
-      )}
+          </div>
+        ))}
+      </section>
     </main>
   );
 }
