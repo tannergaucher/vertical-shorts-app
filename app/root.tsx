@@ -51,6 +51,7 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+        <script async src="https://js.stripe.com/v3/pricing-table.js"></script>
       </head>
       <body>
         <nav className={styles.nav}>
