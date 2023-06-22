@@ -46,12 +46,19 @@ enum UploadStatus {
   PUBLIC
 }
 
+enum PlanType {
+  STARTER
+  GROWTH
+  PROFESSIONAL
+}
+
 model User {
   id               String    @id @default(cuid())
   email            String    @unique
   password         Password?
   projects         Project[]
   currentProjectId String?
+  planType         PlanType?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
 }
@@ -118,31 +125,31 @@ model TwitterCredentials {
 }
 
 model Content {
-  slug            String
-  title           String
-  description     String?
-  thumbnail       String?
-  gif             String?
-  tags            String[]
-  createdAt       DateTime?     @default(now())
-  updatedAt       DateTime?     @updatedAt
-  projectId       String
-  project         Project       @relation(fields: [projectId], references: [id])
-  youtubeId       String?
-  youtubeStatus   UploadStatus? @default(NOT_STARTED)
-  youtubePublishAt DateTime?
-  tikTokId        String?
-  tikTokStatus    UploadStatus? @default(NOT_STARTED)
-  tikTokPublishAt DateTime?
-  instagramId     String?
-  instagramStatus UploadStatus? @default(NOT_STARTED)
+  slug               String
+  title              String
+  description        String?
+  thumbnail          String?
+  gif                String?
+  tags               String[]
+  createdAt          DateTime?     @default(now())
+  updatedAt          DateTime?     @updatedAt
+  projectId          String
+  project            Project       @relation(fields: [projectId], references: [id])
+  youtubeId          String?
+  youtubeStatus      UploadStatus? @default(NOT_STARTED)
+  youtubePublishAt   DateTime?
+  tikTokId           String?
+  tikTokStatus       UploadStatus? @default(NOT_STARTED)
+  tikTokPublishAt    DateTime?
+  instagramId        String?
+  instagramStatus    UploadStatus? @default(NOT_STARTED)
   instagramPublishAt DateTime?
-  facebookId      String?
-  facebookStatus  UploadStatus? @default(NOT_STARTED)
-  facebookPublishAt DateTime?
-  twitterId       String?
-  twitterStatus   UploadStatus? @default(NOT_STARTED)
-  twitterPublishAt DateTime?
+  facebookId         String?
+  facebookStatus     UploadStatus? @default(NOT_STARTED)
+  facebookPublishAt  DateTime?
+  twitterId          String?
+  twitterStatus      UploadStatus? @default(NOT_STARTED)
+  twitterPublishAt   DateTime?
 
   @@unique([projectId, slug])
 }
