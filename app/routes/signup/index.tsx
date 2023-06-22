@@ -36,8 +36,6 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function Page() {
   const { userId } = useLoaderData<LoaderData>();
 
-  console.log(userId);
-
   return (
     <main className={styles.main}>
       <h1 className={styles.heading}> Choose Your Plan!</h1>
