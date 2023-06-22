@@ -2,9 +2,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
-generator uploadService {
+generator serviceUpload {
   provider      = "prisma-client-js"
-  output        = "../upload-service/generated"
+  output        = "../service-upload/generated"
+  binaryTargets = ["debian-openssl-1.1.x"]
+}
+
+generator serviceStripe {
+  provider      = "prisma-client-js"
+  output        = "../service-stripe/generated"
   binaryTargets = ["debian-openssl-1.1.x"]
 }
 
