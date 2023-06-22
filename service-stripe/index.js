@@ -72,6 +72,7 @@ async function handleCheckoutSessionCompleted(checkoutSession) {
     },
     data: {
       stripeCustomerId: checkoutSession.customer,
+      planType: STRIPE_PRODUCTS[stripeSubscription.plan.product],
     },
   });
 }
