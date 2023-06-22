@@ -23,6 +23,8 @@ stripe trigger checkout.session.completed
 
 ```
 
+---
+
 ## Deploy locally from source code
 
 ```
