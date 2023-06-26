@@ -188,6 +188,7 @@ export type PlanType = (typeof PlanType)[keyof typeof PlanType]
 
 export const UploadStatus: {
   NOT_STARTED: 'NOT_STARTED',
+  INITIALIZING: 'INITIALIZING',
   UPLOADING: 'UPLOADING',
   PRIVATE: 'PRIVATE',
   PUBLIC: 'PUBLIC'

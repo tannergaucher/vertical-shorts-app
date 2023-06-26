@@ -47,6 +47,7 @@ enum ChannelType {
 
 enum UploadStatus {
   NOT_STARTED
+  INITIALIZING
   UPLOADING
   PRIVATE
   PUBLIC
