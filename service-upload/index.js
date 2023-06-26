@@ -78,7 +78,7 @@ app.post("/upload-content", async (req, res) => {
           },
         });
 
-        res.send("started uploading content");
+        res.status(200).send("started uploading content");
       })
       .on("finish", () => {
         console.log("dl finished");
@@ -216,6 +216,7 @@ app.post("/upload-youtube-short", async (req, res) => {
         body: bodyStream,
       },
     })
+
     .then(async (response) => {
       console.log(response, "yt_response");
 
@@ -232,7 +233,7 @@ app.post("/upload-youtube-short", async (req, res) => {
         },
       });
 
-      res.send("Video uploaded to youtube");
+      res.status(200).send("Video uploaded to youtube");
     })
     .catch(async (error) => {
       await prisma.content.update({
@@ -302,7 +303,7 @@ app.post("/upload-tiktok", async (req, res) => {
       },
     });
 
-    return res.send(data);
+    return res.status(200).send(data);
   } catch (error) {
     console.log(error, "error");
     return res.status(500).send("Error initializing tiktok upload");
@@ -358,7 +359,7 @@ app.get("/tiktok-upload-status", async (req, res) => {
 
   const statusResJson = await statusRes.json();
 
-  res.send(statusResJson);
+  res.status(200).send(statusResJson);
 });
 
 const port = parseInt(process.env.PORT) || 8080;
