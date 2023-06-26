@@ -151,6 +151,8 @@ app.post("/upload-content", async (req, res) => {
 app.post("/upload-youtube-short", async (req, res) => {
   const { projectId, slug } = req.body;
 
+  console.log("uploading to youtube", projectId, slug);
+
   const content = await prisma.content.update({
     where: {
       projectId_slug: {
