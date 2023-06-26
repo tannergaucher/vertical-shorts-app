@@ -227,6 +227,7 @@ exports.PlanType = {
 
 exports.UploadStatus = {
   NOT_STARTED: 'NOT_STARTED',
+  INITIALIZING: 'INITIALIZING',
   UPLOADING: 'UPLOADING',
   PRIVATE: 'PRIVATE',
   PUBLIC: 'PUBLIC'

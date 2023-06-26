@@ -54,8 +54,26 @@ app.post("/upload-content", async (req, res) => {
       .file(filePath)
       .createReadStream()
       .pipe(createWriteStream(filePath))
-      .on("open", () => {
+      .on("open", async () => {
         console.log("dl started");
+
+        await prisma.content.update({
+          where: {
+            projectId_slug: {
+              projectId,
+              slug,
+            },
+          },
+          data: {
+            youtubeStatus: content.project.youtubeCredentials
+              ? UploadStatus.INITIALIZING
+              : undefined,
+            tikTokStatus: content.project.tikTokCredentials
+              ? UploadStatus.INITIALIZING
+              : undefined,
+          },
+        });
+
         res.send("started uploading content");
       })
 

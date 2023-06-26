@@ -132,8 +132,9 @@ export default function Page() {
             }
           );
 
+          setDisabled(false);
+
           if (uploadContentRes.ok) {
-            setDisabled(false);
             navigate(Routes.AdminContentScheduler(content.slug));
           }
         }
