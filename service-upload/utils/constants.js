@@ -5,5 +5,5 @@ export const UPLOAD_SERVICE_BASE_URL =
 
 export const APP_BASE_URL =
   process.env.NODE_ENV === "production"
-    ? `https://vertical-shorts-app.netlify.app`
+    ? `https://verticalshorts.app`
     : `http://localhost:3000`;
