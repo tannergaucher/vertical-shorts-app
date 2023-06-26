@@ -49,6 +49,10 @@ app.post("/upload-content", async (req, res) => {
   const filePath = `${slug}.mp4`;
 
   try {
+    const testExists = await storage.bucket(projectId).file(filePath).exists();
+
+    console.log(testExists, "test exists");
+
     storage
       .bucket(projectId)
       .file(filePath)
@@ -76,7 +80,6 @@ app.post("/upload-content", async (req, res) => {
 
         res.send("started uploading content");
       })
-
       .on("finish", () => {
         console.log("dl finished");
 
