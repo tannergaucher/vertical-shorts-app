@@ -30,21 +30,21 @@ export async function action({ request }: ActionArgs) {
 
   if (!validateEmail(email)) {
     return json(
-      { errors: { email: "Email is invalid", password: null } },
+      { errors: { email: "is invalid", password: null } },
       { status: 400 }
     );
   }
 
   if (typeof password !== "string" || password.length === 0) {
     return json(
-      { errors: { email: null, password: "Password is required" } },
+      { errors: { email: null, password: "is required" } },
       { status: 400 }
     );
   }
 
   if (password.length < 8) {
     return json(
-      { errors: { email: null, password: "Password is too short" } },
+      { errors: { email: null, password: "is too short" } },
       { status: 400 }
     );
   }
@@ -96,9 +96,19 @@ export default function Page() {
     <main className={styles.main}>
       <h1>Login</h1>
       <fieldset disabled={disabled} className={styles.fieldset}>
-        <Form>
+        {actionData?.errors ? (
+          <legend className={styles.legend}>Error!</legend>
+        ) : null}
+        <Form method="post">
           <div>
-            <label htmlFor="email">Email address</label>
+            <label htmlFor="email">
+              Email address{" "}
+              {actionData?.errors?.email && (
+                <span style={{ color: `var(--warning)` }}>
+                  {actionData.errors.email}
+                </span>
+              )}
+            </label>
             <div>
               <input
                 ref={emailRef}
@@ -112,15 +122,21 @@ export default function Page() {
                 aria-describedby="email-error"
                 className={styles.input}
               />
-              {actionData?.errors?.email && (
-                <div style={{ color: `palevioletred` }} id="email-error">
-                  {actionData.errors.email}
-                </div>
-              )}
             </div>
           </div>
           <div>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">
+              Password{" "}
+              {actionData?.errors?.password && (
+                <span
+                  style={{
+                    color: `var(--warning)`,
+                  }}
+                >
+                  {actionData.errors.password}
+                </span>
+              )}
+            </label>
             <div>
               <input
                 id="password"
@@ -132,16 +148,6 @@ export default function Page() {
                 aria-describedby="password-error"
                 className={styles.input}
               />
-              {actionData?.errors?.password && (
-                <div
-                  style={{
-                    color: `palevioletred`,
-                  }}
-                  id="password-error"
-                >
-                  {actionData.errors.password}
-                </div>
-              )}
             </div>
           </div>
           <input type="hidden" name="redirectTo" value={redirectTo} />
@@ -154,7 +160,6 @@ export default function Page() {
             type="checkbox"
             className={styles.checkbox}
           />
-
           <label htmlFor="remember">
             <small>Remember me</small>
           </label>
