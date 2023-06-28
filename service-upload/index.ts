@@ -187,7 +187,7 @@ app.post("/upload-youtube-short", async (req, res) => {
 
   oauth2Client.setCredentials({
     access_token: project?.youtubeCredentials?.accessToken,
-    refresh_token: project?.youtubeCredentials.refreshToken,
+    refresh_token: project?.youtubeCredentials?.refreshToken,
   });
 
   const youtube = google.youtube({
