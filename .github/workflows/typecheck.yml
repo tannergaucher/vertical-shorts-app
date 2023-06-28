@@ -10,6 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: npm install && cd service-upload && npm install
+        run: npm install
+      - name: Install service upload dependencies
+        working-directory: ./service-upload
+        run: npm install
       - name: Typecheck
         run: npm run typecheck
