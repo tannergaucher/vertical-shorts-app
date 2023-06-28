@@ -1,4 +1,6 @@
-# Vertical Content Publisher
+# verticalshorts.app
+
+Single source of truth for posting vertical video content and publishing to all social media channels.
 
 ## Uses
 
@@ -11,6 +13,9 @@
 - [Google Cloud Storage](https://cloud.google.com/storage)
 - [Google Cloud Pub / Sub](https://cloud.google.com/pubsub)
 - [Google Cloud Functions](https://cloud.google.com/functions)
+- [Google Cloud Run](https://cloud.google.com/run)
+- [Google Cloud Build](https://cloud.google.com/build)
+- [Stripe Subscriptions] (https://stripe.com/docs/api/subscriptions)
 
 ## Generate Prisma Client
 
