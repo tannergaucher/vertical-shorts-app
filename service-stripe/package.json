@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "build": "tsc --p tsconfig.json"
+    "build": "tsc --p tsconfig.json",
+    "postInstall": "npm run build"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +18,5 @@
   },
   "devDependencies": {
     "typescript": "^5.1.5"
-  },
-  "postInstall": "npm run build"
+  }
 }
