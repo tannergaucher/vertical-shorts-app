@@ -45,7 +45,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.youtubePublishAt
-                          ? content.youtubePublishAt.toString()
+                          ? content.youtubePublishAt
                           : "NONE"}
                       </Link>
                     </td>
@@ -65,7 +65,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.tikTokPublishAt
-                          ? content.tikTokPublishAt.toString()
+                          ? content.tikTokPublishAt
                           : "NONE"}
                       </Link>
                     </td>
@@ -79,7 +79,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.twitterPublishAt
-                          ? content.twitterPublishAt.toString()
+                          ? content.twitterPublishAt
                           : "NONE"}
                       </Link>
                     </td>
@@ -93,7 +93,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.instagramPublishAt
-                          ? content.instagramPublishAt.toString()
+                          ? content.instagramPublishAt
                           : "NONE"}
                       </Link>
                     </td>
@@ -107,7 +107,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.facebookPublishAt
-                          ? content.facebookPublishAt.toString()
+                          ? content.facebookPublishAt
                           : "NONE"}
                       </Link>
                     </td>
