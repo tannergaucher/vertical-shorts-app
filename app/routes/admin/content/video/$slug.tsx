@@ -36,7 +36,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   if (!user.planType) {
-    return redirect(Routes.Signup);
+    return redirect(`${Routes.Signup}?from=${slug}`);
   }
 
   const projectId = user?.currentProjectId;
