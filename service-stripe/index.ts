@@ -20,7 +20,7 @@ app.post(
 
     switch (event.type) {
       case "checkout.session.completed":
-        const checkoutSession = event.data.object;
+        const checkoutSession = event.data.object as CheckoutSession;
 
         handleCheckoutSessionCompleted(checkoutSession);
         break;
