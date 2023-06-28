@@ -15,6 +15,14 @@ export function ContentStatus({
   content: Content;
   open?: boolean;
 }) {
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleString("en-US", {
+      dateStyle: "long",
+      timeStyle: "short",
+      hour12: true,
+    });
+  };
+
   return (
     <details className={styles.details} open={open}>
       <summary className={styles.summary}>Status</summary>
@@ -45,7 +53,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.youtubePublishAt
-                          ? content.youtubePublishAt
+                          ? formatDate(content.youtubePublishAt)
                           : "NONE"}
                       </Link>
                     </td>
@@ -65,7 +73,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.tikTokPublishAt
-                          ? content.tikTokPublishAt
+                          ? formatDate(content.tikTokPublishAt)
                           : "NONE"}
                       </Link>
                     </td>
@@ -79,7 +87,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.twitterPublishAt
-                          ? content.twitterPublishAt
+                          ? formatDate(content.twitterPublishAt)
                           : "NONE"}
                       </Link>
                     </td>
@@ -93,7 +101,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.instagramPublishAt
-                          ? content.instagramPublishAt
+                          ? formatDate(content.instagramPublishAt)
                           : "NONE"}
                       </Link>
                     </td>
@@ -107,7 +115,7 @@ export function ContentStatus({
                     <td>
                       <Link to={Routes.AdminContentScheduler(content.slug)}>
                         {content.facebookPublishAt
-                          ? content.facebookPublishAt
+                          ? formatDate(content.facebookPublishAt)
                           : "NONE"}
                       </Link>
                     </td>
