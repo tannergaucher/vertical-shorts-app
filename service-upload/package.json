@@ -1,6 +1,6 @@
 {
-  "name": "helloworld",
-  "description": "Simple hello world sample in Node",
+  "name": "service-upload",
+  "description": "Upload service for fetching video from gcp bucket and posting to integration APIS",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
@@ -30,5 +30,6 @@
     "nodemon": "^2.0.22",
     "typescript": "^4.9.5",
     "vitest": "^0.23.4"
-  }
+  },
+  "postinstall": "npm run build"
 }
