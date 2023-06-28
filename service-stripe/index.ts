@@ -8,7 +8,7 @@ const app = express();
 
 const prisma = new PrismaClient();
 
-const stripe = new Stripe(process.env.STRIPE_API_KEY, {
+const stripe = new Stripe(process.env.STRIPE_API_KEY ?? "", {
   apiVersion: "2022-11-15",
 });
 
@@ -34,7 +34,15 @@ app.post(
 
 app.listen(8080, () => console.log("Running on port 8080"));
 
-async function handleCheckoutSessionCompleted(checkoutSession) {
+interface CheckoutSession {
+  id: string;
+  customer: string;
+  client_reference_id: string;
+}
+
+async function handleCheckoutSessionCompleted(
+  checkoutSession: CheckoutSession
+) {
   console.log(`Payment received!`);
 
   if (!checkoutSession.client_reference_id) {
@@ -57,9 +65,16 @@ async function handleCheckoutSessionCompleted(checkoutSession) {
     checkoutSession.id
   );
 
-  const stripeSubscription = await stripe.subscriptions.retrieve(
-    stripeCheckout.subscription
-  );
+  interface StripeSubscription {
+    id: string;
+    plan: {
+      product: string;
+    };
+  }
+
+  const stripeSubscription = (await stripe.subscriptions.retrieve(
+    stripeCheckout.subscription?.toString() ?? ""
+  )) as unknown as StripeSubscription;
 
   await prisma.user.update({
     where: {
@@ -67,7 +82,10 @@ async function handleCheckoutSessionCompleted(checkoutSession) {
     },
     data: {
       stripeCustomerId: checkoutSession.customer,
-      planType: STRIPE_PRODUCTS[stripeSubscription.plan.product],
+      planType:
+        STRIPE_PRODUCTS[
+          stripeSubscription.plan.product as keyof typeof STRIPE_PRODUCTS
+        ],
     },
   });
 }
