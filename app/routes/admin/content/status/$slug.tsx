@@ -55,13 +55,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   });
 };
 
-export const actionDataSchema = z.object({
+export const actionSchema = zfd.formData({
   slug: z.string(),
   projectId: z.string(),
 });
 
 export const action: ActionFunction = async ({ request }) => {
-  const { slug, projectId } = actionDataSchema.parse(await request.formData());
+  const { slug, projectId } = actionSchema.parse(await request.formData());
 
   await deleteContent({
     slug,
