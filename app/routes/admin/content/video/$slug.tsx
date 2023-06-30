@@ -3,6 +3,7 @@ import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import { Breadcrumb } from "~/components/breadcrumb";
 import { storage } from "~/entry.server";
@@ -24,10 +25,12 @@ export const meta: MetaFunction = () => {
   };
 };
 
-export const loader: LoaderFunction = async ({ params, request }) => {
-  const slug = params.slug;
+const schema = z.object({
+  slug: z.string(),
+});
 
-  invariant(slug, "slug is required");
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const { slug } = schema.parse(params);
 
   const user = await getUser(request);
 
