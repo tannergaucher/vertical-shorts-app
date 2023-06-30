@@ -8,6 +8,7 @@ import {
   useTransition,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -23,10 +24,12 @@ type LoaderData = {
   project: Awaited<ReturnType<typeof getProject>>;
 };
 
-export const loader: LoaderFunction = async ({ params, request }) => {
-  const slug = params.slug;
+const paramsSchema = z.object({
+  slug: z.string(),
+});
 
-  invariant(slug, "slug is required");
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const { slug } = paramsSchema.parse(params);
 
   const user = await getUser(request);
 
