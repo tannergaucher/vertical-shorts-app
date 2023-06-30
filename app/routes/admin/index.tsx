@@ -3,6 +3,7 @@ import { ChannelType } from "@prisma/client";
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
+import { zfd } from "zod-form-data";
 
 import { prisma } from "~/db.server";
 import { getChannels } from "~/models/chanel.server";
@@ -39,12 +40,13 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
 };
 
+const schema = zfd.formData({
+  currentProjectId: zfd.text().optional(),
+  userId: zfd.text().optional(),
+});
+
 export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-
-  const currentProjectId = formData.get("currentProjectId");
-
-  const userId = formData.get("userId");
+  const { currentProjectId, userId } = schema.parse(await request.formData());
 
   if (!currentProjectId || !userId) {
     return redirect(Routes.Login);
@@ -52,10 +54,10 @@ export const action: ActionFunction = async ({ request }) => {
 
   const user = prisma.user.update({
     where: {
-      id: userId.toString(),
+      id: userId,
     },
     data: {
-      currentProjectId: currentProjectId.toString(),
+      currentProjectId: currentProjectId,
     },
   });
 
