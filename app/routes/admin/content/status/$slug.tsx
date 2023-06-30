@@ -6,6 +6,8 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
 
 import { ContentStatus } from "~/components/content-status";
 import { deleteContent, getContent } from "~/models/content.server";
@@ -26,10 +28,12 @@ type LoaderData = {
   project: Awaited<ReturnType<typeof getProject>>;
 };
 
-export const loader: LoaderFunction = async ({ params, request }) => {
-  const slug = params.slug;
+const paramsSchema = z.object({
+  slug: z.string(),
+});
 
-  invariant(slug, "slug is required");
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const { slug } = paramsSchema.parse(params);
 
   const user = await getUser(request);
 
@@ -51,13 +55,13 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   });
 };
 
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const slug = formData.get("slug");
-  const projectId = formData.get("projectId");
+export const actionSchema = zfd.formData({
+  slug: z.string(),
+  projectId: z.string(),
+});
 
-  invariant(typeof slug === "string", "slug is required");
-  invariant(typeof projectId === "string", "projectId is required");
+export const action: ActionFunction = async ({ request }) => {
+  const { slug, projectId } = actionSchema.parse(await request.formData());
 
   await deleteContent({
     slug,

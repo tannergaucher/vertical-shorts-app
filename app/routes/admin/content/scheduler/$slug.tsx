@@ -8,6 +8,8 @@ import {
   useTransition,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
 import { getContent } from "~/models/content.server";
@@ -22,10 +24,12 @@ type LoaderData = {
   project: Awaited<ReturnType<typeof getProject>>;
 };
 
-export const loader: LoaderFunction = async ({ params, request }) => {
-  const slug = params.slug;
+const paramsSchema = z.object({
+  slug: z.string(),
+});
 
-  invariant(slug, "slug is required");
+export const loader: LoaderFunction = async ({ params, request }) => {
+  const { slug } = paramsSchema.parse(params);
 
   const user = await getUser(request);
 
@@ -46,27 +50,24 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   });
 };
 
+export const schema = zfd.formData({
+  date: zfd.text(),
+  time: zfd.text(),
+  slug: zfd.text(),
+  projectId: zfd.text(),
+  channelTypes: zfd.repeatableOfType(
+    zfd
+      .text()
+      .refine((value) =>
+        Object.values(ChannelType).includes(value as ChannelType)
+      )
+  ),
+});
+
 export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-
-  const date = formData.get("date");
-  const time = formData.get("time");
-  const slug = formData.get("slug");
-  const projectId = formData.get("projectId");
-  const channelTypes = formData.getAll("channelType");
-
-  invariant(typeof date === "string", "date is required");
-  invariant(typeof time === "string", "time is required");
-  invariant(typeof slug === "string", "slug is required");
-  invariant(typeof projectId === "string", "projectId is required");
-  invariant(channelTypes.length > 0, "a channel is required");
-
-  channelTypes.forEach((channelType) => {
-    invariant(
-      Object.values(ChannelType).includes(channelType as ChannelType),
-      "channelType must be a valid ChannelType"
-    );
-  });
+  const { date, time, slug, projectId, channelTypes } = schema.parse(
+    await request.formData()
+  );
 
   await upsertContent({
     projectId,
