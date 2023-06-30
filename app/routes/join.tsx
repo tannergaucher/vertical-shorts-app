@@ -8,8 +8,10 @@ import {
   useTransition,
 } from "@remix-run/react";
 import * as React from "react";
+import { zfd } from "zod-form-data";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
+import { Routes } from "~/routes";
 import { createUserSession, getUserId } from "~/session.server";
 import styles from "~/styles/login.module.css";
 import { safeRedirect, validateEmail } from "~/utils";
@@ -20,11 +22,16 @@ export async function loader({ request }: LoaderArgs) {
   return json({});
 }
 
+const schema = zfd.formData({
+  email: zfd.text(),
+  password: zfd.text(),
+  redirectTo: zfd.text().optional(),
+});
+
 export async function action({ request }: ActionArgs) {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
+  const { email, password, redirectTo } = schema.parse(
+    await request.formData()
+  );
 
   if (!validateEmail(email)) {
     return json(
@@ -66,7 +73,7 @@ export async function action({ request }: ActionArgs) {
     request,
     userId: user.id,
     remember: false,
-    redirectTo,
+    redirectTo: safeRedirect(redirectTo, Routes.Index),
   });
 }
 
@@ -78,7 +85,7 @@ export const meta: MetaFunction = () => {
 
 export default function Page() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const redirectTo = searchParams.get("redirectTo") ?? Routes.Index;
   const actionData = useActionData<typeof action>();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
