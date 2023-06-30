@@ -8,6 +8,7 @@ import {
   useTransition,
 } from "@remix-run/react";
 import * as React from "react";
+import { zfd } from "zod-form-data";
 
 import { verifyLogin } from "~/models/user.server";
 import { Routes } from "~/routes";
@@ -21,12 +22,17 @@ export async function loader({ request }: LoaderArgs) {
   return json({});
 }
 
+const schema = zfd.formData({
+  email: zfd.text(),
+  password: zfd.text(),
+  redirectTo: zfd.text(),
+  remember: zfd.text().optional(),
+});
+
 export async function action({ request }: ActionArgs) {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), Routes.Admin);
-  const remember = formData.get("remember");
+  const { email, password, redirectTo, remember } = schema.parse(
+    await request.formData()
+  );
 
   if (!validateEmail(email)) {
     return json(
@@ -62,7 +68,7 @@ export async function action({ request }: ActionArgs) {
     request,
     userId: user.id,
     remember: remember === "on" ? true : false,
-    redirectTo,
+    redirectTo: safeRedirect(redirectTo, Routes.Admin),
   });
 }
 
