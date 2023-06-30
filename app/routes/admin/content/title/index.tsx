@@ -5,7 +5,7 @@ import type {
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, useParams, useTransition } from "@remix-run/react";
-import invariant from "tiny-invariant";
+import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
 import { upsertContent } from "~/models/content.server";
@@ -29,11 +29,12 @@ export const loader: LoaderFunction = async ({ request }) => {
   return null;
 };
 
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const title = formData.get("title");
+const schema = zfd.formData({
+  title: zfd.text(),
+});
 
-  invariant(typeof title === "string", "title is required");
+export const action: ActionFunction = async ({ request }) => {
+  const { title } = schema.parse(await request.formData());
 
   const user = await getUser(request);
 
@@ -45,7 +46,7 @@ export const action: ActionFunction = async ({ request }) => {
 
   await upsertContent({
     slug,
-    title: title.toString().trim(),
+    title: title.trim(),
     projectId: user.currentProjectId,
   });
 
