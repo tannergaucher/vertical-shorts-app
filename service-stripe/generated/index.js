@@ -261,8 +261,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../prisma",
   "clientVersion": "4.15.0",
@@ -272,14 +271,14 @@ const config = {
   ],
   "activeProvider": "postgresql",
   "dataProxy": false,
-  "postinstall": false
+  "postinstall": true
 }
 
 const fs = require('fs')
 
 config.dirname = __dirname
 if (!fs.existsSync(path.join(__dirname, 'schema.prisma'))) {
-  config.dirname = path.join(process.cwd(), "service-stripe/generated")
+  config.dirname = path.join(process.cwd(), "../../service-stripe/generated")
   config.isBundled = true
 }
 
@@ -303,15 +302,15 @@ exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
 
 path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
-path.join(process.cwd(), "service-stripe/generated/libquery_engine-darwin-arm64.dylib.node")
+path.join(process.cwd(), "../../service-stripe/generated/libquery_engine-darwin-arm64.dylib.node")
 
 path.join(__dirname, "libquery_engine-debian-openssl-1.1.x.so.node");
-path.join(process.cwd(), "service-stripe/generated/libquery_engine-debian-openssl-1.1.x.so.node")
+path.join(process.cwd(), "../../service-stripe/generated/libquery_engine-debian-openssl-1.1.x.so.node")
 
 path.join(__dirname, "libquery_engine-debian-openssl-3.0.x.so.node");
-path.join(process.cwd(), "service-stripe/generated/libquery_engine-debian-openssl-3.0.x.so.node")
+path.join(process.cwd(), "../../service-stripe/generated/libquery_engine-debian-openssl-3.0.x.so.node")
 
 path.join(__dirname, "libquery_engine-rhel-openssl-1.0.x.so.node");
-path.join(process.cwd(), "service-stripe/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
+path.join(process.cwd(), "../../service-stripe/generated/libquery_engine-rhel-openssl-1.0.x.so.node")
 path.join(__dirname, "schema.prisma");
-path.join(process.cwd(), "service-stripe/generated/schema.prisma")
+path.join(process.cwd(), "../../service-stripe/generated/schema.prisma")
