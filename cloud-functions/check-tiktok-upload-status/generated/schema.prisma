@@ -14,6 +14,12 @@ generator serviceStripe {
   binaryTargets = ["debian-openssl-1.1.x"]
 }
 
+generator cloudAnnotateVideo {
+  provider      = "prisma-client-js"
+  output        = "../cloud-functions/annotate-video/generated"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
+}
+
 generator cloudFetchYoutubeContentForPublishingClient {
   provider      = "prisma-client-js"
   output        = "../cloud-functions/fetch-youtube-content-for-publishing/generated"
