@@ -32,12 +32,6 @@ generator cloudPublishYoutubeConentClient {
   binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
 }
 
-generator cloudTiktokCheckUploadStatusClient {
-  provider      = "prisma-client-js"
-  output        = "../cloud-functions/check-tiktok-upload-status/generated"
-  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
-}
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")

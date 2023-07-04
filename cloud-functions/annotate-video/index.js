@@ -60,7 +60,7 @@ function annotateVideo(cloudEvent) {
             switch (_c.label) {
                 case 0:
                     if (!cloudEvent.data) {
-                        throw new Error("NO_DATA");
+                        throw new Error("NO_CLOUDEVENT_DATA");
                     }
                     _b = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8")), slug = _b.slug, projectId = _b.projectId;
                     return [4 /*yield*/, prisma.content.findUnique({

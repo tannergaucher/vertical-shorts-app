@@ -82,6 +82,9 @@ function publishYoutubeContent(cloudEvent) {
                     if (content.youtubeStatus === generated_1.UploadStatus.PUBLIC) {
                         return [2 /*return*/];
                     }
+                    if (content.youtubeStatus === generated_1.UploadStatus.NOT_STARTED) {
+                        console.log("HANDLE NOT STARTED");
+                    }
                     return [4 /*yield*/, prisma.project.findUnique({
                             where: {
                                 id: projectId
@@ -126,7 +129,8 @@ function publishYoutubeContent(cloudEvent) {
                                 }
                             },
                             data: {
-                                youtubeStatus: generated_1.UploadStatus.PUBLIC
+                                youtubeStatus: generated_1.UploadStatus.PUBLIC,
+                                youtubePublishAt: null
                             }
                         })];
                 case 4:
