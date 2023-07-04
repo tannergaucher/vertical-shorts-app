@@ -10,11 +10,11 @@ steps:
       [
         "functions",
         "deploy",
-        "[annotate-video]",
-        "[annotate-video]",
+        "annotate-video",
+        "annotate-video",
         "--runtime",
-        "[nodejs18]",
+        "nodejs18",
         "--entry-point",
-        "[annotateVideo]",
+        "annotateVideo",
       ]
     dir: "function/dir/from/repo/root"
