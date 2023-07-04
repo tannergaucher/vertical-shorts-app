@@ -17,9 +17,9 @@ functions.cloudEvent(
 );
 
 export async function annotateVideo(cloudEvent: CloudEvent<string>) {
-  if (!cloudEvent.data) {
-    throw new Error("NO_CLOUDEVENT_DATA");
-  }
+  // if (!cloudEvent.data) {
+  //   throw new Error("NO_CLOUDEVENT_DATA");
+  // }
 
   const { slug, projectId } = JSON.parse(
     Buffer.from(cloudEvent.data, "base64").toString("utf8")
