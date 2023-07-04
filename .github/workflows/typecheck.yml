@@ -10,6 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install dependencies
-        run: npm install
+        run: find . -type f -name "package.json" -not -path "./node_modules/*" -execdir npm install \;
       - name: Typecheck
         run: npm run typecheck
