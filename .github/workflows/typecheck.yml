@@ -16,3 +16,8 @@ jobs:
         run: npm install
       - name: Typecheck
         run: npm run typecheck
+     - name: Install annotate video dependencies
+        working-directory: ./cloud-functions/annotate-video
+        run: npm install
+      - name: Typecheck
+        run: npm run typecheck
