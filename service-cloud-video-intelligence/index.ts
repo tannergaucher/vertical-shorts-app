@@ -87,6 +87,7 @@ app.post("/recognize-text", async (req, res) => {
     },
     select: {
       projectId: true,
+      slug: true,
     },
   });
 
@@ -94,7 +95,7 @@ app.post("/recognize-text", async (req, res) => {
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsUri = `gs://${projectId}/${slug}.mp4`;
+  const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
   const request = {
     inputUri: gcsUri,
@@ -173,6 +174,7 @@ app.post("/transcribe", async (req, res) => {
     },
     select: {
       projectId: true,
+      slug: true,
     },
   });
 
@@ -180,7 +182,7 @@ app.post("/transcribe", async (req, res) => {
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsUri = `gs://${projectId}/${slug}.mp4`;
+  const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
   const videoContext = {
     speechTranscriptionConfig: {
