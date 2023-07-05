@@ -24,7 +24,7 @@ const prisma = new PrismaClient();
 const videoIntelligenceClient =
   new videoIntelligence.VideoIntelligenceServiceClient();
 
-app.post("/annotate", async (req, res) => {
+app.post("/detect-labels", async (req, res) => {
   const { projectId, slug } = req.body;
 
   const content = await prisma.content.findUnique({
@@ -101,9 +101,7 @@ app.post("/recognize-text", async (req, res) => {
     features: [google.cloud.videointelligence.v1.Feature.TEXT_DETECTION],
   };
 
-  // Detects text in a video
   const [operation] = await videoIntelligenceClient.annotateVideo(request);
-  //   const results = await operation.promise();
   console.log("Waiting for operation to complete...");
 
   interface Result {
