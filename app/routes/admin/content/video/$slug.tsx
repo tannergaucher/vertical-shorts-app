@@ -117,8 +117,6 @@ export default function Page() {
               "Content-Type": "video/mp4",
             },
           });
-
-          // and publish annotate video to pubsub
         } catch (error) {
           console.log(error, "error");
           setDisabled(false);
