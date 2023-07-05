@@ -253,7 +253,7 @@ exports.Prisma.ModelName = {
  */
 const config = {
   "generator": {
-    "name": "serviceCloudVideoIntelligenge",
+    "name": "serviceCloudVideoIntelligence",
     "provider": {
       "fromEnvVar": null,
       "value": "prisma-client-js"
@@ -285,7 +285,8 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "dataProxy": false
+  "dataProxy": false,
+  "postinstall": false
 }
 
 const fs = require('fs')

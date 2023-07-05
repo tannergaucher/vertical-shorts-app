@@ -14,7 +14,7 @@ generator serviceStripe {
   binaryTargets = ["debian-openssl-1.1.x"]
 }
 
-generator serviceCloudVideoIntelligenge {
+generator serviceCloudVideoIntelligence {
   provider      = "prisma-client-js"
   output        = "../service-cloud-video-intelligence/generated"
   binaryTargets = ["debian-openssl-1.1.x"]
