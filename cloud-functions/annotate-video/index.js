@@ -55,7 +55,7 @@ functions.cloudEvent("annotate-video", function (cloudEvent) { return __awaiter(
 function annotateVideo(cloudEvent) {
     var _a;
     return __awaiter(this, void 0, void 0, function () {
-        var _b, slug, projectId, content, gcsResourceUri, client, request, operation, operationResult, annotations, labels;
+        var _b, slug, projectId, gcsResourceUri, client, request, operation, operationResult, annotations, labels;
         return __generator(this, function (_c) {
             switch (_c.label) {
                 case 0:
@@ -63,70 +63,51 @@ function annotateVideo(cloudEvent) {
                         throw new Error("NO_CLOUDEVENT_DATA");
                     }
                     _b = JSON.parse(Buffer.from(cloudEvent.data, "base64").toString("utf8")), slug = _b.slug, projectId = _b.projectId;
-                    return [4 /*yield*/, prisma.content.findUnique({
-                            where: {
-                                projectId_slug: {
-                                    projectId: projectId,
-                                    slug: slug
-                                }
-                            },
-                            select: {
-                                projectId: true,
-                                slug: true
-                            }
-                        })];
-                case 1:
-                    content = _c.sent();
-                    if (!content) {
-                        throw new Error("CONTENT_NOT_FOUND");
-                    }
-                    gcsResourceUri = "gs://".concat(content.projectId, "/").concat(content.slug);
+                    gcsResourceUri = "gs://".concat(projectId, "/").concat(slug);
                     client = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
                     request = {
                         inputUri: gcsResourceUri,
                         features: [protos_1.google.cloud.videointelligence.v1.Feature.LABEL_DETECTION]
                     };
                     return [4 /*yield*/, client.annotateVideo(request)];
-                case 2:
+                case 1:
                     operation = (_c.sent())[0];
                     console.log("Waiting for operation to complete...");
                     return [4 /*yield*/, operation.promise()];
-                case 3:
+                case 2:
                     operationResult = (_c.sent())[0];
                     annotations = (_a = operationResult.annotationResults) === null || _a === void 0 ? void 0 : _a[0];
+                    console.log("Annotations:", JSON.stringify(annotations, null, 2));
                     labels = annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations;
+                    console.log("Labels:", JSON.stringify(labels, null, 2));
                     labels === null || labels === void 0 ? void 0 : labels.forEach(function (label) {
-                        var _a;
+                        var _a, _b;
                         console.log("Label ".concat((_a = label === null || label === void 0 ? void 0 : label.entity) === null || _a === void 0 ? void 0 : _a.description, " occurs at:"));
-                        labels === null || labels === void 0 ? void 0 : labels.forEach(function (label) {
-                            var _a, _b;
-                            console.log("Label ".concat((_a = label === null || label === void 0 ? void 0 : label.entity) === null || _a === void 0 ? void 0 : _a.description, " occurs at:"));
-                            (_b = label === null || label === void 0 ? void 0 : label.segments) === null || _b === void 0 ? void 0 : _b.forEach(function (segment) {
-                                var _a, _b, _c, _d, _e, _f;
-                                var time = segment.segment;
-                                if (time !== null && time !== undefined) {
-                                    if (((_a = time.startTimeOffset) === null || _a === void 0 ? void 0 : _a.seconds) === undefined) {
-                                        time.startTimeOffset = { seconds: 0, nanos: 0 };
-                                    }
-                                    if (((_b = time.startTimeOffset) === null || _b === void 0 ? void 0 : _b.nanos) === undefined) {
-                                        time.startTimeOffset.nanos = 0;
-                                    }
-                                    if (((_c = time.endTimeOffset) === null || _c === void 0 ? void 0 : _c.seconds) === undefined) {
-                                        time.endTimeOffset = { seconds: 0, nanos: 0 };
-                                    }
-                                    if (((_d = time.endTimeOffset) === null || _d === void 0 ? void 0 : _d.nanos) === undefined) {
-                                        time.endTimeOffset.nanos = 0;
-                                    }
-                                    console.log("\tStart: ".concat(time.startTimeOffset.seconds) +
-                                        ".".concat(((_e = time.startTimeOffset.nanos) !== null && _e !== void 0 ? _e : 0 / 1e6).toFixed(0), "s"));
-                                    console.log("\tEnd: ".concat(time.endTimeOffset.seconds, ".") +
-                                        "".concat(((_f = time.endTimeOffset.nanos) !== null && _f !== void 0 ? _f : 0 / 1e6).toFixed(0), "s"));
+                        (_b = label === null || label === void 0 ? void 0 : label.segments) === null || _b === void 0 ? void 0 : _b.forEach(function (segment) {
+                            var _a, _b, _c, _d, _e, _f;
+                            var time = segment.segment;
+                            if (time !== null && time !== undefined) {
+                                if (((_a = time.startTimeOffset) === null || _a === void 0 ? void 0 : _a.seconds) === undefined) {
+                                    time.startTimeOffset = { seconds: 0, nanos: 0 };
                                 }
-                                console.log("\tConfidence: ".concat(segment.confidence));
-                            });
+                                if (((_b = time.startTimeOffset) === null || _b === void 0 ? void 0 : _b.nanos) === undefined) {
+                                    time.startTimeOffset.nanos = 0;
+                                }
+                                if (((_c = time.endTimeOffset) === null || _c === void 0 ? void 0 : _c.seconds) === undefined) {
+                                    time.endTimeOffset = { seconds: 0, nanos: 0 };
+                                }
+                                if (((_d = time.endTimeOffset) === null || _d === void 0 ? void 0 : _d.nanos) === undefined) {
+                                    time.endTimeOffset.nanos = 0;
+                                }
+                                console.log("\tStart: ".concat(time.startTimeOffset.seconds) +
+                                    ".".concat(((_e = time.startTimeOffset.nanos) !== null && _e !== void 0 ? _e : 0 / 1e6).toFixed(0), "s"));
+                                console.log("\tEnd: ".concat(time.endTimeOffset.seconds, ".") +
+                                    "".concat(((_f = time.endTimeOffset.nanos) !== null && _f !== void 0 ? _f : 0 / 1e6).toFixed(0), "s"));
+                            }
+                            console.log("\tConfidence: ".concat(segment.confidence));
                         });
                     });
-                    return [2 /*return*/];
+                    return [2 /*return*/, { message: "success" }];
             }
         });
     });

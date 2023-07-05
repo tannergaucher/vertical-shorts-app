@@ -158,6 +158,8 @@ model Content {
   twitterId          String?
   twitterStatus      UploadStatus? @default(NOT_STARTED)
   twitterPublishAt   DateTime?
+  annotations        Json?
+  labels             Json?
 
   @@unique([projectId, slug])
 }
