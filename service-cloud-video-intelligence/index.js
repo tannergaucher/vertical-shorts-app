@@ -96,6 +96,20 @@ app.post("/annotate", (req, res) => __awaiter(void 0, void 0, void 0, function* 
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d;
     const { projectId, slug } = req.body;
+    const content = yield prisma.content.findUnique({
+        where: {
+            projectId_slug: {
+                projectId,
+                slug,
+            },
+        },
+        select: {
+            projectId: true,
+        },
+    });
+    if (!content) {
+        throw new Error("CONTENT_NOT_FOUND");
+    }
     const gcsUri = `gs://${projectId}/${slug}.mp4`;
     const request = {
         inputUri: gcsUri,
@@ -132,6 +146,20 @@ app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, func
 }));
 app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { projectId, slug } = req.body;
+    const content = yield prisma.content.findUnique({
+        where: {
+            projectId_slug: {
+                projectId,
+                slug,
+            },
+        },
+        select: {
+            projectId: true,
+        },
+    });
+    if (!content) {
+        throw new Error("CONTENT_NOT_FOUND");
+    }
     const gcsUri = `gs://${projectId}/${slug}.mp4`;
     const videoContext = {
         speechTranscriptionConfig: {
@@ -147,30 +175,18 @@ app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function
     const [operation] = yield videoIntelligenceClient.annotateVideo(request);
     console.log("Waiting for operation to complete...");
     const [operationResult] = yield operation.promise();
-    // There is only one annotation_result since only
-    // one video is processed.
     console.log(operationResult, "_operation result");
-    //   const annotationResults = operationResult.annotationResults[0];
-    //   for (const speechTranscription of annotationResults.speechTranscriptions) {
-    //     // The number of alternatives for each transcription is limited by
-    //     // SpeechTranscriptionConfig.max_alternatives.
-    //     // Each alternative is a different possible transcription
-    //     // and has its own confidence score.
-    //     for (const alternative of speechTranscription.alternatives) {
-    //       console.log("Alternative level information:");
-    //       console.log(`Transcript: ${alternative.transcript}`);
-    //       console.log(`Confidence: ${alternative.confidence}`);
-    //       console.log("Word level information:");
-    //       for (const wordInfo of alternative.words) {
-    //         const word = wordInfo.word;
-    //         const start_time =
-    //           wordInfo.startTime.seconds + wordInfo.startTime.nanos * 1e-9;
-    //         const end_time =
-    //           wordInfo.endTime.seconds + wordInfo.endTime.nanos * 1e-9;
-    //         console.log("\t" + start_time + "s - " + end_time + "s: " + word);
-    //       }
-    //     }
-    //   }
+    yield prisma.content.update({
+        where: {
+            projectId_slug: {
+                projectId,
+                slug,
+            },
+        },
+        data: {
+            transcription: JSON.stringify(operationResult),
+        },
+    });
     res.json({ success: true });
 }));
 const port = parseInt((_a = process.env.PORT) !== null && _a !== void 0 ? _a : "8080");

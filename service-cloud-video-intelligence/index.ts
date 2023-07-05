@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import express, { json } from "express";
 
 import { PrismaClient } from "./generated/index.js";
-import { APP_BASE_URL } from "./utils/constants";
+import { CLOUD_VIDEO_INTELLIGENCE_SERVICE_BASE_URL } from "./utils/constants";
 
 dotenv.config();
 
@@ -15,7 +15,7 @@ app.use(json());
 
 app.use(
   cors({
-    origin: APP_BASE_URL,
+    origin: CLOUD_VIDEO_INTELLIGENCE_SERVICE_BASE_URL,
   })
 );
 
