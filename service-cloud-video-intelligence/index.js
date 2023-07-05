@@ -128,37 +128,49 @@ app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, func
             });
         });
     }
-    // Gets annotations for video
-    //   const textAnnotations = results[0].annotationResults[0].textAnnotations;
-    //   console.log(textAnnotations, "text annotations");
-    //   textAnnotations.forEach((textAnnotation) => {
-    //     console.log(`Text ${textAnnotation.text} occurs at:`);
-    //     textAnnotation.segments.forEach((segment) => {
-    //       const time = segment.segment;
-    //       console.log(
-    //         ` Start: ${time.startTimeOffset.seconds || 0}.${(
-    //           time.startTimeOffset.nanos / 1e6
-    //         ).toFixed(0)}s`
-    //       );
-    //       console.log(
-    //         ` End: ${time.endTimeOffset.seconds || 0}.${(
-    //           time.endTimeOffset.nanos / 1e6
-    //         ).toFixed(0)}s`
-    //       );
-    //       console.log(` Confidence: ${segment.confidence}`);
-    //       segment.frames.forEach((frame) => {
-    //         const timeOffset = frame.timeOffset;
-    //         console.log(
-    //           `Time offset for the frame: ${timeOffset.seconds || 0}` +
-    //             `.${(timeOffset.nanos / 1e6).toFixed(0)}s`
-    //         );
-    //         console.log("Rotated Bounding Box Vertices:");
-    //         frame.rotatedBoundingBox.vertices.forEach((vertex) => {
-    //           console.log(`Vertex.x:${vertex.x}, Vertex.y:${vertex.y}`);
-    //         });
-    //       });
-    //     });
-    //   });
+    res.json({ success: true });
+}));
+app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, slug } = req.body;
+    const gcsUri = `gs://${projectId}/${slug}.mp4`;
+    const videoContext = {
+        speechTranscriptionConfig: {
+            languageCode: "en-US",
+            enableAutomaticPunctuation: true,
+        },
+    };
+    const request = {
+        inputUri: gcsUri,
+        videoContext: videoContext,
+        features: [protos_1.google.cloud.videointelligence.v1.Feature.SPEECH_TRANSCRIPTION],
+    };
+    const [operation] = yield videoIntelligenceClient.annotateVideo(request);
+    console.log("Waiting for operation to complete...");
+    const [operationResult] = yield operation.promise();
+    // There is only one annotation_result since only
+    // one video is processed.
+    console.log(operationResult, "_operation result");
+    //   const annotationResults = operationResult.annotationResults[0];
+    //   for (const speechTranscription of annotationResults.speechTranscriptions) {
+    //     // The number of alternatives for each transcription is limited by
+    //     // SpeechTranscriptionConfig.max_alternatives.
+    //     // Each alternative is a different possible transcription
+    //     // and has its own confidence score.
+    //     for (const alternative of speechTranscription.alternatives) {
+    //       console.log("Alternative level information:");
+    //       console.log(`Transcript: ${alternative.transcript}`);
+    //       console.log(`Confidence: ${alternative.confidence}`);
+    //       console.log("Word level information:");
+    //       for (const wordInfo of alternative.words) {
+    //         const word = wordInfo.word;
+    //         const start_time =
+    //           wordInfo.startTime.seconds + wordInfo.startTime.nanos * 1e-9;
+    //         const end_time =
+    //           wordInfo.endTime.seconds + wordInfo.endTime.nanos * 1e-9;
+    //         console.log("\t" + start_time + "s - " + end_time + "s: " + word);
+    //       }
+    //     }
+    //   }
     res.json({ success: true });
 }));
 const port = parseInt((_a = process.env.PORT) !== null && _a !== void 0 ? _a : "8080");

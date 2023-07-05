@@ -78,6 +78,22 @@ app.post("/annotate", async (req, res) => {
 app.post("/recognize-text", async (req, res) => {
   const { projectId, slug } = req.body;
 
+  const content = await prisma.content.findUnique({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    select: {
+      projectId: true,
+    },
+  });
+
+  if (!content) {
+    throw new Error("CONTENT_NOT_FOUND");
+  }
+
   const gcsUri = `gs://${projectId}/${slug}.mp4`;
 
   const request = {
@@ -162,6 +178,61 @@ app.post("/recognize-text", async (req, res) => {
       });
     });
   }
+
+  res.json({ success: true });
+});
+
+app.post("/transcribe", async (req, res) => {
+  const { projectId, slug } = req.body;
+
+  const content = await prisma.content.findUnique({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    select: {
+      projectId: true,
+    },
+  });
+
+  if (!content) {
+    throw new Error("CONTENT_NOT_FOUND");
+  }
+
+  const gcsUri = `gs://${projectId}/${slug}.mp4`;
+
+  const videoContext = {
+    speechTranscriptionConfig: {
+      languageCode: "en-US",
+      enableAutomaticPunctuation: true,
+    },
+  };
+
+  const request = {
+    inputUri: gcsUri,
+    videoContext: videoContext,
+    features: [google.cloud.videointelligence.v1.Feature.SPEECH_TRANSCRIPTION],
+  };
+
+  const [operation] = await videoIntelligenceClient.annotateVideo(request);
+  console.log("Waiting for operation to complete...");
+  const [operationResult] = await operation.promise();
+
+  console.log(operationResult, "_operation result");
+
+  await prisma.content.update({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    data: {
+      transcription: JSON.stringify(operationResult),
+    },
+  });
 
   res.json({ success: true });
 });

@@ -166,6 +166,7 @@ model Content {
   twitterPublishAt   DateTime?
   annotations        Json?
   labels             Json?
+  transcription      Json?
 
   @@unique([projectId, slug])
 }

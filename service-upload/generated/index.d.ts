@@ -134,6 +134,7 @@ export type Content = {
   twitterPublishAt: Date | null
   annotations: Prisma.JsonValue | null
   labels: Prisma.JsonValue | null
+  transcription: Prisma.JsonValue | null
 }
 
 /**
@@ -7874,6 +7875,7 @@ export namespace Prisma {
     twitterPublishAt: number
     annotations: number
     labels: number
+    transcription: number
     _all: number
   }
 
@@ -7957,6 +7959,7 @@ export namespace Prisma {
     twitterPublishAt?: true
     annotations?: true
     labels?: true
+    transcription?: true
     _all?: true
   }
 
@@ -8060,6 +8063,7 @@ export namespace Prisma {
     twitterPublishAt: Date | null
     annotations: JsonValue | null
     labels: JsonValue | null
+    transcription: JsonValue | null
     _count: ContentCountAggregateOutputType | null
     _min: ContentMinAggregateOutputType | null
     _max: ContentMaxAggregateOutputType | null
@@ -8106,6 +8110,7 @@ export namespace Prisma {
     twitterPublishAt?: boolean
     annotations?: boolean
     labels?: boolean
+    transcription?: boolean
     project?: boolean | ProjectArgs
   }
 
@@ -10927,7 +10932,8 @@ export namespace Prisma {
     twitterStatus: 'twitterStatus',
     twitterPublishAt: 'twitterPublishAt',
     annotations: 'annotations',
-    labels: 'labels'
+    labels: 'labels',
+    transcription: 'transcription'
   };
 
   export type ContentScalarFieldEnum = (typeof ContentScalarFieldEnum)[keyof typeof ContentScalarFieldEnum]
@@ -11474,6 +11480,7 @@ export namespace Prisma {
     twitterPublishAt?: DateTimeNullableFilter | Date | string | null
     annotations?: JsonNullableFilter
     labels?: JsonNullableFilter
+    transcription?: JsonNullableFilter
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
@@ -11504,6 +11511,7 @@ export namespace Prisma {
     twitterPublishAt?: SortOrder
     annotations?: SortOrder
     labels?: SortOrder
+    transcription?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
 
@@ -11538,6 +11546,7 @@ export namespace Prisma {
     twitterPublishAt?: SortOrder
     annotations?: SortOrder
     labels?: SortOrder
+    transcription?: SortOrder
     _count?: ContentCountOrderByAggregateInput
     _max?: ContentMaxOrderByAggregateInput
     _min?: ContentMinOrderByAggregateInput
@@ -11573,6 +11582,7 @@ export namespace Prisma {
     twitterPublishAt?: DateTimeNullableWithAggregatesFilter | Date | string | null
     annotations?: JsonNullableWithAggregatesFilter
     labels?: JsonNullableWithAggregatesFilter
+    transcription?: JsonNullableWithAggregatesFilter
   }
 
   export type ProjectWhereInput = {
@@ -12166,6 +12176,7 @@ export namespace Prisma {
     twitterPublishAt?: Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
     project: ProjectCreateNestedOneWithoutContentInput
   }
 
@@ -12196,6 +12207,7 @@ export namespace Prisma {
     twitterPublishAt?: Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUpdateInput = {
@@ -12224,6 +12236,7 @@ export namespace Prisma {
     twitterPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
     project?: ProjectUpdateOneRequiredWithoutContentNestedInput
   }
 
@@ -12254,6 +12267,7 @@ export namespace Prisma {
     twitterPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentCreateManyInput = {
@@ -12283,6 +12297,7 @@ export namespace Prisma {
     twitterPublishAt?: Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUpdateManyMutationInput = {
@@ -12311,6 +12326,7 @@ export namespace Prisma {
     twitterPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedUpdateManyInput = {
@@ -12340,6 +12356,7 @@ export namespace Prisma {
     twitterPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectCreateInput = {
@@ -12943,6 +12960,7 @@ export namespace Prisma {
     twitterPublishAt?: SortOrder
     annotations?: SortOrder
     labels?: SortOrder
+    transcription?: SortOrder
   }
 
   export type ContentMaxOrderByAggregateInput = {
@@ -14559,6 +14577,7 @@ export namespace Prisma {
     twitterPublishAt?: Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedCreateWithoutProjectInput = {
@@ -14587,6 +14606,7 @@ export namespace Prisma {
     twitterPublishAt?: Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentCreateOrConnectWithoutProjectInput = {
@@ -14813,6 +14833,7 @@ export namespace Prisma {
     twitterPublishAt?: DateTimeNullableFilter | Date | string | null
     annotations?: JsonNullableFilter
     labels?: JsonNullableFilter
+    transcription?: JsonNullableFilter
   }
 
   export type ChannelUpsertWithWhereUniqueWithoutProjectInput = {
@@ -15090,6 +15111,7 @@ export namespace Prisma {
     twitterPublishAt?: Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ChannelCreateManyProjectInput = {
@@ -15128,6 +15150,7 @@ export namespace Prisma {
     twitterPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedUpdateWithoutProjectInput = {
@@ -15156,6 +15179,7 @@ export namespace Prisma {
     twitterPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedUpdateManyWithoutContentInput = {
@@ -15184,6 +15208,7 @@ export namespace Prisma {
     twitterPublishAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
+    transcription?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ChannelUpdateWithoutProjectInput = {
