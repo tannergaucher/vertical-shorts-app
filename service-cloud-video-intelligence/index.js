@@ -50,7 +50,8 @@ app.use((0, cors_1.default)({
     origin: constants_1.APP_BASE_URL,
 }));
 const prisma = new index_js_1.PrismaClient();
-app.post("/annotate-video", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const videoIntelligenceClient = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
+app.post("/annotate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const { projectId, slug } = req.body;
     const content = yield prisma.content.findUnique({
@@ -69,12 +70,11 @@ app.post("/annotate-video", (req, res) => __awaiter(void 0, void 0, void 0, func
         throw new Error("CONTENT_NOT_FOUND");
     }
     const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
-    const client = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
     const request = {
         inputUri: gcsResourceUri,
         features: [protos_1.google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
     };
-    const [operation] = yield client.annotateVideo(request);
+    const [operation] = yield videoIntelligenceClient.annotateVideo(request);
     console.log("Waiting for operation to complete...");
     const [operationResult] = yield operation.promise();
     const annotations = (_b = operationResult.annotationResults) === null || _b === void 0 ? void 0 : _b[0];
@@ -92,6 +92,74 @@ app.post("/annotate-video", (req, res) => __awaiter(void 0, void 0, void 0, func
         },
     });
     return res.json({ success: true });
+}));
+app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _c, _d;
+    const { projectId, slug } = req.body;
+    const gcsUri = `gs://${projectId}/${slug}.mp4`;
+    const request = {
+        inputUri: gcsUri,
+        features: [protos_1.google.cloud.videointelligence.v1.Feature.TEXT_DETECTION],
+    };
+    // Detects text in a video
+    const [operation] = yield videoIntelligenceClient.annotateVideo(request);
+    //   const results = await operation.promise();
+    console.log("Waiting for operation to complete...");
+    const results = (yield operation.promise());
+    const textAnnotations = (_d = (_c = results[0]) === null || _c === void 0 ? void 0 : _c.annotationResults[0]) === null || _d === void 0 ? void 0 : _d.textAnnotations;
+    if (textAnnotations !== undefined) {
+        console.log(textAnnotations, "text annotations");
+        textAnnotations.forEach((textAnnotation) => {
+            console.log(`Text ${textAnnotation.text} occurs at:`);
+            textAnnotation.segments.forEach((segment) => {
+                const time = segment.segment;
+                console.log(` Start: ${time.startTimeOffset.seconds || 0}.${(time.startTimeOffset.nanos / 1e6).toFixed(0)}s`);
+                console.log(` End: ${time.endTimeOffset.seconds || 0}.${(time.endTimeOffset.nanos / 1e6).toFixed(0)}s`);
+                console.log(` Confidence: ${segment.confidence}`);
+                segment.frames.forEach((frame) => {
+                    const timeOffset = frame.timeOffset;
+                    console.log(`Time offset for the frame: ${timeOffset.seconds || 0}` +
+                        `.${(timeOffset.nanos / 1e6).toFixed(0)}s`);
+                    console.log("Rotated Bounding Box Vertices:");
+                    frame.rotatedBoundingBox.vertices.forEach((vertex) => {
+                        console.log(`Vertex.x:${vertex.x}, Vertex.y:${vertex.y}`);
+                    });
+                });
+            });
+        });
+    }
+    // Gets annotations for video
+    //   const textAnnotations = results[0].annotationResults[0].textAnnotations;
+    //   console.log(textAnnotations, "text annotations");
+    //   textAnnotations.forEach((textAnnotation) => {
+    //     console.log(`Text ${textAnnotation.text} occurs at:`);
+    //     textAnnotation.segments.forEach((segment) => {
+    //       const time = segment.segment;
+    //       console.log(
+    //         ` Start: ${time.startTimeOffset.seconds || 0}.${(
+    //           time.startTimeOffset.nanos / 1e6
+    //         ).toFixed(0)}s`
+    //       );
+    //       console.log(
+    //         ` End: ${time.endTimeOffset.seconds || 0}.${(
+    //           time.endTimeOffset.nanos / 1e6
+    //         ).toFixed(0)}s`
+    //       );
+    //       console.log(` Confidence: ${segment.confidence}`);
+    //       segment.frames.forEach((frame) => {
+    //         const timeOffset = frame.timeOffset;
+    //         console.log(
+    //           `Time offset for the frame: ${timeOffset.seconds || 0}` +
+    //             `.${(timeOffset.nanos / 1e6).toFixed(0)}s`
+    //         );
+    //         console.log("Rotated Bounding Box Vertices:");
+    //         frame.rotatedBoundingBox.vertices.forEach((vertex) => {
+    //           console.log(`Vertex.x:${vertex.x}, Vertex.y:${vertex.y}`);
+    //         });
+    //       });
+    //     });
+    //   });
+    res.json({ success: true });
 }));
 const port = parseInt((_a = process.env.PORT) !== null && _a !== void 0 ? _a : "8080");
 app.listen(port, () => {
