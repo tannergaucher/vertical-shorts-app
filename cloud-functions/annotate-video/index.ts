@@ -45,7 +45,7 @@ export async function annotateVideo(cloudEvent: CloudEvent<string>) {
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsResourceUri = `gs://${content.projectId}/${content.slug}`;
+  const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
   const client = new videoIntelligence.VideoIntelligenceServiceClient();
 
@@ -62,39 +62,18 @@ export async function annotateVideo(cloudEvent: CloudEvent<string>) {
 
   const labels = annotations?.segmentLabelAnnotations;
 
-  labels?.forEach((label) => {
-    console.log(`Label ${label?.entity?.description} occurs at:`);
-
-    labels?.forEach((label) => {
-      console.log(`Label ${label?.entity?.description} occurs at:`);
-
-      label?.segments?.forEach((segment) => {
-        const time = segment.segment;
-
-        if (time !== null && time !== undefined) {
-          if (time.startTimeOffset?.seconds === undefined) {
-            time.startTimeOffset = { seconds: 0, nanos: 0 };
-          }
-          if (time.startTimeOffset?.nanos === undefined) {
-            time.startTimeOffset.nanos = 0;
-          }
-          if (time.endTimeOffset?.seconds === undefined) {
-            time.endTimeOffset = { seconds: 0, nanos: 0 };
-          }
-          if (time.endTimeOffset?.nanos === undefined) {
-            time.endTimeOffset.nanos = 0;
-          }
-          console.log(
-            `\tStart: ${time.startTimeOffset.seconds}` +
-              `.${(time.startTimeOffset.nanos ?? 0 / 1e6).toFixed(0)}s`
-          );
-          console.log(
-            `\tEnd: ${time.endTimeOffset.seconds}.` +
-              `${(time.endTimeOffset.nanos ?? 0 / 1e6).toFixed(0)}s`
-          );
-        }
-        console.log(`\tConfidence: ${segment.confidence}`);
-      });
-    });
+  await prisma.content.update({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    data: {
+      annotations: JSON.stringify(annotations),
+      labels: JSON.stringify(labels),
+    },
   });
+
+  return { message: "success" };
 }

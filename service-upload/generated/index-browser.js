@@ -121,7 +121,9 @@ exports.Prisma.ContentScalarFieldEnum = {
   facebookPublishAt: 'facebookPublishAt',
   twitterId: 'twitterId',
   twitterStatus: 'twitterStatus',
-  twitterPublishAt: 'twitterPublishAt'
+  twitterPublishAt: 'twitterPublishAt',
+  annotations: 'annotations',
+  labels: 'labels'
 };
 
 exports.Prisma.FacebookCredentialsScalarFieldEnum = {
@@ -139,6 +141,17 @@ exports.Prisma.InstagramCredentialsScalarFieldEnum = {
   updatedAt: 'updatedAt',
   username: 'username',
   projectId: 'projectId'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.PasswordScalarFieldEnum = {

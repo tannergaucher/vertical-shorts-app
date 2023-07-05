@@ -1,6 +1,6 @@
 ## Deploy 2nd Gen Function Using Gcloud CLI
 
-```
+```bash
 gcloud functions deploy fetch-youtube-content-for-publishing \
 --gen2 \
 --region=us-east1 \
