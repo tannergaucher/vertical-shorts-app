@@ -14,6 +14,12 @@ generator serviceStripe {
   binaryTargets = ["debian-openssl-1.1.x"]
 }
 
+generator serviceCloudVideoIntelligence {
+  provider      = "prisma-client-js"
+  output        = "../service-cloud-video-intelligence/generated"
+  binaryTargets = ["debian-openssl-1.1.x"]
+}
+
 generator cloudAnnotateVideo {
   provider      = "prisma-client-js"
   output        = "../cloud-functions/annotate-video/generated"
@@ -160,6 +166,8 @@ model Content {
   twitterPublishAt   DateTime?
   annotations        Json?
   labels             Json?
+  transcription      Json?
+  textDetection      Json?
 
   @@unique([projectId, slug])
 }

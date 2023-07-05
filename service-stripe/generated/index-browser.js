@@ -123,7 +123,9 @@ exports.Prisma.ContentScalarFieldEnum = {
   twitterStatus: 'twitterStatus',
   twitterPublishAt: 'twitterPublishAt',
   annotations: 'annotations',
-  labels: 'labels'
+  labels: 'labels',
+  transcription: 'transcription',
+  textDetection: 'textDetection'
 };
 
 exports.Prisma.FacebookCredentialsScalarFieldEnum = {
