@@ -167,6 +167,7 @@ model Content {
   annotations        Json?
   labels             Json?
   transcription      Json?
+  textDetection      Json?
 
   @@unique([projectId, slug])
 }

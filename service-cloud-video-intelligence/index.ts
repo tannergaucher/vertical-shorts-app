@@ -145,35 +145,16 @@ app.post("/recognize-text", async (req, res) => {
     results[0]?.annotationResults[0]?.textAnnotations;
 
   if (textAnnotations !== undefined) {
-    console.log(textAnnotations, "text annotations");
-
-    textAnnotations.forEach((textAnnotation) => {
-      console.log(`Text ${textAnnotation.text} occurs at:`);
-      textAnnotation.segments.forEach((segment) => {
-        const time = segment.segment;
-        console.log(
-          ` Start: ${time.startTimeOffset.seconds || 0}.${(
-            time.startTimeOffset.nanos / 1e6
-          ).toFixed(0)}s`
-        );
-        console.log(
-          ` End: ${time.endTimeOffset.seconds || 0}.${(
-            time.endTimeOffset.nanos / 1e6
-          ).toFixed(0)}s`
-        );
-        console.log(` Confidence: ${segment.confidence}`);
-        segment.frames.forEach((frame) => {
-          const timeOffset = frame.timeOffset;
-          console.log(
-            `Time offset for the frame: ${timeOffset.seconds || 0}` +
-              `.${(timeOffset.nanos / 1e6).toFixed(0)}s`
-          );
-          console.log("Rotated Bounding Box Vertices:");
-          frame.rotatedBoundingBox.vertices.forEach((vertex) => {
-            console.log(`Vertex.x:${vertex.x}, Vertex.y:${vertex.y}`);
-          });
-        });
-      });
+    await prisma.content.update({
+      where: {
+        projectId_slug: {
+          projectId,
+          slug,
+        },
+      },
+      data: {
+        annotations: JSON.stringify(textAnnotations),
+      },
     });
   }
 

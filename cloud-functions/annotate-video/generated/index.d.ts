@@ -135,6 +135,7 @@ export type Content = {
   annotations: Prisma.JsonValue | null
   labels: Prisma.JsonValue | null
   transcription: Prisma.JsonValue | null
+  textDetection: Prisma.JsonValue | null
 }
 
 /**
@@ -7876,6 +7877,7 @@ export namespace Prisma {
     annotations: number
     labels: number
     transcription: number
+    textDetection: number
     _all: number
   }
 
@@ -7960,6 +7962,7 @@ export namespace Prisma {
     annotations?: true
     labels?: true
     transcription?: true
+    textDetection?: true
     _all?: true
   }
 
@@ -8064,6 +8067,7 @@ export namespace Prisma {
     annotations: JsonValue | null
     labels: JsonValue | null
     transcription: JsonValue | null
+    textDetection: JsonValue | null
     _count: ContentCountAggregateOutputType | null
     _min: ContentMinAggregateOutputType | null
     _max: ContentMaxAggregateOutputType | null
@@ -8111,6 +8115,7 @@ export namespace Prisma {
     annotations?: boolean
     labels?: boolean
     transcription?: boolean
+    textDetection?: boolean
     project?: boolean | ProjectArgs
   }
 
@@ -10933,7 +10938,8 @@ export namespace Prisma {
     twitterPublishAt: 'twitterPublishAt',
     annotations: 'annotations',
     labels: 'labels',
-    transcription: 'transcription'
+    transcription: 'transcription',
+    textDetection: 'textDetection'
   };
 
   export type ContentScalarFieldEnum = (typeof ContentScalarFieldEnum)[keyof typeof ContentScalarFieldEnum]
@@ -11481,6 +11487,7 @@ export namespace Prisma {
     annotations?: JsonNullableFilter
     labels?: JsonNullableFilter
     transcription?: JsonNullableFilter
+    textDetection?: JsonNullableFilter
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
 
@@ -11512,6 +11519,7 @@ export namespace Prisma {
     annotations?: SortOrder
     labels?: SortOrder
     transcription?: SortOrder
+    textDetection?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
 
@@ -11547,6 +11555,7 @@ export namespace Prisma {
     annotations?: SortOrder
     labels?: SortOrder
     transcription?: SortOrder
+    textDetection?: SortOrder
     _count?: ContentCountOrderByAggregateInput
     _max?: ContentMaxOrderByAggregateInput
     _min?: ContentMinOrderByAggregateInput
@@ -11583,6 +11592,7 @@ export namespace Prisma {
     annotations?: JsonNullableWithAggregatesFilter
     labels?: JsonNullableWithAggregatesFilter
     transcription?: JsonNullableWithAggregatesFilter
+    textDetection?: JsonNullableWithAggregatesFilter
   }
 
   export type ProjectWhereInput = {
@@ -12177,6 +12187,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
     project: ProjectCreateNestedOneWithoutContentInput
   }
 
@@ -12208,6 +12219,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUpdateInput = {
@@ -12237,6 +12249,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
     project?: ProjectUpdateOneRequiredWithoutContentNestedInput
   }
 
@@ -12268,6 +12281,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentCreateManyInput = {
@@ -12298,6 +12312,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUpdateManyMutationInput = {
@@ -12327,6 +12342,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedUpdateManyInput = {
@@ -12357,6 +12373,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ProjectCreateInput = {
@@ -12961,6 +12978,7 @@ export namespace Prisma {
     annotations?: SortOrder
     labels?: SortOrder
     transcription?: SortOrder
+    textDetection?: SortOrder
   }
 
   export type ContentMaxOrderByAggregateInput = {
@@ -14578,6 +14596,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedCreateWithoutProjectInput = {
@@ -14607,6 +14626,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentCreateOrConnectWithoutProjectInput = {
@@ -14834,6 +14854,7 @@ export namespace Prisma {
     annotations?: JsonNullableFilter
     labels?: JsonNullableFilter
     transcription?: JsonNullableFilter
+    textDetection?: JsonNullableFilter
   }
 
   export type ChannelUpsertWithWhereUniqueWithoutProjectInput = {
@@ -15112,6 +15133,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ChannelCreateManyProjectInput = {
@@ -15151,6 +15173,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedUpdateWithoutProjectInput = {
@@ -15180,6 +15203,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ContentUncheckedUpdateManyWithoutContentInput = {
@@ -15209,6 +15233,7 @@ export namespace Prisma {
     annotations?: NullableJsonNullValueInput | InputJsonValue
     labels?: NullableJsonNullValueInput | InputJsonValue
     transcription?: NullableJsonNullValueInput | InputJsonValue
+    textDetection?: NullableJsonNullValueInput | InputJsonValue
   }
 
   export type ChannelUpdateWithoutProjectInput = {
