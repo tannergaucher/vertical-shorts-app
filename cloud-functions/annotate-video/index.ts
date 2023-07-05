@@ -45,7 +45,7 @@ export async function annotateVideo(cloudEvent: CloudEvent<string>) {
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsResourceUri = `gs://${content.projectId}/${content.slug}`;
+  const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
   const client = new videoIntelligence.VideoIntelligenceServiceClient();
 
