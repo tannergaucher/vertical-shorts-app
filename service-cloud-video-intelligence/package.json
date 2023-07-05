@@ -5,7 +5,7 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js",
+    "start": "node index.js",
     "test": "vitest",
     "build": "tsc --p tsconfig.json",
     "postinstall": "npm run build"
