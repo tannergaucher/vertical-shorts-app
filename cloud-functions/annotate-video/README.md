@@ -26,7 +26,7 @@ curl -m 550 -X POST https://us-east1-homerice.cloudfunctions.net/annotate-video 
 -d '{
   "message": {
     "_comment": "data is base64 encoded string",
-    "data": "ewogICJwcm9qZWN0SWQiOiAiY2xqY3doOTNxMDAwMmwxMDh0dGxwbzVnbyIsCiAgInNsdWciOiAibXktbmV3LXZlcnQubXA0Igp9"
+    "data": "ewogICJwcm9qZWN0SWQiOiAiY2xqcGVreWZ2MDAwMmw1MDh1bGc3ZmRiciIsCiAgInNsdWciOiAicm9zZS10dGVva2Jva2tpLm1wNCIKfQ=="
   }
 }'
 ```
@@ -35,7 +35,7 @@ curl -m 550 -X POST https://us-east1-homerice.cloudfunctions.net/annotate-video 
 
 ```json
 {
-  "projectId": "cljcwh93q0002l108ttlpo5go",
-  "slug": "my-new-vert.mp4"
+  "projectId": "cljpekyfv0002l508ulg7fdbr",
+  "slug": "rose-tteokbokki.mp4"
 }
 ```
