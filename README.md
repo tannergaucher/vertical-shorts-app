@@ -15,6 +15,7 @@ Single source of truth for posting vertical video content and publishing to all 
 - [Google Cloud Functions](https://cloud.google.com/functions)
 - [Google Cloud Run](https://cloud.google.com/run)
 - [Google Cloud Build](https://cloud.google.com/build)
+- [Google Cloud Video Intelligence](https://cloud.google.com/video-intelligence)
 - [Stripe Subscriptions](https://stripe.com/docs/api/subscriptions)
 
 ## Generate Prisma Client
