@@ -51,7 +51,7 @@ app.use((0, cors_1.default)({
 }));
 const prisma = new index_js_1.PrismaClient();
 const videoIntelligenceClient = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
-app.post("/annotate", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b;
     const { projectId, slug } = req.body;
     const content = yield prisma.content.findUnique({
@@ -105,41 +105,32 @@ app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, func
         },
         select: {
             projectId: true,
+            slug: true,
         },
     });
     if (!content) {
         throw new Error("CONTENT_NOT_FOUND");
     }
-    const gcsUri = `gs://${projectId}/${slug}.mp4`;
+    const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
     const request = {
         inputUri: gcsUri,
         features: [protos_1.google.cloud.videointelligence.v1.Feature.TEXT_DETECTION],
     };
-    // Detects text in a video
     const [operation] = yield videoIntelligenceClient.annotateVideo(request);
-    //   const results = await operation.promise();
     console.log("Waiting for operation to complete...");
     const results = (yield operation.promise());
     const textAnnotations = (_d = (_c = results[0]) === null || _c === void 0 ? void 0 : _c.annotationResults[0]) === null || _d === void 0 ? void 0 : _d.textAnnotations;
     if (textAnnotations !== undefined) {
-        console.log(textAnnotations, "text annotations");
-        textAnnotations.forEach((textAnnotation) => {
-            console.log(`Text ${textAnnotation.text} occurs at:`);
-            textAnnotation.segments.forEach((segment) => {
-                const time = segment.segment;
-                console.log(` Start: ${time.startTimeOffset.seconds || 0}.${(time.startTimeOffset.nanos / 1e6).toFixed(0)}s`);
-                console.log(` End: ${time.endTimeOffset.seconds || 0}.${(time.endTimeOffset.nanos / 1e6).toFixed(0)}s`);
-                console.log(` Confidence: ${segment.confidence}`);
-                segment.frames.forEach((frame) => {
-                    const timeOffset = frame.timeOffset;
-                    console.log(`Time offset for the frame: ${timeOffset.seconds || 0}` +
-                        `.${(timeOffset.nanos / 1e6).toFixed(0)}s`);
-                    console.log("Rotated Bounding Box Vertices:");
-                    frame.rotatedBoundingBox.vertices.forEach((vertex) => {
-                        console.log(`Vertex.x:${vertex.x}, Vertex.y:${vertex.y}`);
-                    });
-                });
-            });
+        yield prisma.content.update({
+            where: {
+                projectId_slug: {
+                    projectId,
+                    slug,
+                },
+            },
+            data: {
+                annotations: JSON.stringify(textAnnotations),
+            },
         });
     }
     res.json({ success: true });
@@ -155,12 +146,13 @@ app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function
         },
         select: {
             projectId: true,
+            slug: true,
         },
     });
     if (!content) {
         throw new Error("CONTENT_NOT_FOUND");
     }
-    const gcsUri = `gs://${projectId}/${slug}.mp4`;
+    const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
     const videoContext = {
         speechTranscriptionConfig: {
             languageCode: "en-US",

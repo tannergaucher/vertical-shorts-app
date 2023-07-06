@@ -3,6 +3,6 @@
 ## Deploy locally from source code
 
 ```
-gcloud run deploy service-upload  --source .
+gcloud run deploy service-cloud-video-intelligence  --source .
 
 ```
