@@ -201,8 +201,6 @@ app.post("/transcribe", async (req, res) => {
   console.log("Waiting for operation to complete...");
   const [operationResult] = await operation.promise();
 
-  console.log(operationResult, "_operation result");
-
   await prisma.content.update({
     where: {
       projectId_slug: {

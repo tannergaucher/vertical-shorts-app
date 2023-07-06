@@ -167,7 +167,6 @@ app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function
     const [operation] = yield videoIntelligenceClient.annotateVideo(request);
     console.log("Waiting for operation to complete...");
     const [operationResult] = yield operation.promise();
-    console.log(operationResult, "_operation result");
     yield prisma.content.update({
         where: {
             projectId_slug: {
