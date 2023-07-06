@@ -1,6 +1,6 @@
 {
   "name": "service-cloud-video-intelligence",
-  "description": "Service for Google Cloud Video Intelligence API",
+  "description": "Google Cloud Video Intelligence API Service",
   "version": "1.0.0",
   "private": true,
   "main": "index.js",
