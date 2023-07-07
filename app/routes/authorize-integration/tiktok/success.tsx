@@ -126,10 +126,12 @@ export const loader: LoaderFunction = async ({ request }) => {
                   channelType: "TIKTOK",
                   name: channelResponseData.data.user.display_name,
                   subscribers: channelResponseData.data.user.follower_count,
+                  thumbnail: channelResponseData.data.user.avatar_url,
                 },
                 update: {
                   name: channelResponseData.data.user.display_name,
                   subscribers: channelResponseData.data.user.follower_count,
+                  thumbnail: channelResponseData.data.user.avatar_url,
                 },
               },
             },
