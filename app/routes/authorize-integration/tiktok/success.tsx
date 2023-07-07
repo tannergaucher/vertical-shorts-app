@@ -53,7 +53,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
     {
       headers: {
-        Authorization: `Bearer ${data.data.access_token}`,
+        Authorization: `Bearer ${data.access_token}`,
       },
     }
   );
