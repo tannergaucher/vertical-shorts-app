@@ -41,6 +41,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     "Current project is required"
   );
 
+  invariant(
+    typeof process.env.TIKTOK_CLIENT_KEY === "string",
+    "TikTok client key is required"
+  );
+
+  invariant(
+    typeof process.env.TIKTOK_CLIENT_SECRET === "string",
+    "TikTok client secret is required"
+  );
+
+  invariant(
+    typeof process.env.TIKTOK_REDIRECT_URI === "string",
+    "TikTok redirect URI is required"
+  );
+
   const url = new URL(request.url);
   const authorizationCode = url.searchParams.get("code");
 
@@ -55,11 +70,11 @@ export const loader: LoaderFunction = async ({ request }) => {
       "Cache-Control": "no-cache",
     },
     body: new URLSearchParams({
-      client_key: process.env.TIKTOK_CLIENT_KEY as string,
-      client_secret: process.env.TIKTOK_CLIENT_SECRET as string,
+      client_key: process.env.TIKTOK_CLIENT_KEY,
+      client_secret: process.env.TIKTOK_CLIENT_SECRET,
       code: authorizationCode,
       grant_type: "authorization_code",
-      redirect_uri: process.env.TIKTOK_REDIRECT_URI as string,
+      redirect_uri: process.env.TIKTOK_REDIRECT_URI,
     }),
   });
 
