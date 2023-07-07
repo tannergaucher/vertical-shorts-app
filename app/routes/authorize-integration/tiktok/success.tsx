@@ -93,6 +93,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const accessTokenData = (await response.json()) as TikTokAccessTokenResponse;
 
+  console.log(accessTokenData, "accessTokenData");
+
   if ("error" in accessTokenData) {
     throw new Error(
       `Error fetching TikTok auth token: ${accessTokenData.error_description}`
@@ -110,6 +112,8 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const channelResponseData =
     (await channelResponse.json()) as TikTokChannelResponse;
+
+  console.log(channelResponseData, "channelResponseData");
 
   if ("error" in channelResponseData) {
     throw new Error(
