@@ -91,11 +91,11 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw new Error(`Error fetching TikTok auth token: ${response.statusText}`);
   }
 
-  const data = (await response.json()) as TikTokAccessTokenResponse;
+  const accessTokenData = (await response.json()) as TikTokAccessTokenResponse;
 
-  if ("error" in data) {
+  if ("error" in accessTokenData) {
     throw new Error(
-      `Error fetching TikTok auth token: ${data.error_description}`
+      `Error fetching TikTok auth token: ${accessTokenData.error_description}`
     );
   }
 
@@ -103,7 +103,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
     {
       headers: {
-        Authorization: `Bearer ${data.access_token}`,
+        Authorization: `Bearer ${accessTokenData.access_token}`,
       },
     }
   );
@@ -131,19 +131,19 @@ export const loader: LoaderFunction = async ({ request }) => {
             tikTokCredentials: {
               upsert: {
                 create: {
-                  accessToken: data.access_token,
-                  refreshToken: data.refresh_token,
-                  refreshTokenExpiresIn: data.refresh_expires_in,
-                  scope: data.scope,
-                  openId: data.open_id,
+                  accessToken: accessTokenData.access_token,
+                  refreshToken: accessTokenData.refresh_token,
+                  refreshTokenExpiresIn: accessTokenData.refresh_expires_in,
+                  scope: accessTokenData.scope,
+                  openId: accessTokenData.open_id,
                   handle: channelResponseData.data.user.display_name,
                 },
                 update: {
-                  accessToken: data.access_token,
-                  refreshToken: data.refresh_token,
-                  refreshTokenExpiresIn: data.refresh_expires_in,
-                  scope: data.scope,
-                  openId: data.open_id,
+                  accessToken: accessTokenData.access_token,
+                  refreshToken: accessTokenData.refresh_token,
+                  refreshTokenExpiresIn: accessTokenData.refresh_expires_in,
+                  scope: accessTokenData.scope,
+                  openId: accessTokenData.open_id,
                   handle: channelResponseData.data.user.display_name,
                 },
               },
