@@ -27,6 +27,9 @@ interface TikTokChannelSuccessResponse {
       union_id: string;
     };
   };
+  error: {
+    code: "ok";
+  };
 }
 
 interface TikTokErrorResponse {
@@ -113,9 +116,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const channelResponseData =
     (await channelResponse.json()) as TikTokChannelResponse;
 
-  console.log(channelResponseData, "channelResponseData");
-
-  if ("error" in channelResponseData) {
+  if ("error_description" in channelResponseData) {
     throw new Error(
       `Error fetching TikTok channel: ${channelResponseData.error_description}`
     );
