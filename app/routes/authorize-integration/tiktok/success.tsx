@@ -7,6 +7,28 @@ import { prisma } from "~/db.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
+interface TikTokAccessTokenResponse {
+  access_token: string;
+  expires_in: number;
+  open_id: string;
+  refresh_expires_in: number;
+  refresh_token: string;
+  scope: string;
+  token_type: "Bearer";
+}
+
+interface TikTokChannelResponse {
+  data: {
+    user: {
+      avatar_url: string;
+      display_name: string;
+      follower_count: number;
+      open_id: string;
+      union_id: string;
+    };
+  };
+}
+
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
 
@@ -45,9 +67,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     throw new Error(`Error fetching TikTok auth token: ${response.statusText}`);
   }
 
-  const data = await response.json();
-
-  console.log(data, "_data");
+  const data = (await response.json()) as TikTokAccessTokenResponse;
 
   const channelResponse = await fetch(
     `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
@@ -58,7 +78,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     }
   );
 
-  const channelResponseData = await channelResponse.json();
+  const channelResponseData =
+    (await channelResponse.json()) as TikTokChannelResponse;
 
   console.log(channelResponseData, "channelResponseData");
 
