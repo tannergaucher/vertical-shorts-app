@@ -30,6 +30,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
+      "Cache-Control": "no-cache",
     },
     body: new URLSearchParams({
       client_key: process.env.TIKTOK_CLIENT_KEY as string,
@@ -45,6 +46,8 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 
   const data = await response.json();
+
+  console.log(data, "_data");
 
   const channelResponse = await fetch(
     `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
