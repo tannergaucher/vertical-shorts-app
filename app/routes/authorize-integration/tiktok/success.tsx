@@ -57,7 +57,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   const authorizationCode = url.searchParams.get("code");
 
   if (!authorizationCode) {
-    return redirect("/authorize-integration/tiktok");
+    throw new Error("No authorization code");
   }
 
   const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
