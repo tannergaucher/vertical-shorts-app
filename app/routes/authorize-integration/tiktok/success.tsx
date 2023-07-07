@@ -96,8 +96,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const accessTokenData = (await response.json()) as TikTokAccessTokenResponse;
 
-  console.log(accessTokenData, "accessTokenData");
-
   if ("error" in accessTokenData) {
     throw new Error(
       `Error fetching TikTok auth token: ${accessTokenData.error_description}`
