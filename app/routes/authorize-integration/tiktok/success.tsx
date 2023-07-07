@@ -7,7 +7,7 @@ import { prisma } from "~/db.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
-interface TikTokAccessTokenResponse {
+interface TikTokAccessTokenSuccessResponse {
   access_token: string;
   expires_in: number;
   open_id: string;
@@ -17,7 +17,7 @@ interface TikTokAccessTokenResponse {
   token_type: "Bearer";
 }
 
-interface TikTokChannelResponse {
+interface TikTokChannelSuccessResponse {
   data: {
     user: {
       avatar_url: string;
@@ -28,6 +28,18 @@ interface TikTokChannelResponse {
     };
   };
 }
+
+interface TikTokErrorResponse {
+  error: string;
+  error_description: string;
+  log_id: string;
+}
+
+type TikTokAccessTokenResponse =
+  | TikTokAccessTokenSuccessResponse
+  | TikTokErrorResponse;
+
+type TikTokChannelResponse = TikTokChannelSuccessResponse | TikTokErrorResponse;
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
@@ -81,6 +93,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const data = (await response.json()) as TikTokAccessTokenResponse;
 
+  if ("error" in data) {
+    throw new Error(
+      `Error fetching TikTok auth token: ${data.error_description}`
+    );
+  }
+
   const channelResponse = await fetch(
     `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
     {
@@ -92,6 +110,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 
   const channelResponseData =
     (await channelResponse.json()) as TikTokChannelResponse;
+
+  if ("error" in channelResponseData) {
+    throw new Error(
+      `Error fetching TikTok channel: ${channelResponseData.error_description}`
+    );
+  }
 
   await prisma.user.update({
     where: {
