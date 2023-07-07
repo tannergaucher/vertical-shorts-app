@@ -104,18 +104,18 @@ app.post("/upload-content", async (req, res) => {
           }
         );
 
-        if (content.project.youtubeCredentials) {
-          fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              projectId,
-              slug,
-            }),
-          });
-        }
+        // if (content.project.youtubeCredentials) {
+        //   fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       projectId,
+        //       slug,
+        //     }),
+        //   });
+        // }
 
         if (content.project.tikTokCredentials) {
           fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
