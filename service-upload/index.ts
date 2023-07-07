@@ -72,8 +72,6 @@ app.post("/upload-content", async (req, res) => {
               : undefined,
           },
         });
-
-        res.status(200).send("started uploading content");
       })
       .on("finish", () => {
         console.log("download finished");
