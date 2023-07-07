@@ -93,8 +93,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   const channelResponseData =
     (await channelResponse.json()) as TikTokChannelResponse;
 
-  console.log(channelResponseData, "channelResponseData");
-
   await prisma.user.update({
     where: {
       id: user.id,
