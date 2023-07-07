@@ -39,78 +39,81 @@ export const loader: LoaderFunction = async ({ request }) => {
     }),
   });
 
-  if (response.ok) {
-    const data = await response.json();
+  if (!response.ok) {
+    console.log(await response.text());
+    throw new Error("Error fetching TikTok auth token");
+  }
 
-    const channelResponse = await fetch(
-      `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
-      {
-        headers: {
-          Authorization: `Bearer ${data.data.access_token}`,
-        },
-      }
-    );
+  const data = await response.json();
 
-    const channelResponseData = await channelResponse.json();
-
-    console.log(channelResponseData, "channelResponseData");
-
-    await prisma.user.update({
-      where: {
-        id: user.id,
+  const channelResponse = await fetch(
+    `https://open.tiktokapis.com/v2/user/info/?fields=open_id,union_id,avatar_url,display_name,follower_count`,
+    {
+      headers: {
+        Authorization: `Bearer ${data.data.access_token}`,
       },
-      data: {
-        projects: {
-          update: {
-            where: {
-              id: user.currentProjectId,
-            },
-            data: {
-              tikTokCredentials: {
-                upsert: {
-                  create: {
-                    accessToken: data.data.access_token,
-                    refreshToken: data.data.refresh_token,
-                    refreshTokenExpiresIn: data.data.refresh_expires_in,
-                    scope: data.data.scope,
-                    openId: data.data.open_id,
-                    handle: channelResponseData.data.user.display_name,
-                  },
-                  update: {
-                    accessToken: data.data.access_token,
-                    refreshToken: data.data.refresh_token,
-                    refreshTokenExpiresIn: data.data.refresh_expires_in,
-                    scope: data.data.scope,
-                    openId: data.data.open_id,
-                    handle: channelResponseData.data.user.display_name,
-                  },
+    }
+  );
+
+  const channelResponseData = await channelResponse.json();
+
+  console.log(channelResponseData, "channelResponseData");
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      projects: {
+        update: {
+          where: {
+            id: user.currentProjectId,
+          },
+          data: {
+            tikTokCredentials: {
+              upsert: {
+                create: {
+                  accessToken: data.data.access_token,
+                  refreshToken: data.data.refresh_token,
+                  refreshTokenExpiresIn: data.data.refresh_expires_in,
+                  scope: data.data.scope,
+                  openId: data.data.open_id,
+                  handle: channelResponseData.data.user.display_name,
+                },
+                update: {
+                  accessToken: data.data.access_token,
+                  refreshToken: data.data.refresh_token,
+                  refreshTokenExpiresIn: data.data.refresh_expires_in,
+                  scope: data.data.scope,
+                  openId: data.data.open_id,
+                  handle: channelResponseData.data.user.display_name,
                 },
               },
-              channels: {
-                upsert: {
-                  where: {
-                    projectId_channelType: {
-                      projectId: user.currentProjectId,
-                      channelType: "TIKTOK",
-                    },
-                  },
-                  create: {
+            },
+            channels: {
+              upsert: {
+                where: {
+                  projectId_channelType: {
+                    projectId: user.currentProjectId,
                     channelType: "TIKTOK",
-                    name: channelResponseData.data.user.display_name,
-                    subscribers: channelResponseData.data.user.follower_count,
                   },
-                  update: {
-                    name: channelResponseData.data.user.display_name,
-                    subscribers: channelResponseData.data.user.follower_count,
-                  },
+                },
+                create: {
+                  channelType: "TIKTOK",
+                  name: channelResponseData.data.user.display_name,
+                  subscribers: channelResponseData.data.user.follower_count,
+                },
+                update: {
+                  name: channelResponseData.data.user.display_name,
+                  subscribers: channelResponseData.data.user.follower_count,
                 },
               },
             },
           },
         },
       },
-    });
-  }
+    },
+  });
 
   return redirect(Routes.Admin);
 };
