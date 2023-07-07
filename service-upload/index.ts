@@ -308,10 +308,7 @@ app.post("/upload-tiktok", async (req, res) => {
 app.get(`/serve-video`, async (req, res) => {
   const { slug } = req.query;
 
-  const __dirname = path.resolve();
-  console.log(__dirname, "dirname");
-  const filePath = path.join(__dirname, `${slug}.mp4`);
-  console.log(filePath, "filepath");
+  const filePath = `${slug}.mp4`;
   const fileSizeInBytes = statSync(filePath).size;
 
   res.setHeader("Content-Type", "video/mp4");
