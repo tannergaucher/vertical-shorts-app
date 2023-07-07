@@ -36,6 +36,13 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect(Routes.Login);
   }
 
+  const url = new URL(request.url);
+  const authorizationCode = url.searchParams.get("code");
+
+  invariant(
+    typeof authorizationCode === "string",
+    "Authorization code is required"
+  );
   invariant(
     typeof user.currentProjectId === "string",
     "Current project is required"
@@ -52,13 +59,6 @@ export const loader: LoaderFunction = async ({ request }) => {
     typeof process.env.TIKTOK_REDIRECT_URI === "string",
     "TikTok redirect URI is required"
   );
-
-  const url = new URL(request.url);
-  const authorizationCode = url.searchParams.get("code");
-
-  if (!authorizationCode) {
-    throw new Error("No authorization code");
-  }
 
   const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
     method: "POST",
