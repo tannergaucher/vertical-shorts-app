@@ -41,8 +41,7 @@ export const loader: LoaderFunction = async ({ request }) => {
   });
 
   if (!response.ok) {
-    console.log(response.statusText);
-    throw new Error("Error fetching TikTok auth token");
+    throw new Error(`Error fetching TikTok auth token: ${response.statusText}`);
   }
 
   const data = await response.json();
