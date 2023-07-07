@@ -49,10 +49,6 @@ app.post("/upload-content", async (req, res) => {
   const filePath = `${slug}.mp4`;
 
   try {
-    const testExists = await storage.bucket(projectId).file(filePath).exists();
-
-    console.log(testExists, "test exists");
-
     storage
       .bucket(projectId)
       .file(filePath)
@@ -60,7 +56,6 @@ app.post("/upload-content", async (req, res) => {
       .pipe(createWriteStream(filePath))
       .on("open", async () => {
         console.log("dl started");
-
         await prisma.content.update({
           where: {
             projectId_slug: {
@@ -81,8 +76,7 @@ app.post("/upload-content", async (req, res) => {
         res.status(200).send("started uploading content");
       })
       .on("finish", () => {
-        console.log("dl finished");
-
+        console.log("download finished");
         exec(
           `${ffmpeg} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
 
@@ -145,6 +139,8 @@ app.post("/upload-content", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).send("Error downloading file");
+  } finally {
+    res.status(200).send("uploaded content to channels");
   }
 });
 
@@ -218,6 +214,7 @@ app.post("/upload-youtube-short", async (req, res) => {
     })
     .then(async (response) => {
       console.log(response, "yt_response");
+
       await prisma.content.update({
         where: {
           projectId_slug: {
