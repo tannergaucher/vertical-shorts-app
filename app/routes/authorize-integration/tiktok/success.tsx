@@ -40,17 +40,14 @@ export const loader: LoaderFunction = async ({ request }) => {
     typeof user.currentProjectId === "string",
     "Current project is required"
   );
-
   invariant(
     typeof process.env.TIKTOK_CLIENT_KEY === "string",
     "TikTok client key is required"
   );
-
   invariant(
     typeof process.env.TIKTOK_CLIENT_SECRET === "string",
     "TikTok client secret is required"
   );
-
   invariant(
     typeof process.env.TIKTOK_REDIRECT_URI === "string",
     "TikTok redirect URI is required"
