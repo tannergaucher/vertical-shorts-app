@@ -26,17 +26,17 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect("/authorize-integration/tiktok");
   }
 
-  const response = await fetch("https://open-api.tiktok.com/v2/oauth/token/", {
+  const response = await fetch("https://open.tiktokapis.com/v2/oauth/token/", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: JSON.stringify({
-      client_key: process.env.TIKTOK_CLIENT_KEY,
-      client_secret: process.env.TIKTOK_CLIENT_SECRET,
+    body: new URLSearchParams({
+      client_key: process.env.TIKTOK_CLIENT_KEY as string,
+      client_secret: process.env.TIKTOK_CLIENT_SECRET as string,
       code: authorizationCode,
       grant_type: "authorization_code",
-      redirect_uri: process.env.TIKTOK_REDIRECT_URI,
+      redirect_uri: process.env.TIKTOK_REDIRECT_URI as string,
     }),
   });
 
