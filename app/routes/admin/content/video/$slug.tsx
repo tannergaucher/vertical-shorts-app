@@ -84,6 +84,55 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   return json({ content, signedUrl, projectId });
 };
 
+async function handleGcpSignedUpload({
+  slug,
+  signedUrl,
+  projectId,
+  input,
+}: {
+  slug: string;
+  signedUrl: string;
+  projectId: string;
+  input: HTMLInputElement;
+}) {
+  if (input?.files?.length) {
+    const file = input.files[0];
+
+    const reader = new FileReader();
+
+    reader.readAsArrayBuffer(file);
+
+    reader.onload = async (e) => {
+      const videoData = e.target?.result;
+
+      try {
+        await fetch(signedUrl, {
+          method: "PUT",
+          body: videoData,
+          headers: {
+            "Content-Type": "video/mp4",
+          },
+        }).then(async () => {
+          const body: UploadContentBody = {
+            slug,
+            projectId,
+          };
+
+          await fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-content`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+        });
+      } catch (error) {
+        console.log(error, "error");
+      }
+    };
+  }
+}
+
 export default function Page() {
   const { content, signedUrl, projectId } = useLoaderData<LoaderData>();
 
@@ -93,60 +142,25 @@ export default function Page() {
 
   const { slug } = useParams();
 
-  async function handleGcpSignedUpload() {
-    invariant(typeof slug === "string", "slug must be a string");
+  async function handleSubmit() {
+    const input = document.querySelector("input[type=file]");
 
-    const input = document.querySelector(
-      "input[type=file]"
-    ) as HTMLInputElement;
+    invariant(input instanceof HTMLInputElement, "input must be a file input");
 
-    if (input?.files?.length) {
-      const file = input.files[0];
+    try {
+      setDisabled(true);
 
-      const reader = new FileReader();
+      await handleGcpSignedUpload({
+        slug: content.slug,
+        signedUrl,
+        projectId,
+        input,
+      });
 
-      reader.readAsArrayBuffer(file);
-
-      reader.onload = async (e) => {
-        const videoData = e.target?.result;
-
-        try {
-          setDisabled(true);
-
-          await fetch(signedUrl, {
-            method: "PUT",
-            body: videoData,
-            headers: {
-              "Content-Type": "video/mp4",
-            },
-          });
-        } catch (error) {
-          console.log(error, "error");
-          setDisabled(false);
-        } finally {
-          const body: UploadContentBody = {
-            slug,
-            projectId,
-          };
-
-          const uploadContentRes = await fetch(
-            `${UPLOAD_SERVICE_BASE_URL}/upload-content`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(body),
-            }
-          );
-
-          setDisabled(false);
-
-          if (uploadContentRes.ok) {
-            navigate(Routes.AdminContentScheduler(content.slug));
-          }
-        }
-      };
+      navigate(Routes.AdminContentScheduler(content.slug));
+    } catch (error) {
+      console.log(error, "error");
+      setDisabled(false);
     }
   }
 
@@ -157,7 +171,7 @@ export default function Page() {
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            await handleGcpSignedUpload();
+            handleSubmit();
           }}
         >
           <input
