@@ -26,7 +26,7 @@ const prisma = new PrismaClient();
 
 const storage = new Storage();
 
-interface UploadContentBody {
+export interface UploadContentBody {
   slug: string;
   projectId: string;
 }

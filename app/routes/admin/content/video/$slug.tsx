@@ -13,6 +13,8 @@ import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
 import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
+import type { UploadContentBody } from "../../../../../service-upload";
+
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
   signedUrl: string;
@@ -93,7 +95,7 @@ export default function Page() {
   const { slug } = useParams();
 
   async function handleGcpSignedUpload() {
-    setDisabled(true);
+    invariant(typeof slug === "string", "slug must be a string");
 
     const input = document.querySelector(
       "input[type=file]"
@@ -110,6 +112,8 @@ export default function Page() {
         const videoData = e.target?.result;
 
         try {
+          setDisabled(true);
+
           await fetch(signedUrl, {
             method: "PUT",
             body: videoData,
@@ -121,6 +125,11 @@ export default function Page() {
           console.log(error, "error");
           setDisabled(false);
         } finally {
+          const body: UploadContentBody = {
+            slug,
+            projectId,
+          };
+
           const uploadContentRes = await fetch(
             `${UPLOAD_SERVICE_BASE_URL}/upload-content`,
             {
@@ -128,10 +137,7 @@ export default function Page() {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                slug,
-                projectId,
-              }),
+              body: JSON.stringify(body),
             }
           );
 
