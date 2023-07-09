@@ -6,7 +6,6 @@ import dotenv from "dotenv";
 import express, { json } from "express";
 import { createReadStream, createWriteStream, statSync } from "fs";
 import { google } from "googleapis";
-import path from "path";
 
 import { PrismaClient, UploadStatus } from "./generated/index.js";
 import { APP_BASE_URL, UPLOAD_SERVICE_BASE_URL } from "./utils/constants";
