@@ -290,7 +290,9 @@ app.post("/upload-tiktok", async (req, res) => {
     );
 
     if (!initRes.ok) {
-      throw new Error("ERROR_INITIALIZING_TIKTOK_UPLOAD");
+      throw new Error(
+        `ERROR_INITIALIZING_TIKTOK_UPLOAD: ${initRes.statusText}}`
+      );
     }
 
     const { data } = await initRes.json();
