@@ -1,12 +1,14 @@
 import type { LoaderArgs } from "@remix-run/node";
-
-import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
+import invariant from "tiny-invariant";
 
 export async function loader({ params }: LoaderArgs) {
-  const { slug } = params;
+  const { projectId, slug } = params;
+
+  invariant(projectId, "projectId is required");
+  invariant(slug, "slug is required");
 
   const videoRes = await fetch(
-    `${UPLOAD_SERVICE_BASE_URL}/serve-video?slug=${slug}`
+    `https://storage.googleapis.com/${projectId}/${slug}.mp4`
   );
 
   if (!videoRes.ok) {

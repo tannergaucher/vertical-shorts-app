@@ -284,7 +284,7 @@ app.post("/upload-tiktok", async (req, res) => {
         },
         body: JSON.stringify({
           source: "PULL_FROM_URL",
-          video_url: `${APP_BASE_URL}/resource/serve-video/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
+          video_url: `${APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
         }),
       }
     );
@@ -315,20 +315,6 @@ app.post("/upload-tiktok", async (req, res) => {
     console.log(error, "error");
     return res.status(500).send("Error initializing tiktok upload");
   }
-});
-
-app.get("/serve-video", async (req, res) => {
-  const { slug } = req.query;
-
-  const filePath = `${slug}.mp4`;
-  const absolutePath = path.resolve(filePath);
-  const fileSizeInBytes = statSync(absolutePath).size;
-
-  res.setHeader("Content-Type", "video/mp4");
-  res.setHeader("Content-Length", fileSizeInBytes);
-  res.setHeader("Content-Disposition", "inline");
-
-  res.sendFile(absolutePath);
 });
 
 app.get("/tiktok-upload-status", async (req, res) => {

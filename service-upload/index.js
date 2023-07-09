@@ -282,7 +282,7 @@ app.post("/upload-tiktok", (req, res) => __awaiter(void 0, void 0, void 0, funct
             }),
         });
         if (!initRes.ok) {
-            throw new Error("ERROR_INITIALIZING_TIKTOK_UPLOAD");
+            throw new Error(`ERROR_INITIALIZING_TIKTOK_UPLOAD: ${initRes.statusText}}`);
         }
         const { data } = yield initRes.json();
         yield prisma.content.update({
