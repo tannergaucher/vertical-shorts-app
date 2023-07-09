@@ -4,8 +4,8 @@ import {
   Form,
   Link,
   useActionData,
+  useNavigation,
   useSearchParams,
-  useTransition,
 } from "@remix-run/react";
 import * as React from "react";
 import { zfd } from "zod-form-data";
@@ -85,7 +85,7 @@ export default function Page() {
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
-  const transition = useTransition();
+  const transition = useNavigation();
 
   React.useEffect(() => {
     if (actionData?.errors?.email) {

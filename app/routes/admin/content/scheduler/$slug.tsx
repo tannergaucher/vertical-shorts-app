@@ -4,8 +4,8 @@ import { json, redirect } from "@remix-run/node";
 import {
   Form,
   useLoaderData,
+  useNavigation,
   useParams,
-  useTransition,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
@@ -94,7 +94,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Page() {
   const { content, project } = useLoaderData<LoaderData>();
-  const transition = useTransition();
+  const transition = useNavigation();
 
   const { slug } = useParams();
 

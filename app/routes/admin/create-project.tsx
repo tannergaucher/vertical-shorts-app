@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Form, useTransition } from "@remix-run/react";
+import { Form, useNavigation } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { prisma } from "~/db.server";
@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const transition = useTransition();
+  const transition = useNavigation();
 
   const disabled =
     transition.state === "loading" || transition.state === "submitting";

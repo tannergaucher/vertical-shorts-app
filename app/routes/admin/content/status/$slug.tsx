@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useLoaderData, useTransition } from "@remix-run/react";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -74,7 +74,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { content, project } = useLoaderData<LoaderData>();
 
-  const transition = useTransition();
+  const transition = useNavigation();
 
   const disabled =
     transition.state === "loading" || transition.state === "submitting";

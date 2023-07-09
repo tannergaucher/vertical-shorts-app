@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Form, useParams, useTransition } from "@remix-run/react";
+import { Form, useNavigation, useParams } from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const transition = useTransition();
+  const transition = useNavigation();
 
   const { slug } = useParams();
 
