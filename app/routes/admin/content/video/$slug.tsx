@@ -2,6 +2,7 @@ import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { useState } from "react";
+import type { UploadContentBody } from "service-upload";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -12,8 +13,6 @@ import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
 import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
-
-import type { UploadContentBody } from "../../../../../service-upload";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
