@@ -74,94 +74,98 @@ app.post("/upload-content", (req, res) => __awaiter(void 0, void 0, void 0, func
         },
     });
     const filePath = `${slug}.mp4`;
-    try {
-        const testExists = yield storage.bucket(projectId).file(filePath).exists();
-        console.log(testExists, "test exists");
-        storage
-            .bucket(projectId)
-            .file(filePath)
-            .createReadStream()
-            .pipe((0, fs_1.createWriteStream)(filePath))
-            .on("open", () => __awaiter(void 0, void 0, void 0, function* () {
-            console.log("dl started");
-            yield prisma.content.update({
-                where: {
-                    projectId_slug: {
-                        projectId,
-                        slug,
-                    },
+    storage
+        .bucket(projectId)
+        .file(filePath)
+        .createReadStream()
+        .pipe((0, fs_1.createWriteStream)(filePath))
+        .on("open", () => __awaiter(void 0, void 0, void 0, function* () {
+        console.log("dl started");
+        yield prisma.content.update({
+            where: {
+                projectId_slug: {
+                    projectId,
+                    slug,
                 },
-                data: {
-                    youtubeStatus: content.project.youtubeCredentials
-                        ? index_js_1.UploadStatus.INITIALIZING
-                        : undefined,
-                    tikTokStatus: content.project.tikTokCredentials
-                        ? index_js_1.UploadStatus.INITIALIZING
-                        : undefined,
-                },
-            });
-            res.status(200).send("started uploading content");
-        }))
-            .on("finish", () => {
-            console.log("dl finished");
-            (0, child_process_1.exec)(`${ffmpeg_1.path} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`, (error) => __awaiter(void 0, void 0, void 0, function* () {
-                if (error) {
-                    console.log("error creating gif", error);
-                }
-                else {
-                    console.log("gif created");
-                    yield storage
-                        .bucket(projectId)
-                        .upload(`${slug}.gif`)
-                        .then(() => __awaiter(void 0, void 0, void 0, function* () {
-                        yield prisma.content.update({
-                            where: {
-                                projectId_slug: {
-                                    projectId,
-                                    slug,
-                                },
-                            },
-                            data: {
-                                gif: `https://storage.googleapis.com/${projectId}/${slug}.gif`,
-                            },
-                        });
-                    }));
-                }
-            }));
-            if (content.project.youtubeCredentials) {
-                fetch(`${constants_1.UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        projectId,
-                        slug,
-                    }),
-                });
-            }
-            if (content.project.tikTokCredentials) {
-                fetch(`${constants_1.UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        projectId,
-                        slug,
-                    }),
-                });
-            }
-        })
-            .on("error", (err) => {
-            console.log(err);
-            res.status(500).send("Something went wrong!");
+            },
+            data: {
+                youtubeStatus: content.project.youtubeCredentials
+                    ? index_js_1.UploadStatus.INITIALIZING
+                    : undefined,
+                tikTokStatus: content.project.tikTokCredentials
+                    ? index_js_1.UploadStatus.INITIALIZING
+                    : undefined,
+            },
         });
-    }
-    catch (error) {
-        console.log(error);
-        res.status(500).send("Error downloading file");
-    }
+    }))
+        .on("finish", () => {
+        console.log("download finished");
+        (0, child_process_1.exec)(`${ffmpeg_1.path} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`, (error) => __awaiter(void 0, void 0, void 0, function* () {
+            if (error) {
+                console.log("error creating gif", error);
+            }
+            else {
+                console.log("gif created");
+                yield storage
+                    .bucket(projectId)
+                    .upload(`${slug}.gif`)
+                    .then(() => __awaiter(void 0, void 0, void 0, function* () {
+                    yield prisma.content.update({
+                        where: {
+                            projectId_slug: {
+                                projectId,
+                                slug,
+                            },
+                        },
+                        data: {
+                            gif: `https://storage.googleapis.com/${projectId}/${slug}.gif`,
+                        },
+                    });
+                }));
+            }
+        }));
+        // if (content.project.youtubeCredentials) {
+        //   fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+        //     method: "POST",
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //       projectId,
+        //       slug,
+        //     }),
+        //   });
+        // }
+        if (content.project.tikTokCredentials) {
+            fetch(`${constants_1.UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    projectId,
+                    slug,
+                }),
+            });
+        }
+        res.status(200).send("Upload successful!");
+    })
+        .on("error", (err) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(err);
+        yield prisma.content.update({
+            where: {
+                projectId_slug: {
+                    projectId,
+                    slug,
+                },
+            },
+            data: {
+                youtubeStatus: index_js_1.UploadStatus.NOT_STARTED,
+                tikTokStatus: index_js_1.UploadStatus.NOT_STARTED,
+            },
+        });
+        res.status(500).send("Something went wrong!");
+    }));
 }));
 app.post("/upload-youtube-short", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c;
@@ -300,15 +304,15 @@ app.post("/upload-tiktok", (req, res) => __awaiter(void 0, void 0, void 0, funct
         return res.status(500).send("Error initializing tiktok upload");
     }
 }));
-app.get(`/serve-video`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/serve-video", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { slug } = req.query;
-    const __dirname = path_1.default.resolve();
-    const filePath = path_1.default.join(__dirname, `${slug}.mp4`);
-    const fileSizeInBytes = (0, fs_1.statSync)(filePath).size;
+    const filePath = `${slug}.mp4`;
+    const absolutePath = path_1.default.resolve(filePath);
+    const fileSizeInBytes = (0, fs_1.statSync)(absolutePath).size;
     res.setHeader("Content-Type", "video/mp4");
     res.setHeader("Content-Length", fileSizeInBytes);
     res.setHeader("Content-Disposition", "inline");
-    res.sendFile(filePath);
+    res.sendFile(absolutePath);
 }));
 app.get("/tiktok-upload-status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _d;
