@@ -44,7 +44,6 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importStar(require("express"));
 const fs_1 = require("fs");
 const googleapis_1 = require("googleapis");
-const path_1 = __importDefault(require("path"));
 const index_js_1 = require("./generated/index.js");
 const constants_1 = require("./utils/constants");
 dotenv_1.default.config();
@@ -124,18 +123,18 @@ app.post("/upload-content", (req, res) => __awaiter(void 0, void 0, void 0, func
                 }));
             }
         }));
-        // if (content.project.youtubeCredentials) {
-        //   fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-        //     method: "POST",
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //       projectId,
-        //       slug,
-        //     }),
-        //   });
-        // }
+        if (content.project.youtubeCredentials) {
+            fetch(`${constants_1.UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    projectId,
+                    slug,
+                }),
+            });
+        }
         if (content.project.tikTokCredentials) {
             fetch(`${constants_1.UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
                 method: "POST",
@@ -278,7 +277,7 @@ app.post("/upload-tiktok", (req, res) => __awaiter(void 0, void 0, void 0, funct
             },
             body: JSON.stringify({
                 source: "PULL_FROM_URL",
-                video_url: `${constants_1.APP_BASE_URL}/resource/serve-video/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
+                video_url: `${constants_1.APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
             }),
         });
         if (!initRes.ok) {
@@ -304,17 +303,7 @@ app.post("/upload-tiktok", (req, res) => __awaiter(void 0, void 0, void 0, funct
         return res.status(500).send("Error initializing tiktok upload");
     }
 }));
-app.get("/serve-video", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { slug } = req.query;
-    const filePath = `${slug}.mp4`;
-    const absolutePath = path_1.default.resolve(filePath);
-    const fileSizeInBytes = (0, fs_1.statSync)(absolutePath).size;
-    res.setHeader("Content-Type", "video/mp4");
-    res.setHeader("Content-Length", fileSizeInBytes);
-    res.setHeader("Content-Disposition", "inline");
-    res.sendFile(absolutePath);
-}));
-app.get("/tiktok-upload-status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.get("/upload-tiktok-status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _d;
     const { publish_id, project_id } = req.query;
     const project = yield prisma.project.findUnique({

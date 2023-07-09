@@ -4,7 +4,7 @@ import { exec } from "child_process";
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { json } from "express";
-import { createReadStream, createWriteStream, statSync } from "fs";
+import { createReadStream, createWriteStream } from "fs";
 import { google } from "googleapis";
 
 import { PrismaClient, UploadStatus } from "./generated/index.js";
