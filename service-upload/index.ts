@@ -316,7 +316,7 @@ app.post("/upload-tiktok", async (req, res) => {
   }
 });
 
-app.get("/tiktok-upload-status", async (req, res) => {
+app.get("/upload-tiktok-status", async (req, res) => {
   const { publish_id, project_id } = req.query;
 
   const project = await prisma.project.findUnique({
