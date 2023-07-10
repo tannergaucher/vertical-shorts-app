@@ -166,7 +166,8 @@ exports.Prisma.ProjectScalarFieldEnum = {
   title: 'title',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  userId: 'userId'
+  userId: 'userId',
+  tags: 'tags'
 };
 
 exports.Prisma.QueryMode = {

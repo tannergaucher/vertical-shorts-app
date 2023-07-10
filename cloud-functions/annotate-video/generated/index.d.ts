@@ -148,6 +148,7 @@ export type Project = {
   createdAt: Date
   updatedAt: Date
   userId: string
+  tags: string[]
 }
 
 /**
@@ -8914,6 +8915,7 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     userId: number
+    tags: number
     _all: number
   }
 
@@ -8940,6 +8942,7 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     userId?: true
+    tags?: true
     _all?: true
   }
 
@@ -9022,6 +9025,7 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     userId: string
+    tags: string[]
     _count: ProjectCountAggregateOutputType | null
     _min: ProjectMinAggregateOutputType | null
     _max: ProjectMaxAggregateOutputType | null
@@ -9047,6 +9051,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     userId?: boolean
+    tags?: boolean
     user?: boolean | UserArgs
     content?: boolean | Project$contentArgs
     channels?: boolean | Project$channelsArgs
@@ -10998,7 +11003,8 @@ export namespace Prisma {
     title: 'title',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    userId: 'userId'
+    userId: 'userId',
+    tags: 'tags'
   };
 
   export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -11604,6 +11610,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     userId?: StringFilter | string
+    tags?: StringNullableListFilter
     user?: XOR<UserRelationFilter, UserWhereInput>
     content?: ContentListRelationFilter
     channels?: ChannelListRelationFilter
@@ -11620,6 +11627,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    tags?: SortOrder
     user?: UserOrderByWithRelationInput
     content?: ContentOrderByRelationAggregateInput
     channels?: ChannelOrderByRelationAggregateInput
@@ -11640,6 +11648,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    tags?: SortOrder
     _count?: ProjectCountOrderByAggregateInput
     _max?: ProjectMaxOrderByAggregateInput
     _min?: ProjectMinOrderByAggregateInput
@@ -11654,6 +11663,7 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     userId?: StringWithAggregatesFilter | string
+    tags?: StringNullableListFilter
   }
 
   export type ChannelWhereInput = {
@@ -12381,6 +12391,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -12397,6 +12408,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -12411,6 +12423,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -12427,6 +12440,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -12442,6 +12456,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
   }
 
   export type ProjectUpdateManyMutationInput = {
@@ -12449,6 +12464,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
   }
 
   export type ProjectUncheckedUpdateManyInput = {
@@ -12457,6 +12473,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
   }
 
   export type ChannelCreateInput = {
@@ -13133,6 +13150,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     userId?: SortOrder
+    tags?: SortOrder
   }
 
   export type ProjectMaxOrderByAggregateInput = {
@@ -13456,6 +13474,10 @@ export namespace Prisma {
     update?: XOR<ProjectUpdateWithoutContentInput, ProjectUncheckedUpdateWithoutContentInput>
   }
 
+  export type ProjectCreatetagsInput = {
+    set: Enumerable<string>
+  }
+
   export type UserCreateNestedOneWithoutProjectsInput = {
     create?: XOR<UserCreateWithoutProjectsInput, UserUncheckedCreateWithoutProjectsInput>
     connectOrCreate?: UserCreateOrConnectWithoutProjectsInput
@@ -13548,6 +13570,11 @@ export namespace Prisma {
     create?: XOR<TwitterCredentialsCreateWithoutProjectInput, TwitterCredentialsUncheckedCreateWithoutProjectInput>
     connectOrCreate?: TwitterCredentialsCreateOrConnectWithoutProjectInput
     connect?: TwitterCredentialsWhereUniqueInput
+  }
+
+  export type ProjectUpdatetagsInput = {
+    set?: Enumerable<string>
+    push?: string | Enumerable<string>
   }
 
   export type UserUpdateOneRequiredWithoutProjectsNestedInput = {
@@ -14019,6 +14046,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
@@ -14033,6 +14061,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -14090,6 +14119,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     userId?: StringFilter | string
+    tags?: StringNullableListFilter
   }
 
   export type UserCreateWithoutPasswordInput = {
@@ -14151,6 +14181,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -14166,6 +14197,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -14189,6 +14221,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -14204,6 +14237,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -14217,6 +14251,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -14232,6 +14267,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -14255,6 +14291,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -14270,6 +14307,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -14283,6 +14321,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -14298,6 +14337,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -14321,6 +14361,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -14336,6 +14377,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -14349,6 +14391,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -14364,6 +14407,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -14387,6 +14431,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -14402,6 +14447,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -14415,6 +14461,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
@@ -14430,6 +14477,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -14453,6 +14501,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
@@ -14468,6 +14517,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -14481,6 +14531,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     channels?: ChannelCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
@@ -14496,6 +14547,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     channels?: ChannelUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
     instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -14519,6 +14571,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
@@ -14534,6 +14587,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
     instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -15003,6 +15057,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     user: UserCreateNestedOneWithoutProjectsInput
     content?: ContentCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsCreateNestedOneWithoutProjectInput
@@ -15018,6 +15073,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     userId: string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
     content?: ContentUncheckedCreateNestedManyWithoutProjectInput
     youtubeCredentials?: YoutubeCredentialsUncheckedCreateNestedOneWithoutProjectInput
     instagramCredentials?: InstagramCredentialsUncheckedCreateNestedOneWithoutProjectInput
@@ -15041,6 +15097,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     user?: UserUpdateOneRequiredWithoutProjectsNestedInput
     content?: ContentUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
@@ -15056,6 +15113,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
     instagramCredentials?: InstagramCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -15069,6 +15127,7 @@ export namespace Prisma {
     title: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    tags?: ProjectCreatetagsInput | Enumerable<string>
   }
 
   export type ProjectUpdateWithoutUserInput = {
@@ -15076,6 +15135,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUpdateManyWithoutProjectNestedInput
     channels?: ChannelUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUpdateOneWithoutProjectNestedInput
@@ -15090,6 +15150,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
     content?: ContentUncheckedUpdateManyWithoutProjectNestedInput
     channels?: ChannelUncheckedUpdateManyWithoutProjectNestedInput
     youtubeCredentials?: YoutubeCredentialsUncheckedUpdateOneWithoutProjectNestedInput
@@ -15104,6 +15165,7 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    tags?: ProjectUpdatetagsInput | Enumerable<string>
   }
 
   export type ContentCreateManyProjectInput = {
