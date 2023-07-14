@@ -1,5 +1,6 @@
 .asideSection {
   background-color: var(--bg-2);
+  height: fit-content;
 }
 
 .submitButton {
