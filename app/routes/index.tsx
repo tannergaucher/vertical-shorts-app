@@ -148,7 +148,7 @@ export default function Page() {
                 </button>
                 {project.tags.map((tag) => (
                   <div key={tag} className={styles.tag}>
-                    <span>{tag}</span>
+                    <span>#{tag}</span>
                     <button
                       type="button"
                       className={styles.removeTagButton}
@@ -164,7 +164,7 @@ export default function Page() {
                         )
                       }
                     >
-                      X
+                      x
                     </button>
                   </div>
                 ))}
