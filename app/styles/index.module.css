@@ -1,14 +1,29 @@
-.main {
-  margin-block-start: var(--space-4);
+.asideSection {
+  background-color: var(--bg-2);
+  height: fit-content;
+}
+
+.submitButton {
+  margin-top: var(--space-2);
+}
+
+.title {
+  text-align: center;
+  margin-block-end: var(--space-3);
+}
+
+.contentAsideGrid {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: var(--space-1);
 }
 
 .contentGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 600px));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--space-4);
   border-radius: var(--radius);
   width: 100%;
-  margin-block-start: var(--space-3);
   margin-block-end: var(--space-3);
   justify-content: center;
 }
@@ -27,4 +42,19 @@
 
 .contentTitle {
   margin-block-end: var(--space-1);
+}
+
+.tag {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1);
+  align-items: center;
+}
+
+.removeTagButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-2);
+  text-align: right;
 }

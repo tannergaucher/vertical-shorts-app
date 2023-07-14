@@ -1,8 +1,11 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { z } from "zod";
+import { zfd } from "zod-form-data";
 
 import { ContentStatus } from "~/components/content-status";
+import { prisma } from "~/db.server";
 import { getContents } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
@@ -41,23 +44,134 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
 };
 
+enum ActionType {
+  AddTag = "add-tag",
+  RemoveTag = "remove-tag",
+}
+
+const schema = zfd.formData({
+  tag: zfd.text(),
+  actionType: zfd.text(z.enum([ActionType.AddTag, ActionType.RemoveTag])),
+});
+
+export const action: ActionFunction = async ({ request }) => {
+  const { tag, actionType } = schema.parse(await request.formData());
+
+  const user = await getUser(request);
+
+  if (!user?.currentProjectId) {
+    return redirect(Routes.AdminCreateProject);
+  }
+
+  const project = await getProject({
+    id: user.currentProjectId,
+  });
+
+  if (!project) {
+    return redirect(Routes.AdminCreateProject);
+  }
+
+  const tags =
+    actionType === ActionType.RemoveTag
+      ? [...project.tags.filter((t) => t !== tag.trim())]
+      : Array.from(new Set([...project.tags, tag.trim()]));
+
+  await prisma.project.update({
+    where: {
+      id: project.id,
+    },
+    data: {
+      tags,
+    },
+  });
+
+  return json({
+    tags,
+  });
+};
+
 export default function Page() {
   const { contents, project } = useLoaderData<LoaderData>();
 
+  const fetcher = useFetcher();
+
   return (
     <main className={styles.main}>
-      <section className={styles.contentGrid}>
-        {contents?.map((content) => (
-          <div key={content.slug} className={styles.contentCard}>
-            {content.gif ? <img src={content.gif} alt={content.title} /> : null}
-            <div className={styles.contentCardDetails}>
-              <Link to={Routes.AdminContentStatus(content.slug)}>
-                <h3 className={styles.contentTitle}>{content.title}</h3>
-              </Link>
-              <ContentStatus project={project} content={content} />
+      <h1 className={styles.title}>{project.title}</h1>
+      <section className={styles.contentAsideGrid}>
+        <section className={styles.contentGrid}>
+          {contents?.map((content) => (
+            <div key={content.slug} className={styles.contentCard}>
+              {content.gif ? (
+                <img src={content.gif} alt={content.title} />
+              ) : null}
+              <div className={styles.contentCardDetails}>
+                <Link to={Routes.AdminContentStatus(content.slug)}>
+                  <h3 className={styles.contentTitle}>{content.title}</h3>
+                </Link>
+                <ContentStatus project={project} content={content} />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </section>
+        <section className={styles.asideSection}>
+          <aside>
+            <fieldset
+              disabled={
+                fetcher.state === "loading" || fetcher.state === "submitting"
+              }
+            >
+              <Form method="post">
+                <input type="text" placeholder="Add Tag" name="tag" id="tag" />
+                <button
+                  className={styles.submitButton}
+                  onClick={(e) => {
+                    const tagInputElement =
+                      e.currentTarget.form?.elements.namedItem(
+                        "tag"
+                      ) as HTMLInputElement;
+
+                    fetcher.submit(
+                      {
+                        actionType: ActionType.AddTag,
+                        tag: tagInputElement.value,
+                      },
+                      {
+                        method: "post",
+                      }
+                    );
+
+                    tagInputElement.value = "";
+                  }}
+                >
+                  Add Tag
+                </button>
+                {project.tags.map((tag) => (
+                  <div key={tag} className={styles.tag}>
+                    <span>#{tag}</span>
+                    <button
+                      type="button"
+                      className={styles.removeTagButton}
+                      onClick={() =>
+                        fetcher.submit(
+                          {
+                            actionType: ActionType.RemoveTag,
+                            tag,
+                          },
+                          {
+                            method: "post",
+                          }
+                        )
+                      }
+                    >
+                      x
+                    </button>
+                  </div>
+                ))}
+              </Form>
+            </fieldset>
+          </aside>
+        </section>
       </section>
     </main>
   );
