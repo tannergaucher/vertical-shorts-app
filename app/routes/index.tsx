@@ -1,6 +1,7 @@
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 import { ContentStatus } from "~/components/content-status";
@@ -50,17 +51,11 @@ enum ActionType {
 
 const schema = zfd.formData({
   tag: zfd.text(),
-  actionType: zfd
-    .text()
-    .refine((value) => Object.values(ActionType).includes(value as ActionType)),
+  actionType: zfd.text(z.enum([ActionType.AddTag, ActionType.RemoveTag])),
 });
 
 export const action: ActionFunction = async ({ request }) => {
   const { tag, actionType } = schema.parse(await request.formData());
-
-  console.log(tag, "_tag");
-
-  console.log(actionType, "_actionType");
 
   const user = await getUser(request);
 
@@ -76,7 +71,10 @@ export const action: ActionFunction = async ({ request }) => {
     return redirect(Routes.AdminCreateProject);
   }
 
-  const tags = Array.from(new Set([...project.tags, tag.trim()]));
+  const tags =
+    actionType === ActionType.RemoveTag
+      ? [...project.tags.filter((t) => t !== tag.trim())]
+      : Array.from(new Set([...project.tags, tag.trim()]));
 
   await prisma.project.update({
     where: {
@@ -95,7 +93,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { contents, project } = useLoaderData<LoaderData>();
 
-  const submit = useSubmit();
+  const fetcher = useFetcher();
 
   return (
     <main className={styles.main}>
@@ -118,16 +116,33 @@ export default function Page() {
         </section>
         <section className={styles.asideSection}>
           <aside>
-            <fieldset>
+            <fieldset
+              disabled={
+                fetcher.state === "loading" || fetcher.state === "submitting"
+              }
+            >
               <Form method="post">
-                <input type="text" placeholder="Add Tag" name="tag" />
+                <input type="text" placeholder="Add Tag" name="tag" id="tag" />
                 <button
                   className={styles.submitButton}
-                  onClick={(e) =>
-                    submit({
-                      actionType: ActionType.AddTag,
-                    })
-                  }
+                  onClick={(e) => {
+                    const tagInputElement =
+                      e.currentTarget.form?.elements.namedItem(
+                        "tag"
+                      ) as HTMLInputElement;
+
+                    fetcher.submit(
+                      {
+                        actionType: ActionType.AddTag,
+                        tag: tagInputElement.value,
+                      },
+                      {
+                        method: "post",
+                      }
+                    );
+
+                    tagInputElement.value = "";
+                  }}
                 >
                   Add Tag
                 </button>
@@ -138,10 +153,15 @@ export default function Page() {
                       type="button"
                       className={styles.removeTagButton}
                       onClick={() =>
-                        submit({
-                          actionType: ActionType.RemoveTag,
-                          tag,
-                        })
+                        fetcher.submit(
+                          {
+                            actionType: ActionType.RemoveTag,
+                            tag,
+                          },
+                          {
+                            method: "post",
+                          }
+                        )
                       }
                     >
                       X
