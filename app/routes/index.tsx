@@ -163,9 +163,7 @@ export default function Page() {
                           }
                         )
                       }
-                    >
-                      x
-                    </button>
+                    ></button>
                   </div>
                 ))}
               </Form>
