@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import type { Response } from "express";
 import express, { json } from "express";
 
-import type { Prisma } from "./generated";
 import { PrismaClient } from "./generated/index.js";
 import { APP_BASE_URL } from "./utils/constants";
 
