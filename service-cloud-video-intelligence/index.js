@@ -64,10 +64,18 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
         select: {
             projectId: true,
             slug: true,
+            annotations: true,
+            labels: true,
         },
     });
     if (!content) {
         throw new Error("CONTENT_NOT_FOUND");
+    }
+    if (content.labels) {
+        return res.json({
+            success: true,
+            labels: JSON.parse(content.labels),
+        });
     }
     const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
     const request = {
@@ -91,7 +99,10 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
             labels: JSON.stringify(labels),
         },
     });
-    return res.json({ success: true });
+    return res.json({
+        success: true,
+        labels: JSON.parse(JSON.stringify(labels)),
+    });
 }));
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d;

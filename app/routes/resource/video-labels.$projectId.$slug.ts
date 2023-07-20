@@ -1,0 +1,33 @@
+import { type LoaderArgs } from "@remix-run/node";
+import invariant from "tiny-invariant";
+
+import { CLOUD_VIDEO_INTELLIGENCE_BASE_URL } from "~/utils/constants";
+
+export async function loader({ params }: LoaderArgs) {
+  const { projectId, slug } = params;
+
+  invariant(projectId, "projectId is required");
+  invariant(slug, "slug is required");
+
+  const res = await fetch(
+    `${CLOUD_VIDEO_INTELLIGENCE_BASE_URL}/detect-labels`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        projectId,
+        slug,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Something went wrong");
+  }
+
+  console.log("res", res);
+
+  return await res.json();
+}
