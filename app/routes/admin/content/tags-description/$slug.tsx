@@ -72,7 +72,9 @@ export const action: ActionFunction = async ({ request }) => {
     },
     data: {
       tags: {
-        set: tags.flatMap((tag) => (tag.length ? tag.toString().trim() : [])),
+        set: tags.flatMap((tag) =>
+          tag.toString().length ? tag.toString().trim() : []
+        ),
       },
     },
     select: {
