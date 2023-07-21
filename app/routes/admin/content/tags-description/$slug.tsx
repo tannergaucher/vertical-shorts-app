@@ -113,11 +113,15 @@ function TagsForm({
 }) {
   const tagsFetcher = useFetcher<DetectLabelsResponse>();
 
-  if (!tagsFetcher.data && tagsFetcher.state !== "loading") {
+  if (!tagsFetcher.data) {
     return (
       <div>
         <h2>Tags</h2>
         <button
+          disabled={
+            tagsFetcher.state === "loading" ||
+            tagsFetcher.state === "submitting"
+          }
           onClick={() => {
             tagsFetcher.load(Routes.ResourceVideoLabels(project.id, slug));
           }}
@@ -128,20 +132,23 @@ function TagsForm({
     );
   }
 
-  if (!tagsFetcher.data) {
-    return <div>Loading Tags</div>;
-  }
-
-  if (!tagsFetcher.data.labels) {
+  if (!tagsFetcher.data?.labels) {
     return <div>No Generated Tags</div>;
   }
 
-  const tags = [...project.tags, ...tagsFetcher.data.labels];
+  const tags = [
+    // ...project.tags,
+    ...tagsFetcher.data.labels,
+  ];
 
   return (
     <>
       <h2>Tags</h2>
-      <fieldset>
+      <fieldset
+        disabled={
+          tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
+        }
+      >
         <tagsFetcher.Form method="post">
           {!tagsFetcher.data ? <button>Generate Tags</button> : null}
           {tags.map((tag) => (
