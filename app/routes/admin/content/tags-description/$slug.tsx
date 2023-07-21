@@ -10,6 +10,7 @@ import type { DetectLabelsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
 
 import { prisma } from "~/db.server";
+import type { Content } from "~/models/content.server";
 import type { Project } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
@@ -23,6 +24,7 @@ export const meta: MetaFunction = () => {
 
 type LoaderData = {
   project: Pick<Project, "id" | "tags">;
+  content: Pick<Content, "tags" | "description">;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -50,6 +52,18 @@ export const loader: LoaderFunction = async ({ params, request }) => {
         tags: true,
       },
     }),
+    content: await prisma.content.findUnique({
+      where: {
+        projectId_slug: {
+          projectId: user.currentProjectId,
+          slug,
+        },
+      },
+      select: {
+        tags: true,
+        description: true,
+      },
+    }),
   });
 };
 
@@ -59,6 +73,9 @@ export const action: ActionFunction = async ({ request }) => {
   const tags = formData.getAll("tags");
   const projectId = formData.get("projectId");
   const slug = formData.get("slug");
+  const description = formData.get("description");
+
+  console.log(description, "_description");
 
   invariant(typeof projectId === "string", "projectId is required");
   invariant(typeof slug === "string", "slug is required");
@@ -71,11 +88,15 @@ export const action: ActionFunction = async ({ request }) => {
       },
     },
     data: {
-      tags: {
-        set: tags.flatMap((tag) =>
-          tag.toString().length ? tag.toString().trim() : []
-        ),
-      },
+      tags: tags.length
+        ? {
+            set: tags.flatMap((tag) =>
+              tag.toString().length ? tag.toString().trim() : []
+            ),
+          }
+        : undefined,
+
+      description: description ? description.toString().trim() : undefined,
     },
     select: {
       tags: true,
@@ -88,7 +109,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { project } = useLoaderData<LoaderData>();
+  const { project, content } = useLoaderData<LoaderData>();
 
   const { slug } = useParams();
 
@@ -100,7 +121,7 @@ export default function Page() {
         <TagsForm project={project} slug={slug} />
       </section>
       <section>
-        <DescriptionForm />
+        <DescriptionForm project={project} slug={slug} content={content} />
       </section>
     </main>
   );
@@ -171,20 +192,42 @@ function TagsForm({
   );
 }
 
-function DescriptionForm() {
+function DescriptionForm({
+  project,
+  slug,
+  content,
+}: {
+  project: LoaderData["project"];
+  content: LoaderData["content"];
+  slug: string;
+}) {
   const [isEditing, setIsEditing] = useState(false);
 
+  const descriptionFetcher = useFetcher();
+
   return (
-    <>
+    <div>
       <h2>Description</h2>
-      <textarea
-        name=""
-        id="description"
-        onFocus={() => {
-          setIsEditing(true);
-        }}
-      ></textarea>
-      {isEditing ? <button>Save</button> : null}
-    </>
+      <fieldset
+        disabled={
+          descriptionFetcher.state === "loading" ||
+          descriptionFetcher.state === "submitting"
+        }
+      >
+        <descriptionFetcher.Form method="post">
+          <textarea
+            name="description"
+            id="description"
+            defaultValue={content.description || ""}
+            onFocus={() => {
+              setIsEditing(true);
+            }}
+          ></textarea>
+          <input type="hidden" name="projectId" value={project.id} />
+          <input type="hidden" name="slug" value={slug} id="slug" />
+          {isEditing ? <button type="submit">Save</button> : null}
+        </descriptionFetcher.Form>
+      </fieldset>
+    </div>
   );
 }
