@@ -13,6 +13,7 @@ import { prisma } from "~/db.server";
 import type { Project } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
+import styles from "~/styles/adminContentTagsDescription.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -56,7 +57,8 @@ export const action: ActionFunction = async ({ request }) => {
 
 enum TagType {
   ProjectTag = "PROJECT_TAG",
-  ContentTag = "CONTENT_TAG",
+  UserAddedContentTag = "USER_ADDED_CONTENT_TAG",
+  GeneratedContentTag = "GENERATED_CONTENT_TAG",
 }
 
 export default function Page() {
@@ -67,8 +69,13 @@ export default function Page() {
   invariant(slug, "slug is required");
 
   return (
-    <main>
-      <TagsForm project={project} slug={slug} />
+    <main className={styles.main}>
+      <section>
+        <TagsForm project={project} slug={slug} />
+      </section>
+      <section>
+        <h1>Description</h1>
+      </section>
     </main>
   );
 }
@@ -102,11 +109,11 @@ function TagsForm({
     return <div>No Labels</div>;
   }
 
-  const contentTags: Tag[] = tagsFetcher.data.labels.flatMap((label) =>
+  const generatedContentTags: Tag[] = tagsFetcher.data.labels.flatMap((label) =>
     label.entity?.description
       ? {
           label: label.entity.description,
-          type: TagType.ContentTag,
+          type: TagType.GeneratedContentTag,
           userSelected: true,
         }
       : []
@@ -118,40 +125,31 @@ function TagsForm({
     userSelected: true,
   }));
 
-  const tags = [...projectTags, ...contentTags];
+  const tags = [...projectTags, ...generatedContentTags];
 
   return (
-    <div>
+    <>
       <h1>Tags</h1>
       <fieldset>
         <tagsFetcher.Form method="post">
           {!tagsFetcher.data ? <button>Generate Tags</button> : null}
           {tags.map((tag) => (
             <div key={tag.label} data-tag-type={tag.type}>
-              <label>
+              <label className={styles.tagLabel}>
+                {tag.label}
                 <input
                   type="checkbox"
                   name="tags"
                   value={tag.label}
                   defaultChecked
-                  checked={tag.userSelected}
-                  onChange={() => {
-                    tagsFetcher.submit(
-                      {
-                        tag: tag.label,
-                      },
-                      {
-                        method: "post",
-                      }
-                    );
-                  }}
                 />
-                {tag.label}
               </label>
             </div>
           ))}
+          <input type="text" placeholder="tag" />
+          <button type="submit">Update Tags</button>
         </tagsFetcher.Form>
       </fieldset>
-    </div>
+    </>
   );
 }
