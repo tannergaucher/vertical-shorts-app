@@ -42,8 +42,8 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     return redirect(Routes.AdminCreateProject);
   }
 
-  return json({
-    project: await prisma.project.findUnique({
+  return json<LoaderData>({
+    project: await prisma.project.findUniqueOrThrow({
       where: {
         id: user.currentProjectId,
       },
@@ -52,7 +52,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
         tags: true,
       },
     }),
-    content: await prisma.content.findUnique({
+    content: await prisma.content.findUniqueOrThrow({
       where: {
         projectId_slug: {
           projectId: user.currentProjectId,
