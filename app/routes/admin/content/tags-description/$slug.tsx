@@ -5,6 +5,7 @@ import type {
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
+import { useState } from "react";
 import type { DetectLabelsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
 
@@ -24,8 +25,12 @@ type LoaderData = {
   project: Pick<Project, "id" | "tags">;
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({ params, request }) => {
   const user = await getUser(request);
+
+  const slug = params.slug;
+
+  invariant(typeof slug === "string", "slug is required");
 
   if (!user) {
     return redirect(Routes.Login);
@@ -49,15 +54,35 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export const action: ActionFunction = async ({ request }) => {
-  console.log("ACTION SUBMIT");
-
   const formData = await request.formData();
 
   const tags = formData.getAll("tags");
+  const projectId = formData.get("projectId");
+  const slug = formData.get("slug");
 
-  console.log(tags, "tags");
+  invariant(typeof projectId === "string", "projectId is required");
+  invariant(typeof slug === "string", "slug is required");
 
-  return null;
+  const content = await prisma.content.update({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    data: {
+      tags: {
+        set: tags.flatMap((tag) => (tag.length ? tag.toString().trim() : [])),
+      },
+    },
+    select: {
+      tags: true,
+    },
+  });
+
+  return json({
+    labels: content.tags,
+  });
 };
 
 export default function Page() {
@@ -73,7 +98,7 @@ export default function Page() {
         <TagsForm project={project} slug={slug} />
       </section>
       <section>
-        <h1>Description</h1>
+        <DescriptionForm />
       </section>
     </main>
   );
@@ -103,19 +128,15 @@ function TagsForm({
     );
   }
 
-  if (tagsFetcher.state === "loading") {
-    return <div>Loading Tags...</div>;
+  if (!tagsFetcher.data) {
+    return <div>Loading Tags</div>;
   }
 
-  if (!tagsFetcher.data?.labels) {
-    return <div>No Labels</div>;
+  if (!tagsFetcher.data.labels) {
+    return <div>No Generated Tags</div>;
   }
 
-  const generatedContentTags = tagsFetcher.data.labels.flatMap((label) =>
-    label.entity?.description ? label.entity.description : []
-  );
-
-  const tags = [...project.tags, ...generatedContentTags];
+  const tags = [...project.tags, ...tagsFetcher.data.labels];
 
   return (
     <>
@@ -132,9 +153,29 @@ function TagsForm({
             </div>
           ))}
           <input type="text" placeholder="Tags" name="tags" />
+          <input type="hidden" name="projectId" value={project.id} />
+          <input type="hidden" name="slug" value={slug} id="slug" />
           <button type="submit">Submit</button>
         </tagsFetcher.Form>
       </fieldset>
+    </>
+  );
+}
+
+function DescriptionForm() {
+  const [isEditing, setIsEditing] = useState(false);
+
+  return (
+    <>
+      <h2>Description</h2>
+      <textarea
+        name=""
+        id="description"
+        onFocus={() => {
+          setIsEditing(true);
+        }}
+      ></textarea>
+      {isEditing ? <button>Save</button> : null}
     </>
   );
 }

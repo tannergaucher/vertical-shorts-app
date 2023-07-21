@@ -27,7 +27,7 @@ const videoIntelligenceClient =
 
 export interface DetectLabelsResponse {
   success: boolean;
-  labels?: google.cloud.videointelligence.v1.ILabelAnnotation[];
+  labels: string[];
 }
 
 app.post(
@@ -54,10 +54,20 @@ app.post(
       throw new Error("CONTENT_NOT_FOUND");
     }
 
+    const parsedContentLabels = JSON.parse(
+      content.labels as string
+    ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[];
+
+    const labels = parsedContentLabels.flatMap((label) =>
+      label.entity?.description ? label.entity.description : []
+    );
+
+    console.log("_labels", labels);
+
     if (content.labels) {
       return res.json({
         success: true,
-        labels: JSON.parse(content.labels as string),
+        labels,
       });
     }
 
@@ -74,24 +84,12 @@ app.post(
 
     const annotations = operationResult.annotationResults?.[0];
 
-    const labels = annotations?.segmentLabelAnnotations;
-
-    await prisma.content.update({
-      where: {
-        projectId_slug: {
-          projectId,
-          slug,
-        },
-      },
-      data: {
-        annotations: JSON.stringify(annotations),
-        labels: JSON.stringify(labels),
-      },
-    });
-
     return res.json({
       success: true,
-      labels: JSON.parse(JSON.stringify(labels)),
+      labels:
+        annotations?.segmentLabelAnnotations?.flatMap(
+          (label) => label.entity?.description ?? []
+        ) ?? [],
     });
   }
 );
