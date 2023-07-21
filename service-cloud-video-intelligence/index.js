@@ -52,7 +52,7 @@ app.use((0, cors_1.default)({
 const prisma = new index_js_1.PrismaClient();
 const videoIntelligenceClient = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
 app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _b, _c, _d;
     const { projectId, slug } = req.body;
     const content = yield prisma.content.findUnique({
         where: {
@@ -64,10 +64,21 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
         select: {
             projectId: true,
             slug: true,
+            annotations: true,
+            labels: true,
         },
     });
     if (!content) {
         throw new Error("CONTENT_NOT_FOUND");
+    }
+    const parsedContentLabels = JSON.parse(content.labels);
+    const labels = parsedContentLabels.flatMap((label) => { var _a; return ((_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) ? label.entity.description : []; });
+    console.log("_labels", labels);
+    if (content.labels) {
+        return res.json({
+            success: true,
+            labels,
+        });
     }
     const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
     const request = {
@@ -78,23 +89,13 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
     console.log("Waiting for operation to complete...");
     const [operationResult] = yield operation.promise();
     const annotations = (_b = operationResult.annotationResults) === null || _b === void 0 ? void 0 : _b[0];
-    const labels = annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations;
-    yield prisma.content.update({
-        where: {
-            projectId_slug: {
-                projectId,
-                slug,
-            },
-        },
-        data: {
-            annotations: JSON.stringify(annotations),
-            labels: JSON.stringify(labels),
-        },
+    return res.json({
+        success: true,
+        labels: (_d = (_c = annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations) === null || _c === void 0 ? void 0 : _c.flatMap((label) => { var _a, _b; return (_b = (_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) !== null && _b !== void 0 ? _b : []; })) !== null && _d !== void 0 ? _d : [],
     });
-    return res.json({ success: true });
 }));
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _c, _d;
+    var _e, _f;
     const { projectId, slug } = req.body;
     const content = yield prisma.content.findUnique({
         where: {
@@ -119,7 +120,7 @@ app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, func
     const [operation] = yield videoIntelligenceClient.annotateVideo(request);
     console.log("Waiting for operation to complete...");
     const results = (yield operation.promise());
-    const textAnnotations = (_d = (_c = results[0]) === null || _c === void 0 ? void 0 : _c.annotationResults[0]) === null || _d === void 0 ? void 0 : _d.textAnnotations;
+    const textAnnotations = (_f = (_e = results[0]) === null || _e === void 0 ? void 0 : _e.annotationResults[0]) === null || _f === void 0 ? void 0 : _f.textAnnotations;
     if (textAnnotations !== undefined) {
         yield prisma.content.update({
             where: {

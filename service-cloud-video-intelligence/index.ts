@@ -2,6 +2,7 @@ import { v1 as videoIntelligence } from "@google-cloud/video-intelligence";
 import { google } from "@google-cloud/video-intelligence/build/protos/protos";
 import cors from "cors";
 import dotenv from "dotenv";
+import type { Response } from "express";
 import express, { json } from "express";
 
 import { PrismaClient } from "./generated/index.js";
@@ -24,56 +25,74 @@ const prisma = new PrismaClient();
 const videoIntelligenceClient =
   new videoIntelligence.VideoIntelligenceServiceClient();
 
-app.post("/detect-labels", async (req, res) => {
-  const { projectId, slug } = req.body;
+export interface DetectLabelsResponse {
+  success: boolean;
+  labels: string[];
+}
 
-  const content = await prisma.content.findUnique({
-    where: {
-      projectId_slug: {
-        projectId,
-        slug,
+app.post(
+  "/detect-labels",
+  async (req, res: Response<{}, DetectLabelsResponse>) => {
+    const { projectId, slug } = req.body;
+
+    const content = await prisma.content.findUnique({
+      where: {
+        projectId_slug: {
+          projectId,
+          slug,
+        },
       },
-    },
-    select: {
-      projectId: true,
-      slug: true,
-    },
-  });
+      select: {
+        projectId: true,
+        slug: true,
+        annotations: true,
+        labels: true,
+      },
+    });
 
-  if (!content) {
-    throw new Error("CONTENT_NOT_FOUND");
+    if (!content) {
+      throw new Error("CONTENT_NOT_FOUND");
+    }
+
+    const parsedContentLabels = JSON.parse(
+      content.labels as string
+    ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[];
+
+    const labels = parsedContentLabels.flatMap((label) =>
+      label.entity?.description ? label.entity.description : []
+    );
+
+    console.log("_labels", labels);
+
+    if (content.labels) {
+      return res.json({
+        success: true,
+        labels,
+      });
+    }
+
+    const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
+
+    const request = {
+      inputUri: gcsResourceUri,
+      features: [google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
+    };
+
+    const [operation] = await videoIntelligenceClient.annotateVideo(request);
+    console.log("Waiting for operation to complete...");
+    const [operationResult] = await operation.promise();
+
+    const annotations = operationResult.annotationResults?.[0];
+
+    return res.json({
+      success: true,
+      labels:
+        annotations?.segmentLabelAnnotations?.flatMap(
+          (label) => label.entity?.description ?? []
+        ) ?? [],
+    });
   }
-
-  const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
-
-  const request = {
-    inputUri: gcsResourceUri,
-    features: [google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
-  };
-
-  const [operation] = await videoIntelligenceClient.annotateVideo(request);
-  console.log("Waiting for operation to complete...");
-  const [operationResult] = await operation.promise();
-
-  const annotations = operationResult.annotationResults?.[0];
-
-  const labels = annotations?.segmentLabelAnnotations;
-
-  await prisma.content.update({
-    where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
-    },
-    data: {
-      annotations: JSON.stringify(annotations),
-      labels: JSON.stringify(labels),
-    },
-  });
-
-  return res.json({ success: true });
-});
+);
 
 app.post("/recognize-text", async (req, res) => {
   const { projectId, slug } = req.body;
