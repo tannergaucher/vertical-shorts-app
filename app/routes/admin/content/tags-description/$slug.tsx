@@ -5,7 +5,6 @@ import type {
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
-import { useEffect } from "react";
 import type { DetectLabelsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
 
@@ -52,14 +51,14 @@ export const loader: LoaderFunction = async ({ request }) => {
 export const action: ActionFunction = async ({ request }) => {
   console.log("ACTION SUBMIT");
 
+  const formData = await request.formData();
+
+  const tags = formData.getAll("tags");
+
+  console.log(tags, "tags");
+
   return null;
 };
-
-enum TagType {
-  ProjectTag = "PROJECT_TAG",
-  UserAddedContentTag = "USER_ADDED_CONTENT_TAG",
-  GeneratedContentTag = "GENERATED_CONTENT_TAG",
-}
 
 export default function Page() {
   const { project } = useLoaderData<LoaderData>();
@@ -80,12 +79,6 @@ export default function Page() {
   );
 }
 
-interface Tag {
-  label: string;
-  type: TagType;
-  userSelected: boolean;
-}
-
 function TagsForm({
   project,
   slug,
@@ -95,59 +88,51 @@ function TagsForm({
 }) {
   const tagsFetcher = useFetcher<DetectLabelsResponse>();
 
-  useEffect(() => {
-    if (tagsFetcher.state === "idle" && !tagsFetcher.data) {
-      tagsFetcher.load(Routes.ResourceVideoLabels(project.id, slug));
-    }
-  }, [tagsFetcher, project.id, slug]);
-
-  if (!tagsFetcher.data) {
-    return <div>Loading..</div>;
+  if (!tagsFetcher.data && tagsFetcher.state !== "loading") {
+    return (
+      <div>
+        <h2>Tags</h2>
+        <button
+          onClick={() => {
+            tagsFetcher.load(Routes.ResourceVideoLabels(project.id, slug));
+          }}
+        >
+          Automatically Generate Tags
+        </button>
+      </div>
+    );
   }
 
-  if (!tagsFetcher.data.labels) {
+  if (tagsFetcher.state === "loading") {
+    return <div>Loading Tags...</div>;
+  }
+
+  if (!tagsFetcher.data?.labels) {
     return <div>No Labels</div>;
   }
 
-  const generatedContentTags: Tag[] = tagsFetcher.data.labels.flatMap((label) =>
-    label.entity?.description
-      ? {
-          label: label.entity.description,
-          type: TagType.GeneratedContentTag,
-          userSelected: true,
-        }
-      : []
+  const generatedContentTags = tagsFetcher.data.labels.flatMap((label) =>
+    label.entity?.description ? label.entity.description : []
   );
 
-  const projectTags: Tag[] = project.tags.map((tag) => ({
-    label: tag,
-    type: TagType.ProjectTag,
-    userSelected: true,
-  }));
-
-  const tags = [...projectTags, ...generatedContentTags];
+  const tags = [...project.tags, ...generatedContentTags];
 
   return (
     <>
-      <h1>Tags</h1>
+      <h2>Tags</h2>
       <fieldset>
         <tagsFetcher.Form method="post">
           {!tagsFetcher.data ? <button>Generate Tags</button> : null}
           {tags.map((tag) => (
-            <div key={tag.label} data-tag-type={tag.type}>
+            <div key={tag}>
               <label className={styles.tagLabel}>
-                {tag.label}
-                <input
-                  type="checkbox"
-                  name="tags"
-                  value={tag.label}
-                  defaultChecked
-                />
+                {tag}
+                <input type="checkbox" name="tags" value={tag} defaultChecked />
               </label>
             </div>
           ))}
-          <input type="text" placeholder="tag" />
-          <button type="submit">Update Tags</button>
+          <input type="text" placeholder="Tags" name="tags" />
+          <button type="submit">Submit</button>
         </tagsFetcher.Form>
       </fieldset>
     </>
