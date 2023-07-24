@@ -157,7 +157,7 @@ export default function Page() {
         input,
       });
 
-      navigate(Routes.AdminContentScheduler(content.slug));
+      navigate(Routes.AdminContentTagsDescription(content.slug));
     } catch (error) {
       console.log(error, "error");
       setDisabled(false);
