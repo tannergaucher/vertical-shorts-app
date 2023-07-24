@@ -7,7 +7,7 @@ WORKDIR /service-cloud-video-intelligence
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --production && npm install -g typescript
+RUN npm ci --production
 
 # Copy the TypeScript source code to the working directory
 COPY . .
