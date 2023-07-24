@@ -27,7 +27,7 @@ steps:
       - "build"
       - "-t"
       - "gcr.io/homerice/service-cloud-video-intelligence"
-      - "." # The location of your Dockerfile (assuming it's in the root)
+      - "./service-cloud-intelligence/Dockerfile" # Specify the path to your Dockerfile if it's not in the root directory
 
   # Step 5: Push the Docker image to Google Container Registry
   - name: "gcr.io/cloud-builders/docker"
