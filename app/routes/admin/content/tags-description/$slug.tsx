@@ -9,6 +9,7 @@ import { useState } from "react";
 import type { DetectLabelsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
 
+import { Breadcrumb } from "~/components/breadcrumb";
 import { prisma } from "~/db.server";
 import type { Content } from "~/models/content.server";
 import type { Project } from "~/models/project.server";
@@ -116,13 +117,16 @@ export default function Page() {
   invariant(slug, "slug is required");
 
   return (
-    <main className={styles.main}>
-      <section>
-        <TagsForm project={project} slug={slug} />
-      </section>
-      <section>
-        <DescriptionForm project={project} slug={slug} content={content} />
-      </section>
+    <main>
+      <Breadcrumb slug={slug} />
+      <div className={styles.tagsDescriptionGrid}>
+        <section>
+          <TagsForm project={project} slug={slug} />
+        </section>
+        <section>
+          <DescriptionForm project={project} slug={slug} content={content} />
+        </section>
+      </div>
     </main>
   );
 }
@@ -139,8 +143,9 @@ function TagsForm({
   if (!tagsFetcher.data) {
     return (
       <div>
-        <h2>Tags</h2>
+        <h2 className={styles.sectionTitle}>Tags</h2>
         <button
+          className={styles.generateTagsButton}
           disabled={
             tagsFetcher.state === "loading" ||
             tagsFetcher.state === "submitting"
@@ -149,7 +154,7 @@ function TagsForm({
             tagsFetcher.load(Routes.ResourceVideoLabels(project.id, slug));
           }}
         >
-          Automatically Generate Tags
+          Generate Tags
         </button>
       </div>
     );
@@ -166,7 +171,7 @@ function TagsForm({
 
   return (
     <>
-      <h2>Tags</h2>
+      <h2 className={styles.sectionTitle}>Tags</h2>
       <fieldset
         disabled={
           tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
@@ -182,10 +187,17 @@ function TagsForm({
               </label>
             </div>
           ))}
-          <input type="text" placeholder="Tags" name="tags" />
+          <input
+            type="text"
+            placeholder="Tags"
+            name="tags"
+            className={styles.addTagInput}
+          />
           <input type="hidden" name="projectId" value={project.id} />
           <input type="hidden" name="slug" value={slug} id="slug" />
-          <button type="submit">Submit</button>
+          <button type="submit" className={styles.tagsSubmitButton}>
+            Submit
+          </button>
         </tagsFetcher.Form>
       </fieldset>
     </>
@@ -207,7 +219,7 @@ function DescriptionForm({
 
   return (
     <div>
-      <h2>Description</h2>
+      <h2 className={styles.sectionTitle}>Description</h2>
       <fieldset
         disabled={
           descriptionFetcher.state === "loading" ||
