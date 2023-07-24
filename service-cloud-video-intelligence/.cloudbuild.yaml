@@ -1,0 +1,47 @@
+steps:
+  # Step 1: Install Node.js and npm dependencies
+  - name: "node:16"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - "npm ci"
+
+  # Step 2: Build TypeScript code
+  - name: "node:16"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - "npm run build"
+
+  # Step 3: Configure Google Cloud SDK
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "config"
+      - "set"
+      - "project"
+      - "homerice" # Replace with your Google Cloud Project ID
+
+  # Step 4: Build the Docker image
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/homerice/service-cloud-video-intelligence"
+      - "." # The location of your Dockerfile (assuming it's in the root)
+
+  # Step 5: Push the Docker image to Google Container Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "gcr.io/homerice/service-cloud-video-intelligence"
+
+  # Step 6: Deploy the Docker image to Cloud Run
+  - name: "gcr.io/cloud-builders/gcloud"
+    args:
+      - "run"
+      - "deploy"
+      - "service-cloud-video-intelligence"
+      - "--image=gcr.io/homerice/service-cloud-video-intelligence"
+      - "--region=us-central1"
+      - "--platform=managed"
+      - "--allow-unauthenticated" # Adjust this as per your authentication needs
