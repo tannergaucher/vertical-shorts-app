@@ -82,12 +82,26 @@ app.post(
 
     const annotations = operationResult.annotationResults?.[0];
 
+    const generatedLabels =
+      annotations?.segmentLabelAnnotations?.flatMap(
+        (label) => label.entity?.description ?? []
+      ) ?? [];
+
+    await prisma.content.update({
+      where: {
+        projectId_slug: {
+          projectId,
+          slug,
+        },
+      },
+      data: {
+        tags: generatedLabels,
+      },
+    });
+
     return res.json({
       success: true,
-      labels:
-        annotations?.segmentLabelAnnotations?.flatMap(
-          (label) => label.entity?.description ?? []
-        ) ?? [],
+      labels: generatedLabels,
     });
   }
 );
