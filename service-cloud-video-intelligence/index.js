@@ -88,9 +88,21 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
     console.log("Waiting for operation to complete...");
     const [operationResult] = yield operation.promise();
     const annotations = (_b = operationResult.annotationResults) === null || _b === void 0 ? void 0 : _b[0];
+    const generatedLabels = (_d = (_c = annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations) === null || _c === void 0 ? void 0 : _c.flatMap((label) => { var _a, _b; return (_b = (_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) !== null && _b !== void 0 ? _b : []; })) !== null && _d !== void 0 ? _d : [];
+    yield prisma.content.update({
+        where: {
+            projectId_slug: {
+                projectId,
+                slug,
+            },
+        },
+        data: {
+            tags: generatedLabels,
+        },
+    });
     return res.json({
         success: true,
-        labels: (_d = (_c = annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations) === null || _c === void 0 ? void 0 : _c.flatMap((label) => { var _a, _b; return (_b = (_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) !== null && _b !== void 0 ? _b : []; })) !== null && _d !== void 0 ? _d : [],
+        labels: generatedLabels,
     });
 }));
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
