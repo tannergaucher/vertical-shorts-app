@@ -56,15 +56,13 @@ app.post(
 
     const parsedContentLabels = JSON.parse(
       content.labels as string
-    ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[];
+    ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[] | null;
 
-    const labels = parsedContentLabels.flatMap((label) =>
+    const labels = parsedContentLabels?.flatMap((label) =>
       label.entity?.description ? label.entity.description : []
     );
 
-    console.log("_labels", labels);
-
-    if (content.labels) {
+    if (labels) {
       return res.json({
         success: true,
         labels,

@@ -24,7 +24,9 @@ export async function loader({ params }: LoaderArgs) {
   );
 
   if (!res.ok) {
-    throw new Error("Something went wrong");
+    throw new Error(
+      "Something went wrong fetching video labels resource route data"
+    );
   }
 
   return await res.json();
