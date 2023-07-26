@@ -3,6 +3,6 @@
 ## Deploy locally from source code
 
 ```
-gcloud run deploy service-cloud-video-intelligence  --source .
+npm run build && gcloud run deploy service-cloud-video-intelligence  --source .
 
 ```
