@@ -72,9 +72,8 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
         throw new Error("CONTENT_NOT_FOUND");
     }
     const parsedContentLabels = JSON.parse(content.labels);
-    const labels = parsedContentLabels.flatMap((label) => { var _a; return ((_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) ? label.entity.description : []; });
-    console.log("_labels", labels);
-    if (content.labels) {
+    const labels = parsedContentLabels === null || parsedContentLabels === void 0 ? void 0 : parsedContentLabels.flatMap((label) => { var _a; return ((_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) ? label.entity.description : []; });
+    if (labels) {
         return res.json({
             success: true,
             labels,
