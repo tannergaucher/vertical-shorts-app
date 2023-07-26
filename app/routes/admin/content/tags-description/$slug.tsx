@@ -76,8 +76,6 @@ export const action: ActionFunction = async ({ request }) => {
   const slug = formData.get("slug");
   const description = formData.get("description");
 
-  console.log(description, "_description");
-
   invariant(typeof projectId === "string", "projectId is required");
   invariant(typeof slug === "string", "slug is required");
 
@@ -112,6 +110,8 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { project, content } = useLoaderData<LoaderData>();
 
+  const [hasGeneratedTags, setHasGeneratedTags] = useState(false);
+
   const { slug } = useParams();
 
   invariant(slug, "slug is required");
@@ -121,7 +121,13 @@ export default function Page() {
       <Breadcrumb slug={slug} />
       <div className={styles.tagsDescriptionGrid}>
         <section>
-          <TagsForm project={project} slug={slug} />
+          <TagsForm
+            project={project}
+            content={content}
+            slug={slug}
+            hasGeneratedTags={hasGeneratedTags}
+            setHasGeneratedTags={setHasGeneratedTags}
+          />
         </section>
         <section>
           <DescriptionForm project={project} slug={slug} content={content} />
@@ -133,17 +139,27 @@ export default function Page() {
 
 function TagsForm({
   project,
+  content,
   slug,
+  hasGeneratedTags,
+  setHasGeneratedTags,
 }: {
   project: LoaderData["project"];
+  content: LoaderData["content"];
   slug: string;
+  hasGeneratedTags: boolean;
+  setHasGeneratedTags: (value: boolean) => void;
 }) {
   const tagsFetcher = useFetcher<DetectLabelsResponse>();
 
-  if (!tagsFetcher.data) {
-    return (
-      <div>
-        <h2 className={styles.sectionTitle}>Tags</h2>
+  const tags = tagsFetcher.data?.labels
+    ? [...project.tags, ...content.tags, ...tagsFetcher.data.labels]
+    : [...project.tags, ...content.tags];
+
+  return (
+    <>
+      <h2 className={styles.sectionTitle}>Tags</h2>
+      {!hasGeneratedTags ? (
         <button
           className={styles.generateTagsButton}
           disabled={
@@ -152,33 +168,18 @@ function TagsForm({
           }
           onClick={() => {
             tagsFetcher.load(Routes.ResourceVideoLabels(project.id, slug));
+            setHasGeneratedTags(true);
           }}
         >
           Generate Tags
         </button>
-      </div>
-    );
-  }
-
-  if (!tagsFetcher.data?.labels) {
-    return <div>No Generated Tags</div>;
-  }
-
-  const tags = [
-    // ...project.tags,
-    ...tagsFetcher.data.labels,
-  ];
-
-  return (
-    <>
-      <h2 className={styles.sectionTitle}>Tags</h2>
+      ) : null}
       <fieldset
         disabled={
           tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
         }
       >
         <tagsFetcher.Form method="post">
-          {!tagsFetcher.data ? <button>Generate Tags</button> : null}
           {tags.map((tag) => (
             <div key={tag}>
               <label className={styles.tagLabel}>
