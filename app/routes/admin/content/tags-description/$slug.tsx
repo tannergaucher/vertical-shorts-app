@@ -5,7 +5,8 @@ import type {
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
-import { useState } from "react";
+import compact from "lodash/compact";
+import { useEffect, useState } from "react";
 import type { DetectLabelsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
 
@@ -94,7 +95,6 @@ export const action: ActionFunction = async ({ request }) => {
             ),
           }
         : undefined,
-
       description: description ? description.toString().trim() : undefined,
     },
     select: {
@@ -102,8 +102,9 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return json({
+  return json<DetectLabelsResponse>({
     labels: content.tags,
+    success: true,
   });
 };
 
@@ -217,6 +218,12 @@ function DescriptionForm({
   const [isEditing, setIsEditing] = useState(false);
 
   const descriptionFetcher = useFetcher();
+
+  useEffect(() => {
+    if (descriptionFetcher.state === "idle") {
+      setIsEditing(false);
+    }
+  }, [descriptionFetcher.state]);
 
   return (
     <div>
