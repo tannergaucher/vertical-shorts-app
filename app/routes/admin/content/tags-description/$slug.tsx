@@ -5,7 +5,6 @@ import type {
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
-import compact from "lodash/compact";
 import { useEffect, useState } from "react";
 import type { DetectLabelsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
