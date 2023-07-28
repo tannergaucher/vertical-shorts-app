@@ -16,6 +16,7 @@
   display: grid;
   grid-template-columns: 1fr auto;
   padding: var(--space-1);
+  gap: var(--space-1);
 }
 
 .contentGrid {
