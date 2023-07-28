@@ -5,6 +5,10 @@
   padding: var(--space-2);
 }
 
+.pageTitle {
+  text-align: center;
+}
+
 .tagLabel {
   display: grid;
   grid-template-columns: 1fr auto;

@@ -1,10 +1,16 @@
+import type { Project } from "@prisma/client";
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { Form, useNavigation, useParams } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
+import {
+  Form,
+  useLoaderData,
+  useNavigation,
+  useParams,
+} from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -19,6 +25,10 @@ export const meta: MetaFunction = () => {
   };
 };
 
+type LoaderData = {
+  project: Project;
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
 
@@ -26,7 +36,17 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect(Routes.Login);
   }
 
-  return null;
+  const project = user.projects.find(
+    (project) => project.id === user.currentProjectId
+  );
+
+  if (!project) {
+    return redirect(Routes.AdminCreateProject);
+  }
+
+  return json({
+    project,
+  });
 };
 
 const schema = zfd.formData({
@@ -56,6 +76,8 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const transition = useNavigation();
 
+  const { project } = useLoaderData<LoaderData>();
+
   const { slug } = useParams();
 
   const disabled =
@@ -63,6 +85,7 @@ export default function Page() {
 
   return (
     <main className={styles.main}>
+      <h1 className={styles.pageTitle}>{project.title}</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled} className={styles.fieldset}>
         <Form method="post">

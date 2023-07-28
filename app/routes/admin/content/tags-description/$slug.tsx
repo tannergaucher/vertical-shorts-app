@@ -24,7 +24,7 @@ export const meta: MetaFunction = () => {
 };
 
 type LoaderData = {
-  project: Pick<Project, "id" | "tags">;
+  project: Pick<Project, "id" | "tags" | "title">;
   content: Pick<Content, "tags" | "description">;
 };
 
@@ -51,6 +51,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       select: {
         id: true,
         tags: true,
+        title: true,
       },
     }),
     content: await prisma.content.findUniqueOrThrow({
@@ -124,6 +125,7 @@ export default function Page() {
 
   return (
     <main>
+      <h1 className={styles.pageTitle}>{project.title}</h1>
       <Breadcrumb slug={slug} />
       <div className={styles.tagsDescriptionGrid}>
         <section>

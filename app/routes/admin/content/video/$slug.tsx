@@ -9,6 +9,7 @@ import { z } from "zod";
 import { Breadcrumb } from "~/components/breadcrumb";
 import { storage } from "~/entry.server";
 import { getContent } from "~/models/content.server";
+import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
@@ -16,8 +17,8 @@ import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
+  project: Awaited<ReturnType<typeof getProject>>;
   signedUrl: string;
-  projectId: string;
 };
 
 export const meta: MetaFunction = () => {
@@ -81,7 +82,11 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     projectId,
   });
 
-  return json({ content, signedUrl, projectId });
+  const project = await getProject({
+    id: projectId,
+  });
+
+  return json({ content, signedUrl, project });
 };
 
 async function handleGcpSignedUpload({
@@ -134,7 +139,7 @@ async function handleGcpSignedUpload({
 }
 
 export default function Page() {
-  const { content, signedUrl, projectId } = useLoaderData<LoaderData>();
+  const { content, signedUrl, project } = useLoaderData<LoaderData>();
 
   const [disabled, setDisabled] = useState(false);
 
@@ -153,7 +158,7 @@ export default function Page() {
       await handleGcpSignedUpload({
         slug: content.slug,
         signedUrl,
-        projectId,
+        projectId: project.id,
         input,
       });
 
@@ -166,6 +171,7 @@ export default function Page() {
 
   return (
     <main className={styles.main}>
+      <h1 className={styles.pageTitle}>{project.title}</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <form
