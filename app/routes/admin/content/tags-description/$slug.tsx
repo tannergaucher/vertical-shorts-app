@@ -112,6 +112,12 @@ export default function Page() {
 
   const [hasGeneratedTags, setHasGeneratedTags] = useState(false);
 
+  useEffect(() => {
+    if (content.tags.length) {
+      setHasGeneratedTags(true);
+    }
+  }, [hasGeneratedTags, content.tags]);
+
   const { slug } = useParams();
 
   invariant(slug, "slug is required");
