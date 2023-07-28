@@ -105,8 +105,8 @@ export default function Page() {
 
   return (
     <main className={styles.main}>
+      <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
-        <Breadcrumb slug={slug} />
         <Form method="post">
           <section className={styles.checkboxSection}>
             {channelTypes.map((channelType) => (

@@ -63,8 +63,8 @@ export default function Page() {
 
   return (
     <main className={styles.main}>
+      <Breadcrumb slug={slug} />
       <fieldset disabled={disabled} className={styles.fieldset}>
-        <Breadcrumb slug={slug} />
         <Form method="post">
           <input
             type="text"
