@@ -17,8 +17,8 @@ export function ContentStatus({
   project: Project;
   content: Content;
   open?: boolean;
-  selectedDetails: string | null;
-  setSelectedDetails: (slug: string | null) => void;
+  selectedDetails?: string | null;
+  setSelectedDetails?: (slug: string | null) => void;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -59,11 +59,11 @@ export function ContentStatus({
         e.preventDefault();
 
         if (selectedDetails === content.slug) {
-          setSelectedDetails(null);
+          setSelectedDetails?.(null);
           return;
         }
 
-        setSelectedDetails(content.slug);
+        setSelectedDetails?.(content.slug);
       }}
     >
       <summary className={styles.summary}>Status</summary>
