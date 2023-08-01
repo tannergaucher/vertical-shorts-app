@@ -1,4 +1,5 @@
 import { Link } from "@remix-run/react";
+import { useEffect, useState } from "react";
 
 import type { Content } from "~/models/content.server";
 import type { Project } from "~/models/project.server";
@@ -10,11 +11,17 @@ export function ContentStatus({
   project,
   content,
   open,
+  selectedDetails,
+  setSelectedDetails,
 }: {
   project: Project;
   content: Content;
   open?: boolean;
+  selectedDetails: string | null;
+  setSelectedDetails: (slug: string | null) => void;
 }) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString("en-US", {
       dateStyle: "long",
@@ -23,8 +30,42 @@ export function ContentStatus({
     });
   };
 
+  useEffect(() => {
+    if (content.slug === selectedDetails) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [selectedDetails, content.slug]);
+
+  useEffect(() => {
+    if (isOpen) {
+      const selectedDetails = document.getElementById(content.slug);
+
+      selectedDetails?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
+    }
+  }, [isOpen, content.slug]);
+
   return (
-    <details className={styles.details} open={open}>
+    <details
+      id={content.slug}
+      className={styles.details}
+      open={isOpen}
+      onClick={(e) => {
+        e.preventDefault();
+
+        if (selectedDetails === content.slug) {
+          setSelectedDetails(null);
+          return;
+        }
+
+        setSelectedDetails(content.slug);
+      }}
+    >
       <summary className={styles.summary}>Status</summary>
       <table className={styles.table}>
         <thead>

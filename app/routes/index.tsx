@@ -1,6 +1,7 @@
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -95,6 +96,8 @@ export default function Page() {
 
   const fetcher = useFetcher();
 
+  const [selectedDetails, setSelectedDetails] = useState<string | null>(null);
+
   return (
     <main className={styles.main}>
       <h1 className={styles.title}>{project.title}</h1>
@@ -109,7 +112,12 @@ export default function Page() {
                 <Link to={Routes.AdminContentStatus(content.slug)}>
                   <h3 className={styles.contentTitle}>{content.title}</h3>
                 </Link>
-                <ContentStatus project={project} content={content} />
+                <ContentStatus
+                  project={project}
+                  content={content}
+                  selectedDetails={selectedDetails}
+                  setSelectedDetails={setSelectedDetails}
+                />
               </div>
             </div>
           ))}
