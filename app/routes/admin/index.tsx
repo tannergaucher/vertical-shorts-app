@@ -126,15 +126,14 @@ export default function Page() {
       <section>
         {user.planType ? (
           <>
-            <h3>Current Plan: {getChannelFromChannelType(user.planType)}</h3>
+            <h2>Current Plan:</h2>
+            <h3>{getChannelFromChannelType(user.planType)}</h3>
             <Link to={Routes.Signup}>Update Plan</Link>
           </>
         ) : (
-          <>
-            <Link to={Routes.Signup}>
-              <h3>Sign Up</h3>
-            </Link>
-          </>
+          <Link to={Routes.Signup}>
+            <h3>Select a Plan</h3>
+          </Link>
         )}
       </section>
     </main>
