@@ -36,6 +36,10 @@
   height: max-content;
 }
 
+.contentCard[data-current="true"] {
+  background-color: var(--bg-2);
+}
+
 .contentCardDetails {
   padding: var(--space-1);
   text-decoration: none;

@@ -64,7 +64,7 @@ export default function App() {
         <nav className={styles.nav}>
           <Link to={Routes.Index}>
             <h3>
-              <em>verticalshorts.app</em>
+              <em>Vertical Shorts</em>
             </h3>
           </Link>
           <menu className={styles.menu}>
