@@ -1,4 +1,4 @@
-import type { Channel } from "@prisma/client";
+import type { Channel, PlanType } from "@prisma/client";
 import { ChannelType } from "@prisma/client";
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
@@ -126,7 +126,7 @@ export default function Page() {
       <section>
         {user.planType ? (
           <>
-            <h3>Current Plan: {user.planType}</h3>
+            <h3>Current Plan: {getChannelFromChannelType(user.planType)}</h3>
             <Link to={Routes.Signup}>Update Plan</Link>
           </>
         ) : (
@@ -139,6 +139,17 @@ export default function Page() {
       </section>
     </main>
   );
+}
+
+function getChannelFromChannelType(planType: PlanType) {
+  switch (planType) {
+    case "STARTER":
+      return "Starter";
+    case "GROWTH":
+      return "Growth";
+    case "PROFESSIONAL":
+      return "Professional";
+  }
 }
 
 function getRouteFromChannelType(channelType: ChannelType) {
