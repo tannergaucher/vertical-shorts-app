@@ -123,6 +123,20 @@ export default function Page() {
           );
         })}
       </section>
+      <section>
+        {user.planType ? (
+          <>
+            <h3>Current Plan: {user.planType}</h3>
+            <Link to={Routes.Signup}>Update Plan</Link>
+          </>
+        ) : (
+          <>
+            <Link to={Routes.Signup}>
+              <h3>Sign Up</h3>
+            </Link>
+          </>
+        )}
+      </section>
     </main>
   );
 }
