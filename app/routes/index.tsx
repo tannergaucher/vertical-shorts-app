@@ -104,7 +104,11 @@ export default function Page() {
       <section className={styles.contentAsideGrid}>
         <section className={styles.contentGrid}>
           {contents?.map((content) => (
-            <div key={content.slug} className={styles.contentCard}>
+            <div
+              key={content.slug}
+              className={styles.contentCard}
+              data-current={content.slug === selectedDetails}
+            >
               {content.gif ? (
                 <img src={content.gif} alt={content.title} />
               ) : null}
