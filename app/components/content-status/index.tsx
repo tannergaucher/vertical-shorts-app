@@ -31,12 +31,12 @@ export function ContentStatus({
   };
 
   useEffect(() => {
-    if (content.slug === selectedDetails) {
+    if (content.slug === selectedDetails || open) {
       setIsOpen(true);
     } else {
       setIsOpen(false);
     }
-  }, [selectedDetails, content.slug]);
+  }, [selectedDetails, content.slug, open]);
 
   useEffect(() => {
     if (isOpen) {
