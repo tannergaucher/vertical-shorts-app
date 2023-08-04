@@ -35,30 +35,6 @@ async function seed() {
           },
         })
         .catch(() => {});
-
-      await prisma.tikTokCredentials
-        .delete({
-          where: {
-            projectId: project.id,
-          },
-        })
-        .catch(() => {});
-
-      await prisma.facebookCredentials
-        .delete({
-          where: {
-            projectId: project.id,
-          },
-        })
-        .catch(() => {});
-
-      await prisma.youtubeCredentials
-        .delete({
-          where: {
-            projectId: project.id,
-          },
-        })
-        .catch(() => {});
     });
 
     await prisma.project
