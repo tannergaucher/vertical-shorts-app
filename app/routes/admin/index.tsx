@@ -152,17 +152,31 @@ function ChannelItem({
     updatedAt: string;
   };
 }) {
+  const SUPPORTED_CHANNELS: ChannelType[] = [
+    ChannelType.YOUTUBE,
+    ChannelType.TIKTOK,
+    // ChannelType.INSTAGRAM,
+    // ChannelType.TWITTER,
+    // ChannelType.FACEBOOK,
+  ];
   return (
     <Link
       className={styles.channel}
       to={getRouteFromChannelType(channelType)}
       data-selected={projectChannel ? "true" : "false"}
+      data-supported={
+        SUPPORTED_CHANNELS.includes(channelType) ? "true" : "false"
+      }
     >
-      <h3 className={styles.channelTitle}>{`${
-        projectChannel
-          ? `${channelType} | ${projectChannel.name}`
-          : `ADD ${channelType} CHANNEL`
-      }`}</h3>
+      {SUPPORTED_CHANNELS.includes(channelType) ? (
+        <h3 className={styles.channelTitle}>{`${
+          projectChannel
+            ? `${channelType} | ${projectChannel.name}`
+            : `ADD ${channelType} CHANNEL`
+        }`}</h3>
+      ) : (
+        <h3 className={styles.channelTitle}>{`${channelType} COMING SOON`}</h3>
+      )}
     </Link>
   );
 }
