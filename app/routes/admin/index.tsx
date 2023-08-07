@@ -57,7 +57,7 @@ export const action: ActionFunction = async ({ request }) => {
       id: userId,
     },
     data: {
-      currentProjectId: currentProjectId,
+      currentProjectId,
     },
   });
 
@@ -123,13 +123,12 @@ export default function Page() {
           );
         })}
       </section>
-      <section>
+      <section className={styles.currentPlanSection}>
         {user.planType ? (
-          <>
-            <h2>Current Plan:</h2>
-            <h3>{getChannelFromChannelType(user.planType)}</h3>
+          <div className={styles.currentPlanName}>
+            <h2> {getChannelFromChannelType(user.planType)}</h2>
             <Link to={Routes.Signup}>Update Plan</Link>
-          </>
+          </div>
         ) : (
           <Link to={Routes.Signup}>
             <h3>Select a Plan</h3>

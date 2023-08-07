@@ -36,7 +36,7 @@ export function Breadcrumb({ slug }: { slug?: string }) {
                 : "false"
             }
           >
-            Video
+            Upload
           </Link>
         </li>
         <li>

@@ -25,7 +25,7 @@ export const meta: MetaFunction = () => {
 
 type LoaderData = {
   project: Pick<Project, "id" | "tags" | "title">;
-  content: Pick<Content, "tags" | "description">;
+  content: Pick<Content, "tags" | "description" | "title">;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -64,6 +64,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       select: {
         tags: true,
         description: true,
+        title: true,
       },
     }),
   });
@@ -125,7 +126,10 @@ export default function Page() {
 
   return (
     <main>
-      <h1 className={styles.pageTitle}>{project.title}</h1>
+      <h1 className={styles.pageTitle}>{content.title}</h1>
+      <h2 className={styles.pageTitle}>
+        <em>{project.title}</em>
+      </h2>
       <Breadcrumb slug={slug} />
       <div className={styles.tagsDescriptionGrid}>
         <section>
