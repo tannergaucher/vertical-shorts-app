@@ -63,15 +63,13 @@ export default function App() {
       <body>
         <nav className={styles.nav}>
           <Link to={Routes.Index}>
-            <h3>
-              <em>Vertical Shorts</em>
-            </h3>
+            <h3>Content</h3>
           </Link>
           <menu className={styles.menu}>
             <ul className={styles.ul}>
               <li>
                 <Link to={Routes.Admin}>
-                  <h3>Admin</h3>
+                  <h3>Settings</h3>
                 </Link>
               </li>
               <li>

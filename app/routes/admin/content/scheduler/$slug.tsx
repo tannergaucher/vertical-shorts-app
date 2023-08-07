@@ -105,7 +105,10 @@ export default function Page() {
 
   return (
     <main className={styles.main}>
-      <h1 className={styles.pageTitle}>{project.title}</h1>
+      <h1 className={styles.pageTitle}>{content.title}</h1>
+      <em>
+        <h2 className={styles.pageTitle}>{project.title}</h2>
+      </em>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">

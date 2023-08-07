@@ -5,6 +5,7 @@
 
 .pageTitle {
   text-align: center;
+  margin-block-end: var(--space-2);
 }
 
 .input {

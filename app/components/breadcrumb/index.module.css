@@ -28,18 +28,22 @@
   border-color: var(--bg-1);
 }
 
-.breadcrumbList li:hover {
-  border-color: var(--accent);
-}
-
 .breadcrumbLink {
   text-decoration: none;
   font-weight: bold;
   padding: var(--space-2);
   color: var(--grey);
+  box-shadow: var(--elevation-1);
+}
+
+.breadcrumbLink:hover {
+  color: var(--accent);
+  box-shadow: var(--elevation-2);
+  transition: color var(--duration) box-shadow var(--duration) ease-in-out;
 }
 
 .breadcrumbLink:active,
 .breadcrumbLink[data-current="true"] {
   color: var(--accent);
+  box-shadow: var(--elevation-3);
 }

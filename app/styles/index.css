@@ -147,7 +147,8 @@ fieldset:disabled {
   cursor: pointer;
 }
 
-button {
+button,
+.linkButton {
   background-color: var(--accent);
   color: var(--bg-2);
   border: none;
@@ -157,6 +158,19 @@ button {
   width: 100%;
   transition: background-color var(--duration);
   font: inherit;
+  /* box-shadow: var(--elevation-3); */
+}
+
+button[data-secondary],
+.linkButton {
+  background-color: var(--bg-2);
+  color: var(--accent);
+  transition: background-color var(--duration) color var(--duration);
+}
+
+button[data-secondary]:hover {
+  box-shadow: var(--elevation-1);
+  transition: background-color var(--duration) color var(--duration) ease-in-out;
 }
 
 table {
