@@ -52,6 +52,12 @@
   box-shadow: var(--elevation-2);
 }
 
+.channel[data-supported="false"] {
+  text-decoration: line-through;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
 .channel:hover {
   border-color: var(--accent);
   background-color: var(--bg-2);
