@@ -18,7 +18,7 @@ export function ContentStatus({
   project: Project;
   content: Content;
   open?: boolean;
-  scrollIntoView: boolean;
+  scrollIntoView?: boolean;
   selectedDetails?: string | null;
   setSelectedDetails?: (slug: string | null) => void;
 }) {
