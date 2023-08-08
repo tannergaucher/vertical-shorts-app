@@ -25,12 +25,12 @@ const prisma = new PrismaClient();
 const videoIntelligenceClient =
   new videoIntelligence.VideoIntelligenceServiceClient();
 
-interface DetectTagsRequest {
+interface GenerateTagsRequest {
   projectId: string;
   slug: string;
 }
 
-export interface DetectTagsResponse {
+export interface GenerateTagsResponse {
   success: boolean;
   tags: string[];
 }
@@ -48,10 +48,10 @@ function parseTags(
 }
 
 app.post(
-  "/detect-tags",
+  "/generate-tags",
   async (
-    req: Request<{}, {}, DetectTagsRequest>,
-    res: Response<DetectTagsResponse>
+    req: Request<{}, {}, GenerateTagsRequest>,
+    res: Response<GenerateTagsResponse>
   ) => {
     const { projectId, slug } = req.body;
 
