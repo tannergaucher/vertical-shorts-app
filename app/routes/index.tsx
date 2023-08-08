@@ -5,7 +5,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-import { ContentStatus } from "~/components/content-status";
+import { ContentDetails } from "~/components/content-details";
 import { prisma } from "~/db.server";
 import { getContents } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
@@ -116,7 +116,7 @@ export default function Page() {
                 <Link to={Routes.AdminContentStatus(content.slug)}>
                   <h3 className={styles.contentTitle}>{content.title}</h3>
                 </Link>
-                <ContentStatus
+                <ContentDetails
                   project={project}
                   content={content}
                   selectedDetails={selectedDetails}

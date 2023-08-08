@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import type { Content } from "~/models/content.server";
 import type { Project } from "~/models/project.server";
 import { Routes } from "~/routes";
+import { formatDate } from "~/utils/format-date";
 
 import styles from "./index.module.css";
 
-export function ContentStatus({
+export function ContentDetails({
   project,
   content,
   open,
@@ -21,14 +22,6 @@ export function ContentStatus({
   setSelectedDetails?: (slug: string | null) => void;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleString("en-US", {
-      dateStyle: "long",
-      timeStyle: "short",
-      hour12: true,
-    });
-  };
 
   useEffect(() => {
     if (content.slug === selectedDetails || open) {
@@ -66,7 +59,7 @@ export function ContentStatus({
         setSelectedDetails?.(content.slug);
       }}
     >
-      <summary className={styles.summary}>Status</summary>
+      <summary className={styles.summary}>Details</summary>
       <table className={styles.table}>
         <thead>
           <tr>
