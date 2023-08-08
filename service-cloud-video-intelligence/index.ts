@@ -25,21 +25,33 @@ const prisma = new PrismaClient();
 const videoIntelligenceClient =
   new videoIntelligence.VideoIntelligenceServiceClient();
 
-interface DetectLabelsRequest {
+interface DetectTagsRequest {
   projectId: string;
   slug: string;
 }
 
-export interface DetectLabelsResponse {
+export interface DetectTagsResponse {
   success: boolean;
   tags: string[];
+}
+
+function parseTags(
+  labels?: google.cloud.videointelligence.v1.ILabelAnnotation[] | null
+) {
+  if (!labels) {
+    return [];
+  }
+
+  return labels.flatMap((label) =>
+    label.entity?.description ? label.entity.description : []
+  );
 }
 
 app.post(
   "/detect-tags",
   async (
-    req: Request<{}, {}, DetectLabelsRequest>,
-    res: Response<DetectLabelsResponse>
+    req: Request<{}, {}, DetectTagsRequest>,
+    res: Response<DetectTagsResponse>
   ) => {
     const { projectId, slug } = req.body;
 
@@ -66,14 +78,12 @@ app.post(
       content.labels as string
     ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[] | null;
 
-    const tags = parsedContentLabels?.flatMap((label) =>
-      label.entity?.description ? label.entity.description : []
-    );
+    const parsedTags = parseTags(parsedContentLabels);
 
-    if (tags) {
+    if (parsedTags) {
       return res.json({
         success: true,
-        tags,
+        tags: parsedTags,
       });
     }
 
@@ -85,15 +95,14 @@ app.post(
     };
 
     const [operation] = await videoIntelligenceClient.annotateVideo(request);
+
     console.log("Waiting for operation to complete...");
+
     const [operationResult] = await operation.promise();
 
     const annotations = operationResult.annotationResults?.[0];
 
-    const tagsFromLabelDescription =
-      annotations?.segmentLabelAnnotations?.flatMap(
-        (label) => label.entity?.description ?? []
-      ) ?? [];
+    const parsedFetchedTags = parseTags(annotations?.segmentLabelAnnotations);
 
     await prisma.content.update({
       where: {
@@ -103,13 +112,13 @@ app.post(
         },
       },
       data: {
-        tags: tagsFromLabelDescription,
+        tags: parsedFetchedTags,
       },
     });
 
     return res.json({
       success: true,
-      tags: tagsFromLabelDescription,
+      tags: parsedFetchedTags,
     });
   }
 );
