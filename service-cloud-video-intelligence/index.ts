@@ -36,7 +36,7 @@ export interface DetectLabelsResponse {
 }
 
 app.post(
-  "/detect-labels",
+  "/detect-tags",
   async (
     req: Request<{}, {}, DetectLabelsRequest>,
     res: Response<DetectLabelsResponse>

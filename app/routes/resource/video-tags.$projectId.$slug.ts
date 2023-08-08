@@ -9,19 +9,16 @@ export async function loader({ params }: LoaderArgs) {
   invariant(projectId, "projectId is required");
   invariant(slug, "slug is required");
 
-  const res = await fetch(
-    `${CLOUD_VIDEO_INTELLIGENCE_BASE_URL}/detect-labels`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        projectId,
-        slug,
-      }),
-    }
-  );
+  const res = await fetch(`${CLOUD_VIDEO_INTELLIGENCE_BASE_URL}/detect-tags`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      projectId,
+      slug,
+    }),
+  });
 
   if (!res.ok) {
     throw new Error(

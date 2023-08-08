@@ -51,7 +51,7 @@ app.use((0, cors_1.default)({
 }));
 const prisma = new index_js_1.PrismaClient();
 const videoIntelligenceClient = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
-app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/detect-tags", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _b, _c, _d;
     const { projectId, slug } = req.body;
     const content = yield prisma.content.findUnique({
@@ -72,11 +72,11 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
         throw new Error("CONTENT_NOT_FOUND");
     }
     const parsedContentLabels = JSON.parse(content.labels);
-    const labels = parsedContentLabels === null || parsedContentLabels === void 0 ? void 0 : parsedContentLabels.flatMap((label) => { var _a; return ((_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) ? label.entity.description : []; });
-    if (labels) {
+    const tags = parsedContentLabels === null || parsedContentLabels === void 0 ? void 0 : parsedContentLabels.flatMap((label) => { var _a; return ((_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) ? label.entity.description : []; });
+    if (tags) {
         return res.json({
             success: true,
-            labels,
+            tags,
         });
     }
     const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
@@ -88,7 +88,7 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
     console.log("Waiting for operation to complete...");
     const [operationResult] = yield operation.promise();
     const annotations = (_b = operationResult.annotationResults) === null || _b === void 0 ? void 0 : _b[0];
-    const generatedLabels = (_d = (_c = annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations) === null || _c === void 0 ? void 0 : _c.flatMap((label) => { var _a, _b; return (_b = (_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) !== null && _b !== void 0 ? _b : []; })) !== null && _d !== void 0 ? _d : [];
+    const tagsFromLabelDescription = (_d = (_c = annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations) === null || _c === void 0 ? void 0 : _c.flatMap((label) => { var _a, _b; return (_b = (_a = label.entity) === null || _a === void 0 ? void 0 : _a.description) !== null && _b !== void 0 ? _b : []; })) !== null && _d !== void 0 ? _d : [];
     yield prisma.content.update({
         where: {
             projectId_slug: {
@@ -97,12 +97,12 @@ app.post("/detect-labels", (req, res) => __awaiter(void 0, void 0, void 0, funct
             },
         },
         data: {
-            tags: generatedLabels,
+            tags: tagsFromLabelDescription,
         },
     });
     return res.json({
         success: true,
-        labels: generatedLabels,
+        tags: tagsFromLabelDescription,
     });
 }));
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
