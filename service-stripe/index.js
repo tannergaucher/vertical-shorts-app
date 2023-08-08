@@ -37,10 +37,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
 const stripe_1 = __importDefault(require("stripe"));
+const tiny_invariant_1 = __importDefault(require("tiny-invariant"));
 const index_js_1 = require("./generated/index.js");
 const constants_js_1 = require("./utils/constants.js");
 const app = (0, express_1.default)();
 const prisma = new index_js_1.PrismaClient();
+(0, tiny_invariant_1.default)(process.env.STRIPE_API_KEY, "Missing Stripe API key");
 const stripe = new stripe_1.default(process.env.STRIPE_API_KEY, {
     apiVersion: "2022-11-15",
 });
@@ -72,7 +74,8 @@ function handleCheckoutSessionCompleted(checkoutSession) {
             throw new Error(`User not found with ID ${checkoutSession.client_reference_id}`);
         }
         const stripeCheckout = yield stripe.checkout.sessions.retrieve(checkoutSession.id);
-        const stripeSubscription = yield stripe.subscriptions.retrieve(stripeCheckout.subscription);
+        (0, tiny_invariant_1.default)(stripeCheckout.subscription, "Missing subscription");
+        const stripeSubscription = (yield stripe.subscriptions.retrieve(stripeCheckout.subscription.toString()));
         yield prisma.user.update({
             where: {
                 id: checkoutSession.client_reference_id,
