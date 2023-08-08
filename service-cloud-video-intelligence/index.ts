@@ -2,7 +2,7 @@ import { v1 as videoIntelligence } from "@google-cloud/video-intelligence";
 import { google } from "@google-cloud/video-intelligence/build/protos/protos";
 import cors from "cors";
 import dotenv from "dotenv";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import express, { json } from "express";
 
 import { PrismaClient } from "./generated/index.js";
@@ -25,14 +25,22 @@ const prisma = new PrismaClient();
 const videoIntelligenceClient =
   new videoIntelligence.VideoIntelligenceServiceClient();
 
+interface DetectLabelsRequest {
+  projectId: string;
+  slug: string;
+}
+
 export interface DetectLabelsResponse {
   success: boolean;
-  labels: string[];
+  tags: string[];
 }
 
 app.post(
   "/detect-labels",
-  async (req, res: Response<{}, DetectLabelsResponse>) => {
+  async (
+    req: Request<{}, {}, DetectLabelsRequest>,
+    res: Response<DetectLabelsResponse>
+  ) => {
     const { projectId, slug } = req.body;
 
     const content = await prisma.content.findUnique({
@@ -58,14 +66,14 @@ app.post(
       content.labels as string
     ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[] | null;
 
-    const labels = parsedContentLabels?.flatMap((label) =>
+    const tags = parsedContentLabels?.flatMap((label) =>
       label.entity?.description ? label.entity.description : []
     );
 
-    if (labels) {
+    if (tags) {
       return res.json({
         success: true,
-        labels,
+        tags,
       });
     }
 
@@ -82,7 +90,7 @@ app.post(
 
     const annotations = operationResult.annotationResults?.[0];
 
-    const generatedLabels =
+    const tagsFromLabelDescription =
       annotations?.segmentLabelAnnotations?.flatMap(
         (label) => label.entity?.description ?? []
       ) ?? [];
@@ -95,13 +103,13 @@ app.post(
         },
       },
       data: {
-        tags: generatedLabels,
+        tags: tagsFromLabelDescription,
       },
     });
 
     return res.json({
       success: true,
-      labels: generatedLabels,
+      tags: tagsFromLabelDescription,
     });
   }
 );
