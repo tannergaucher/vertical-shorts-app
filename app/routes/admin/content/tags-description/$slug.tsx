@@ -6,7 +6,7 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import type { DetectTagsResponse } from "service-cloud-video-intelligence";
+import type { GenerateTagsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -103,9 +103,9 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return json<DetectTagsResponse>({
-    tags: content.tags,
+  return json<GenerateTagsResponse>({
     success: true,
+    tags: content.tags,
   });
 };
 
@@ -162,7 +162,7 @@ function TagsForm({
   hasGeneratedTags: boolean;
   setHasGeneratedTags: (value: boolean) => void;
 }) {
-  const tagsFetcher = useFetcher<DetectTagsResponse>();
+  const tagsFetcher = useFetcher<GenerateTagsResponse>();
 
   const tags = tagsFetcher.data?.tags
     ? [...project.tags, ...content.tags, ...tagsFetcher.data.tags]
