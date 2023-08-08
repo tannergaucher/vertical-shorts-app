@@ -9,7 +9,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-import { ContentStatus } from "~/components/content-status";
+import { ContentDetails } from "~/components/content-details";
 import { deleteContent, getContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
@@ -87,7 +87,7 @@ export default function Page() {
         alt={content.title}
         className={styles.gif}
       />
-      <ContentStatus content={content} project={project} open={true} />
+      <ContentDetails content={content} project={project} open={true} />
       <fieldset disabled={disabled} className={styles.fieldset}>
         <Form method="post">
           <input type="hidden" name="slug" value={content.slug} />

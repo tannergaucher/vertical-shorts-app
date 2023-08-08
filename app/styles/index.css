@@ -186,6 +186,10 @@ td {
   padding: var(--space-1);
 }
 
+th {
+  text-align: initial;
+}
+
 @media (max-width: 768px) {
   :root {
     --container: 100%;
