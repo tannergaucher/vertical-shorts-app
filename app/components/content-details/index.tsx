@@ -14,10 +14,12 @@ export function ContentDetails({
   open,
   selectedDetails,
   setSelectedDetails,
+  scrollIntoView,
 }: {
   project: Project;
   content: Content;
   open?: boolean;
+  scrollIntoView?: boolean;
   selectedDetails?: string | null;
   setSelectedDetails?: (slug: string | null) => void;
 }) {
@@ -32,7 +34,7 @@ export function ContentDetails({
   }, [selectedDetails, content.slug, open]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (scrollIntoView && isOpen) {
       const selectedDetails = document.getElementById(content.slug);
 
       selectedDetails?.scrollIntoView({
@@ -41,7 +43,7 @@ export function ContentDetails({
         inline: "center",
       });
     }
-  }, [isOpen, content.slug]);
+  }, [isOpen, scrollIntoView, content.slug]);
 
   return (
     <details

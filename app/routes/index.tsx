@@ -121,6 +121,7 @@ export default function Page() {
                   content={content}
                   selectedDetails={selectedDetails}
                   setSelectedDetails={setSelectedDetails}
+                  scrollIntoView
                 />
               </div>
             </div>
