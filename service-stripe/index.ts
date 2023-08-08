@@ -1,5 +1,7 @@
+import type { Request, Response } from "express";
 import express, { json } from "express";
 import Stripe from "stripe";
+import invariant from "tiny-invariant";
 
 import { PrismaClient } from "./generated/index.js";
 import { STRIPE_PRODUCTS } from "./utils/constants.js";
@@ -8,19 +10,34 @@ const app = express();
 
 const prisma = new PrismaClient();
 
-const stripe = new Stripe(process.env.STRIPE_API_KEY ?? "", {
+invariant(process.env.STRIPE_API_KEY, "Missing Stripe API key");
+
+const stripe = new Stripe(process.env.STRIPE_API_KEY, {
   apiVersion: "2022-11-15",
 });
+
+interface StripeWebhookEvent {
+  type: "checkout.session.completed";
+  data: {
+    object: CheckoutSession;
+  };
+}
+
+interface CheckoutSession {
+  id: string;
+  customer: string;
+  client_reference_id: string;
+}
 
 app.post(
   "/webhook",
   json({ type: "application/json" }),
-  (request, response) => {
+  (request: Request<{}, {}, StripeWebhookEvent>, response: Response) => {
     const event = request.body;
 
     switch (event.type) {
       case "checkout.session.completed":
-        const checkoutSession = event.data.object as CheckoutSession;
+        const checkoutSession = event.data.object;
 
         handleCheckoutSessionCompleted(checkoutSession);
         break;
@@ -33,12 +50,6 @@ app.post(
 );
 
 app.listen(8080, () => console.log("Running on port 8080"));
-
-interface CheckoutSession {
-  id: string;
-  customer: string;
-  client_reference_id: string;
-}
 
 async function handleCheckoutSessionCompleted(
   checkoutSession: CheckoutSession
@@ -72,8 +83,10 @@ async function handleCheckoutSessionCompleted(
     };
   }
 
+  invariant(stripeCheckout.subscription, "Missing subscription");
+
   const stripeSubscription = (await stripe.subscriptions.retrieve(
-    stripeCheckout.subscription?.toString() ?? ""
+    stripeCheckout.subscription.toString()
   )) as unknown as StripeSubscription;
 
   await prisma.user.update({
