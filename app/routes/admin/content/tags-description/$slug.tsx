@@ -6,7 +6,7 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import { useEffect, useState } from "react";
-import type { DetectLabelsResponse } from "service-cloud-video-intelligence";
+import type { DetectTagsResponse } from "service-cloud-video-intelligence";
 import invariant from "tiny-invariant";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -103,8 +103,8 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return json<DetectLabelsResponse>({
-    labels: content.tags,
+  return json<DetectTagsResponse>({
+    tags: content.tags,
     success: true,
   });
 };
@@ -162,10 +162,10 @@ function TagsForm({
   hasGeneratedTags: boolean;
   setHasGeneratedTags: (value: boolean) => void;
 }) {
-  const tagsFetcher = useFetcher<DetectLabelsResponse>();
+  const tagsFetcher = useFetcher<DetectTagsResponse>();
 
-  const tags = tagsFetcher.data?.labels
-    ? [...project.tags, ...content.tags, ...tagsFetcher.data.labels]
+  const tags = tagsFetcher.data?.tags
+    ? [...project.tags, ...content.tags, ...tagsFetcher.data.tags]
     : [...project.tags, ...content.tags];
 
   return (
@@ -179,7 +179,7 @@ function TagsForm({
             tagsFetcher.state === "submitting"
           }
           onClick={() => {
-            tagsFetcher.load(Routes.ResourceVideoLabels(project.id, slug));
+            tagsFetcher.load(Routes.ResourceVideoTags(project.id, slug));
             setHasGeneratedTags(true);
           }}
         >

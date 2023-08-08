@@ -17,6 +17,6 @@ export const Routes = {
   Login: `/login`,
   Logout: `/logout`,
   Signup: `/signup`,
-  ResourceVideoLabels: (projectId: string, slug: string) =>
-    `/resource/video-labels/${projectId}/${slug}`,
+  ResourceVideoTags: (projectId: string, slug: string) =>
+    `/resource/video-tags/${projectId}/${slug}`,
 };

@@ -2,7 +2,7 @@ import { v1 as videoIntelligence } from "@google-cloud/video-intelligence";
 import { google } from "@google-cloud/video-intelligence/build/protos/protos";
 import cors from "cors";
 import dotenv from "dotenv";
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import express, { json } from "express";
 
 import { PrismaClient } from "./generated/index.js";
@@ -25,14 +25,34 @@ const prisma = new PrismaClient();
 const videoIntelligenceClient =
   new videoIntelligence.VideoIntelligenceServiceClient();
 
-export interface DetectLabelsResponse {
+interface DetectTagsRequest {
+  projectId: string;
+  slug: string;
+}
+
+export interface DetectTagsResponse {
   success: boolean;
-  labels: string[];
+  tags: string[];
+}
+
+function parseTags(
+  labels?: google.cloud.videointelligence.v1.ILabelAnnotation[] | null
+) {
+  if (!labels) {
+    return [];
+  }
+
+  return labels.flatMap((label) =>
+    label.entity?.description ? label.entity.description : []
+  );
 }
 
 app.post(
-  "/detect-labels",
-  async (req, res: Response<{}, DetectLabelsResponse>) => {
+  "/detect-tags",
+  async (
+    req: Request<{}, {}, DetectTagsRequest>,
+    res: Response<DetectTagsResponse>
+  ) => {
     const { projectId, slug } = req.body;
 
     const content = await prisma.content.findUnique({
@@ -58,14 +78,12 @@ app.post(
       content.labels as string
     ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[] | null;
 
-    const labels = parsedContentLabels?.flatMap((label) =>
-      label.entity?.description ? label.entity.description : []
-    );
+    const parsedTags = parseTags(parsedContentLabels);
 
-    if (labels) {
+    if (parsedTags) {
       return res.json({
         success: true,
-        labels,
+        tags: parsedTags,
       });
     }
 
@@ -77,15 +95,14 @@ app.post(
     };
 
     const [operation] = await videoIntelligenceClient.annotateVideo(request);
+
     console.log("Waiting for operation to complete...");
+
     const [operationResult] = await operation.promise();
 
     const annotations = operationResult.annotationResults?.[0];
 
-    const generatedLabels =
-      annotations?.segmentLabelAnnotations?.flatMap(
-        (label) => label.entity?.description ?? []
-      ) ?? [];
+    const parsedFetchedTags = parseTags(annotations?.segmentLabelAnnotations);
 
     await prisma.content.update({
       where: {
@@ -95,13 +112,13 @@ app.post(
         },
       },
       data: {
-        tags: generatedLabels,
+        tags: parsedFetchedTags,
       },
     });
 
     return res.json({
       success: true,
-      labels: generatedLabels,
+      tags: parsedFetchedTags,
     });
   }
 );
