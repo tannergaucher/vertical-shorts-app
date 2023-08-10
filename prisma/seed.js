@@ -9,7 +9,6 @@ async function seed() {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (user) {
-    // get user projects
     const projects = await prisma.project.findMany({
       where: { userId: user.id },
       select: {
@@ -44,6 +43,7 @@ async function seed() {
         create: {
           title: "My Seed Project",
           tags: ["seed-project-tag"],
+          // eventually create good seed content with gifs
           content: {
             create: {
               slug: "seed-slug",
