@@ -67,7 +67,6 @@ export const loader = async ({ request }: LoaderArgs) => {
                   create: {
                     accessToken: tokens.access_token,
                     refreshToken: tokens.refresh_token,
-                    userId: user.id,
                   },
                   update: {
                     accessToken: tokens.access_token,

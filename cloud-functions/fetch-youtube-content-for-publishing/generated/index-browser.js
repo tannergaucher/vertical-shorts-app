@@ -224,7 +224,6 @@ exports.Prisma.YoutubeCredentialsScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   channelId: 'channelId',
-  userId: 'userId',
   projectId: 'projectId'
 };
 exports.ChannelType = {
