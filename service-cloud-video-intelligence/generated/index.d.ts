@@ -46,7 +46,6 @@ export type YoutubeCredentials = {
   createdAt: Date
   updatedAt: Date
   channelId: string | null
-  userId: string
   projectId: string
 }
 
@@ -3052,7 +3051,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     channelId: string | null
-    userId: string | null
     projectId: string | null
   }
 
@@ -3063,7 +3061,6 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     channelId: string | null
-    userId: string | null
     projectId: string | null
   }
 
@@ -3074,7 +3071,6 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     channelId: number
-    userId: number
     projectId: number
     _all: number
   }
@@ -3087,7 +3083,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     channelId?: true
-    userId?: true
     projectId?: true
   }
 
@@ -3098,7 +3093,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     channelId?: true
-    userId?: true
     projectId?: true
   }
 
@@ -3109,7 +3103,6 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     channelId?: true
-    userId?: true
     projectId?: true
     _all?: true
   }
@@ -3194,7 +3187,6 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     channelId: string | null
-    userId: string
     projectId: string
     _count: YoutubeCredentialsCountAggregateOutputType | null
     _min: YoutubeCredentialsMinAggregateOutputType | null
@@ -3222,7 +3214,6 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     channelId?: boolean
-    userId?: boolean
     projectId?: boolean
     project?: boolean | ProjectArgs
   }
@@ -11082,7 +11073,6 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     channelId: 'channelId',
-    userId: 'userId',
     projectId: 'projectId'
   };
 
@@ -11197,7 +11187,6 @@ export namespace Prisma {
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
     channelId?: StringNullableFilter | string | null
-    userId?: StringFilter | string
     projectId?: StringFilter | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
@@ -11209,7 +11198,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     channelId?: SortOrder
-    userId?: SortOrder
     projectId?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
@@ -11217,7 +11205,6 @@ export namespace Prisma {
   export type YoutubeCredentialsWhereUniqueInput = {
     id?: string
     projectId?: string
-    projectId_userId?: YoutubeCredentialsProjectIdUserIdCompoundUniqueInput
   }
 
   export type YoutubeCredentialsOrderByWithAggregationInput = {
@@ -11227,7 +11214,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     channelId?: SortOrder
-    userId?: SortOrder
     projectId?: SortOrder
     _count?: YoutubeCredentialsCountOrderByAggregateInput
     _max?: YoutubeCredentialsMaxOrderByAggregateInput
@@ -11244,7 +11230,6 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
     channelId?: StringNullableWithAggregatesFilter | string | null
-    userId?: StringWithAggregatesFilter | string
     projectId?: StringWithAggregatesFilter | string
   }
 
@@ -11846,7 +11831,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     channelId?: string | null
-    userId: string
     project: ProjectCreateNestedOneWithoutYoutubeCredentialsInput
   }
 
@@ -11857,7 +11841,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     channelId?: string | null
-    userId: string
     projectId: string
   }
 
@@ -11868,7 +11851,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutYoutubeCredentialsNestedInput
   }
 
@@ -11879,7 +11861,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -11890,7 +11871,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     channelId?: string | null
-    userId: string
     projectId: string
   }
 
@@ -11901,7 +11881,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type YoutubeCredentialsUncheckedUpdateManyInput = {
@@ -11911,7 +11890,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -12730,11 +12708,6 @@ export namespace Prisma {
     isNot?: ProjectWhereInput
   }
 
-  export type YoutubeCredentialsProjectIdUserIdCompoundUniqueInput = {
-    projectId: string
-    userId: string
-  }
-
   export type YoutubeCredentialsCountOrderByAggregateInput = {
     id?: SortOrder
     accessToken?: SortOrder
@@ -12742,7 +12715,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     channelId?: SortOrder
-    userId?: SortOrder
     projectId?: SortOrder
   }
 
@@ -12753,7 +12725,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     channelId?: SortOrder
-    userId?: SortOrder
     projectId?: SortOrder
   }
 
@@ -12764,7 +12735,6 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     channelId?: SortOrder
-    userId?: SortOrder
     projectId?: SortOrder
   }
 
@@ -14730,7 +14700,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     channelId?: string | null
-    userId: string
   }
 
   export type YoutubeCredentialsUncheckedCreateWithoutProjectInput = {
@@ -14740,7 +14709,6 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     channelId?: string | null
-    userId: string
   }
 
   export type YoutubeCredentialsCreateOrConnectWithoutProjectInput = {
@@ -14953,7 +14921,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type YoutubeCredentialsUncheckedUpdateWithoutProjectInput = {
@@ -14963,7 +14930,6 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    userId?: StringFieldUpdateOperationsInput | string
   }
 
   export type InstagramCredentialsUpsertWithoutProjectInput = {
