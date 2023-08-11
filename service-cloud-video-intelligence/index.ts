@@ -35,7 +35,7 @@ export interface GenerateTagsResponse {
   tags: string[];
 }
 
-function parseTags(
+function parseLabelsToTags(
   labels?: google.cloud.videointelligence.v1.ILabelAnnotation[] | null
 ) {
   if (!labels) {
@@ -78,48 +78,66 @@ app.post(
       content.labels as string
     ) as unknown as google.cloud.videointelligence.v1.ILabelAnnotation[] | null;
 
-    const parsedTags = parseTags(parsedContentLabels);
+    const parsedTags = parseLabelsToTags(parsedContentLabels);
 
-    if (parsedTags) {
+    if (parsedTags.length > 0) {
       return res.json({
         success: true,
         tags: parsedTags,
       });
     }
 
-    const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
+    try {
+      const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
-    const request = {
-      inputUri: gcsResourceUri,
-      features: [google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
-    };
+      const request = {
+        inputUri: gcsResourceUri,
+        features: [google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
+      };
 
-    const [operation] = await videoIntelligenceClient.annotateVideo(request);
+      const [operation] = await videoIntelligenceClient.annotateVideo(request);
 
-    console.log("Waiting for operation to complete...");
+      console.log("Waiting for operation to complete...");
 
-    const [operationResult] = await operation.promise();
+      const [operationResult] = await operation.promise();
 
-    const annotations = operationResult.annotationResults?.[0];
+      const annotations = operationResult.annotationResults?.[0];
 
-    const parsedFetchedTags = parseTags(annotations?.segmentLabelAnnotations);
+      const parsedFetchedTags = parseLabelsToTags(
+        annotations?.segmentLabelAnnotations
+      );
 
-    await prisma.content.update({
-      where: {
-        projectId_slug: {
-          projectId,
-          slug,
-        },
-      },
-      data: {
-        tags: parsedFetchedTags,
-      },
-    });
+      if (parsedFetchedTags.length > 0) {
+        await prisma.content.update({
+          where: {
+            projectId_slug: {
+              projectId,
+              slug,
+            },
+          },
+          data: {
+            tags: parsedFetchedTags,
+          },
+        });
 
-    return res.json({
-      success: true,
-      tags: parsedFetchedTags,
-    });
+        return res.json({
+          success: true,
+          tags: parsedFetchedTags,
+        });
+      }
+
+      return res.json({
+        success: false,
+        tags: [],
+      });
+    } catch (error) {
+      console.error(error);
+
+      return res.json({
+        success: false,
+        tags: [],
+      });
+    }
   }
 );
 
