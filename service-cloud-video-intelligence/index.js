@@ -51,7 +51,7 @@ app.use((0, cors_1.default)({
 }));
 const prisma = new index_js_1.PrismaClient();
 const videoIntelligenceClient = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
-function parseTags(labels) {
+function parseLabelsToTags(labels) {
     if (!labels) {
         return [];
     }
@@ -78,38 +78,53 @@ app.post("/generate-tags", (req, res) => __awaiter(void 0, void 0, void 0, funct
         throw new Error("CONTENT_NOT_FOUND");
     }
     const parsedContentLabels = JSON.parse(content.labels);
-    const parsedTags = parseTags(parsedContentLabels);
-    if (parsedTags) {
+    const parsedTags = parseLabelsToTags(parsedContentLabels);
+    if (parsedTags.length > 0) {
         return res.json({
             success: true,
             tags: parsedTags,
         });
     }
-    const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
-    const request = {
-        inputUri: gcsResourceUri,
-        features: [protos_1.google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
-    };
-    const [operation] = yield videoIntelligenceClient.annotateVideo(request);
-    console.log("Waiting for operation to complete...");
-    const [operationResult] = yield operation.promise();
-    const annotations = (_b = operationResult.annotationResults) === null || _b === void 0 ? void 0 : _b[0];
-    const parsedFetchedTags = parseTags(annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations);
-    yield prisma.content.update({
-        where: {
-            projectId_slug: {
-                projectId,
-                slug,
-            },
-        },
-        data: {
-            tags: parsedFetchedTags,
-        },
-    });
-    return res.json({
-        success: true,
-        tags: parsedFetchedTags,
-    });
+    try {
+        const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
+        const request = {
+            inputUri: gcsResourceUri,
+            features: [protos_1.google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
+        };
+        const [operation] = yield videoIntelligenceClient.annotateVideo(request);
+        console.log("Waiting for operation to complete...");
+        const [operationResult] = yield operation.promise();
+        const annotations = (_b = operationResult.annotationResults) === null || _b === void 0 ? void 0 : _b[0];
+        const parsedFetchedTags = parseLabelsToTags(annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations);
+        if (parsedFetchedTags.length > 0) {
+            yield prisma.content.update({
+                where: {
+                    projectId_slug: {
+                        projectId,
+                        slug,
+                    },
+                },
+                data: {
+                    tags: parsedFetchedTags,
+                },
+            });
+            return res.json({
+                success: true,
+                tags: parsedFetchedTags,
+            });
+        }
+        return res.json({
+            success: false,
+            tags: [],
+        });
+    }
+    catch (error) {
+        console.error(error);
+        return res.json({
+            success: false,
+            tags: [],
+        });
+    }
 }));
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _c, _d;
