@@ -4,10 +4,6 @@
   top: 0;
 }
 
-.details[open] {
-  box-shadow: var(--elevation-3);
-}
-
 .details[open] .summary {
   color: var(--accent);
 }
@@ -21,4 +17,5 @@
   margin-block-start: var(--space-1);
   background-color: var(--bg-2);
   border-color: var(--bg-1);
+  box-shadow: var(--elevation-3);
 }

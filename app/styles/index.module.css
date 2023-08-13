@@ -34,10 +34,12 @@
   border-radius: var(--radius);
   text-decoration: none;
   height: max-content;
+  box-shadow: var(--elevation-1);
 }
 
 .contentCard[data-current="true"] {
   background-color: var(--bg-2);
+  box-shadow: var(--elevation-2);
 }
 
 .contentCardDetails {
