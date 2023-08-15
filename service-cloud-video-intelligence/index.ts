@@ -65,7 +65,6 @@ app.post(
       select: {
         projectId: true,
         slug: true,
-        annotations: true,
         labels: true,
       },
     });

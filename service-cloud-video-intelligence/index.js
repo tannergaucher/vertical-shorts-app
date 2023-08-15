@@ -70,7 +70,6 @@ app.post("/generate-tags", (req, res) => __awaiter(void 0, void 0, void 0, funct
         select: {
             projectId: true,
             slug: true,
-            annotations: true,
             labels: true,
         },
     });
