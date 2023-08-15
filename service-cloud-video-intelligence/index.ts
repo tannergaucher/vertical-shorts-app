@@ -156,10 +156,10 @@ app.post("/recognize-text", async (req, res) => {
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+  const inputUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
   const request = {
-    inputUri: gcsUri,
+    inputUri,
     features: [google.cloud.videointelligence.v1.Feature.TEXT_DETECTION],
   };
 
