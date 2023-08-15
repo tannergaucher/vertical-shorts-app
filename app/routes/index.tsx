@@ -135,7 +135,15 @@ export default function Page() {
               }
             >
               <Form method="post">
-                <input type="text" placeholder="Add Tag" name="tag" id="tag" />
+                <input
+                  type="text"
+                  placeholder="Add Tag"
+                  name="tag"
+                  id="tag"
+                  onFocus={() => {
+                    setSelectedDetails(null);
+                  }}
+                />
                 <button
                   className={styles.submitButton}
                   onClick={(e) => {
