@@ -2,7 +2,6 @@ import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-import { useRef } from "react";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
