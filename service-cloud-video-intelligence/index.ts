@@ -131,12 +131,8 @@ app.post(
         tags: [],
       });
     } catch (error) {
-      console.error(error);
-
-      return res.json({
-        success: false,
-        tags: [],
-      });
+      console.log(error);
+      throw new Error("ERROR_GENERATING_TAGS");
     }
   }
 );
