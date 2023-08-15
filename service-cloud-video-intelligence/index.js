@@ -119,11 +119,8 @@ app.post("/generate-tags", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
     catch (error) {
-        console.error(error);
-        return res.json({
-            success: false,
-            tags: [],
-        });
+        console.log(error);
+        throw new Error("ERROR_GENERATING_TAGS");
     }
 }));
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
