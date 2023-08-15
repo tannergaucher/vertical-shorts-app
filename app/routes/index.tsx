@@ -2,6 +2,7 @@ import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+import { useRef } from "react";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -92,6 +93,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
+  const [tagsFocused, setTagsFocused] = useState(false);
   const { contents, project } = useLoaderData<LoaderData>();
 
   const fetcher = useFetcher();
@@ -135,30 +137,38 @@ export default function Page() {
               }
             >
               <Form method="post">
-                <input type="text" placeholder="Add Tag" name="tag" id="tag" />
-                <button
-                  className={styles.submitButton}
-                  onClick={(e) => {
-                    const tagInputElement =
-                      e.currentTarget.form?.elements.namedItem(
-                        "tag"
-                      ) as HTMLInputElement;
+                <input
+                  type="text"
+                  placeholder="Add Tag"
+                  name="tag"
+                  id="tag"
+                  onFocus={() => setTagsFocused(true)}
+                />
+                {tagsFocused ? (
+                  <button
+                    className={styles.submitButton}
+                    onClick={(e) => {
+                      const tagInputElement =
+                        e.currentTarget.form?.elements.namedItem(
+                          "tag"
+                        ) as HTMLInputElement;
 
-                    fetcher.submit(
-                      {
-                        actionType: ActionType.AddTag,
-                        tag: tagInputElement.value,
-                      },
-                      {
-                        method: "post",
-                      }
-                    );
+                      fetcher.submit(
+                        {
+                          actionType: ActionType.AddTag,
+                          tag: tagInputElement.value,
+                        },
+                        {
+                          method: "post",
+                        }
+                      );
 
-                    tagInputElement.value = "";
-                  }}
-                >
-                  Add Tag
-                </button>
+                      tagInputElement.value = "";
+                    }}
+                  >
+                    Add Tag
+                  </button>
+                ) : null}
                 {project.tags.map((tag) => (
                   <div key={tag} className={styles.tag}>
                     <span>#{tag}</span>
