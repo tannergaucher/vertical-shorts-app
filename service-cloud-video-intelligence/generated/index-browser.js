@@ -139,9 +139,12 @@ exports.Prisma.FacebookCredentialsScalarFieldEnum = {
 exports.Prisma.InstagramCredentialsScalarFieldEnum = {
   id: 'id',
   accessToken: 'accessToken',
+  dataAccessExpirationTime: 'dataAccessExpirationTime',
+  expiresIn: 'expiresIn',
+  signedRequest: 'signedRequest',
+  userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  username: 'username',
   projectId: 'projectId'
 };
 

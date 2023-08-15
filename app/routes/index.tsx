@@ -150,7 +150,7 @@ export default function Page() {
                         tag: tagInputElement.value,
                       },
                       {
-                        method: "post",
+                        method: "POST",
                       }
                     );
 

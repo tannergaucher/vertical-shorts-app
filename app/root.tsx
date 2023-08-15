@@ -61,6 +61,13 @@ export default function App() {
         ) : null}
       </head>
       <body>
+        <script
+          async
+          defer
+          crossOrigin="anonymous"
+          src="https://connect.facebook.net/en_US/sdk.js"
+        ></script>
+
         <nav className={styles.nav}>
           <Link to={Routes.Index}>
             <h3>Content</h3>

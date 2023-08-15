@@ -3,6 +3,8 @@ export const Routes = {
   AuthorizeYoutube: `/authorize-integration/youtube`,
   AuthorizeTikTok: `/authorize-integration/tiktok`,
   AuthorizeInstagram: `/authorize-integration/instagram`,
+  AuthorizeInstagramSuccess: (accessToken: string) =>
+    `/authorize-integration/instagram/success/${accessToken}`,
   AuthorizeFacebook: `/authorize-integration/facebook`,
   AuthorizeTwitter: `/authorize-integration/twitter`,
   Admin: `/admin`,

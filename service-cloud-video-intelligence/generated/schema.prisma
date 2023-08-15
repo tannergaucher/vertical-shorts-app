@@ -95,13 +95,16 @@ model YoutubeCredentials {
 }
 
 model InstagramCredentials {
-  id          String   @id @default(cuid())
-  accessToken String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  username    String
-  projectId   String   @unique
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id                       String   @id @default(cuid())
+  accessToken              String
+  dataAccessExpirationTime Int
+  expiresIn                Int
+  signedRequest            String
+  userId                   String
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+  projectId                String   @unique
+  project                  Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
 
 model TikTokCredentials {

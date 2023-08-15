@@ -56,9 +56,12 @@ export type YoutubeCredentials = {
 export type InstagramCredentials = {
   id: string
   accessToken: string
+  dataAccessExpirationTime: number
+  expiresIn: number
+  signedRequest: string
+  userId: string
   createdAt: Date
   updatedAt: Date
-  username: string
   projectId: string
 }
 
@@ -3987,63 +3990,103 @@ export namespace Prisma {
 
   export type AggregateInstagramCredentials = {
     _count: InstagramCredentialsCountAggregateOutputType | null
+    _avg: InstagramCredentialsAvgAggregateOutputType | null
+    _sum: InstagramCredentialsSumAggregateOutputType | null
     _min: InstagramCredentialsMinAggregateOutputType | null
     _max: InstagramCredentialsMaxAggregateOutputType | null
+  }
+
+  export type InstagramCredentialsAvgAggregateOutputType = {
+    dataAccessExpirationTime: number | null
+    expiresIn: number | null
+  }
+
+  export type InstagramCredentialsSumAggregateOutputType = {
+    dataAccessExpirationTime: number | null
+    expiresIn: number | null
   }
 
   export type InstagramCredentialsMinAggregateOutputType = {
     id: string | null
     accessToken: string | null
+    dataAccessExpirationTime: number | null
+    expiresIn: number | null
+    signedRequest: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    username: string | null
     projectId: string | null
   }
 
   export type InstagramCredentialsMaxAggregateOutputType = {
     id: string | null
     accessToken: string | null
+    dataAccessExpirationTime: number | null
+    expiresIn: number | null
+    signedRequest: string | null
+    userId: string | null
     createdAt: Date | null
     updatedAt: Date | null
-    username: string | null
     projectId: string | null
   }
 
   export type InstagramCredentialsCountAggregateOutputType = {
     id: number
     accessToken: number
+    dataAccessExpirationTime: number
+    expiresIn: number
+    signedRequest: number
+    userId: number
     createdAt: number
     updatedAt: number
-    username: number
     projectId: number
     _all: number
   }
 
 
+  export type InstagramCredentialsAvgAggregateInputType = {
+    dataAccessExpirationTime?: true
+    expiresIn?: true
+  }
+
+  export type InstagramCredentialsSumAggregateInputType = {
+    dataAccessExpirationTime?: true
+    expiresIn?: true
+  }
+
   export type InstagramCredentialsMinAggregateInputType = {
     id?: true
     accessToken?: true
+    dataAccessExpirationTime?: true
+    expiresIn?: true
+    signedRequest?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    username?: true
     projectId?: true
   }
 
   export type InstagramCredentialsMaxAggregateInputType = {
     id?: true
     accessToken?: true
+    dataAccessExpirationTime?: true
+    expiresIn?: true
+    signedRequest?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    username?: true
     projectId?: true
   }
 
   export type InstagramCredentialsCountAggregateInputType = {
     id?: true
     accessToken?: true
+    dataAccessExpirationTime?: true
+    expiresIn?: true
+    signedRequest?: true
+    userId?: true
     createdAt?: true
     updatedAt?: true
-    username?: true
     projectId?: true
     _all?: true
   }
@@ -4086,6 +4129,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: InstagramCredentialsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: InstagramCredentialsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: InstagramCredentialsMinAggregateInputType
@@ -4116,6 +4171,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: InstagramCredentialsCountAggregateInputType | true
+    _avg?: InstagramCredentialsAvgAggregateInputType
+    _sum?: InstagramCredentialsSumAggregateInputType
     _min?: InstagramCredentialsMinAggregateInputType
     _max?: InstagramCredentialsMaxAggregateInputType
   }
@@ -4124,11 +4181,16 @@ export namespace Prisma {
   export type InstagramCredentialsGroupByOutputType = {
     id: string
     accessToken: string
+    dataAccessExpirationTime: number
+    expiresIn: number
+    signedRequest: string
+    userId: string
     createdAt: Date
     updatedAt: Date
-    username: string
     projectId: string
     _count: InstagramCredentialsCountAggregateOutputType | null
+    _avg: InstagramCredentialsAvgAggregateOutputType | null
+    _sum: InstagramCredentialsSumAggregateOutputType | null
     _min: InstagramCredentialsMinAggregateOutputType | null
     _max: InstagramCredentialsMaxAggregateOutputType | null
   }
@@ -4150,9 +4212,12 @@ export namespace Prisma {
   export type InstagramCredentialsSelect = {
     id?: boolean
     accessToken?: boolean
+    dataAccessExpirationTime?: boolean
+    expiresIn?: boolean
+    signedRequest?: boolean
+    userId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
-    username?: boolean
     projectId?: boolean
     project?: boolean | ProjectArgs
   }
@@ -10955,9 +11020,12 @@ export namespace Prisma {
   export const InstagramCredentialsScalarFieldEnum: {
     id: 'id',
     accessToken: 'accessToken',
+    dataAccessExpirationTime: 'dataAccessExpirationTime',
+    expiresIn: 'expiresIn',
+    signedRequest: 'signedRequest',
+    userId: 'userId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
-    username: 'username',
     projectId: 'projectId'
   };
 
@@ -11239,9 +11307,12 @@ export namespace Prisma {
     NOT?: Enumerable<InstagramCredentialsWhereInput>
     id?: StringFilter | string
     accessToken?: StringFilter | string
+    dataAccessExpirationTime?: IntFilter | number
+    expiresIn?: IntFilter | number
+    signedRequest?: StringFilter | string
+    userId?: StringFilter | string
     createdAt?: DateTimeFilter | Date | string
     updatedAt?: DateTimeFilter | Date | string
-    username?: StringFilter | string
     projectId?: StringFilter | string
     project?: XOR<ProjectRelationFilter, ProjectWhereInput>
   }
@@ -11249,9 +11320,12 @@ export namespace Prisma {
   export type InstagramCredentialsOrderByWithRelationInput = {
     id?: SortOrder
     accessToken?: SortOrder
+    dataAccessExpirationTime?: SortOrder
+    expiresIn?: SortOrder
+    signedRequest?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    username?: SortOrder
     projectId?: SortOrder
     project?: ProjectOrderByWithRelationInput
   }
@@ -11264,13 +11338,18 @@ export namespace Prisma {
   export type InstagramCredentialsOrderByWithAggregationInput = {
     id?: SortOrder
     accessToken?: SortOrder
+    dataAccessExpirationTime?: SortOrder
+    expiresIn?: SortOrder
+    signedRequest?: SortOrder
+    userId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-    username?: SortOrder
     projectId?: SortOrder
     _count?: InstagramCredentialsCountOrderByAggregateInput
+    _avg?: InstagramCredentialsAvgOrderByAggregateInput
     _max?: InstagramCredentialsMaxOrderByAggregateInput
     _min?: InstagramCredentialsMinOrderByAggregateInput
+    _sum?: InstagramCredentialsSumOrderByAggregateInput
   }
 
   export type InstagramCredentialsScalarWhereWithAggregatesInput = {
@@ -11279,9 +11358,12 @@ export namespace Prisma {
     NOT?: Enumerable<InstagramCredentialsScalarWhereWithAggregatesInput>
     id?: StringWithAggregatesFilter | string
     accessToken?: StringWithAggregatesFilter | string
+    dataAccessExpirationTime?: IntWithAggregatesFilter | number
+    expiresIn?: IntWithAggregatesFilter | number
+    signedRequest?: StringWithAggregatesFilter | string
+    userId?: StringWithAggregatesFilter | string
     createdAt?: DateTimeWithAggregatesFilter | Date | string
     updatedAt?: DateTimeWithAggregatesFilter | Date | string
-    username?: StringWithAggregatesFilter | string
     projectId?: StringWithAggregatesFilter | string
   }
 
@@ -11896,62 +11978,83 @@ export namespace Prisma {
   export type InstagramCredentialsCreateInput = {
     id?: string
     accessToken: string
+    dataAccessExpirationTime: number
+    expiresIn: number
+    signedRequest: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    username: string
     project: ProjectCreateNestedOneWithoutInstagramCredentialsInput
   }
 
   export type InstagramCredentialsUncheckedCreateInput = {
     id?: string
     accessToken: string
+    dataAccessExpirationTime: number
+    expiresIn: number
+    signedRequest: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    username: string
     projectId: string
   }
 
   export type InstagramCredentialsUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    dataAccessExpirationTime?: IntFieldUpdateOperationsInput | number
+    expiresIn?: IntFieldUpdateOperationsInput | number
+    signedRequest?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
     project?: ProjectUpdateOneRequiredWithoutInstagramCredentialsNestedInput
   }
 
   export type InstagramCredentialsUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    dataAccessExpirationTime?: IntFieldUpdateOperationsInput | number
+    expiresIn?: IntFieldUpdateOperationsInput | number
+    signedRequest?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
   export type InstagramCredentialsCreateManyInput = {
     id?: string
     accessToken: string
+    dataAccessExpirationTime: number
+    expiresIn: number
+    signedRequest: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    username: string
     projectId: string
   }
 
   export type InstagramCredentialsUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    dataAccessExpirationTime?: IntFieldUpdateOperationsInput | number
+    expiresIn?: IntFieldUpdateOperationsInput | number
+    signedRequest?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
   }
 
   export type InstagramCredentialsUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    dataAccessExpirationTime?: IntFieldUpdateOperationsInput | number
+    expiresIn?: IntFieldUpdateOperationsInput | number
+    signedRequest?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
     projectId?: StringFieldUpdateOperationsInput | string
   }
 
@@ -12738,33 +12841,6 @@ export namespace Prisma {
     projectId?: SortOrder
   }
 
-  export type InstagramCredentialsCountOrderByAggregateInput = {
-    id?: SortOrder
-    accessToken?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    username?: SortOrder
-    projectId?: SortOrder
-  }
-
-  export type InstagramCredentialsMaxOrderByAggregateInput = {
-    id?: SortOrder
-    accessToken?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    username?: SortOrder
-    projectId?: SortOrder
-  }
-
-  export type InstagramCredentialsMinOrderByAggregateInput = {
-    id?: SortOrder
-    accessToken?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    username?: SortOrder
-    projectId?: SortOrder
-  }
-
   export type IntFilter = {
     equals?: number
     in?: Enumerable<number> | number
@@ -12774,6 +12850,68 @@ export namespace Prisma {
     gt?: number
     gte?: number
     not?: NestedIntFilter | number
+  }
+
+  export type InstagramCredentialsCountOrderByAggregateInput = {
+    id?: SortOrder
+    accessToken?: SortOrder
+    dataAccessExpirationTime?: SortOrder
+    expiresIn?: SortOrder
+    signedRequest?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+  }
+
+  export type InstagramCredentialsAvgOrderByAggregateInput = {
+    dataAccessExpirationTime?: SortOrder
+    expiresIn?: SortOrder
+  }
+
+  export type InstagramCredentialsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    accessToken?: SortOrder
+    dataAccessExpirationTime?: SortOrder
+    expiresIn?: SortOrder
+    signedRequest?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+  }
+
+  export type InstagramCredentialsMinOrderByAggregateInput = {
+    id?: SortOrder
+    accessToken?: SortOrder
+    dataAccessExpirationTime?: SortOrder
+    expiresIn?: SortOrder
+    signedRequest?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    projectId?: SortOrder
+  }
+
+  export type InstagramCredentialsSumOrderByAggregateInput = {
+    dataAccessExpirationTime?: SortOrder
+    expiresIn?: SortOrder
+  }
+
+  export type IntWithAggregatesFilter = {
+    equals?: number
+    in?: Enumerable<number> | number
+    notIn?: Enumerable<number> | number
+    lt?: number
+    lte?: number
+    gt?: number
+    gte?: number
+    not?: NestedIntWithAggregatesFilter | number
+    _count?: NestedIntFilter
+    _avg?: NestedFloatFilter
+    _sum?: NestedIntFilter
+    _min?: NestedIntFilter
+    _max?: NestedIntFilter
   }
 
   export type TikTokCredentialsCountOrderByAggregateInput = {
@@ -12821,22 +12959,6 @@ export namespace Prisma {
 
   export type TikTokCredentialsSumOrderByAggregateInput = {
     refreshTokenExpiresIn?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter = {
-    equals?: number
-    in?: Enumerable<number> | number
-    notIn?: Enumerable<number> | number
-    lt?: number
-    lte?: number
-    gt?: number
-    gte?: number
-    not?: NestedIntWithAggregatesFilter | number
-    _count?: NestedIntFilter
-    _avg?: NestedFloatFilter
-    _sum?: NestedIntFilter
-    _min?: NestedIntFilter
-    _max?: NestedIntFilter
   }
 
   export type FacebookCredentialsCountOrderByAggregateInput = {
@@ -13355,6 +13477,14 @@ export namespace Prisma {
     connect?: ProjectWhereUniqueInput
   }
 
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
   export type ProjectUpdateOneRequiredWithoutInstagramCredentialsNestedInput = {
     create?: XOR<ProjectCreateWithoutInstagramCredentialsInput, ProjectUncheckedCreateWithoutInstagramCredentialsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutInstagramCredentialsInput
@@ -13367,14 +13497,6 @@ export namespace Prisma {
     create?: XOR<ProjectCreateWithoutTikTokCredentialsInput, ProjectUncheckedCreateWithoutTikTokCredentialsInput>
     connectOrCreate?: ProjectCreateOrConnectWithoutTikTokCredentialsInput
     connect?: ProjectWhereUniqueInput
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type ProjectUpdateOneRequiredWithoutTikTokCredentialsNestedInput = {
@@ -14719,17 +14841,23 @@ export namespace Prisma {
   export type InstagramCredentialsCreateWithoutProjectInput = {
     id?: string
     accessToken: string
+    dataAccessExpirationTime: number
+    expiresIn: number
+    signedRequest: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    username: string
   }
 
   export type InstagramCredentialsUncheckedCreateWithoutProjectInput = {
     id?: string
     accessToken: string
+    dataAccessExpirationTime: number
+    expiresIn: number
+    signedRequest: string
+    userId: string
     createdAt?: Date | string
     updatedAt?: Date | string
-    username: string
   }
 
   export type InstagramCredentialsCreateOrConnectWithoutProjectInput = {
@@ -14940,17 +15068,23 @@ export namespace Prisma {
   export type InstagramCredentialsUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    dataAccessExpirationTime?: IntFieldUpdateOperationsInput | number
+    expiresIn?: IntFieldUpdateOperationsInput | number
+    signedRequest?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
   }
 
   export type InstagramCredentialsUncheckedUpdateWithoutProjectInput = {
     id?: StringFieldUpdateOperationsInput | string
     accessToken?: StringFieldUpdateOperationsInput | string
+    dataAccessExpirationTime?: IntFieldUpdateOperationsInput | number
+    expiresIn?: IntFieldUpdateOperationsInput | number
+    signedRequest?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    username?: StringFieldUpdateOperationsInput | string
   }
 
   export type TikTokCredentialsUpsertWithoutProjectInput = {
