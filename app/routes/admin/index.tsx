@@ -182,10 +182,15 @@ function ChannelItem({
     // ChannelType.TWITTER,
     // ChannelType.FACEBOOK,
   ];
+
   return (
     <Link
       className={styles.channel}
-      to={getRouteFromChannelType(channelType)}
+      to={
+        SUPPORTED_CHANNELS.includes(channelType)
+          ? getRouteFromChannelType(channelType)
+          : "#"
+      }
       data-selected={projectChannel ? "true" : "false"}
       data-supported={
         SUPPORTED_CHANNELS.includes(channelType) ? "true" : "false"
