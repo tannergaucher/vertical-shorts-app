@@ -87,10 +87,10 @@ app.post(
     }
 
     try {
-      const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
+      const inputUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
       const request = {
-        inputUri: gcsResourceUri,
+        inputUri,
         features: [google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
       };
 
@@ -243,7 +243,7 @@ app.post("/transcribe", async (req, res) => {
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+  const inputUri = `gs://${content.projectId}/${content.slug}.mp4`;
 
   const videoContext = {
     speechTranscriptionConfig: {
@@ -253,8 +253,8 @@ app.post("/transcribe", async (req, res) => {
   };
 
   const request = {
-    inputUri: gcsUri,
-    videoContext: videoContext,
+    inputUri,
+    videoContext,
     features: [google.cloud.videointelligence.v1.Feature.SPEECH_TRANSCRIPTION],
   };
 
