@@ -70,7 +70,6 @@ app.post("/generate-tags", (req, res) => __awaiter(void 0, void 0, void 0, funct
         select: {
             projectId: true,
             slug: true,
-            annotations: true,
             labels: true,
         },
     });
@@ -86,9 +85,9 @@ app.post("/generate-tags", (req, res) => __awaiter(void 0, void 0, void 0, funct
         });
     }
     try {
-        const gcsResourceUri = `gs://${content.projectId}/${content.slug}.mp4`;
+        const inputUri = `gs://${content.projectId}/${content.slug}.mp4`;
         const request = {
-            inputUri: gcsResourceUri,
+            inputUri,
             features: [protos_1.google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
         };
         const [operation] = yield videoIntelligenceClient.annotateVideo(request);
@@ -141,9 +140,9 @@ app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, func
     if (!content) {
         throw new Error("CONTENT_NOT_FOUND");
     }
-    const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+    const inputUri = `gs://${content.projectId}/${content.slug}.mp4`;
     const request = {
-        inputUri: gcsUri,
+        inputUri,
         features: [protos_1.google.cloud.videointelligence.v1.Feature.TEXT_DETECTION],
     };
     const [operation] = yield videoIntelligenceClient.annotateVideo(request);
@@ -182,7 +181,7 @@ app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function
     if (!content) {
         throw new Error("CONTENT_NOT_FOUND");
     }
-    const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+    const inputUri = `gs://${content.projectId}/${content.slug}.mp4`;
     const videoContext = {
         speechTranscriptionConfig: {
             languageCode: "en-US",
@@ -190,8 +189,8 @@ app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function
         },
     };
     const request = {
-        inputUri: gcsUri,
-        videoContext: videoContext,
+        inputUri,
+        videoContext,
         features: [protos_1.google.cloud.videointelligence.v1.Feature.SPEECH_TRANSCRIPTION],
     };
     const [operation] = yield videoIntelligenceClient.annotateVideo(request);
