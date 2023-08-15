@@ -178,7 +178,7 @@ function ChannelItem({
   const SUPPORTED_CHANNELS: ChannelType[] = [
     ChannelType.YOUTUBE,
     ChannelType.TIKTOK,
-    // ChannelType.INSTAGRAM,
+    ChannelType.INSTAGRAM,
     // ChannelType.TWITTER,
     // ChannelType.FACEBOOK,
   ];
