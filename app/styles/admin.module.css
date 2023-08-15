@@ -43,10 +43,10 @@
   justify-content: center;
   align-items: center;
   text-decoration: none;
+  box-shadow: var(--elevation-1);
 }
 
 .channel[data-selected="true"] {
-  /* border-color: var(--accent); */
   background-color: var(--bg-2);
   transition: border-color background-color var(--duration);
   box-shadow: var(--elevation-2);
