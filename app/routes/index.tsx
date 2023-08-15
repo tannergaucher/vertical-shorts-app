@@ -141,7 +141,10 @@ export default function Page() {
                   placeholder="Add Tag"
                   name="tag"
                   id="tag"
-                  onFocus={() => setTagsFocused(true)}
+                  onFocus={() => {
+                    setSelectedDetails(null);
+                    setTagsFocused(true);
+                  }}
                 />
                 {tagsFocused ? (
                   <button
