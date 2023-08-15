@@ -263,7 +263,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tg/Documents/GitHub/remix-blog/cloud-functions/annotate-video/generated",
+      "value": "/Users/tg/Documents/vertical-shorts-app/cloud-functions/annotate-video/generated",
       "fromEnvVar": null
     },
     "config": {
