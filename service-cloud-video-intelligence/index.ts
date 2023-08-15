@@ -259,7 +259,9 @@ app.post("/transcribe", async (req, res) => {
   };
 
   const [operation] = await videoIntelligenceClient.annotateVideo(request);
+
   console.log("Waiting for operation to complete...");
+
   const [operationResult] = await operation.promise();
 
   await prisma.content.update({
