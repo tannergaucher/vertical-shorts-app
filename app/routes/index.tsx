@@ -92,6 +92,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
+  const [tagsFocused, setTagsFocused] = useState(false);
   const { contents, project } = useLoaderData<LoaderData>();
 
   const fetcher = useFetcher();
@@ -140,33 +141,33 @@ export default function Page() {
                   placeholder="Add Tag"
                   name="tag"
                   id="tag"
-                  onFocus={() => {
-                    setSelectedDetails(null);
-                  }}
+                  onFocus={() => setTagsFocused(true)}
                 />
-                <button
-                  className={styles.submitButton}
-                  onClick={(e) => {
-                    const tagInputElement =
-                      e.currentTarget.form?.elements.namedItem(
-                        "tag"
-                      ) as HTMLInputElement;
+                {tagsFocused ? (
+                  <button
+                    className={styles.submitButton}
+                    onClick={(e) => {
+                      const tagInputElement =
+                        e.currentTarget.form?.elements.namedItem(
+                          "tag"
+                        ) as HTMLInputElement;
 
-                    fetcher.submit(
-                      {
-                        actionType: ActionType.AddTag,
-                        tag: tagInputElement.value,
-                      },
-                      {
-                        method: "post",
-                      }
-                    );
+                      fetcher.submit(
+                        {
+                          actionType: ActionType.AddTag,
+                          tag: tagInputElement.value,
+                        },
+                        {
+                          method: "post",
+                        }
+                      );
 
-                    tagInputElement.value = "";
-                  }}
-                >
-                  Add Tag
-                </button>
+                      tagInputElement.value = "";
+                    }}
+                  >
+                    Add Tag
+                  </button>
+                ) : null}
                 {project.tags.map((tag) => (
                   <div key={tag} className={styles.tag}>
                     <span>#{tag}</span>

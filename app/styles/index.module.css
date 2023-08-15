@@ -14,7 +14,7 @@
 
 .contentAsideGrid {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 3fr 1fr;
   padding: var(--space-1);
   gap: var(--space-1);
 }
