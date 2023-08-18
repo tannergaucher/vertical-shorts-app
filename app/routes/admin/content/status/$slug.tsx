@@ -10,6 +10,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 import { ContentDetails } from "~/components/content-details";
+import { PlaceholderGif } from "~/components/placeholder-gif";
 import { deleteContent, getContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
@@ -82,11 +83,12 @@ export default function Page() {
   return (
     <main className={styles.main}>
       <h1 className={styles.contentTitle}>{content.title}</h1>
-      <img
+      <PlaceholderGif />
+      {/* <img
         src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.gif`}
         alt={content.title}
         className={styles.gif}
-      />
+      /> */}
       <ContentDetails content={content} project={project} open={true} />
       <fieldset disabled={disabled} className={styles.fieldset}>
         <Form method="post">

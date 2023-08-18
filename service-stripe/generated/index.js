@@ -260,7 +260,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tg/Documents/GitHub/remix-blog/service-stripe/generated",
+      "value": "/Users/tg/Documents/vertical-shorts-app/service-stripe/generated",
       "fromEnvVar": null
     },
     "config": {
