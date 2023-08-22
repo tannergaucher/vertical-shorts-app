@@ -83,15 +83,15 @@ app.post(
       .on("finish", () => {
         console.log("download finished");
 
+        const gifPath = `${slug}.gif`;
+
         exec(
-          `${ffmpeg} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
+          `${ffmpeg} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${gifPath}`,
 
           async (error) => {
             if (error) {
               console.log("error creating gif", error);
             } else {
-              const gifPath = `${slug}.gif`;
-
               console.log("gif created at", gifPath);
 
               await storage
@@ -106,7 +106,7 @@ app.post(
                       },
                     },
                     data: {
-                      gif: `https://storage.googleapis.com/${projectId}/${slug}.gif`,
+                      gif: `https://storage.googleapis.com/${projectId}/${gifPath}`,
                     },
                   });
                 });
@@ -158,7 +158,9 @@ app.post(
           },
         });
 
-        res.status(500).send("Something went wrong!");
+        res
+          .status(500)
+          .send(`Something went wrong uploading content ${content.title}`);
       });
   }
 );
