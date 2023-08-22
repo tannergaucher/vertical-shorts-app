@@ -288,17 +288,13 @@ app.post(
 
     try {
       const initRes = await fetch(
-        `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
+        `https://open.tiktokapis.com/v2/post/publish/creator_info/query/`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
-            "Content-Type": "application/json;",
+            "Content-Type": "application/json; charset=UTF-8",
           },
-          body: JSON.stringify({
-            source: "PULL_FROM_URL",
-            video_url: `${APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
-          }),
         }
       );
 

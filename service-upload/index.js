@@ -147,7 +147,7 @@ app.post("/upload-content", (req, res) => __awaiter(void 0, void 0, void 0, func
                 }),
             });
         }
-        res.status(200).send("Upload successful!");
+        // res.status(200).send("Upload successful!");
     })
         .on("error", (err) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(err);
@@ -269,16 +269,12 @@ app.post("/upload-tiktok", (req, res) => __awaiter(void 0, void 0, void 0, funct
         throw new Error("no tiktok credentials");
     }
     try {
-        const initRes = yield fetch(`https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`, {
+        const initRes = yield fetch(`https://open.tiktokapis.com/v2/post/publish/creator_info/query/`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
-                "Content-Type": "application/json;",
+                "Content-Type": "application/json; charset=UTF-8",
             },
-            body: JSON.stringify({
-                source: "PULL_FROM_URL",
-                video_url: `${constants_1.APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
-            }),
         });
         if (!initRes.ok) {
             throw new Error(`ERROR_INITIALIZING_TIKTOK_UPLOAD: ${initRes.statusText}}`);
