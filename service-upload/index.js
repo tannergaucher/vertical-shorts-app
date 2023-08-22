@@ -64,6 +64,7 @@ app.post("/upload-content", (req, res) => __awaiter(void 0, void 0, void 0, func
             },
         },
         select: {
+            title: true,
             project: {
                 select: {
                     youtubeCredentials: true,
@@ -104,10 +105,11 @@ app.post("/upload-content", (req, res) => __awaiter(void 0, void 0, void 0, func
                 console.log("error creating gif", error);
             }
             else {
-                console.log("gif created");
+                const gifPath = `${slug}.gif`;
+                console.log("gif created at", gifPath);
                 yield storage
                     .bucket(projectId)
-                    .upload(`${slug}.gif`)
+                    .upload(gifPath)
                     .then(() => __awaiter(void 0, void 0, void 0, function* () {
                     yield prisma.content.update({
                         where: {
@@ -147,7 +149,7 @@ app.post("/upload-content", (req, res) => __awaiter(void 0, void 0, void 0, func
                 }),
             });
         }
-        // res.status(200).send("Upload successful!");
+        res.status(200).send(`Uploaded content: ${content.title}`);
     })
         .on("error", (err) => __awaiter(void 0, void 0, void 0, function* () {
         console.log(err);
@@ -224,7 +226,6 @@ app.post("/upload-youtube-short", (req, res) => __awaiter(void 0, void 0, void 0
         },
     })
         .then((response) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(response, "yt_response");
         yield prisma.content.update({
             where: {
                 projectId_slug: {
@@ -232,12 +233,16 @@ app.post("/upload-youtube-short", (req, res) => __awaiter(void 0, void 0, void 0
                     slug,
                 },
             },
-            data: {
-                youtubeStatus: index_js_1.UploadStatus.PRIVATE,
-                youtubeId: response.data.id,
-            },
+            data: response.data.id
+                ? {
+                    youtubeStatus: index_js_1.UploadStatus.PRIVATE,
+                    youtubeId: response.data.id,
+                }
+                : {
+                    youtubeStatus: index_js_1.UploadStatus.NOT_STARTED,
+                    youtubeId: null,
+                },
         });
-        res.status(200).send("Video uploaded to youtube");
     }))
         .catch((error) => __awaiter(void 0, void 0, void 0, function* () {
         yield prisma.content.update({
@@ -249,10 +254,12 @@ app.post("/upload-youtube-short", (req, res) => __awaiter(void 0, void 0, void 0
             },
             data: {
                 youtubeStatus: index_js_1.UploadStatus.NOT_STARTED,
+                youtubeId: null,
             },
         });
-        console.log("yt_error:", error);
-        res.status(400).send("Error uploading video to youtube:");
+        const errorMessage = `Error uploading video ${content.title} to YouTube`;
+        console.log(error, errorMessage);
+        res.status(400).send(errorMessage);
     }));
 }));
 app.post("/upload-tiktok", (req, res) => __awaiter(void 0, void 0, void 0, function* () {

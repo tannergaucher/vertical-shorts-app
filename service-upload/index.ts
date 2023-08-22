@@ -44,6 +44,7 @@ app.post(
         },
       },
       select: {
+        title: true,
         project: {
           select: {
             youtubeCredentials: true,
@@ -89,11 +90,13 @@ app.post(
             if (error) {
               console.log("error creating gif", error);
             } else {
-              console.log("gif created");
+              const gifPath = `${slug}.gif`;
+
+              console.log("gif created at", gifPath);
 
               await storage
                 .bucket(projectId)
-                .upload(`${slug}.gif`)
+                .upload(gifPath)
                 .then(async () => {
                   await prisma.content.update({
                     where: {
@@ -137,7 +140,7 @@ app.post(
           });
         }
 
-        // res.status(200).send("Upload successful!");
+        res.status(200).send(`Uploaded content: ${content.title}`);
       })
       .on("error", async (err) => {
         console.log(err);
@@ -231,8 +234,6 @@ app.post(
         },
       })
       .then(async (response) => {
-        console.log(response, "yt_response");
-
         await prisma.content.update({
           where: {
             projectId_slug: {
@@ -240,13 +241,16 @@ app.post(
               slug,
             },
           },
-          data: {
-            youtubeStatus: UploadStatus.PRIVATE,
-            youtubeId: response.data.id,
-          },
+          data: response.data.id
+            ? {
+                youtubeStatus: UploadStatus.PRIVATE,
+                youtubeId: response.data.id,
+              }
+            : {
+                youtubeStatus: UploadStatus.NOT_STARTED,
+                youtubeId: null,
+              },
         });
-
-        res.status(200).send("Video uploaded to youtube");
       })
       .catch(async (error) => {
         await prisma.content.update({
@@ -258,12 +262,15 @@ app.post(
           },
           data: {
             youtubeStatus: UploadStatus.NOT_STARTED,
+            youtubeId: null,
           },
         });
 
-        console.log("yt_error:", error);
+        const errorMessage = `Error uploading video ${content.title} to YouTube`;
 
-        res.status(400).send("Error uploading video to youtube:");
+        console.log(error, errorMessage);
+
+        res.status(400).send(errorMessage);
       });
   }
 );
