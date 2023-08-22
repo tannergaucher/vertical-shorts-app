@@ -62,7 +62,8 @@ app.post(
       .createReadStream()
       .pipe(createWriteStream(filePath))
       .on("open", async () => {
-        console.log("dl started");
+        console.log(`${content.title} download started from gcp storage`);
+
         await prisma.content.update({
           where: {
             projectId_slug: {
@@ -81,7 +82,7 @@ app.post(
         });
       })
       .on("finish", () => {
-        console.log("download finished");
+        console.log("download from gcp storage finished");
 
         const gifPath = `${slug}.gif`;
 
@@ -92,7 +93,7 @@ app.post(
             if (error) {
               console.log("error creating gif", error);
             } else {
-              console.log("gif created at", gifPath);
+              console.log(`gif created at ${gifPath}`);
 
               await storage
                 .bucket(projectId)
@@ -170,8 +171,6 @@ app.post(
   async (req: Request<{}, {}, UploadContentBody>, res: Response<string>) => {
     const { projectId, slug } = req.body;
 
-    console.log("uploading to youtube", projectId, slug);
-
     const content = await prisma.content.update({
       where: {
         projectId_slug: {
@@ -216,6 +215,8 @@ app.post(
 
     const filePath = `${req.body.slug}.mp4`;
     const bodyStream = createReadStream(filePath);
+
+    console.log(`Uploading ${content.title} to youtube`);
 
     youtube.videos
       .insert({
