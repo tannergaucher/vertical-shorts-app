@@ -1,72 +1,41 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { useEffect, useLayoutEffect, useState } from "react";
 
-import { prisma } from "~/db.server";
+import type { InstagramAuthResponse } from "~/models/instagram-credentials.server";
 import { getUser } from "~/session.server";
 
 type LoaderData = {
   projectId: string;
+  userId: string;
 };
 
 export const loader = async ({ request }: LoaderArgs) => {
   const user = await getUser(request);
 
-  return json({
-    currentProjectId: user?.currentProjectId,
-  });
+  if (user?.currentProjectId) {
+    return json<LoaderData>({
+      projectId: user.currentProjectId,
+      userId: user.id,
+    });
+  }
 };
 
-type AuthResponse = {
-  accessToken: string;
-  dataAccessExpirationTime: number;
-  expiresIn: number;
-  signedRequest: string;
-  userId: string;
-} | null;
+export async function action({ request }: ActionArgs) {
+  const formData = await request.formData();
 
-async function upsertIGCredentials({
-  projectId,
-  authResponse,
-}: {
-  projectId: string;
-  authResponse: AuthResponse;
-}) {
-  if (!authResponse?.accessToken) {
-    return;
-  }
+  const accessToken = formData.get("accessToken");
 
-  return await prisma.instagramCredentials.upsert({
-    where: {
-      projectId,
-    },
-    create: {
-      accessToken: authResponse.accessToken,
-      dataAccessExpirationTime: authResponse.dataAccessExpirationTime,
-      expiresIn: authResponse.expiresIn,
-      signedRequest: authResponse.signedRequest,
-      userId: authResponse.userId,
-      project: {
-        connect: {
-          id: projectId,
-        },
-      },
-    },
-    update: {
-      accessToken: authResponse.accessToken,
-      dataAccessExpirationTime: authResponse.dataAccessExpirationTime,
-      expiresIn: authResponse.expiresIn,
-      signedRequest: authResponse.signedRequest,
-      userId: authResponse.userId,
-    },
-  });
+  console.log(accessToken, "_accessToken_");
+
+  return null;
 }
 
 export default function Page() {
-  const { projectId } = useLoaderData<LoaderData>();
+  const { userId } = useLoaderData<LoaderData>();
 
-  const [authResponse, setAuthResponse] = useState<AuthResponse>(null);
+  const [authResponse, setAuthResponse] = useState<InstagramAuthResponse>(null);
 
   useLayoutEffect(() => {
     FB.init({
@@ -77,45 +46,54 @@ export default function Page() {
     });
 
     FB.getLoginStatus(function (response) {
-      console.log(response, "get login status response");
+      console.log(response, "fb.getLoginStatus response");
+      if (
+        response.status === "connected" &&
+        response.authResponse.accessToken
+      ) {
+        FB.login(
+          function (response) {
+            console.log("fb login status response", response);
+
+            setAuthResponse({
+              userId,
+              accessToken: response.authResponse.accessToken,
+              dataAccessExpirationTime:
+                response.authResponse.data_access_expiration_time,
+              expiresIn: response.authResponse.expiresIn,
+              signedRequest: response.authResponse.signedRequest,
+            });
+
+            console.log(authResponse, "_authres");
+          },
+          // { scope: "instagram_content_publish" }
+          { scope: "public_profile" }
+        );
+      }
     });
-  }, []);
+  }, [authResponse, userId]);
 
   useEffect(() => {
-    if (authResponse?.accessToken) {
-      upsertIGCredentials({ projectId, authResponse });
-    }
-  }, [authResponse, projectId]);
+    FB.login(
+      function (response) {
+        console.log("fb.login response", response);
+      },
+      // { scope: "instagram_content_publish" }
+      { scope: "public_profile" }
+    );
+  }, [authResponse]);
 
   return (
     <main>
       <h1>Authorize Instagram</h1>
-      <button
-        onClick={() => {
-          FB.login(
-            function (response) {
-              console.log(response, "fb login response");
-              if (
-                response.status === "connected" &&
-                response.authResponse.accessToken
-              ) {
-                setAuthResponse({
-                  accessToken: response.authResponse.accessToken,
-                  dataAccessExpirationTime:
-                    response.authResponse.data_access_expiration_time,
-                  expiresIn: response.authResponse.expiresIn,
-                  userId: response.authResponse.userID,
-                  signedRequest: response.authResponse.userID,
-                });
-              }
-            },
-            // { scope: "instagram_content_publish" }
-            { scope: "public_profile" }
-          );
-        }}
-      >
-        LOGIN
-      </button>
+      <Form method="post">
+        <input
+          type="hidden"
+          name="accessToken"
+          value={authResponse?.accessToken}
+        />
+        <button type="submit">LOGIN</button>
+      </Form>
     </main>
   );
 }
