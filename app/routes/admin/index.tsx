@@ -11,6 +11,7 @@ import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import styles from "~/styles/admin.module.css";
+import { SUPPORTED_CHANNELS } from "~/utils/constants";
 
 type LoaderData = {
   user?: Awaited<ReturnType<typeof getUser>>;
@@ -175,14 +176,6 @@ function ChannelItem({
     updatedAt: string;
   };
 }) {
-  const SUPPORTED_CHANNELS: ChannelType[] = [
-    ChannelType.YOUTUBE,
-    ChannelType.TIKTOK,
-    // ChannelType.INSTAGRAM,
-    // ChannelType.TWITTER,
-    // ChannelType.FACEBOOK,
-  ];
-
   return (
     <Link
       className={styles.channel}
