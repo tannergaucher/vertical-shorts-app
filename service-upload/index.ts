@@ -30,7 +30,11 @@ app.post("/upload-youtube-short", uploadYouTubeShort);
 
 app.get("/upload-tiktok-status", uploadTikTokStatus);
 
-const port = parseInt(process.env.PORT ?? "8080");
+if (!process.env.PORT) {
+  throw new Error("PORT environment variable not set");
+}
+
+const port = parseInt(process.env.PORT);
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
