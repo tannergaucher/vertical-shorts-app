@@ -4,11 +4,10 @@ import dotenv from "dotenv";
 import express, { json } from "express";
 
 import { PrismaClient } from "./generated/index.js";
-import { uploadTikTok } from "./tiktok/upload-tiktok";
-import { uploadTikTokStatus } from "./tiktok/upload-tiktok-status";
+import { uploadTikTok, uploadTikTokStatus } from "./tiktok";
 import { uploadContent } from "./upload-content";
 import { APP_BASE_URL } from "./utils/constants";
-import { uploadYouTubeShort } from "./youtube/upload-youtube-short.js";
+import { uploadYouTubeShort } from "./youtube";
 
 dotenv.config();
 
