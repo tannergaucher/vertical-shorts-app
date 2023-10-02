@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 
-import { prisma } from "./index";
+import { prisma } from "../index";
 
 interface UploadTikTokStatusQueryParams {
   publish_id: string;

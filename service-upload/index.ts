@@ -4,11 +4,11 @@ import dotenv from "dotenv";
 import express, { json } from "express";
 
 import { PrismaClient } from "./generated/index.js";
+import { uploadTikTok } from "./tiktok/upload-tiktok";
+import { uploadTikTokStatus } from "./tiktok/upload-tiktok-status";
 import { uploadContent } from "./upload-content";
-import { uploadTikTokContent } from "./upload-tiktok.js";
-import { uploadTikTokStatus } from "./upload-tiktok-status";
-import { uploadYouTubeShort } from "./upload-youtube-short";
 import { APP_BASE_URL } from "./utils/constants";
+import { uploadYouTubeShort } from "./youtube/upload-youtube-short.js";
 
 dotenv.config();
 
@@ -26,7 +26,7 @@ export const prisma = new PrismaClient();
 export const storage = new Storage();
 
 app.post("/upload-content", uploadContent);
-app.post("/upload-tiktok", uploadTikTokContent);
+app.post("/upload-tiktok", uploadTikTok);
 app.post("/upload-youtube-short", uploadYouTubeShort);
 
 app.get("/upload-tiktok-status", uploadTikTokStatus);

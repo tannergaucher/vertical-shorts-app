@@ -1,16 +1,16 @@
 import type { Request, Response } from "express";
 
-import { UploadStatus } from "./generated";
-import { prisma } from "./index";
-import { APP_BASE_URL } from "./utils/constants";
+import { UploadStatus } from "../generated";
+import { prisma } from "../index";
+import { APP_BASE_URL } from "../utils/constants";
 
-interface UploadTikTokContentBody {
+interface UploadTikTokBody {
   projectId: string;
   slug: string;
 }
 
-export async function uploadTikTokContent(
-  req: Request<{}, {}, UploadTikTokContentBody>,
+export async function uploadTikTok(
+  req: Request<{}, {}, UploadTikTokBody>,
   res: Response
 ): Promise<Response> {
   const { projectId, slug } = req.body;

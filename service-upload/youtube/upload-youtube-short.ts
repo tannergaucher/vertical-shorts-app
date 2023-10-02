@@ -2,8 +2,8 @@ import type { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { google } from "googleapis";
 
-import { UploadStatus } from "./generated";
-import { prisma } from "./index";
+import { UploadStatus } from "../generated";
+import { prisma } from "../index";
 
 interface UploadYoutubeContentBody {
   projectId: string;
@@ -107,8 +107,9 @@ export async function uploadYouTubeShort(
 
       return res
         .status(200)
-        .send(`Uploaded ${content.title} to youtube | ${projectId}/${slug}`);
+        .send(`Uploaded ${content.title} : ${projectId}/${slug} to YouTube`);
     })
+
     .catch(async (error) => {
       await prisma.content.update({
         where: {
