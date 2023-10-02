@@ -30,19 +30,10 @@ interface GenerateTagsRequest {
   slug: string;
 }
 
-interface GenerateTagsSuccessResponse {
-  success: true;
+export interface GenerateTagsResponse {
+  success: boolean;
   tags: string[];
 }
-
-interface GenerateTagsFailureResponse {
-  success: false;
-  tags: [];
-}
-
-type GenerateTagsResponse =
-  | GenerateTagsSuccessResponse
-  | GenerateTagsFailureResponse;
 
 function parseLabelsToTags(
   labels?: google.cloud.videointelligence.v1.ILabelAnnotation[] | null
