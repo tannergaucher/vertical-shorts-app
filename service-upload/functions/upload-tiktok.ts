@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 
+import type { PrismaClient } from "../generated";
 import { UploadStatus } from "../generated";
-import { prisma } from "../index";
 import { APP_BASE_URL } from "../utils/constants";
 
 interface UploadTikTokBody {
@@ -16,7 +16,8 @@ interface UploadTikTokResponse {
 
 export async function uploadTikTok(
   req: Request<{}, {}, UploadTikTokBody>,
-  res: Response
+  res: Response,
+  prisma: PrismaClient
 ): Promise<Response<UploadTikTokResponse>> {
   const { projectId, slug } = req.body;
 
@@ -57,7 +58,7 @@ export async function uploadTikTok(
         message: "Error initializing tiktok upload",
       };
 
-      return res.status(500).send(initResponseError);
+      return res.status(500).json(initResponseError);
     }
 
     const { data } = (await initResponse.json()) as {
@@ -91,6 +92,6 @@ export async function uploadTikTok(
       message: "Error initializing tiktok upload",
     };
 
-    return res.status(500).send(errorResponse);
+    return res.status(500).json(errorResponse);
   }
 }

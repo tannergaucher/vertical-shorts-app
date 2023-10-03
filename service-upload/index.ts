@@ -26,7 +26,7 @@ export const prisma = new PrismaClient();
 export const storage = new Storage();
 
 app.post("/upload-content", uploadContent);
-app.post("/upload-tiktok", uploadTikTok);
+app.post("/upload-tiktok", (req, res) => uploadTikTok(req, res, prisma));
 app.post("/upload-youtube-short", uploadYouTubeShort);
 
 app.get("/upload-tiktok-status", uploadTikTokStatus);
