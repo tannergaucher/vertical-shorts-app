@@ -46,7 +46,7 @@ export async function uploadContent(
     .createReadStream()
     .pipe(createWriteStream(filePath))
     .on("open", async () => {
-      res.status(200).send(`content download started for ${projectId}/${slug}`);
+      console.log(`Downloading started from gcp bucket ${projectId}/${slug}`);
 
       await prisma.content.update({
         where: {
@@ -82,6 +82,10 @@ export async function uploadContent(
       throw new Error(err.message);
     })
     .on("finish", async () => {
+      res
+        .status(200)
+        .send(`Video downloaded from gcp bucket: ${projectId}/${slug}`);
+
       exec(
         `${ffmpeg} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
 
