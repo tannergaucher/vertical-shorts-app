@@ -115,7 +115,7 @@ export async function uploadContent(
       );
 
       if (content.project.youtubeCredentials) {
-        await fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+        fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -128,7 +128,7 @@ export async function uploadContent(
       }
 
       if (content.project.tikTokCredentials) {
-        await fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
+        fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
