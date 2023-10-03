@@ -3,11 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { json } from "express";
 
+import { uploadTikTok } from "./functions/upload-tiktok";
+import { uploadTikTokStatus } from "./functions/upload-tiktok-status";
+import { uploadYouTubeShort } from "./functions/upload-youtube-short";
 import { PrismaClient } from "./generated/index.js";
-import { uploadTikTok, uploadTikTokStatus } from "./tiktok";
 import { uploadContent } from "./upload-content";
 import { APP_BASE_URL } from "./utils/constants";
-import { uploadYouTubeShort } from "./youtube";
 
 dotenv.config();
 
