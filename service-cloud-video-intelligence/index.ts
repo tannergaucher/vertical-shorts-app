@@ -6,16 +6,17 @@ import express, { json } from "express";
 
 import { generateTags } from "./content/generate-tags";
 import { recognizeText } from "./content/recognize-text";
+import { transcribe } from "./content/transcribe";
 import { PrismaClient } from "./generated/index.js";
 import { APP_BASE_URL } from "./utils/constants";
 
 dotenv.config();
 
-export const prisma = new PrismaClient();
-
 export const cloudIntelligence = new v1.VideoIntelligenceServiceClient();
 
 export const CloudIntelligenceTypes = google.cloud.videointelligence.v1;
+
+export const prisma = new PrismaClient();
 
 const app = express();
 
@@ -28,62 +29,8 @@ app.use(
 );
 
 app.post("/generate-tags", generateTags);
-
 app.post("/recognize-text", recognizeText);
-
-app.post("/transcribe", async (req, res) => {
-  const { projectId, slug } = req.body;
-
-  const content = await prisma.content.findUnique({
-    where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
-    },
-    select: {
-      projectId: true,
-      slug: true,
-    },
-  });
-
-  if (!content) {
-    throw new Error("CONTENT_NOT_FOUND");
-  }
-
-  const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
-
-  const videoContext = {
-    speechTranscriptionConfig: {
-      languageCode: "en-US",
-      enableAutomaticPunctuation: true,
-    },
-  };
-
-  const request = {
-    inputUri: gcsUri,
-    videoContext: videoContext,
-    features: [google.cloud.videointelligence.v1.Feature.SPEECH_TRANSCRIPTION],
-  };
-
-  const [operation] = await cloudIntelligence.annotateVideo(request);
-  console.log("Waiting for operation to complete...");
-  const [operationResult] = await operation.promise();
-
-  await prisma.content.update({
-    where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
-    },
-    data: {
-      transcription: JSON.stringify(operationResult),
-    },
-  });
-
-  res.json({ success: true });
-});
+app.post("/transcribe", transcribe);
 
 const port = parseInt(process.env.PORT ?? "8080");
 
