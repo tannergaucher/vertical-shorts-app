@@ -66,7 +66,7 @@ export async function uploadTikTok(
     };
   };
 
-  await prisma.content.update({
+  const updatedContent = await prisma.content.update({
     where: {
       projectId_slug: {
         projectId,
@@ -81,7 +81,7 @@ export async function uploadTikTok(
 
   const response: UploadTikTokResponse = {
     success: true,
-    message: "Successfully initialized tiktok upload",
+    message: `Successfully initialized tiktok upload ${updatedContent.title} publish_id: ${data.publish_id} status: ${updatedContent.tikTokStatus}`,
   };
 
   return res.status(200).json(response);
