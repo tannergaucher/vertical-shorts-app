@@ -1,11 +1,12 @@
 import { path as ffmpeg } from "@ffmpeg-installer/ffmpeg";
+import type { Storage } from "@google-cloud/storage";
 import { exec } from "child_process";
 import type { Request, Response } from "express";
 import { createWriteStream } from "fs";
 
-import { UploadStatus } from "./generated";
-import { prisma, storage } from "./index";
-import { UPLOAD_SERVICE_BASE_URL } from "./utils/constants";
+import type { PrismaClient } from "../generated";
+import { UploadStatus } from "../generated";
+import { UPLOAD_SERVICE_BASE_URL } from "../utils/constants";
 
 export interface UploadContentBody {
   slug: string;
@@ -14,7 +15,9 @@ export interface UploadContentBody {
 
 export async function uploadContent(
   req: Request<{}, {}, UploadContentBody>,
-  res: Response
+  res: Response,
+  prisma: PrismaClient,
+  storage: Storage
 ) {
   const { projectId, slug } = req.body;
 

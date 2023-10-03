@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 
-import { prisma } from "../index";
+import type { PrismaClient } from "../generated";
 
 interface UploadTikTokStatusQueryParams {
   publish_id: string;
@@ -15,7 +15,8 @@ interface UploadTikTokStatusResponse {
 
 export async function uploadTikTokStatus(
   req: Request<{}, {}, UploadTikTokStatusQueryParams>,
-  res: Response
+  res: Response,
+  prisma: PrismaClient
 ): Promise<Response<UploadTikTokStatusResponse>> {
   const { publish_id, project_id } = req.query;
 

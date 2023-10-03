@@ -2,8 +2,8 @@ import type { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { google } from "googleapis";
 
+import type { PrismaClient } from "../generated";
 import { UploadStatus } from "../generated";
-import { prisma } from "../index";
 
 interface UploadYoutubeShortRequest {
   projectId: string;
@@ -17,7 +17,8 @@ interface UploadYoutubeShortResponse {
 
 export async function uploadYouTubeShort(
   req: Request<{}, {}, UploadYoutubeShortRequest>,
-  res: Response
+  res: Response,
+  prisma: PrismaClient
 ): Promise<Response<UploadYoutubeShortResponse>> {
   const { projectId, slug } = req.body;
 
@@ -152,6 +153,6 @@ export async function uploadYouTubeShort(
         message: `Failed Uploading ${content.title} : ${projectId}/${slug} to YouTube`,
       };
 
-      return res.status(400).send(uploadFailureResponse);
+      return res.status(400).json(uploadFailureResponse);
     });
 }
