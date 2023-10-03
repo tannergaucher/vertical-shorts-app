@@ -14,7 +14,7 @@ export interface RecognizeTextResponse {
 export async function transcribe(
   req: Request<{}, {}, RecognizeTextRequest>,
   res: Response<RecognizeTextResponse>
-) {
+): Promise<Response<RecognizeTextResponse>> {
   const { projectId, slug } = req.body;
 
   const content = await prisma.content.findUnique({
@@ -67,5 +67,5 @@ export async function transcribe(
     },
   });
 
-  res.json({ success: true });
+  return res.json({ success: true });
 }

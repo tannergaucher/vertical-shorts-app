@@ -14,7 +14,7 @@ export interface RecognizeTextResponse {
 export async function recognizeText(
   req: Request<{}, {}, RecognizeTextRequest>,
   res: Response<RecognizeTextResponse>
-) {
+): Promise<Response<RecognizeTextResponse>> {
   const { projectId, slug } = req.body;
 
   const content = await prisma.content.findUnique({
@@ -45,44 +45,10 @@ export async function recognizeText(
 
   console.log("Waiting for operation to complete...");
 
-  interface Result {
-    annotationResults: {
-      textAnnotations: TextAnnotation[];
-    }[];
-  }
+  const results =
+    (await operation.promise()) as CloudIntelligenceTypes.AnnotateVideoResult[];
 
-  interface TextAnnotation {
-    text: string;
-    segments: {
-      segment: {
-        startTimeOffset: {
-          seconds: number;
-          nanos: number;
-        };
-        endTimeOffset: {
-          seconds: number;
-          nanos: number;
-        };
-      };
-      confidence: number;
-      frames: {
-        timeOffset: {
-          seconds: number;
-          nanos: number;
-        };
-        rotatedBoundingBox: {
-          vertices: {
-            x: number;
-            y: number;
-          }[];
-        };
-      }[];
-    }[];
-  }
-
-  const results = (await operation.promise()) as Result[];
-
-  const textAnnotations: TextAnnotation[] | undefined =
+  const textAnnotations: CloudIntelligenceTypes.TextAnnotation[] | undefined =
     results[0]?.annotationResults[0]?.textAnnotations;
 
   if (textAnnotations !== undefined) {
@@ -99,5 +65,5 @@ export async function recognizeText(
     });
   }
 
-  res.json({ success: true });
+  return res.json({ success: true });
 }

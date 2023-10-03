@@ -28,7 +28,7 @@ function getTagsFromLabels(
 export async function generateTags(
   req: Request<{}, {}, GenerateTagsRequest>,
   res: Response<GenerateTagsResponse>
-) {
+): Promise<Response<GenerateTagsResponse>> {
   const { projectId, slug } = req.body;
 
   const content = await prisma.content.findUnique({
