@@ -39,7 +39,7 @@ function transcribe(req, res) {
         const request = {
             inputUri: gcsUri,
             videoContext: videoContext,
-            features: [index_1.CloudIntelligenceTypes.Feature.TEXT_DETECTION],
+            features: [index_1.CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION],
         };
         const [operation] = yield index_1.cloudIntelligence.annotateVideo(request);
         console.log("Waiting for operation to complete...");
@@ -55,7 +55,7 @@ function transcribe(req, res) {
                 transcription: JSON.stringify(operationResult),
             },
         });
-        res.json({ success: true });
+        return res.json({ success: true });
     });
 }
 exports.transcribe = transcribe;

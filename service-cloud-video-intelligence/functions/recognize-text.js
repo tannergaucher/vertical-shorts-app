@@ -52,7 +52,7 @@ function recognizeText(req, res) {
                 },
             });
         }
-        res.json({ success: true });
+        return res.json({ success: true });
     });
 }
 exports.recognizeText = recognizeText;
