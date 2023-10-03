@@ -13,15 +13,17 @@ export interface GenerateTagsResponse {
   tags: string[];
 }
 
-function getTagsFromLabels(
-  labels?: CloudIntelligenceTypes.LabelAnnotation[] | null
+function getTagsFromLabelAnnotations(
+  labelAnnotations?: CloudIntelligenceTypes.LabelAnnotation[] | null
 ) {
-  if (!labels) {
+  if (!labelAnnotations) {
     return [];
   }
 
-  return labels.flatMap((label) =>
-    label.entity?.description ? label.entity.description : []
+  return labelAnnotations.flatMap((labelAnnotation) =>
+    labelAnnotation.entity?.description
+      ? labelAnnotation.entity.description
+      : []
   );
 }
 
@@ -54,7 +56,7 @@ export async function generateTags(
     | CloudIntelligenceTypes.LabelAnnotation[]
     | null;
 
-  const tags = getTagsFromLabels(contentLabels);
+  const tags = getTagsFromLabelAnnotations(contentLabels);
 
   if (tags.length > 0) {
     return res.json({
@@ -79,7 +81,9 @@ export async function generateTags(
 
     const annotations = operationResult.annotationResults?.[0];
 
-    const tags = getTagsFromLabels(annotations?.segmentLabelAnnotations);
+    const tags = getTagsFromLabelAnnotations(
+      annotations?.segmentLabelAnnotations
+    );
 
     if (tags.length > 0) {
       await prisma.content.update({
