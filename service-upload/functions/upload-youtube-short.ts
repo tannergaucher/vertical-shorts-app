@@ -10,10 +10,15 @@ interface UploadYoutubeContentBody {
   slug: string;
 }
 
+interface UploadYoutubeShortResponse {
+  success: boolean;
+  message: string;
+}
+
 export async function uploadYouTubeShort(
   req: Request<{}, {}, UploadYoutubeContentBody>,
   res: Response
-): Promise<Response> {
+): Promise<Response<UploadYoutubeShortResponse>> {
   const { projectId, slug } = req.body;
 
   const content = await prisma.content.update({
@@ -69,7 +74,24 @@ export async function uploadYouTubeShort(
 
   const bodyStream = createReadStream(filePath);
 
-  res.status(200).send("Starting upload to youtube");
+  await prisma.content.update({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    data: {
+      youtubeStatus: UploadStatus.UPLOADING,
+    },
+  });
+
+  const uploadStartedResponse: UploadYoutubeShortResponse = {
+    success: true,
+    message: `Started Uploading ${content.title} : ${projectId}/${slug} to YouTube`,
+  };
+
+  res.status(200).send(uploadStartedResponse);
 
   return youtube.videos
     .insert({
@@ -90,8 +112,6 @@ export async function uploadYouTubeShort(
       },
     })
     .then(async (response) => {
-      console.log(`Upload ${content.title} to YouTube response`, response);
-
       await prisma.content.update({
         where: {
           projectId_slug: {
@@ -105,9 +125,12 @@ export async function uploadYouTubeShort(
         },
       });
 
-      return res
-        .status(200)
-        .send(`Uploaded ${content.title} : ${projectId}/${slug} to YouTube`);
+      const uploadFinishedResponse: UploadYoutubeShortResponse = {
+        success: true,
+        message: `Finished Uploading ${content.title} : ${projectId}/${slug} to YouTube`,
+      };
+
+      return res.status(200).json(uploadFinishedResponse);
     })
 
     .catch(async (error) => {

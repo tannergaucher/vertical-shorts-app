@@ -9,10 +9,15 @@ interface UploadTikTokBody {
   slug: string;
 }
 
+interface UploadTikTokResponse {
+  success: boolean;
+  message: string;
+}
+
 export async function uploadTikTok(
   req: Request<{}, {}, UploadTikTokBody>,
   res: Response
-): Promise<Response> {
+): Promise<Response<UploadTikTokResponse>> {
   const { projectId, slug } = req.body;
 
   const project = await prisma.project.findUnique({
@@ -67,9 +72,18 @@ export async function uploadTikTok(
       },
     });
 
-    return res.status(200).send(data);
+    const response: UploadTikTokResponse = {
+      success: true,
+      message: "Successfully initialized tiktok upload",
+    };
+
+    return res.json(response);
   } catch (error) {
-    console.log(error, "error");
-    return res.status(500).send("Error initializing tiktok upload");
+    const errorResponse: UploadTikTokResponse = {
+      success: false,
+      message: "Error initializing tiktok upload",
+    };
+
+    return res.status(500).send(errorResponse);
   }
 }
