@@ -7,10 +7,16 @@ interface UploadTikTokStatusQueryParams {
   project_id: string;
 }
 
+interface UploadTikTokStatusResponse {
+  success: boolean;
+  message: string;
+  status?: any;
+}
+
 export async function uploadTikTokStatus(
   req: Request<{}, {}, UploadTikTokStatusQueryParams>,
   res: Response
-): Promise<Response> {
+): Promise<Response<UploadTikTokStatusResponse>> {
   const { publish_id, project_id } = req.query;
 
   if (!publish_id || !project_id?.toString()) {
@@ -47,8 +53,19 @@ export async function uploadTikTokStatus(
   if (!statusRes.ok) {
     const { status, statusText } = statusRes;
 
-    return res.status(status).send(statusText);
+    const failureResponse: UploadTikTokStatusResponse = {
+      success: false,
+      message: `Error fetching tiktok upload for project_id: ${project_id} publish_id: ${publish_id} statusText: ${statusText} status: ${status}`,
+    };
+
+    return res.status(400).json(failureResponse);
   }
 
-  return res.status(200).send(await statusRes.json());
+  const successResponse: UploadTikTokStatusResponse = {
+    success: true,
+    message: `Fetched tiktok upload status for project_id: ${project_id} publish_id: ${publish_id}`,
+    status: await statusRes.json(),
+  };
+
+  return res.status(200).json(successResponse);
 }
