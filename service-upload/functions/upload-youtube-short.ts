@@ -134,6 +134,7 @@ export async function uploadYouTubeShort(
     })
 
     .catch(async (error) => {
+      console.log(error);
       await prisma.content.update({
         where: {
           projectId_slug: {
