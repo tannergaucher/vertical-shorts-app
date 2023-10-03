@@ -165,6 +165,7 @@ export default function Page() {
       navigate(Routes.AdminContentTagsDescription(content.slug));
     } catch (error) {
       console.log(error, "error");
+    } finally {
       setDisabled(false);
     }
   }
