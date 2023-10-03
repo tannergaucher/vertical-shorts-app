@@ -2,7 +2,7 @@ import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { useState } from "react";
-import type { UploadContentBody } from "service-upload/upload-content";
+import type { UploadContentBody } from "service-upload/functions/upload-content";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
