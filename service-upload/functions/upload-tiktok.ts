@@ -52,12 +52,19 @@ export async function uploadTikTok(
     );
 
     if (!initResponse.ok) {
-      throw new Error(
-        `ERROR_INITIALIZING_TIKTOK_UPLOAD: ${initResponse.statusText}}`
-      );
+      const initResponseError: UploadTikTokResponse = {
+        success: false,
+        message: "Error initializing tiktok upload",
+      };
+
+      return res.status(500).send(initResponseError);
     }
 
-    const { data } = await initResponse.json();
+    const { data } = (await initResponse.json()) as {
+      data: {
+        publish_id: string;
+      };
+    };
 
     await prisma.content.update({
       where: {
