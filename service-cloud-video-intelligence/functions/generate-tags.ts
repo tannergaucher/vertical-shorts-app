@@ -1,6 +1,6 @@
-import { google } from "@google-cloud/video-intelligence/build/protos/protos";
 import type { Request, Response } from "express";
 
+import { CloudIntelligenceTypes } from "../index";
 import { cloudIntelligence, prisma } from "../index";
 
 interface GenerateTagsRequest {
@@ -14,7 +14,7 @@ export interface GenerateTagsResponse {
 }
 
 function getTagsFromLabels(
-  labels?: google.cloud.videointelligence.v1.ILabelAnnotation[] | null
+  labels?: CloudIntelligenceTypes.LabelAnnotation[] | null
 ) {
   if (!labels) {
     return [];
@@ -51,7 +51,7 @@ export async function generateTags(
   }
 
   const contentLabels = JSON.parse(content.labels as string) as unknown as
-    | google.cloud.videointelligence.v1.ILabelAnnotation[]
+    | CloudIntelligenceTypes.LabelAnnotation[]
     | null;
 
   const tags = getTagsFromLabels(contentLabels);
@@ -66,7 +66,7 @@ export async function generateTags(
   try {
     const annotateVideoRequest = {
       inputUri: `gs://${content.projectId}/${content.slug}.mp4`,
-      features: [google.cloud.videointelligence.v1.Feature.LABEL_DETECTION],
+      features: [CloudIntelligenceTypes.Feature.LABEL_DETECTION],
     };
 
     const [operation] = await cloudIntelligence.annotateVideo(

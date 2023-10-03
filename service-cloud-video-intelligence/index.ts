@@ -12,9 +12,20 @@ import { APP_BASE_URL } from "./utils/constants";
 
 dotenv.config();
 
+google.cloud.videointelligence.v1.Feature.TEXT_DETECTION;
+
 export const cloudIntelligence = new v1.VideoIntelligenceServiceClient();
 
-export const CloudIntelligenceTypes = google.cloud.videointelligence.v1;
+export namespace CloudIntelligenceTypes {
+  export type LabelAnnotation =
+    google.cloud.videointelligence.v1.ILabelAnnotation;
+  export enum Feature {
+    LABEL_DETECTION = google.cloud.videointelligence.v1.Feature.LABEL_DETECTION,
+    SPEECH_TRANSCRIPTION = google.cloud.videointelligence.v1.Feature
+      .SPEECH_TRANSCRIPTION,
+    TEXT_DETECTION = google.cloud.videointelligence.v1.Feature.TEXT_DETECTION,
+  }
+}
 
 export const prisma = new PrismaClient();
 

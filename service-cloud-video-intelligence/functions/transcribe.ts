@@ -46,11 +46,13 @@ export async function transcribe(
   const request = {
     inputUri: gcsUri,
     videoContext: videoContext,
-    features: [CloudIntelligenceTypes.Feature.TEXT_DETECTION],
+    features: [CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION],
   };
 
   const [operation] = await cloudIntelligence.annotateVideo(request);
+
   console.log("Waiting for operation to complete...");
+
   const [operationResult] = await operation.promise();
 
   await prisma.content.update({
