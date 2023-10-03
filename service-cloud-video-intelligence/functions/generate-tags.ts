@@ -1,7 +1,7 @@
 import { google } from "@google-cloud/video-intelligence/build/protos/protos";
 import type { Request, Response } from "express";
 
-import { cloudIntelligence, prisma } from "./index";
+import { cloudIntelligence, prisma } from "../index";
 
 interface GenerateTagsRequest {
   projectId: string;

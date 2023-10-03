@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 
-import { cloudIntelligence, CloudIntelligenceTypes, prisma } from "./index";
+import { cloudIntelligence, CloudIntelligenceTypes, prisma } from "../index";
 
 interface RecognizeTextRequest {
   projectId: string;
