@@ -4,10 +4,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express, { json } from "express";
 
-import { generateTags } from "./content/generate-tags";
-import { recognizeText } from "./content/recognize-text";
-import { transcribe } from "./content/transcribe";
+import { generateTags } from "./generate-tags";
 import { PrismaClient } from "./generated/index.js";
+import { recognizeText } from "./recognize-text";
+import { transcribe } from "./transcribe";
 import { APP_BASE_URL } from "./utils/constants";
 
 dotenv.config();
