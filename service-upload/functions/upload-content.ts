@@ -46,7 +46,8 @@ export async function uploadContent(
     .createReadStream()
     .pipe(createWriteStream(filePath))
     .on("open", async () => {
-      console.log(`content download started for ${projectId}/${slug}`);
+      res.status(200).send(`content download started for ${projectId}/${slug}`);
+
       await prisma.content.update({
         where: {
           projectId_slug: {
@@ -64,9 +65,23 @@ export async function uploadContent(
         },
       });
     })
-    .on("finish", async () => {
-      console.log("download finished");
+    .on("error", async (err) => {
+      await prisma.content.update({
+        where: {
+          projectId_slug: {
+            projectId,
+            slug,
+          },
+        },
+        data: {
+          youtubeStatus: UploadStatus.NOT_STARTED,
+          tikTokStatus: UploadStatus.NOT_STARTED,
+        },
+      });
 
+      throw new Error(err.message);
+    })
+    .on("finish", async () => {
       exec(
         `${ffmpeg} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
 
@@ -120,23 +135,5 @@ export async function uploadContent(
           }),
         });
       }
-    })
-    .on("error", async (err) => {
-      console.log(err);
-
-      await prisma.content.update({
-        where: {
-          projectId_slug: {
-            projectId,
-            slug,
-          },
-        },
-        data: {
-          youtubeStatus: UploadStatus.NOT_STARTED,
-          tikTokStatus: UploadStatus.NOT_STARTED,
-        },
-      });
-
-      res.status(500).send("Something went wrong!");
     });
 }
