@@ -87,12 +87,7 @@ export async function uploadYouTubeShort(
     },
   });
 
-  const uploadStartedResponse: UploadYoutubeShortResponse = {
-    success: true,
-    message: `Started Uploading ${content.title} : ${projectId}/${slug} to YouTube`,
-  };
-
-  res.status(200).send(uploadStartedResponse);
+  console.log(`Upload started for video ${projectId} / ${slug}`);
 
   return youtube.videos
     .insert({
