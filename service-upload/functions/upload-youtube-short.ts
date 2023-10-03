@@ -5,7 +5,7 @@ import { google } from "googleapis";
 import { UploadStatus } from "../generated";
 import { prisma } from "../index";
 
-interface UploadYoutubeContentBody {
+interface UploadYoutubeShortRequest {
   projectId: string;
   slug: string;
 }
@@ -16,7 +16,7 @@ interface UploadYoutubeShortResponse {
 }
 
 export async function uploadYouTubeShort(
-  req: Request<{}, {}, UploadYoutubeContentBody>,
+  req: Request<{}, {}, UploadYoutubeShortRequest>,
   res: Response
 ): Promise<Response<UploadYoutubeShortResponse>> {
   const { projectId, slug } = req.body;
@@ -146,8 +146,11 @@ export async function uploadYouTubeShort(
         },
       });
 
-      console.log("Youtube Upload Error", error);
+      const uploadFailureResponse: UploadYoutubeShortResponse = {
+        success: false,
+        message: `Failed Uploading ${content.title} : ${projectId}/${slug} to YouTube`,
+      };
 
-      return res.status(400).send("Error uploading video to youtube:");
+      return res.status(400).send(uploadFailureResponse);
     });
 }
