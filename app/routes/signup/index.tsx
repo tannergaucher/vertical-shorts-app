@@ -1,6 +1,7 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { useEffect } from "react";
 
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
@@ -35,6 +36,17 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Page() {
   const { userId } = useLoaderData<LoaderData>();
+
+  useEffect(() => {
+    const scriptTag = document.createElement("script");
+    scriptTag.src = "https://js.stripe.com/v3/pricing-table.js";
+    scriptTag.async = true;
+    document.body.appendChild(scriptTag);
+
+    return () => {
+      document.body.removeChild(scriptTag);
+    };
+  }, []);
 
   return (
     <main className={styles.main}>
