@@ -24,7 +24,9 @@ export async function createContentGif({
     async (error) => {
       if (error) {
         console.log(`Error creating gif ${projectId} $${slug}`, error);
-        throw new Error("Error creating gif");
+        throw new Error(
+          `Error creating gif ${slug}.gif at ffmpegPath ${ffmpegPath}`
+        );
       }
 
       const cloudStoragePath = `https://storage.googleapis.com/${projectId}/${slug}.gif`;
@@ -53,7 +55,6 @@ export async function createContentGif({
   );
 
   return {
-    success: true,
     message: `Created Gif for ${projectId} / ${slug}`,
   };
 }
