@@ -1,16 +1,10 @@
-import type { Request, Response } from "express";
-
+import type { PrismaClient } from "../generated";
 import { CloudIntelligenceTypes } from "../index";
-import { cloudIntelligence, prisma } from "../index";
+import { cloudIntelligence } from "../index";
 
-interface GenerateTagsRequest {
+export interface GenerateTagsRequest {
   projectId: string;
   slug: string;
-}
-
-export interface GenerateTagsResponse {
-  success: boolean;
-  tags: string[];
 }
 
 function getTagsFromLabelAnnotations(
@@ -27,12 +21,17 @@ function getTagsFromLabelAnnotations(
   );
 }
 
-export async function generateTags(
-  req: Request<{}, {}, GenerateTagsRequest>,
-  res: Response<GenerateTagsResponse>
-): Promise<Response<GenerateTagsResponse>> {
-  const { projectId, slug } = req.body;
+interface GenerateTagsParams {
+  projectId: string;
+  slug: string;
+  prisma: PrismaClient;
+}
 
+export async function generateTags({
+  projectId,
+  slug,
+  prisma,
+}: GenerateTagsParams) {
   const content = await prisma.content.findUnique({
     where: {
       projectId_slug: {
@@ -59,10 +58,10 @@ export async function generateTags(
   const tags = getTagsFromLabelAnnotations(contentLabels);
 
   if (tags.length > 0) {
-    return res.json({
-      success: true,
-      tags,
-    });
+    return {
+      tags: [],
+      message: "No tags from content labels",
+    };
   }
 
   try {
@@ -98,22 +97,18 @@ export async function generateTags(
         },
       });
 
-      return res.json({
-        success: true,
+      return {
         tags,
-      });
+        message: `Successfully generated ${tags.length} Tags`,
+      };
     }
 
-    return res.json({
-      success: false,
+    return {
       tags: [],
-    });
+      message: "No tags generated",
+    };
   } catch (error) {
     console.error(error);
-
-    return res.json({
-      success: false,
-      tags: [],
-    });
+    throw new Error(`Error generating tags for ${projectId} / ${slug}`);
   }
 }

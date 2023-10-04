@@ -1,22 +1,22 @@
-import type { Request, Response } from "express";
+import type { PrismaClient } from "../generated";
+import { cloudIntelligence, CloudIntelligenceTypes } from "../index";
 
-import { cloudIntelligence, CloudIntelligenceTypes, prisma } from "../index";
-
-interface RecognizeTextRequest {
+export interface TranscribeRequest {
   projectId: string;
   slug: string;
 }
 
-export interface RecognizeTextResponse {
-  success: boolean;
+interface TranscribeParams {
+  projectId: string;
+  slug: string;
+  prisma: PrismaClient;
 }
 
-export async function transcribe(
-  req: Request<{}, {}, RecognizeTextRequest>,
-  res: Response<RecognizeTextResponse>
-): Promise<Response<RecognizeTextResponse>> {
-  const { projectId, slug } = req.body;
-
+export async function transcribe({
+  projectId,
+  slug,
+  prisma,
+}: TranscribeParams) {
   const content = await prisma.content.findUnique({
     where: {
       projectId_slug: {
@@ -67,5 +67,8 @@ export async function transcribe(
     },
   });
 
-  return res.json({ success: true });
+  return {
+    message: `Created transcription for ${projectId} / ${slug}`,
+    transcription: JSON.stringify(operationResult),
+  };
 }
