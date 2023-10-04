@@ -1,32 +1,24 @@
-import type { Request, Response } from "express";
-
 import type { PrismaClient } from "../generated";
 
-interface UploadTikTokStatusQueryParams {
+export interface UploadTikTokStatusQueryParams {
   publish_id: string;
   project_id: string;
 }
 
-interface UploadTikTokStatusResponse {
-  success: boolean;
-  message: string;
-  status?: any;
+interface UploadTiktokStatusParams {
+  publishId: string;
+  projectId: string;
+  prisma: PrismaClient;
 }
 
-export async function uploadTikTokStatus(
-  req: Request<{}, {}, UploadTikTokStatusQueryParams>,
-  res: Response,
-  prisma: PrismaClient
-): Promise<Response<UploadTikTokStatusResponse>> {
-  const { publish_id, project_id } = req.query;
-
-  if (!publish_id || !project_id?.toString()) {
-    return res.status(400).send("Missing publish_id or project_id");
-  }
-
+export async function uploadTikTokStatus({
+  publishId,
+  projectId,
+  prisma,
+}: UploadTiktokStatusParams) {
   const project = await prisma.project.findUnique({
     where: {
-      id: project_id.toString(),
+      id: projectId,
     },
     select: {
       tikTokCredentials: true,
@@ -34,7 +26,7 @@ export async function uploadTikTokStatus(
   });
 
   if (!project?.tikTokCredentials?.accessToken) {
-    throw new Error("Missing TikTok access token");
+    throw new Error(`Missing TikTok access token for project ${projectId}`);
   }
 
   const statusRes = await fetch(
@@ -46,27 +38,17 @@ export async function uploadTikTokStatus(
         "Content-Type": "application/json; charset=utf-8",
       },
       body: JSON.stringify({
-        publish_id,
+        publish_id: publishId,
       }),
     }
   );
 
   if (!statusRes.ok) {
-    const { status, statusText } = statusRes;
-
-    const statusFailureResponse: UploadTikTokStatusResponse = {
-      success: false,
-      message: `Error fetching tiktok upload for project_id: ${project_id} publish_id: ${publish_id} statusText: ${statusText} status: ${status}`,
-    };
-
-    return res.status(400).send(statusFailureResponse);
+    throw new Error(`Error fetching tiktok status publish_id ${publishId}`);
   }
 
-  const statusSuccessResponse: UploadTikTokStatusResponse = {
-    success: true,
-    message: "Successfully fetched tiktok upload status",
-    status: await statusRes.json(),
+  return {
+    message: `Status for publish_id ${publishId}`,
+    statusJson: statusRes.json(),
   };
-
-  return res.status(200).send(statusSuccessResponse);
 }

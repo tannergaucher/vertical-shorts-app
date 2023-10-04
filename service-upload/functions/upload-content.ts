@@ -1,26 +1,29 @@
-import { path as ffmpeg } from "@ffmpeg-installer/ffmpeg";
+import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import type { Storage } from "@google-cloud/storage";
-import { exec } from "child_process";
-import type { Request, Response } from "express";
 import { createWriteStream } from "fs";
+import { compact } from "lodash";
 
 import type { PrismaClient } from "../generated";
 import { UploadStatus } from "../generated";
 import { UPLOAD_SERVICE_BASE_URL } from "../utils/constants";
+import { createContentGif } from "./create-content-gif";
 
 export interface UploadContentBody {
-  slug: string;
   projectId: string;
+  slug: string;
 }
 
-export async function uploadContent(
-  req: Request<{}, {}, UploadContentBody>,
-  res: Response,
-  prisma: PrismaClient,
-  storage: Storage
-) {
-  const { projectId, slug } = req.body;
+type UploadContentParams = UploadContentBody & {
+  prisma: PrismaClient;
+  storage: Storage;
+};
 
+export async function uploadContent({
+  projectId,
+  slug,
+  prisma,
+  storage,
+}: UploadContentParams) {
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       projectId_slug: {
@@ -79,65 +82,51 @@ export async function uploadContent(
         },
       });
 
-      throw new Error(err.message);
+      throw new Error(`Error downloading from gcp bucket, ${err.message}`);
     })
     .on("finish", async () => {
-      res
-        .status(200)
-        .send(`Video downloaded from gcp bucket: ${projectId}/${slug}`);
+      console.log("Downloaded video from gcp bucket");
 
-      exec(
-        `${ffmpeg} -i ${filePath} -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
+      const socialChannels = compact([
+        content.project.youtubeCredentials
+          ? fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                projectId,
+                slug,
+              }),
+            })
+          : undefined,
+        content.project.tikTokCredentials
+          ? fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                projectId,
+                slug,
+              }),
+            })
+          : undefined,
+      ]);
 
-        async (error) => {
-          if (error) {
-            console.log("error creating gif", error);
-            return;
-          }
-
-          await storage
-            .bucket(projectId)
-            .upload(`${slug}.gif`)
-            .then(async () => {
-              await prisma.content.update({
-                where: {
-                  projectId_slug: {
-                    projectId,
-                    slug,
-                  },
-                },
-                data: {
-                  gif: `https://storage.googleapis.com/${projectId}/${slug}.gif`,
-                },
-              });
-            });
-        }
-      );
-
-      if (content.project.youtubeCredentials) {
-        fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId,
-            slug,
-          }),
-        });
-      }
-
-      if (content.project.tikTokCredentials) {
-        fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            projectId,
-            slug,
-          }),
-        });
-      }
+      await Promise.all([
+        socialChannels.map((socialChannel) => socialChannel),
+        createContentGif({
+          projectId,
+          slug,
+          storage,
+          prisma,
+          ffmpegPath,
+        }),
+      ]);
     });
+
+  return {
+    message: `Uploaded content to social channels!  projectId:${projectId} slug:${slug}`,
+  };
 }

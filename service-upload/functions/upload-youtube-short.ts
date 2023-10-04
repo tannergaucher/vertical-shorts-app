@@ -1,27 +1,25 @@
-import type { Request, Response } from "express";
 import { createReadStream } from "fs";
 import { google } from "googleapis";
 
 import type { PrismaClient } from "../generated";
 import { UploadStatus } from "../generated";
 
-interface UploadYoutubeShortRequest {
+export interface UploadYoutubeShortBody {
   projectId: string;
   slug: string;
 }
 
-interface UploadYoutubeShortResponse {
-  success: boolean;
-  message: string;
+interface UploadYoutubeShortParams {
+  projectId: string;
+  slug: string;
+  prisma: PrismaClient;
 }
 
-export async function uploadYouTubeShort(
-  req: Request<{}, {}, UploadYoutubeShortRequest>,
-  res: Response,
-  prisma: PrismaClient
-): Promise<Response<UploadYoutubeShortResponse>> {
-  const { projectId, slug } = req.body;
-
+export async function uploadYouTubeShort({
+  projectId,
+  slug,
+  prisma,
+}: UploadYoutubeShortParams) {
   const content = await prisma.content.update({
     where: {
       projectId_slug: {
@@ -41,7 +39,7 @@ export async function uploadYouTubeShort(
 
   const project = await prisma.project.findUnique({
     where: {
-      id: req.body.projectId,
+      id: projectId,
     },
     select: {
       youtubeCredentials: true,
@@ -121,16 +119,12 @@ export async function uploadYouTubeShort(
         },
       });
 
-      const uploadFinishedResponse: UploadYoutubeShortResponse = {
-        success: true,
-        message: `Finished Uploading ${content.title} : ${projectId}/${slug} to YouTube`,
+      return {
+        message: `Success uploading ${projectId} ${slug} to youtube`,
       };
-
-      return res.status(200).json(uploadFinishedResponse);
     })
 
     .catch(async (error) => {
-      console.log(error);
       await prisma.content.update({
         where: {
           projectId_slug: {
@@ -143,11 +137,7 @@ export async function uploadYouTubeShort(
         },
       });
 
-      const uploadFailureResponse: UploadYoutubeShortResponse = {
-        success: false,
-        message: `Failed Uploading ${content.title} : ${projectId}/${slug} to YouTube`,
-      };
-
-      return res.status(400).json(uploadFailureResponse);
+      console.log(error);
+      throw new Error(`Error uploading ${projectId} / ${slug} to youtube`);
     });
 }
