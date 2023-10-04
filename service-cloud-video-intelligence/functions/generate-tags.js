@@ -54,9 +54,13 @@ function generateTags({ projectId, slug, prisma, }) {
         try {
             const annotateVideoRequest = {
                 inputUri: `gs://${content.projectId}/${content.slug}.mp4`,
-                features: [index_1.CloudIntelligenceTypes.Feature.LABEL_DETECTION],
+                features: [index_1.CloudIntelligenceTypes.Feature.LABEL_DETECTION.valueOf()],
             };
-            const [operation] = yield index_2.cloudIntelligence.annotateVideo(annotateVideoRequest);
+            const result = yield index_2.cloudIntelligence.annotateVideo(annotateVideoRequest);
+            const [operation] = result;
+            if (operation.error) {
+                throw new Error(`Operation error`);
+            }
             console.log("Waiting for operation to complete...");
             const [operationResult] = yield operation.promise();
             const annotations = (_a = operationResult.annotationResults) === null || _a === void 0 ? void 0 : _a[0];

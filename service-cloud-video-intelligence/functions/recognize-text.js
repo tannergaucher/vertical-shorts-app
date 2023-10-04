@@ -32,10 +32,14 @@ function recognizeText({ projectId, slug, prisma, }) {
         const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
         const request = {
             inputUri: gcsUri,
-            features: [index_1.CloudIntelligenceTypes.Feature.TEXT_DETECTION],
+            features: [index_1.CloudIntelligenceTypes.Feature.TEXT_DETECTION.valueOf()],
         };
-        const [operation] = yield index_1.cloudIntelligence.annotateVideo(request);
+        const result = yield index_1.cloudIntelligence.annotateVideo(request);
+        const [operation] = result;
         console.log("Waiting for operation to complete...");
+        if (operation.error) {
+            throw new Error(`Operation error`);
+        }
         const results = (yield operation.promise());
         const textAnnotations = (_b = (_a = results[0]) === null || _a === void 0 ? void 0 : _a.annotationResults[0]) === null || _b === void 0 ? void 0 : _b.textAnnotations;
         if (textAnnotations !== undefined) {

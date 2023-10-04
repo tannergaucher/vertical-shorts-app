@@ -36,12 +36,18 @@ export async function recognizeText({
 
   const request = {
     inputUri: gcsUri,
-    features: [CloudIntelligenceTypes.Feature.TEXT_DETECTION],
+    features: [CloudIntelligenceTypes.Feature.TEXT_DETECTION.valueOf()],
   };
 
-  const [operation] = await cloudIntelligence.annotateVideo(request);
+  const result = await cloudIntelligence.annotateVideo(request);
+
+  const [operation] = result;
 
   console.log("Waiting for operation to complete...");
+
+  if (operation.error) {
+    throw new Error(`Operation error`);
+  }
 
   const results =
     (await operation.promise()) as CloudIntelligenceTypes.AnnotateVideoResult[];

@@ -46,10 +46,16 @@ export async function transcribe({
   const request = {
     inputUri: gcsUri,
     videoContext: videoContext,
-    features: [CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION],
+    features: [CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION.valueOf()],
   };
 
-  const [operation] = await cloudIntelligence.annotateVideo(request);
+  const result = await cloudIntelligence.annotateVideo(request);
+
+  const [operation] = result;
+
+  if (operation.error) {
+    throw new Error(`Operation Error`);
+  }
 
   console.log("Waiting for operation to complete...");
 

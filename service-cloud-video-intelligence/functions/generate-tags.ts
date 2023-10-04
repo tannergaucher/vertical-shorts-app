@@ -67,12 +67,16 @@ export async function generateTags({
   try {
     const annotateVideoRequest = {
       inputUri: `gs://${content.projectId}/${content.slug}.mp4`,
-      features: [CloudIntelligenceTypes.Feature.LABEL_DETECTION],
+      features: [CloudIntelligenceTypes.Feature.LABEL_DETECTION.valueOf()],
     };
 
-    const [operation] = await cloudIntelligence.annotateVideo(
-      annotateVideoRequest
-    );
+    const result = await cloudIntelligence.annotateVideo(annotateVideoRequest);
+
+    const [operation] = result;
+
+    if (operation.error) {
+      throw new Error(`Operation error`);
+    }
 
     console.log("Waiting for operation to complete...");
 

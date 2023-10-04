@@ -38,9 +38,13 @@ function transcribe({ projectId, slug, prisma, }) {
         const request = {
             inputUri: gcsUri,
             videoContext: videoContext,
-            features: [index_1.CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION],
+            features: [index_1.CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION.valueOf()],
         };
-        const [operation] = yield index_1.cloudIntelligence.annotateVideo(request);
+        const result = yield index_1.cloudIntelligence.annotateVideo(request);
+        const [operation] = result;
+        if (operation.error) {
+            throw new Error(`Operation Error`);
+        }
         console.log("Waiting for operation to complete...");
         const [operationResult] = yield operation.promise();
         yield prisma.content.update({
