@@ -49,7 +49,9 @@ export async function createContentGif({
         })
         .catch((error) => {
           console.log(error);
-          throw new Error(`Error saving cloudStorage path ${cloudStoragePath}`);
+          throw new Error(
+            `Error saving gif to cloudStorage path ${cloudStoragePath}`
+          );
         });
     }
   );
