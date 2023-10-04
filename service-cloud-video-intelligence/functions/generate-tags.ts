@@ -7,25 +7,9 @@ export interface GenerateTagsRequest {
   slug: string;
 }
 
-function getTagsFromLabelAnnotations(
-  labelAnnotations?: CloudIntelligenceTypes.LabelAnnotation[] | null
-) {
-  if (!labelAnnotations) {
-    return [];
-  }
-
-  return labelAnnotations.flatMap((labelAnnotation) =>
-    labelAnnotation.entity?.description
-      ? labelAnnotation.entity.description
-      : []
-  );
-}
-
-interface GenerateTagsParams {
-  projectId: string;
-  slug: string;
+type GenerateTagsParams = GenerateTagsRequest & {
   prisma: PrismaClient;
-}
+};
 
 export async function generateTags({
   projectId,
@@ -115,4 +99,18 @@ export async function generateTags({
     console.error(error);
     throw new Error(`Error generating tags for ${projectId} / ${slug}`);
   }
+}
+
+function getTagsFromLabelAnnotations(
+  labelAnnotations?: CloudIntelligenceTypes.LabelAnnotation[] | null
+) {
+  if (!labelAnnotations) {
+    return [];
+  }
+
+  return labelAnnotations.flatMap((labelAnnotation) =>
+    labelAnnotation.entity?.description
+      ? labelAnnotation.entity.description
+      : []
+  );
 }
