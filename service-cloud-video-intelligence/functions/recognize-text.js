@@ -11,11 +11,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.recognizeText = void 0;
 const index_1 = require("../index");
-function recognizeText(req, res) {
+function recognizeText({ projectId, slug, prisma, }) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
-        const { projectId, slug } = req.body;
-        const content = yield index_1.prisma.content.findUnique({
+        const content = yield prisma.content.findUnique({
             where: {
                 projectId_slug: {
                     projectId,
@@ -28,7 +27,7 @@ function recognizeText(req, res) {
             },
         });
         if (!content) {
-            throw new Error("CONTENT_NOT_FOUND");
+            throw new Error(`No content for ${projectId} / ${slug}`);
         }
         const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
         const request = {
@@ -40,7 +39,7 @@ function recognizeText(req, res) {
         const results = (yield operation.promise());
         const textAnnotations = (_b = (_a = results[0]) === null || _a === void 0 ? void 0 : _a.annotationResults[0]) === null || _b === void 0 ? void 0 : _b.textAnnotations;
         if (textAnnotations !== undefined) {
-            yield index_1.prisma.content.update({
+            yield prisma.content.update({
                 where: {
                     projectId_slug: {
                         projectId,
@@ -52,7 +51,10 @@ function recognizeText(req, res) {
                 },
             });
         }
-        return res.json({ success: true });
+        return {
+            message: `Created annotations for ${projectId} / ${slug}`,
+            annotations: JSON.stringify(textAnnotations),
+        };
     });
 }
 exports.recognizeText = recognizeText;

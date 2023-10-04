@@ -11,10 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transcribe = void 0;
 const index_1 = require("../index");
-function transcribe(req, res) {
+function transcribe({ projectId, slug, prisma, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { projectId, slug } = req.body;
-        const content = yield index_1.prisma.content.findUnique({
+        const content = yield prisma.content.findUnique({
             where: {
                 projectId_slug: {
                     projectId,
@@ -44,7 +43,7 @@ function transcribe(req, res) {
         const [operation] = yield index_1.cloudIntelligence.annotateVideo(request);
         console.log("Waiting for operation to complete...");
         const [operationResult] = yield operation.promise();
-        yield index_1.prisma.content.update({
+        yield prisma.content.update({
             where: {
                 projectId_slug: {
                     projectId,
@@ -55,7 +54,10 @@ function transcribe(req, res) {
                 transcription: JSON.stringify(operationResult),
             },
         });
-        return res.json({ success: true });
+        return {
+            message: `Created transcription for ${projectId} / ${slug}`,
+            transcription: JSON.stringify(operationResult),
+        };
     });
 }
 exports.transcribe = transcribe;

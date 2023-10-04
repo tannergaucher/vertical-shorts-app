@@ -23,11 +23,10 @@ function getTagsFromLabelAnnotations(labelAnnotations) {
             : [];
     });
 }
-function generateTags(req, res) {
+function generateTags({ projectId, slug, prisma, }) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const { projectId, slug } = req.body;
-        const content = yield index_2.prisma.content.findUnique({
+        const content = yield prisma.content.findUnique({
             where: {
                 projectId_slug: {
                     projectId,
@@ -47,10 +46,10 @@ function generateTags(req, res) {
         const contentLabels = JSON.parse(content.labels);
         const tags = getTagsFromLabelAnnotations(contentLabels);
         if (tags.length > 0) {
-            return res.json({
-                success: true,
-                tags,
-            });
+            return {
+                tags: [],
+                message: "No tags from content labels",
+            };
         }
         try {
             const annotateVideoRequest = {
@@ -63,7 +62,7 @@ function generateTags(req, res) {
             const annotations = (_a = operationResult.annotationResults) === null || _a === void 0 ? void 0 : _a[0];
             const tags = getTagsFromLabelAnnotations(annotations === null || annotations === void 0 ? void 0 : annotations.segmentLabelAnnotations);
             if (tags.length > 0) {
-                yield index_2.prisma.content.update({
+                yield prisma.content.update({
                     where: {
                         projectId_slug: {
                             projectId,
@@ -74,22 +73,19 @@ function generateTags(req, res) {
                         tags,
                     },
                 });
-                return res.json({
-                    success: true,
+                return {
                     tags,
-                });
+                    message: `Successfully generated ${tags.length} Tags`,
+                };
             }
-            return res.json({
-                success: false,
+            return {
                 tags: [],
-            });
+                message: "No tags generated",
+            };
         }
         catch (error) {
             console.error(error);
-            return res.json({
-                success: false,
-                tags: [],
-            });
+            throw new Error(`Error generating tags for ${projectId} / ${slug}`);
         }
     });
 }

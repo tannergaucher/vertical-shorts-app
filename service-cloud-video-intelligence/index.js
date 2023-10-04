@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -47,9 +56,52 @@ app.use((0, express_1.json)());
 app.use((0, cors_1.default)({
     origin: constants_1.APP_BASE_URL,
 }));
-app.post("/generate-tags", generate_tags_1.generateTags);
-app.post("/recognize-text", recognize_text_1.recognizeText);
-app.post("/transcribe", transcribe_1.transcribe);
+app.post("/generate-tags", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, slug } = req.body;
+    try {
+        const { message } = yield (0, generate_tags_1.generateTags)({
+            projectId,
+            slug,
+            prisma: exports.prisma,
+        });
+        res.status(200).json(message);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).json(`Error generating tags for ${projectId} / ${slug}`);
+    }
+}));
+app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, slug } = req.body;
+    try {
+        const { message } = yield (0, recognize_text_1.recognizeText)({
+            projectId,
+            slug,
+            prisma: exports.prisma,
+        });
+        res.status(200).json(message);
+    }
+    catch (error) {
+        res
+            .status(400)
+            .send(`Error recognizing text for content ${projectId} / ${slug}`);
+    }
+}));
+app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, slug } = req.body;
+    try {
+        const { message } = yield (0, transcribe_1.transcribe)({
+            projectId,
+            slug,
+            prisma: exports.prisma,
+        });
+        res.status(200).send(message);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).send(`Error transcribing content ${projectId} / ${slug}`);
+    }
+}));
 const port = parseInt((_a = process.env.PORT) !== null && _a !== void 0 ? _a : "8080");
 app.listen(port, () => {
     console.log(`listening on port ${port}`);
