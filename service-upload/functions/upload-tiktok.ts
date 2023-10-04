@@ -1,26 +1,22 @@
-import type { Request, Response } from "express";
-
 import type { PrismaClient } from "../generated";
-import { UploadStatus } from "../generated";
 import { APP_BASE_URL } from "../utils/constants";
 
-interface UploadTikTokBody {
+export interface UploadTikTokBody {
   projectId: string;
   slug: string;
 }
 
-interface UploadTikTokResponse {
-  success: boolean;
-  message: string;
+interface UploadTiktokParams {
+  projectId: string;
+  slug: string;
+  prisma: PrismaClient;
 }
 
-export async function uploadTikTok(
-  req: Request<{}, {}, UploadTikTokBody>,
-  res: Response,
-  prisma: PrismaClient
-): Promise<Response<UploadTikTokResponse>> {
-  const { projectId, slug } = req.body;
-
+export async function uploadTikTok({
+  projectId,
+  slug,
+  prisma,
+}: UploadTiktokParams) {
   const project = await prisma.project.findUnique({
     where: {
       id: projectId,
@@ -52,37 +48,15 @@ export async function uploadTikTok(
   );
 
   if (!initResponse.ok) {
-    const initResponseError: UploadTikTokResponse = {
-      success: false,
-      message: "Error initializing tiktok upload",
-    };
+    console.log(initResponse);
 
-    return res.status(500).json(initResponseError);
+    throw new Error(
+      `Error on tiktok initialization request for ${projectId} / ${slug}`
+    );
   }
 
-  const { data } = (await initResponse.json()) as {
-    data: {
-      publish_id: string;
-    };
+  return {
+    message: `Success initializing tiktok upload for ${projectId} / ${slug}`,
+    initResponse: initResponse.json(),
   };
-
-  const updatedContent = await prisma.content.update({
-    where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
-    },
-    data: {
-      tikTokStatus: UploadStatus.UPLOADING,
-      tikTokId: data.publish_id,
-    },
-  });
-
-  const response: UploadTikTokResponse = {
-    success: true,
-    message: `Successfully initialized tiktok upload ${updatedContent.title} publish_id: ${data.publish_id} status: ${updatedContent.tikTokStatus}`,
-  };
-
-  return res.status(200).json(response);
 }

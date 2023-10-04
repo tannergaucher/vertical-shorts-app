@@ -6,9 +6,11 @@ import express, { json } from "express";
 
 import type { UploadContentBody } from "./functions/upload-content";
 import { uploadContent } from "./functions/upload-content";
+import type { UploadTikTokBody } from "./functions/upload-tiktok";
 import { uploadTikTok } from "./functions/upload-tiktok";
 import type { UploadTikTokStatusQueryParams } from "./functions/upload-tiktok-status";
 import { uploadTikTokStatus } from "./functions/upload-tiktok-status";
+import type { UploadYoutubeShortBody } from "./functions/upload-youtube-short";
 import { uploadYouTubeShort } from "./functions/upload-youtube-short";
 import { PrismaClient } from "./generated/index.js";
 import { APP_BASE_URL } from "./utils/constants";
@@ -51,9 +53,34 @@ app.post(
   }
 );
 
-app.post("/upload-tiktok", (req, res) => uploadTikTok(req, res, prisma));
-app.post("/upload-youtube-short", (req, res) =>
-  uploadYouTubeShort(req, res, prisma)
+app.post(
+  "/upload-tiktok",
+  async (req: Request<{}, {}, UploadTikTokBody>, res: Response) => {
+    const { projectId, slug } = req.body;
+
+    const { message } = await uploadTikTok({
+      projectId,
+      slug,
+      prisma,
+    });
+
+    res.status(200).send(message);
+  }
+);
+
+app.post(
+  "/upload-youtube-short",
+  async (req: Request<{}, {}, UploadYoutubeShortBody>, res) => {
+    const { projectId, slug } = req.body;
+
+    const { message } = await uploadYouTubeShort({
+      projectId,
+      slug,
+      prisma,
+    });
+
+    res.status(200).send(message);
+  }
 );
 app.get(
   "/upload-tiktok-status",
