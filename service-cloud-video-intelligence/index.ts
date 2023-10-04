@@ -65,6 +65,7 @@ app.post(
 
       res.status(200).json(message);
     } catch (error) {
+      console.log(error);
       res
         .status(400)
         .send(`Error recognizing text for content ${projectId} / ${slug}`);
