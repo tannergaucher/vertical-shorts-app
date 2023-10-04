@@ -6,11 +6,9 @@ export interface TranscribeRequest {
   slug: string;
 }
 
-interface TranscribeParams {
-  projectId: string;
-  slug: string;
+type TranscribeParams = TranscribeRequest & {
   prisma: PrismaClient;
-}
+};
 
 export async function transcribe({
   projectId,
