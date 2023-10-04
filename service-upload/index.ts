@@ -7,6 +7,7 @@ import express, { json } from "express";
 import type { UploadContentBody } from "./functions/upload-content";
 import { uploadContent } from "./functions/upload-content";
 import { uploadTikTok } from "./functions/upload-tiktok";
+import type { UploadTikTokStatusQueryParams } from "./functions/upload-tiktok-status";
 import { uploadTikTokStatus } from "./functions/upload-tiktok-status";
 import { uploadYouTubeShort } from "./functions/upload-youtube-short";
 import { PrismaClient } from "./generated/index.js";
@@ -34,16 +35,14 @@ app.post(
     const { projectId, slug } = req.body;
 
     try {
-      await uploadContent({
+      const { message } = await uploadContent({
         projectId,
         slug,
         prisma,
         storage,
       });
 
-      res
-        .status(200)
-        .send(`Initializing content upload for ${projectId} / ${slug}`);
+      res.status(200).send(message);
     } catch (error) {
       res
         .status(400)
@@ -56,8 +55,25 @@ app.post("/upload-tiktok", (req, res) => uploadTikTok(req, res, prisma));
 app.post("/upload-youtube-short", (req, res) =>
   uploadYouTubeShort(req, res, prisma)
 );
-app.get("/upload-tiktok-status", (req, res) =>
-  uploadTikTokStatus(req, res, prisma)
+app.get(
+  "/upload-tiktok-status",
+  async (req: Request<{}, {}, {}, UploadTikTokStatusQueryParams>, res) => {
+    const { project_id, publish_id } = req.query;
+
+    try {
+      const { message } = await uploadTikTokStatus({
+        projectId: project_id,
+        publishId: publish_id,
+        prisma,
+      });
+
+      res.status(200).json(message);
+    } catch (error) {
+      res
+        .status(400)
+        .json(`Error checking tiktok upload status for ${publish_id}`);
+    }
+  }
 );
 
 if (!process.env.PORT) {
