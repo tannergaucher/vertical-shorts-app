@@ -14,7 +14,12 @@ import { APP_BASE_URL } from "./utils/constants";
 
 dotenv.config();
 
+export const prisma = new PrismaClient();
+
+export const storage = new Storage();
+
 const app = express();
+
 app.use(json());
 
 app.use(
@@ -22,10 +27,6 @@ app.use(
     origin: APP_BASE_URL,
   })
 );
-
-export const prisma = new PrismaClient();
-
-export const storage = new Storage();
 
 app.post(
   "/upload-content",
@@ -46,7 +47,7 @@ app.post(
     } catch (error) {
       res
         .status(400)
-        .send(`Error Initializing content upload ${projectId} / ${slug}`);
+        .send(`Error Initializing content upload for ${projectId} / ${slug}`);
     }
   }
 );
