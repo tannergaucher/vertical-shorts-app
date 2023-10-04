@@ -46,6 +46,7 @@ app.post(
 
       res.status(200).send(message);
     } catch (error) {
+      console.log(error);
       res
         .status(400)
         .send(`Error Initializing content upload for ${projectId} / ${slug}`);
@@ -67,6 +68,7 @@ app.post(
 
       res.status(200).send(message);
     } catch (error) {
+      console.log(error);
       res.status(400).send(`Error uploading tiktok ${projectId} / ${slug}`);
     }
   }
