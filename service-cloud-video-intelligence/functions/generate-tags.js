@@ -12,17 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateTags = void 0;
 const index_1 = require("../index");
 const index_2 = require("../index");
-function getTagsFromLabelAnnotations(labelAnnotations) {
-    if (!labelAnnotations) {
-        return [];
-    }
-    return labelAnnotations.flatMap((labelAnnotation) => {
-        var _a;
-        return ((_a = labelAnnotation.entity) === null || _a === void 0 ? void 0 : _a.description)
-            ? labelAnnotation.entity.description
-            : [];
-    });
-}
 function generateTags({ projectId, slug, prisma, }) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -94,3 +83,14 @@ function generateTags({ projectId, slug, prisma, }) {
     });
 }
 exports.generateTags = generateTags;
+function getTagsFromLabelAnnotations(labelAnnotations) {
+    if (!labelAnnotations) {
+        return [];
+    }
+    return labelAnnotations.flatMap((labelAnnotation) => {
+        var _a;
+        return ((_a = labelAnnotation.entity) === null || _a === void 0 ? void 0 : _a.description)
+            ? labelAnnotation.entity.description
+            : [];
+    });
+}
