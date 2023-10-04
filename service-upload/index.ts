@@ -1,8 +1,10 @@
 import { Storage } from "@google-cloud/storage";
 import cors from "cors";
 import dotenv from "dotenv";
+import type { Request, Response } from "express";
 import express, { json } from "express";
 
+import type { UploadContentBody } from "./functions/upload-content";
 import { uploadContent } from "./functions/upload-content";
 import { uploadTikTok } from "./functions/upload-tiktok";
 import { uploadTikTokStatus } from "./functions/upload-tiktok-status";
@@ -25,9 +27,30 @@ export const prisma = new PrismaClient();
 
 export const storage = new Storage();
 
-app.post("/upload-content", (req, res) =>
-  uploadContent(req, res, prisma, storage)
+app.post(
+  "/upload-content",
+  async (req: Request<{}, {}, UploadContentBody>, res: Response) => {
+    const { projectId, slug } = req.body;
+
+    try {
+      await uploadContent({
+        projectId,
+        slug,
+        prisma,
+        storage,
+      });
+
+      res
+        .status(200)
+        .send(`Initializing content upload for ${projectId} / ${slug}`);
+    } catch (error) {
+      res
+        .status(400)
+        .send(`Error Initializing content upload ${projectId} / ${slug}`);
+    }
+  }
 );
+
 app.post("/upload-tiktok", (req, res) => uploadTikTok(req, res, prisma));
 app.post("/upload-youtube-short", (req, res) =>
   uploadYouTubeShort(req, res, prisma)
