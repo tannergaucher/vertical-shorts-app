@@ -58,13 +58,17 @@ app.post(
   async (req: Request<{}, {}, UploadTikTokBody>, res: Response) => {
     const { projectId, slug } = req.body;
 
-    const { message } = await uploadTikTok({
-      projectId,
-      slug,
-      prisma,
-    });
+    try {
+      const { message } = await uploadTikTok({
+        projectId,
+        slug,
+        prisma,
+      });
 
-    res.status(200).send(message);
+      res.status(200).send(message);
+    } catch (error) {
+      res.status(400).send(`Error uploading tiktok ${projectId} / ${slug}`);
+    }
   }
 );
 
@@ -72,14 +76,20 @@ app.post(
   "/upload-youtube-short",
   async (req: Request<{}, {}, UploadYoutubeShortBody>, res) => {
     const { projectId, slug } = req.body;
+    try {
+      const { message } = await uploadYouTubeShort({
+        projectId,
+        slug,
+        prisma,
+      });
 
-    const { message } = await uploadYouTubeShort({
-      projectId,
-      slug,
-      prisma,
-    });
-
-    res.status(200).send(message);
+      res.status(200).send(message);
+    } catch (error) {
+      console.log(error);
+      res
+        .status(400)
+        .send(`Error uploading youtube short ${projectId} / ${slug}`);
+    }
   }
 );
 app.get(
@@ -96,9 +106,12 @@ app.get(
 
       res.status(200).json(message);
     } catch (error) {
+      console.log(error);
       res
         .status(400)
-        .json(`Error checking tiktok upload status for ${publish_id}`);
+        .json(
+          `Error checking tiktok upload status for ${publish_id} / ${project_id}`
+        );
     }
   }
 );
