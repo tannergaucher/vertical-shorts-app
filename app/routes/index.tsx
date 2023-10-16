@@ -11,7 +11,6 @@ import { getContents } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/index.module.css";
 
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
@@ -100,22 +99,21 @@ export default function Page() {
   const [selectedDetails, setSelectedDetails] = useState<string | null>(null);
 
   return (
-    <main className={styles.main}>
-      <h1 className={styles.title}>{project.title}</h1>
-      <section className={styles.contentAsideGrid}>
-        <section className={styles.contentGrid}>
+    <main>
+      <h1>{project.title}</h1>
+      <section>
+        <section>
           {contents?.map((content) => (
             <div
               key={content.slug}
-              className={styles.contentCard}
               data-current={content.slug === selectedDetails}
             >
               {content.gif ? (
                 <img src={content.gif} alt={content.title} />
               ) : null}
-              <div className={styles.contentCardDetails}>
+              <div>
                 <Link to={Routes.AdminContentStatus(content.slug)}>
-                  <h3 className={styles.contentTitle}>{content.title}</h3>
+                  <h3>{content.title}</h3>
                 </Link>
                 <ContentDetails
                   project={project}
@@ -128,7 +126,7 @@ export default function Page() {
             </div>
           ))}
         </section>
-        <section className={styles.asideSection}>
+        <section>
           <aside>
             <fieldset
               disabled={
@@ -148,7 +146,6 @@ export default function Page() {
                 />
                 {tagsFocused ? (
                   <button
-                    className={styles.submitButton}
                     onClick={(e) => {
                       const tagInputElement =
                         e.currentTarget.form?.elements.namedItem(
@@ -172,11 +169,10 @@ export default function Page() {
                   </button>
                 ) : null}
                 {project.tags.map((tag) => (
-                  <div key={tag} className={styles.tag}>
+                  <div key={tag}>
                     <span>#{tag}</span>
                     <button
                       type="button"
-                      className={styles.removeTagButton}
                       onClick={() =>
                         fetcher.submit(
                           {

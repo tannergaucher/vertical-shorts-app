@@ -14,7 +14,6 @@ import { deleteContent, getContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContentStatus.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -80,15 +79,14 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
-      <h1 className={styles.contentTitle}>{content.title}</h1>
+    <main>
+      <h1>{content.title}</h1>
       <img
         src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.gif`}
         alt={content.title}
-        className={styles.gif}
       />
       <ContentDetails content={content} project={project} open={true} />
-      <fieldset disabled={disabled} className={styles.fieldset}>
+      <fieldset disabled={disabled}>
         <Form method="post">
           <input type="hidden" name="slug" value={content.slug} />
           <input type="hidden" name="projectId" value={content.projectId} />

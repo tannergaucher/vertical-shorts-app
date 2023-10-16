@@ -13,7 +13,6 @@ import { zfd } from "zod-form-data";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { Routes } from "~/routes";
 import { createUserSession, getUserId } from "~/session.server";
-import styles from "~/styles/login.module.css";
 import { safeRedirect, validateEmail } from "~/utils";
 
 export async function loader({ request }: LoaderArgs) {
@@ -104,12 +103,10 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
+    <main>
       <h1>Sign Up</h1>
-      <fieldset disabled={disabled} className={styles.fieldset}>
-        {actionData?.errors ? (
-          <legend className={styles.legend}>Error!</legend>
-        ) : null}
+      <fieldset disabled={disabled}>
+        {actionData?.errors ? <legend>Error!</legend> : null}
         <Form method="post">
           <div>
             <label htmlFor="email">
@@ -135,7 +132,6 @@ export default function Page() {
                 autoComplete="email"
                 aria-invalid={actionData?.errors?.email ? true : undefined}
                 aria-describedby="email-error"
-                className={styles.input}
               />
             </div>
           </div>
@@ -161,19 +157,15 @@ export default function Page() {
                 autoComplete="new-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
-                className={styles.input}
               />
             </div>
           </div>
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button type="submit" className={styles.button}>
-            Create Account
-          </button>
+          <button type="submit">Create Account</button>
           <div>
             <small>
               Already have an account?{" "}
               <Link
-                className={styles.login}
                 to={{
                   pathname: "/login",
                   search: searchParams.toString(),

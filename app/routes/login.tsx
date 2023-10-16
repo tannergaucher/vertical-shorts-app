@@ -13,7 +13,6 @@ import { zfd } from "zod-form-data";
 import { verifyLogin } from "~/models/user.server";
 import { Routes } from "~/routes";
 import { createUserSession, getUserId } from "~/session.server";
-import styles from "~/styles/login.module.css";
 import { safeRedirect, validateEmail } from "~/utils";
 
 export async function loader({ request }: LoaderArgs) {
@@ -99,12 +98,10 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
+    <main>
       <h1>Login</h1>
-      <fieldset disabled={disabled} className={styles.fieldset}>
-        {actionData?.errors ? (
-          <legend className={styles.legend}>Error!</legend>
-        ) : null}
+      <fieldset disabled={disabled}>
+        {actionData?.errors ? <legend>Error!</legend> : null}
         <Form method="post">
           <div>
             <label htmlFor="email">
@@ -126,7 +123,6 @@ export default function Page() {
                 autoComplete="email"
                 aria-invalid={actionData?.errors?.email ? true : undefined}
                 aria-describedby="email-error"
-                className={styles.input}
               />
             </div>
           </div>
@@ -152,20 +148,12 @@ export default function Page() {
                 autoComplete="current-password"
                 aria-invalid={actionData?.errors?.password ? true : undefined}
                 aria-describedby="password-error"
-                className={styles.input}
               />
             </div>
           </div>
           <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button type="submit" className={styles.button}>
-            Log in
-          </button>
-          <input
-            id="remember"
-            name="remember"
-            type="checkbox"
-            className={styles.checkbox}
-          />
+          <button type="submit">Log in</button>
+          <input id="remember" name="remember" type="checkbox" />
           <label htmlFor="remember">
             <small>Remember me</small>
           </label>
@@ -173,7 +161,6 @@ export default function Page() {
           <small>
             Don't have an account?{" "}
             <Link
-              className={styles.signUp}
               to={{
                 pathname: "/join",
                 search: searchParams.toString(),

@@ -14,7 +14,6 @@ import type { Content } from "~/models/content.server";
 import type { Project } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContentTagsDescription.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -125,25 +124,23 @@ export default function Page() {
 
   return (
     <main>
-      <h1 className={styles.pageTitle}>{content.title}</h1>
-      <h2 className={styles.pageTitle}>
+      <h1>{content.title}</h1>
+      <h2>
         <em>{project.title}</em>
       </h2>
       <Breadcrumb slug={slug} />
-      <div className={styles.tagsDescriptionGrid}>
-        <section>
-          <TagsForm
-            project={project}
-            content={content}
-            slug={slug}
-            hasGeneratedTags={hasGeneratedTags}
-            setHasGeneratedTags={setHasGeneratedTags}
-          />
-        </section>
-        <section>
-          <DescriptionForm project={project} slug={slug} content={content} />
-        </section>
-      </div>
+      <section>
+        <TagsForm
+          project={project}
+          content={content}
+          slug={slug}
+          hasGeneratedTags={hasGeneratedTags}
+          setHasGeneratedTags={setHasGeneratedTags}
+        />
+      </section>
+      <section>
+        <DescriptionForm project={project} slug={slug} content={content} />
+      </section>
     </main>
   );
 }
@@ -169,10 +166,9 @@ function TagsForm({
 
   return (
     <>
-      <h2 className={styles.sectionTitle}>Tags</h2>
+      <h2>Tags</h2>
       {!hasGeneratedTags ? (
         <button
-          className={styles.generateTagsButton}
           disabled={
             tagsFetcher.state === "loading" ||
             tagsFetcher.state === "submitting"
@@ -193,23 +189,16 @@ function TagsForm({
         <tagsFetcher.Form method="post">
           {tags.map((tag) => (
             <div key={tag}>
-              <label className={styles.tagLabel}>
+              <label>
                 {tag}
                 <input type="checkbox" name="tags" value={tag} defaultChecked />
               </label>
             </div>
           ))}
-          <input
-            type="text"
-            placeholder="Tags"
-            name="tags"
-            className={styles.addTagInput}
-          />
+          <input type="text" placeholder="Tags" name="tags" />
           <input type="hidden" name="projectId" value={project.id} />
           <input type="hidden" name="slug" value={slug} id="slug" />
-          <button type="submit" className={styles.tagsSubmitButton}>
-            Submit
-          </button>
+          <button type="submit">Submit</button>
         </tagsFetcher.Form>
       </fieldset>
     </>
@@ -237,7 +226,7 @@ function DescriptionForm({
 
   return (
     <div>
-      <h2 className={styles.sectionTitle}>Description</h2>
+      <h2>Description</h2>
       <fieldset
         disabled={
           descriptionFetcher.state === "loading" ||

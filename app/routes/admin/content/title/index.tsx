@@ -17,7 +17,6 @@ import { Breadcrumb } from "~/components/breadcrumb";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContent.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -84,20 +83,14 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
-      <h2 className={styles.pageTitle}>
+    <main>
+      <h2>
         <em>{project.title}</em>
       </h2>
       <Breadcrumb slug={slug} />
-      <fieldset disabled={disabled} className={styles.fieldset}>
+      <fieldset disabled={disabled}>
         <Form method="post">
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            required
-            className={styles.input}
-          />
+          <input type="text" name="title" placeholder="Title" required />
           <button type="submit">Next</button>
         </Form>
       </fieldset>

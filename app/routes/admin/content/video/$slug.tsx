@@ -12,7 +12,6 @@ import { getContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContent.module.css";
 import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
 type LoaderData = {
@@ -171,9 +170,9 @@ export default function Page() {
   }
 
   return (
-    <main className={styles.main}>
-      <h1 className={styles.pageTitle}>{content.title}</h1>
-      <h2 className={styles.pageTitle}>
+    <main>
+      <h1>{content.title}</h1>
+      <h2>
         <em>{project.title}</em>
       </h2>
       <Breadcrumb slug={slug} />
@@ -184,12 +183,7 @@ export default function Page() {
             handleSubmit();
           }}
         >
-          <input
-            type="file"
-            name="thumbnail"
-            required
-            className={styles.input}
-          />
+          <input type="file" name="thumbnail" required />
           <button type="submit">Next</button>
         </form>
       </fieldset>

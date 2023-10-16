@@ -17,7 +17,6 @@ import { upsertContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContent.module.css";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -104,15 +103,15 @@ export default function Page() {
   const channelTypes = project.channels.map((channel) => channel.channelType);
 
   return (
-    <main className={styles.main}>
-      <h1 className={styles.pageTitle}>{content.title}</h1>
+    <main>
+      <h1>{content.title}</h1>
       <em>
-        <h2 className={styles.pageTitle}>{project.title}</h2>
+        <h2>{project.title}</h2>
       </em>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">
-          <section className={styles.checkboxSection}>
+          <section>
             {channelTypes.map((channelType) => (
               <label htmlFor={channelType} key={channelType}>
                 <input
@@ -120,7 +119,6 @@ export default function Page() {
                   name="channelType"
                   id={channelType}
                   value={channelType}
-                  className={styles.checkbox}
                   disabled={
                     channelType === "YOUTUBE" &&
                     content.youtubeStatus === UploadStatus.PUBLIC
@@ -159,9 +157,9 @@ export default function Page() {
             ))}
           </section>
           <label htmlFor="date">Date</label>
-          <input type="date" name="date" className={styles.input} required />
+          <input type="date" name="date" required />
           <label htmlFor="time">Time</label>
-          <input type="time" name="time" className={styles.input} required />
+          <input type="time" name="time" required />
           <input type="hidden" name="slug" value={content.slug} />
           <input type="hidden" name="projectId" value={content.projectId} />
           <button type="submit">Schedule</button>

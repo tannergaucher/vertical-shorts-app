@@ -12,10 +12,9 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import styles from "./root.module.css";
+import appStyles from "./app.css";
 import { Routes } from "./routes";
 import { getUser } from "./session.server";
-import stylesheet from "./styles/index.css";
 
 export const links: LinksFunction = () => {
   return [
@@ -26,7 +25,7 @@ export const links: LinksFunction = () => {
     },
     {
       rel: "stylesheet",
-      href: stylesheet,
+      href: appStyles,
       type: "text/css",
     },
     ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -61,12 +60,12 @@ export default function App() {
         ) : null}
       </head>
       <body>
-        <nav className={styles.nav}>
+        <nav>
           <Link to={Routes.Index}>
             <h3>Content</h3>
           </Link>
-          <menu className={styles.menu}>
-            <ul className={styles.ul}>
+          <menu>
+            <ul>
               <li>
                 <Link to={Routes.Admin}>
                   <h3>Settings</h3>

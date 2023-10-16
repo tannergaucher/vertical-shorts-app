@@ -10,7 +10,6 @@ import invariant from "tiny-invariant";
 import { prisma } from "~/db.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/admin.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -66,11 +65,11 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
-      <fieldset disabled={disabled} className={styles.fieldset}>
+    <main>
+      <fieldset disabled={disabled}>
         <Form method="post">
           <label htmlFor="name">Project Name</label>
-          <input type="text" id="name" name="name" className={styles.input} />
+          <input type="text" id="name" name="name" />
           <button type="submit">Create Project</button>
         </Form>
       </fieldset>
