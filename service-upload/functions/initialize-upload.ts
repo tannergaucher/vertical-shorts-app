@@ -134,6 +134,6 @@ export async function initializeUpload({
     });
 
   return {
-    message: `Uploaded projectId: ${projectId} slug: ${slug} to social channels`,
+    message: `Uploaded ${projectId} ${slug} to channels`,
   };
 }
