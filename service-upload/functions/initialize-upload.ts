@@ -87,7 +87,7 @@ export async function initializeUpload({
       throw new Error(`Error downloading from gcp bucket, ${err.message}`);
     })
     .on("finish", async () => {
-      const contentProjectRequests = compact([
+      const channelUploadPostRequests = compact([
         content.project.youtubeCredentials
           ? fetch(
               `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadYoutubeShort}`,
@@ -121,8 +121,8 @@ export async function initializeUpload({
       ]);
 
       await Promise.all([
-        contentProjectRequests.map(
-          (contentProjectRequest) => contentProjectRequest
+        channelUploadPostRequests.map(
+          (channelUploadPostRequest) => channelUploadPostRequest
         ),
         createContentGif({
           projectId,
