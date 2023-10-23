@@ -42,16 +42,12 @@ export function Breadcrumb({ slug }: { slug?: string }) {
         <li>
           <Link
             to={
-              slug
-                ? Routes.AdminContentTagsDescription(slug)
-                : Routes.AdminContentTitle
+              slug ? Routes.AdminContentDetails(slug) : Routes.AdminContentTitle
             }
             className={styles.breadcrumbLink}
             data-current={
               slug &&
-              location.pathname.includes(
-                Routes.AdminContentTagsDescription(slug)
-              )
+              location.pathname.includes(Routes.AdminContentDetails(slug))
                 ? "true"
                 : "false"
             }

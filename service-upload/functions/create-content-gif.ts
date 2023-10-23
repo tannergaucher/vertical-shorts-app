@@ -1,3 +1,4 @@
+import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import type { Storage } from "@google-cloud/storage";
 import { exec } from "child_process";
 
@@ -6,7 +7,6 @@ import type { PrismaClient } from "../generated";
 interface CreateGifParams {
   projectId: string;
   slug: string;
-  ffmpegPath: string;
   storage: Storage;
   prisma: PrismaClient;
 }
@@ -14,26 +14,24 @@ interface CreateGifParams {
 export async function createContentGif({
   projectId,
   slug,
-  ffmpegPath,
   storage,
   prisma,
 }: CreateGifParams) {
+  const gifFile = `${slug}.gif`;
+  const gifStoragePath = `https://storage.googleapis.com/${projectId}/${slug}.gif`;
+
   exec(
     `${ffmpegPath} -i ${slug}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
 
     async (error) => {
       if (error) {
-        console.log(`Error creating gif ${projectId} $${slug}`, error);
-        throw new Error(
-          `Error creating gif ${slug}.gif at ffmpegPath ${ffmpegPath}`
-        );
+        console.log(`Error`, error);
+        throw new Error(`ffmpeg error creating ${gifFile}`);
       }
-
-      const cloudStoragePath = `https://storage.googleapis.com/${projectId}/${slug}.gif`;
 
       await storage
         .bucket(projectId)
-        .upload(`${slug}.gif`)
+        .upload(gifFile)
         .then(async () => {
           await prisma.content.update({
             where: {
@@ -43,15 +41,13 @@ export async function createContentGif({
               },
             },
             data: {
-              gif: cloudStoragePath,
+              gif: gifStoragePath,
             },
           });
         })
         .catch((error) => {
           console.log(error);
-          throw new Error(
-            `Error saving gif to cloudStorage path ${cloudStoragePath}`
-          );
+          throw new Error(`Error uploading ${gifFile} to ${gifStoragePath}`);
         });
     }
   );

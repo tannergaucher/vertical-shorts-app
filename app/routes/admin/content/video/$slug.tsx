@@ -2,7 +2,8 @@ import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { useState } from "react";
-import type { UploadContentBody } from "service-upload/functions/upload-content";
+import type { InitializeUploadBody } from "service-upload/functions/initialize-upload";
+import { ServiceUploadRoutes } from "service-upload/routes";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -52,18 +53,14 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   if (!bucket) {
     await storage.createBucket(projectId).then(async () => {
-      await storage
-        .bucket(projectId)
-        .makePublic()
-        .then(async () => {
-          await storage.bucket(projectId).setCorsConfiguration([
-            {
-              origin: ["*"],
-              method: ["PUT", "GET"],
-              responseHeader: ["Content-Type"],
-            },
-          ]);
-        });
+      await storage.bucket(projectId).makePublic();
+      await storage.bucket(projectId).setCorsConfiguration([
+        {
+          origin: ["*"],
+          method: ["PUT", "GET"],
+          responseHeader: ["Content-Type"],
+        },
+      ]);
     });
   }
 
@@ -89,55 +86,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   return json({ content, signedUrl, project });
 };
 
-async function handleGcpSignedUpload({
-  slug,
-  signedUrl,
-  projectId,
-  input,
-}: {
-  slug: string;
-  signedUrl: string;
-  projectId: string;
-  input: HTMLInputElement;
-}) {
-  if (input?.files?.length) {
-    const file = input.files[0];
-
-    const reader = new FileReader();
-
-    reader.readAsArrayBuffer(file);
-
-    reader.onload = async (e) => {
-      const videoData = e.target?.result;
-
-      try {
-        await fetch(signedUrl, {
-          method: "PUT",
-          body: videoData,
-          headers: {
-            "Content-Type": "video/mp4",
-          },
-        }).then(async () => {
-          const body: UploadContentBody = {
-            slug,
-            projectId,
-          };
-
-          await fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-content`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(body),
-          });
-        });
-      } catch (error) {
-        console.log(error, "error");
-      }
-    };
-  }
-}
-
 export default function Page() {
   const { content, signedUrl, project } = useLoaderData<LoaderData>();
 
@@ -152,17 +100,21 @@ export default function Page() {
 
     invariant(input instanceof HTMLInputElement, "input must be a file input");
 
+    const file = input?.files?.[0];
+
+    invariant(file, "Video File is required");
+
     try {
       setDisabled(true);
 
-      await handleGcpSignedUpload({
-        slug: content.slug,
+      await handleSignedUpload({
+        file,
         signedUrl,
         projectId: project.id,
-        input,
+        slug: content.slug,
       });
 
-      navigate(Routes.AdminContentTagsDescription(content.slug));
+      navigate(Routes.AdminContentDetails(content.slug));
     } catch (error) {
       console.log(error, "error");
     } finally {
@@ -195,4 +147,50 @@ export default function Page() {
       </fieldset>
     </main>
   );
+}
+
+async function handleSignedUpload({
+  projectId,
+  slug,
+  file,
+  signedUrl,
+}: {
+  projectId: string;
+  slug: string;
+  file: File;
+  signedUrl: string;
+}) {
+  const reader = new FileReader();
+
+  reader.readAsArrayBuffer(file);
+
+  reader.onload = async (e) => {
+    const videoBody = e.target?.result;
+
+    try {
+      await fetch(signedUrl, {
+        method: "PUT",
+        body: videoBody,
+        headers: {
+          "Content-Type": "video/mp4",
+        },
+      }).then(async () => {
+        await fetch(
+          `${UPLOAD_SERVICE_BASE_URL}/${ServiceUploadRoutes.InitializeUpload}}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              slug,
+              projectId,
+            } as InitializeUploadBody),
+          }
+        );
+      });
+    } catch (error) {
+      console.log(error, "error");
+    }
+  };
 }

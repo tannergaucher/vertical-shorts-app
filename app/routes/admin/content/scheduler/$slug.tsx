@@ -69,23 +69,16 @@ export const action: ActionFunction = async ({ request }) => {
     await request.formData()
   );
 
+  const formattedDate = `${date}T${time}`;
+
   await upsertContent({
     projectId,
     slug,
     youtubePublishAt: channelTypes.includes(ChannelType.YOUTUBE)
-      ? new Date(`${date}T${time}`)
+      ? new Date(formattedDate)
       : undefined,
     tikTokPublishAt: channelTypes.includes(ChannelType.TIKTOK)
-      ? new Date(`${date}T${time}`)
-      : undefined,
-    instagramPublishAt: channelTypes.includes(ChannelType.INSTAGRAM)
-      ? new Date(`${date}T${time}`)
-      : undefined,
-    facebookPublishAt: channelTypes.includes(ChannelType.FACEBOOK)
-      ? new Date(`${date}T${time}`)
-      : undefined,
-    twitterPublishAt: channelTypes.includes(ChannelType.TWITTER)
-      ? new Date(`${date}T${time}`)
+      ? new Date(formattedDate)
       : undefined,
   });
 
@@ -101,8 +94,6 @@ export default function Page() {
   const disabled =
     transition.state === "loading" || transition.state === "submitting";
 
-  const channelTypes = project.channels.map((channel) => channel.channelType);
-
   return (
     <main className={styles.main}>
       <h1 className={styles.pageTitle}>{content.title}</h1>
@@ -113,7 +104,7 @@ export default function Page() {
       <fieldset disabled={disabled}>
         <Form method="post">
           <section className={styles.checkboxSection}>
-            {channelTypes.map((channelType) => (
+            {project.channels.map(({ channelType }) => (
               <label htmlFor={channelType} key={channelType}>
                 <input
                   type="checkbox"
