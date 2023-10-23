@@ -90,16 +90,13 @@ export const action: ActionFunction = async ({ request }) => {
     slug,
   };
 
-  await fetch(
-    `${SERVICE_UPLOAD_BASE_URL}${ServiceUploadRoutes.InitializeUpload}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(initializeUploadBody),
-    }
-  );
+  await fetch(ServiceUploadRoutes.InitializeUpload, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(initializeUploadBody),
+  });
 
   return redirect(Routes.Index);
 };
