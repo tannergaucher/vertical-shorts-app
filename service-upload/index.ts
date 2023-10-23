@@ -1,8 +1,9 @@
 import { Storage } from "@google-cloud/storage";
+import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import type { Request, Response } from "express";
-import express, { json } from "express";
+import express from "express";
 
 import type { InitializeUploadBody } from "./functions/initialize-upload";
 import { initializeUpload } from "./functions/initialize-upload";
@@ -24,7 +25,7 @@ export const storage = new Storage();
 
 const app = express();
 
-app.use(json());
+app.use(bodyParser.json());
 
 app.use(
   cors({
@@ -118,11 +119,7 @@ app.get(
   }
 );
 
-if (!process.env.PORT) {
-  throw new Error("PORT environment variable not set");
-}
-
-const port = parseInt(process.env.PORT);
+const port = parseInt(process.env.PORT ?? "8080");
 
 app.listen(port, () => {
   console.log(`listening on port ${port}`);

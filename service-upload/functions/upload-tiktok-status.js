@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.uploadTikTokStatus = void 0;
-function uploadTikTokStatus({ publishId, projectId, prisma, }) {
+function uploadTikTokStatus({ prisma, projectId, publishId, }) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const project = yield prisma.project.findUnique({

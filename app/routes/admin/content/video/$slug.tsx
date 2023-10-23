@@ -2,8 +2,6 @@ import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useLoaderData, useNavigate, useParams } from "@remix-run/react";
 import { useState } from "react";
-import type { InitializeUploadBody } from "service-upload/functions/initialize-upload";
-import { ServiceUploadRoutes } from "service-upload/routes";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 
@@ -14,7 +12,6 @@ import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import styles from "~/styles/adminContent.module.css";
-import { UPLOAD_SERVICE_BASE_URL } from "~/utils/constants";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -96,6 +93,8 @@ export default function Page() {
   const { slug } = useParams();
 
   async function handleSubmit() {
+    setDisabled(true);
+
     const input = document.querySelector("input[type=file]");
 
     invariant(input instanceof HTMLInputElement, "input must be a file input");
@@ -104,22 +103,27 @@ export default function Page() {
 
     invariant(file, "Video File is required");
 
-    try {
-      setDisabled(true);
+    const reader = new FileReader();
 
-      await handleSignedUpload({
-        file,
-        signedUrl,
-        projectId: project.id,
-        slug: content.slug,
+    reader.readAsArrayBuffer(file);
+
+    reader.onload = async (e) => {
+      const body = e.target?.result;
+
+      const res = await fetch(signedUrl, {
+        method: "PUT",
+        body,
+        headers: {
+          "Content-Type": "video/mp4",
+        },
       });
 
-      navigate(Routes.AdminContentDetails(content.slug));
-    } catch (error) {
-      console.log(error, "error");
-    } finally {
+      if (res.ok && slug) {
+        return navigate(Routes.AdminContentDetails(slug));
+      }
+
       setDisabled(false);
-    }
+    };
   }
 
   return (
@@ -133,7 +137,7 @@ export default function Page() {
         <form
           onSubmit={async (e) => {
             e.preventDefault();
-            handleSubmit();
+            await handleSubmit();
           }}
         >
           <input
@@ -147,50 +151,4 @@ export default function Page() {
       </fieldset>
     </main>
   );
-}
-
-async function handleSignedUpload({
-  projectId,
-  slug,
-  file,
-  signedUrl,
-}: {
-  projectId: string;
-  slug: string;
-  file: File;
-  signedUrl: string;
-}) {
-  const reader = new FileReader();
-
-  reader.readAsArrayBuffer(file);
-
-  reader.onload = async (e) => {
-    const videoBody = e.target?.result;
-
-    try {
-      await fetch(signedUrl, {
-        method: "PUT",
-        body: videoBody,
-        headers: {
-          "Content-Type": "video/mp4",
-        },
-      }).then(async () => {
-        await fetch(
-          `${UPLOAD_SERVICE_BASE_URL}/${ServiceUploadRoutes.InitializeUpload}}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              slug,
-              projectId,
-            } as InitializeUploadBody),
-          }
-        );
-      });
-    } catch (error) {
-      console.log(error, "error");
-    }
-  };
 }
