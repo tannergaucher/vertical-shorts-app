@@ -7,6 +7,9 @@ import {
   useNavigation,
   useParams,
 } from "@remix-run/react";
+import type { InitializeUploadBody } from "service-upload/functions/initialize-upload";
+import { ServiceUploadRoutes } from "service-upload/routes";
+import { SERVICE_UPLOAD_BASE_URL } from "service-upload/utils/constants";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
@@ -80,6 +83,19 @@ export const action: ActionFunction = async ({ request }) => {
     tikTokPublishAt: channelTypes.includes(ChannelType.TIKTOK)
       ? new Date(formattedDate)
       : undefined,
+  });
+
+  const initializeUploadBody: InitializeUploadBody = {
+    projectId,
+    slug,
+  };
+
+  await fetch(ServiceUploadRoutes.InitializeUpload, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(initializeUploadBody),
   });
 
   return redirect(Routes.Index);

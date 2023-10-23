@@ -78,8 +78,9 @@ export default function Page() {
     <main className={styles.main}>
       <fieldset className={styles.fieldset}>
         <Form method="post">
-          <label htmlFor="currentProjectId">Current Project</label>
-          <br />
+          <label htmlFor="currentProjectId">
+            <h2>Select Project</h2>
+          </label>
           <select
             id="currentProjectId"
             name="currentProjectId"
@@ -111,6 +112,7 @@ export default function Page() {
           <h3>New Project</h3>
         </Link>
       </fieldset>
+      <h2>Publish To</h2>
       <section className={styles.channelsGrid}>
         {allChannelTypes.map((channelType) => {
           return (
@@ -124,6 +126,7 @@ export default function Page() {
           );
         })}
       </section>
+      <h2>Current Plan</h2>
       <section className={styles.currentPlanSection}>
         {user.planType ? (
           <div className={styles.currentPlanName}>

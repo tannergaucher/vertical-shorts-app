@@ -287,8 +287,7 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "dataProxy": false,
-  "postinstall": false
+  "dataProxy": false
 }
 
 const fs = require('fs')

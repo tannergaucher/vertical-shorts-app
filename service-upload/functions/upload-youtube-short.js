@@ -14,7 +14,7 @@ const fs_1 = require("fs");
 const googleapis_1 = require("googleapis");
 const generated_1 = require("../generated");
 function uploadYouTubeShort({ projectId, slug, prisma, }) {
-    var _a, _b;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const content = yield prisma.content.update({
             where: {
@@ -42,7 +42,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
         });
         if (!((_a = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _a === void 0 ? void 0 : _a.accessToken) ||
             !((_b = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _b === void 0 ? void 0 : _b.refreshToken)) {
-            throw new Error("No youtube credentials found");
+            throw new Error("Missing YouTube credentials");
         }
         const oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
         oauth2Client.setCredentials({
@@ -66,7 +66,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
                 youtubeStatus: generated_1.UploadStatus.UPLOADING,
             },
         });
-        console.log(`Upload started for video ${projectId} / ${slug}`);
+        console.log(`Uploading ${projectId} ${slug} to YouTube channel ${(_c = project.youtubeCredentials) === null || _c === void 0 ? void 0 : _c.channelId}`);
         return youtube.videos
             .insert({
             part: ["snippet", "status"],
@@ -86,6 +86,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
             },
         })
             .then((response) => __awaiter(this, void 0, void 0, function* () {
+            var _d;
             yield prisma.content.update({
                 where: {
                     projectId_slug: {
@@ -99,10 +100,11 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
                 },
             });
             return {
-                message: `Success uploading ${projectId} ${slug} to youtube`,
+                message: `Uploaded ${projectId} ${slug} to YouTube channel ${(_d = project.youtubeCredentials) === null || _d === void 0 ? void 0 : _d.channelId}`,
             };
         }))
             .catch((error) => __awaiter(this, void 0, void 0, function* () {
+            var _e;
             yield prisma.content.update({
                 where: {
                     projectId_slug: {
@@ -115,7 +117,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
                 },
             });
             console.log(error);
-            throw new Error(`Error uploading ${projectId} / ${slug} to youtube`);
+            throw new Error(`Error uploading ${projectId} ${slug} to YouTube channel ${(_e = project.youtubeCredentials) === null || _e === void 0 ? void 0 : _e.channelId}`);
         }));
     });
 }
