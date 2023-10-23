@@ -35,9 +35,7 @@ app.use((0, cors_1.default)({
     origin: constants_1.APP_BASE_URL,
 }));
 app.post(routes_1.ServiceUploadRoutes.InitializeUpload, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("_req", req);
     const { projectId, slug } = req.body;
-    console.log(req.body, "req.body");
     try {
         const { message } = yield (0, initialize_upload_1.initializeUpload)({
             projectId,
