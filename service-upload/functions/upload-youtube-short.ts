@@ -50,7 +50,7 @@ export async function uploadYouTubeShort({
     !project?.youtubeCredentials?.accessToken ||
     !project?.youtubeCredentials?.refreshToken
   ) {
-    throw new Error("No youtube credentials found");
+    throw new Error("Missing YouTube credentials");
   }
 
   const oauth2Client = new google.auth.OAuth2(
@@ -85,7 +85,9 @@ export async function uploadYouTubeShort({
     },
   });
 
-  console.log(`Upload started for video ${projectId} / ${slug}`);
+  console.log(
+    `Uploading ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`
+  );
 
   return youtube.videos
     .insert({
@@ -120,7 +122,7 @@ export async function uploadYouTubeShort({
       });
 
       return {
-        message: `Success uploading ${projectId} ${slug} to youtube`,
+        message: `Uploaded ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`,
       };
     })
 
@@ -138,6 +140,9 @@ export async function uploadYouTubeShort({
       });
 
       console.log(error);
-      throw new Error(`Error uploading ${projectId} / ${slug} to youtube`);
+
+      throw new Error(
+        `Error uploading ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`
+      );
     });
 }

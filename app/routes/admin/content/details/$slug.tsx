@@ -18,7 +18,7 @@ import styles from "~/styles/adminContentTagsDescription.module.css";
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Tags & Description",
+    title: "Post Details",
   };
 };
 
@@ -72,39 +72,39 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
 
-  const tags = formData.getAll("tags");
+  // const tags = formData.getAll("tags");
   const projectId = formData.get("projectId");
   const slug = formData.get("slug");
-  const description = formData.get("description");
+  // const description = formData.get("description");
 
   invariant(typeof projectId === "string", "projectId is required");
   invariant(typeof slug === "string", "slug is required");
 
-  const content = await prisma.content.update({
-    where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
-    },
-    data: {
-      tags: tags.length
-        ? {
-            set: tags.flatMap((tag) =>
-              tag.toString().length ? tag.toString().trim() : []
-            ),
-          }
-        : undefined,
-      description: description ? description.toString().trim() : undefined,
-    },
-    select: {
-      tags: true,
-    },
-  });
+  // const content = await prisma.content.update({
+  //   where: {
+  //     projectId_slug: {
+  //       projectId,
+  //       slug,
+  //     },
+  //   },
+  //   data: {
+  //     tags: tags.length
+  //       ? {
+  //           set: tags.flatMap((tag) =>
+  //             tag.toString().length ? tag.toString().trim() : []
+  //           ),
+  //         }
+  //       : undefined,
+  //     description: description ? description.toString().trim() : undefined,
+  //   },
+  //   select: {
+  //     tags: true,
+  //   },
+  // });
 
   return {
     success: true,
-    tags: content.tags,
+    // tags: content.tags,
   };
 };
 
@@ -131,7 +131,7 @@ export default function Page() {
       </h2>
       <Breadcrumb slug={slug} />
       <div className={styles.tagsDescriptionGrid}>
-        <section>
+        {/* <section>
           <TagsForm
             project={project}
             content={content}
@@ -139,7 +139,7 @@ export default function Page() {
             hasGeneratedTags={hasGeneratedTags}
             setHasGeneratedTags={setHasGeneratedTags}
           />
-        </section>
+        </section> */}
         <section>
           <DescriptionForm project={project} slug={slug} content={content} />
         </section>
@@ -148,73 +148,73 @@ export default function Page() {
   );
 }
 
-function TagsForm({
-  project,
-  content,
-  slug,
-  hasGeneratedTags,
-  setHasGeneratedTags,
-}: {
-  project: LoaderData["project"];
-  content: LoaderData["content"];
-  slug: string;
-  hasGeneratedTags: boolean;
-  setHasGeneratedTags: (value: boolean) => void;
-}) {
-  const tagsFetcher = useFetcher();
+// function TagsForm({
+//   project,
+//   content,
+//   slug,
+//   hasGeneratedTags,
+//   setHasGeneratedTags,
+// }: {
+//   project: LoaderData["project"];
+//   content: LoaderData["content"];
+//   slug: string;
+//   hasGeneratedTags: boolean;
+//   setHasGeneratedTags: (value: boolean) => void;
+// }) {
+//   const tagsFetcher = useFetcher();
 
-  const tags = tagsFetcher.data?.tags
-    ? [...project.tags, ...content.tags, ...tagsFetcher.data.tags]
-    : [...project.tags, ...content.tags];
+//   const tags = tagsFetcher.data?.tags
+//     ? [...project.tags, ...content.tags, ...tagsFetcher.data.tags]
+//     : [...project.tags, ...content.tags];
 
-  return (
-    <>
-      <h2 className={styles.sectionTitle}>Tags</h2>
-      {!hasGeneratedTags ? (
-        <button
-          className={styles.generateTagsButton}
-          disabled={
-            tagsFetcher.state === "loading" ||
-            tagsFetcher.state === "submitting"
-          }
-          onClick={() => {
-            tagsFetcher.load(Routes.ResourceVideoTags(project.id, slug));
-            setHasGeneratedTags(true);
-          }}
-        >
-          Generate Tags
-        </button>
-      ) : null}
-      <fieldset
-        disabled={
-          tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
-        }
-      >
-        <tagsFetcher.Form method="post">
-          {tags.map((tag) => (
-            <div key={tag}>
-              <label className={styles.tagLabel}>
-                {tag}
-                <input type="checkbox" name="tags" value={tag} defaultChecked />
-              </label>
-            </div>
-          ))}
-          <input
-            type="text"
-            placeholder="Tags"
-            name="tags"
-            className={styles.addTagInput}
-          />
-          <input type="hidden" name="projectId" value={project.id} />
-          <input type="hidden" name="slug" value={slug} id="slug" />
-          <button type="submit" className={styles.tagsSubmitButton}>
-            Submit
-          </button>
-        </tagsFetcher.Form>
-      </fieldset>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <h2 className={styles.sectionTitle}>Tags</h2>
+//       {!hasGeneratedTags ? (
+//         <button
+//           className={styles.generateTagsButton}
+//           disabled={
+//             tagsFetcher.state === "loading" ||
+//             tagsFetcher.state === "submitting"
+//           }
+//           onClick={() => {
+//             tagsFetcher.load(Routes.ResourceVideoTags(project.id, slug));
+//             setHasGeneratedTags(true);
+//           }}
+//         >
+//           Generate Tags
+//         </button>
+//       ) : null}
+//       <fieldset
+//         disabled={
+//           tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
+//         }
+//       >
+//         <tagsFetcher.Form method="post">
+//           {tags.map((tag) => (
+//             <div key={tag}>
+//               <label className={styles.tagLabel}>
+//                 {tag}
+//                 <input type="checkbox" name="tags" value={tag} defaultChecked />
+//               </label>
+//             </div>
+//           ))}
+//           <input
+//             type="text"
+//             placeholder="Tags"
+//             name="tags"
+//             className={styles.addTagInput}
+//           />
+//           <input type="hidden" name="projectId" value={project.id} />
+//           <input type="hidden" name="slug" value={slug} id="slug" />
+//           <button type="submit" className={styles.tagsSubmitButton}>
+//             Submit
+//           </button>
+//         </tagsFetcher.Form>
+//       </fieldset>
+//     </>
+//   );
+// }
 
 function DescriptionForm({
   project,

@@ -1,20 +1,20 @@
 import type { PrismaClient } from "../generated";
 
 export interface UploadTikTokStatusQueryParams {
-  publish_id: string;
   project_id: string;
+  publish_id: string;
 }
 
 interface UploadTiktokStatusParams {
-  publishId: string;
-  projectId: string;
   prisma: PrismaClient;
+  projectId: string;
+  publishId: string;
 }
 
 export async function uploadTikTokStatus({
-  publishId,
-  projectId,
   prisma,
+  projectId,
+  publishId,
 }: UploadTiktokStatusParams) {
   const project = await prisma.project.findUnique({
     where: {

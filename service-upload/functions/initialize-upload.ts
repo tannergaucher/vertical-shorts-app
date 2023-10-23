@@ -1,29 +1,28 @@
-import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import type { Storage } from "@google-cloud/storage";
 import { createWriteStream } from "fs";
 import { compact } from "lodash";
 
-import type { PrismaClient } from "../generated";
-import { UploadStatus } from "../generated";
-import { UPLOAD_SERVICE_BASE_URL } from "../utils/constants";
+import { type PrismaClient, UploadStatus } from "../generated";
+import { ServiceUploadRoutes } from "../routes";
+import { SERVICE_UPLOAD_BASE_URL } from "../utils/constants";
 import { createContentGif } from "./create-content-gif";
 
-export interface UploadContentBody {
+export interface InitializeUploadBody {
   projectId: string;
   slug: string;
 }
 
-type UploadContentParams = UploadContentBody & {
+type InitializeUploadParams = InitializeUploadBody & {
   prisma: PrismaClient;
   storage: Storage;
 };
 
-export async function uploadContent({
+export async function initializeUpload({
   projectId,
   slug,
   prisma,
   storage,
-}: UploadContentParams) {
+}: InitializeUploadParams) {
   const content = await prisma.content.findUniqueOrThrow({
     where: {
       projectId_slug: {
@@ -32,6 +31,7 @@ export async function uploadContent({
       },
     },
     select: {
+      slug: true,
       project: {
         select: {
           youtubeCredentials: true,
@@ -41,7 +41,7 @@ export async function uploadContent({
     },
   });
 
-  const filePath = `${slug}.mp4`;
+  const filePath = `${content.slug}.mp4`;
 
   storage
     .bucket(projectId)
@@ -49,13 +49,15 @@ export async function uploadContent({
     .createReadStream()
     .pipe(createWriteStream(filePath))
     .on("open", async () => {
-      console.log(`Downloading started from gcp bucket ${projectId}/${slug}`);
+      console.log(
+        `Downloading ${filePath} from bucket ${projectId}/${content.slug}`
+      );
 
       await prisma.content.update({
         where: {
           projectId_slug: {
             projectId,
-            slug,
+            slug: content.slug,
           },
         },
         data: {
@@ -85,48 +87,53 @@ export async function uploadContent({
       throw new Error(`Error downloading from gcp bucket, ${err.message}`);
     })
     .on("finish", async () => {
-      console.log("Downloaded video from gcp bucket");
-
-      const socialChannels = compact([
+      const channelUploadPostRequests = compact([
         content.project.youtubeCredentials
-          ? fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-youtube-short`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                projectId,
-                slug,
-              }),
-            })
+          ? fetch(
+              `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadYoutubeShort}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  projectId,
+                  slug,
+                }),
+              }
+            )
           : undefined,
         content.project.tikTokCredentials
-          ? fetch(`${UPLOAD_SERVICE_BASE_URL}/upload-tiktok`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                projectId,
-                slug,
-              }),
-            })
+          ? fetch(
+              `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadTiktok}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  projectId,
+                  slug,
+                }),
+              }
+            )
           : undefined,
       ]);
 
       await Promise.all([
-        socialChannels.map((socialChannel) => socialChannel),
+        channelUploadPostRequests.map(
+          (channelUploadPostRequest) => channelUploadPostRequest
+        ),
         createContentGif({
           projectId,
           slug,
           storage,
           prisma,
-          ffmpegPath,
         }),
       ]);
     });
 
   return {
-    message: `Uploaded content to social channels!  projectId:${projectId} slug:${slug}`,
+    message: `Uploaded ${projectId} ${slug} to channels`,
   };
 }

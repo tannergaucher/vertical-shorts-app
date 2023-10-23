@@ -94,9 +94,13 @@ export async function upsertContent(content: UpsertContentParams) {
       slug: content.slug,
       projectId: content.projectId,
       title: content.title || "Untitled Content",
+      youtubeStatus: content.youtubePublishAt ? "SCHEDULED" : undefined,
+      tikTokStatus: content.tikTokPublishAt ? "SCHEDULED" : undefined,
     },
     update: {
       ...content,
+      youtubeStatus: content.youtubePublishAt ? "SCHEDULED" : undefined,
+      tikTokStatus: content.tikTokPublishAt ? "SCHEDULED" : undefined,
     },
     include: {
       project: {

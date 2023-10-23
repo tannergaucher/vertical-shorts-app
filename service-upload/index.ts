@@ -4,8 +4,8 @@ import dotenv from "dotenv";
 import type { Request, Response } from "express";
 import express, { json } from "express";
 
-import type { UploadContentBody } from "./functions/upload-content";
-import { uploadContent } from "./functions/upload-content";
+import type { InitializeUploadBody } from "./functions/initialize-upload";
+import { initializeUpload } from "./functions/initialize-upload";
 import type { UploadTikTokBody } from "./functions/upload-tiktok";
 import { uploadTikTok } from "./functions/upload-tiktok";
 import type { UploadTikTokStatusQueryParams } from "./functions/upload-tiktok-status";
@@ -13,6 +13,7 @@ import { uploadTikTokStatus } from "./functions/upload-tiktok-status";
 import type { UploadYoutubeShortBody } from "./functions/upload-youtube-short";
 import { uploadYouTubeShort } from "./functions/upload-youtube-short";
 import { PrismaClient } from "./generated/index.js";
+import { ServiceUploadRoutes } from "./routes";
 import { APP_BASE_URL } from "./utils/constants";
 
 dotenv.config();
@@ -32,12 +33,12 @@ app.use(
 );
 
 app.post(
-  "/upload-content",
-  async (req: Request<{}, {}, UploadContentBody>, res: Response) => {
+  ServiceUploadRoutes.InitializeUpload,
+  async (req: Request<{}, {}, InitializeUploadBody>, res: Response) => {
     const { projectId, slug } = req.body;
 
     try {
-      const { message } = await uploadContent({
+      const { message } = await initializeUpload({
         projectId,
         slug,
         prisma,
@@ -47,15 +48,13 @@ app.post(
       res.status(200).send(message);
     } catch (error) {
       console.log(error);
-      res
-        .status(400)
-        .send(`Error Initializing content upload for ${projectId} / ${slug}`);
+      res.status(400).send(`Error initializing upload ${projectId} ${slug}`);
     }
   }
 );
 
 app.post(
-  "/upload-tiktok",
+  ServiceUploadRoutes.UploadTiktok,
   async (req: Request<{}, {}, UploadTikTokBody>, res: Response) => {
     const { projectId, slug } = req.body;
 
@@ -69,13 +68,13 @@ app.post(
       res.status(200).send(message);
     } catch (error) {
       console.log(error);
-      res.status(400).send(`Error uploading tiktok ${projectId} / ${slug}`);
+      res.status(400).send(`Error uploading ${projectId} ${slug} to TikTok`);
     }
   }
 );
 
 app.post(
-  "/upload-youtube-short",
+  ServiceUploadRoutes.UploadYoutubeShort,
   async (req: Request<{}, {}, UploadYoutubeShortBody>, res) => {
     const { projectId, slug } = req.body;
     try {
@@ -90,12 +89,13 @@ app.post(
       console.log(error);
       res
         .status(400)
-        .send(`Error uploading youtube short ${projectId} / ${slug}`);
+        .send(`Error uploading ${projectId} ${slug} YouTube Short`);
     }
   }
 );
+
 app.get(
-  "/upload-tiktok-status",
+  ServiceUploadRoutes.UploadTiktokStatus,
   async (req: Request<{}, {}, {}, UploadTikTokStatusQueryParams>, res) => {
     const { project_id, publish_id } = req.query;
 
@@ -112,7 +112,7 @@ app.get(
       res
         .status(400)
         .json(
-          `Error checking tiktok upload status for ${publish_id} / ${project_id}`
+          `Error checking TikTok upload status for publish id ${publish_id}`
         );
     }
   }
