@@ -18,10 +18,10 @@ export async function createContentGif({
   prisma,
 }: CreateGifParams) {
   const gifFile = `${slug}.gif`;
-  const gifStoragePath = `https://storage.googleapis.com/${projectId}/${slug}.gif`;
+  const gifStoragePath = `https://storage.googleapis.com/${projectId}/${gifFile}`;
 
   exec(
-    `${ffmpegPath} -i ${slug}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`,
+    `${ffmpegPath} -i ${slug}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${gifFile}`,
 
     async (error) => {
       if (error) {
@@ -53,6 +53,6 @@ export async function createContentGif({
   );
 
   return {
-    message: `Created Gif for ${projectId} / ${slug}`,
+    message: `Uploaded ${gifFile} url to ${gifStoragePath}`,
   };
 }

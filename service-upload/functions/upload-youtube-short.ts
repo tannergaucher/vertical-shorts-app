@@ -9,11 +9,9 @@ export interface UploadYoutubeShortBody {
   slug: string;
 }
 
-interface UploadYoutubeShortParams {
-  projectId: string;
-  slug: string;
+type UploadYoutubeShortParams = UploadYoutubeShortBody & {
   prisma: PrismaClient;
-}
+};
 
 export async function uploadYouTubeShort({
   projectId,
@@ -50,19 +48,28 @@ export async function uploadYouTubeShort({
     !project?.youtubeCredentials?.accessToken ||
     !project?.youtubeCredentials?.refreshToken
   ) {
-    throw new Error("Missing YouTube credentials");
+    throw new Error(`Missing YouTube credentials for project ${projectId}`);
   }
 
-  const oauth2Client = new google.auth.OAuth2(
-    process.env.YOUTUBE_CLIENT_ID,
-    process.env.YOUTUBE_CLIENT_SECRET,
-    process.env.YOUTUBE_REDIRECT_URL
-  );
-
-  oauth2Client.setCredentials({
-    access_token: project.youtubeCredentials.accessToken,
-    refresh_token: project.youtubeCredentials.refreshToken,
+  const oauth2Client = setOauth2ClientCredentials({
+    accessToken: project.youtubeCredentials.accessToken,
+    refreshToken: project.youtubeCredentials.refreshToken,
   });
+
+  if (oauth2Client === null) {
+    await prisma.content.update({
+      where: {
+        projectId_slug: {
+          projectId,
+          slug,
+        },
+      },
+      data: {
+        youtubeStatus: UploadStatus.NOT_STARTED,
+      },
+    });
+    throw new Error("Error setting OAuth client credentials");
+  }
 
   const youtube = google.youtube({
     version: "v3",
@@ -125,7 +132,6 @@ export async function uploadYouTubeShort({
         message: `Uploaded ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`,
       };
     })
-
     .catch(async (error) => {
       await prisma.content.update({
         where: {
@@ -145,4 +151,31 @@ export async function uploadYouTubeShort({
         `Error uploading ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`
       );
     });
+}
+
+function setOauth2ClientCredentials({
+  accessToken,
+  refreshToken,
+}: {
+  accessToken: string;
+  refreshToken: string;
+}) {
+  try {
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.YOUTUBE_CLIENT_ID,
+      process.env.YOUTUBE_CLIENT_SECRET,
+      process.env.YOUTUBE_REDIRECT_URL
+    );
+
+    oauth2Client.setCredentials({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    });
+
+    return oauth2Client;
+  } catch (error) {
+    console.log(error, "Error setting OAuth2 client credentials");
+
+    return null;
+  }
 }
