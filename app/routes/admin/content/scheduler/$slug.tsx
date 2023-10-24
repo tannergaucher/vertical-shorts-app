@@ -1,4 +1,4 @@
-import { ChannelType, UploadStatus } from "@prisma/client";
+import { ChannelType } from "@prisma/client";
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
@@ -58,21 +58,31 @@ export const schema = zfd.formData({
   time: zfd.text(),
   slug: zfd.text(),
   projectId: zfd.text(),
-  channelTypes: zfd.repeatableOfType(
-    zfd
-      .text()
-      .refine((value) =>
-        Object.values(ChannelType).includes(value as ChannelType)
-      )
-  ),
 });
 
 export const action: ActionFunction = async ({ request }) => {
-  const { date, time, slug, projectId, channelTypes } = schema.parse(
+  const { date, time, slug, projectId } = schema.parse(
     await request.formData()
   );
 
+  const user = await getUser(request);
+
+  if (!user) {
+    return redirect(Routes.Login);
+  }
+
+  invariant(user.currentProjectId, "user must have a current project");
+
+  const currentProject = await getProject({
+    id: user.currentProjectId,
+  });
+
   const formattedDate = `${date}T${time}`;
+
+  const channelTypes = [
+    currentProject.youtubeCredentials ? "YOUTUBE" : [],
+    currentProject.tikTokCredentials ? "TIKTOK" : [],
+  ].flat();
 
   await upsertContent({
     projectId,
@@ -122,52 +132,6 @@ export default function Page() {
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">
-          <section className={styles.checkboxSection}>
-            {project.channels.map(({ channelType }) => (
-              <label htmlFor={channelType} key={channelType}>
-                <input
-                  type="checkbox"
-                  name="channelType"
-                  id={channelType}
-                  value={channelType}
-                  className={styles.checkbox}
-                  disabled={
-                    channelType === "YOUTUBE" &&
-                    content.youtubeStatus === UploadStatus.PUBLIC
-                      ? true
-                      : channelType === "TIKTOK" &&
-                        content.tikTokStatus === UploadStatus.PUBLIC
-                      ? true
-                      : channelType === "INSTAGRAM" &&
-                        content.instagramStatus === UploadStatus.PUBLIC
-                      ? true
-                      : channelType === "FACEBOOK" &&
-                        content.facebookStatus === UploadStatus.PUBLIC
-                      ? true
-                      : channelType === "TWITTER" &&
-                        content.twitterStatus === UploadStatus.PUBLIC
-                      ? true
-                      : false
-                  }
-                  defaultChecked={
-                    channelType === "YOUTUBE" && !content.youtubePublishAt
-                      ? true
-                      : channelType === "TIKTOK" && !content.tikTokPublishAt
-                      ? true
-                      : channelType === "INSTAGRAM" &&
-                        !content.instagramPublishAt
-                      ? true
-                      : channelType === "FACEBOOK" && !content.facebookPublishAt
-                      ? true
-                      : channelType === "TWITTER" && !content.twitterPublishAt
-                      ? true
-                      : false
-                  }
-                />
-                {channelType}
-              </label>
-            ))}
-          </section>
           <label htmlFor="date">Date</label>
           <input type="date" name="date" className={styles.input} required />
           <label htmlFor="time">Time</label>
