@@ -96,7 +96,7 @@ app.get(routes_1.ServiceUploadRoutes.UploadTiktokStatus, (req, res) => __awaiter
         console.log(error);
         res
             .status(400)
-            .json(`Error checking TikTok upload status for publish id ${publish_id}`);
+            .json(`Error getting upload status for TikTok publish_id ${publish_id}`);
     }
 }));
 const port = parseInt((_a = process.env.PORT) !== null && _a !== void 0 ? _a : "8080");

@@ -42,13 +42,26 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
         });
         if (!((_a = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _a === void 0 ? void 0 : _a.accessToken) ||
             !((_b = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _b === void 0 ? void 0 : _b.refreshToken)) {
-            throw new Error("Missing YouTube credentials");
+            throw new Error(`Missing YouTube credentials for project ${projectId}`);
         }
-        const oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
-        oauth2Client.setCredentials({
-            access_token: project.youtubeCredentials.accessToken,
-            refresh_token: project.youtubeCredentials.refreshToken,
+        const oauth2Client = setOauth2ClientCredentials({
+            accessToken: project.youtubeCredentials.accessToken,
+            refreshToken: project.youtubeCredentials.refreshToken,
         });
+        if (oauth2Client === null) {
+            yield prisma.content.update({
+                where: {
+                    projectId_slug: {
+                        projectId,
+                        slug,
+                    },
+                },
+                data: {
+                    youtubeStatus: generated_1.UploadStatus.NOT_STARTED,
+                },
+            });
+            throw new Error("Error setting OAuth client credentials");
+        }
         const youtube = googleapis_1.google.youtube({
             version: "v3",
             auth: oauth2Client,
@@ -122,3 +135,17 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
     });
 }
 exports.uploadYouTubeShort = uploadYouTubeShort;
+function setOauth2ClientCredentials({ accessToken, refreshToken, }) {
+    try {
+        const oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
+        oauth2Client.setCredentials({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+        });
+        return oauth2Client;
+    }
+    catch (error) {
+        console.log(error, "Error setting OAuth2 client credentials");
+        return null;
+    }
+}
