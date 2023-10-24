@@ -1,6 +1,5 @@
 import type { Storage } from "@google-cloud/storage";
 import { createWriteStream } from "fs";
-import { compact } from "lodash";
 
 import { type PrismaClient, UploadStatus } from "../generated";
 import { ServiceUploadRoutes } from "../routes";
@@ -41,6 +40,7 @@ export async function initializeUpload({
     },
   });
 
+  const bucketPath = `${projectId}/${content.slug}`;
   const filePath = `${content.slug}.mp4`;
 
   storage
@@ -49,9 +49,7 @@ export async function initializeUpload({
     .createReadStream()
     .pipe(createWriteStream(filePath))
     .on("open", async () => {
-      console.log(
-        `Downloading ${filePath} from bucket ${projectId}/${content.slug}`
-      );
+      console.log(`Downloading ${filePath} from ${bucketPath}`);
 
       await prisma.content.update({
         where: {
@@ -70,6 +68,46 @@ export async function initializeUpload({
         },
       });
     })
+    .on("finish", async () => {
+      createContentGif({
+        projectId,
+        slug,
+        storage,
+        prisma,
+      });
+
+      if (content.project.youtubeCredentials) {
+        fetch(
+          `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadYoutubeShort}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              projectId,
+              slug,
+            }),
+          }
+        );
+      }
+
+      if (content.project.tikTokCredentials) {
+        fetch(
+          `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadTiktok}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              projectId,
+              slug,
+            }),
+          }
+        );
+      }
+    })
     .on("error", async (err) => {
       await prisma.content.update({
         where: {
@@ -84,53 +122,7 @@ export async function initializeUpload({
         },
       });
 
-      throw new Error(`Error downloading from gcp bucket, ${err.message}`);
-    })
-    .on("finish", async () => {
-      const channelUploadPostRequests = compact([
-        content.project.youtubeCredentials
-          ? fetch(
-              `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadYoutubeShort}`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  projectId,
-                  slug,
-                }),
-              }
-            )
-          : undefined,
-        content.project.tikTokCredentials
-          ? fetch(
-              `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadTiktok}`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  projectId,
-                  slug,
-                }),
-              }
-            )
-          : undefined,
-      ]);
-
-      await Promise.all([
-        channelUploadPostRequests.map(
-          (channelUploadPostRequest) => channelUploadPostRequest
-        ),
-        createContentGif({
-          projectId,
-          slug,
-          storage,
-          prisma,
-        }),
-      ]);
+      throw new Error(`Error downloading from ${bucketPath}, ${err.message}`);
     });
 
   return {

@@ -113,7 +113,7 @@ app.get(
       res
         .status(400)
         .json(
-          `Error checking TikTok upload status for publish id ${publish_id}`
+          `Error getting upload status for TikTok publish_id ${publish_id}`
         );
     }
   }

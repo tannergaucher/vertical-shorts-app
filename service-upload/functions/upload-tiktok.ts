@@ -27,12 +27,12 @@ export async function uploadTikTok({
   });
 
   if (!project?.tikTokCredentials) {
-    throw new Error("no tiktok credentials");
+    throw new Error("Missing TikTok credentials");
   }
 
-  console.log(`Starting upload to tiktok for ${projectId} / ${slug}`);
+  console.log(`Starting upload to tiktok for ${projectId} ${slug}`);
 
-  const initResponse = await fetch(
+  const res = await fetch(
     `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
     {
       method: "POST",
@@ -42,21 +42,17 @@ export async function uploadTikTok({
       },
       body: JSON.stringify({
         source: "PULL_FROM_URL",
-        video_url: `${APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
+        video_url: `${APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`,
       }),
     }
   );
 
-  if (!initResponse.ok) {
-    console.log(initResponse);
-
-    throw new Error(
-      `Error on tiktok initialization request for ${projectId} / ${slug}`
-    );
+  if (!res.ok) {
+    console.log(res, "error");
+    throw new Error(`Error initializing TikTok upload ${projectId} ${slug}`);
   }
 
   return {
-    message: `Success initializing tiktok upload for ${projectId} / ${slug}`,
-    initResponse: initResponse.json(),
+    message: `Initialized TikTok upload for ${projectId} ${slug}`,
   };
 }

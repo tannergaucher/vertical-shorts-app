@@ -9,11 +9,9 @@ export interface UploadYoutubeShortBody {
   slug: string;
 }
 
-interface UploadYoutubeShortParams {
-  projectId: string;
-  slug: string;
+type UploadYoutubeShortParams = UploadYoutubeShortBody & {
   prisma: PrismaClient;
-}
+};
 
 export async function uploadYouTubeShort({
   projectId,
@@ -50,7 +48,7 @@ export async function uploadYouTubeShort({
     !project?.youtubeCredentials?.accessToken ||
     !project?.youtubeCredentials?.refreshToken
   ) {
-    throw new Error("Missing YouTube credentials");
+    throw new Error(`Missing YouTube credentials for project ${projectId}`);
   }
 
   const oauth2Client = new google.auth.OAuth2(
