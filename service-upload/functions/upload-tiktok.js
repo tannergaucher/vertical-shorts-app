@@ -22,10 +22,21 @@ function uploadTikTok({ projectId, slug, prisma, }) {
             },
         });
         if (!(project === null || project === void 0 ? void 0 : project.tikTokCredentials)) {
-            throw new Error("no tiktok credentials");
+            throw new Error("Missing TikTok credentials");
         }
-        console.log(`Starting upload to tiktok for ${projectId} / ${slug}`);
-        const initResponse = yield fetch(`https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`, {
+        console.log(`Starting upload to tiktok for ${projectId} ${slug}`);
+        yield prisma.content.update({
+            where: {
+                projectId_slug: {
+                    projectId,
+                    slug,
+                },
+            },
+            data: {
+                tikTokStatus: "UPLOADING",
+            },
+        });
+        const res = yield fetch(`https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
@@ -33,16 +44,25 @@ function uploadTikTok({ projectId, slug, prisma, }) {
             },
             body: JSON.stringify({
                 source: "PULL_FROM_URL",
-                video_url: `${constants_1.APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`, // "https://sf16-va.tiktokcdn.com/obj/eden-va2/uvpapzpbxjH-aulauvJ-WV[[/ljhwZthlaukjlkulzlp/3min.mp4",
+                video_url: `${constants_1.APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`,
             }),
         });
-        if (!initResponse.ok) {
-            console.log(initResponse);
-            throw new Error(`Error on tiktok initialization request for ${projectId} / ${slug}`);
+        if (!res.ok) {
+            yield prisma.content.update({
+                where: {
+                    projectId_slug: {
+                        projectId,
+                        slug,
+                    },
+                },
+                data: {
+                    tikTokStatus: "NOT_STARTED",
+                },
+            });
+            throw new Error(`Error initializing TikTok upload ${projectId} ${slug}`);
         }
         return {
-            message: `Success initializing tiktok upload for ${projectId} / ${slug}`,
-            initResponse: initResponse.json(),
+            message: `Initialized TikTok upload for ${projectId} ${slug}`,
         };
     });
 }

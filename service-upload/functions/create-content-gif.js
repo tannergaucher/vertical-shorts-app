@@ -15,8 +15,8 @@ const child_process_1 = require("child_process");
 function createContentGif({ projectId, slug, storage, prisma, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const gifFile = `${slug}.gif`;
-        const gifStoragePath = `https://storage.googleapis.com/${projectId}/${slug}.gif`;
-        (0, child_process_1.exec)(`${ffmpeg_1.path} -i ${slug}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${slug}.gif`, (error) => __awaiter(this, void 0, void 0, function* () {
+        const gifStoragePath = `https://storage.googleapis.com/${projectId}/${gifFile}`;
+        (0, child_process_1.exec)(`${ffmpeg_1.path} -i ${slug}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${gifFile}`, (error) => __awaiter(this, void 0, void 0, function* () {
             if (error) {
                 console.log(`Error`, error);
                 throw new Error(`ffmpeg error creating ${gifFile}`);
@@ -43,7 +43,7 @@ function createContentGif({ projectId, slug, storage, prisma, }) {
             });
         }));
         return {
-            message: `Created Gif for ${projectId} / ${slug}`,
+            message: `Uploaded ${gifFile} url to ${gifStoragePath}`,
         };
     });
 }

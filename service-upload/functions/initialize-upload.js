@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.initializeUpload = void 0;
 const fs_1 = require("fs");
-const lodash_1 = require("lodash");
 const generated_1 = require("../generated");
 const routes_1 = require("../routes");
 const constants_1 = require("../utils/constants");
@@ -35,6 +34,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
                 },
             },
         });
+        const bucketPath = `${projectId}/${content.slug}`;
         const filePath = `${content.slug}.mp4`;
         storage
             .bucket(projectId)
@@ -42,7 +42,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
             .createReadStream()
             .pipe((0, fs_1.createWriteStream)(filePath))
             .on("open", () => __awaiter(this, void 0, void 0, function* () {
-            console.log(`Downloading ${filePath} from bucket ${projectId}/${content.slug}`);
+            console.log(`Downloading ${filePath} from ${bucketPath}`);
             yield prisma.content.update({
                 where: {
                     projectId_slug: {
@@ -60,6 +60,38 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
                 },
             });
         }))
+            .on("finish", () => __awaiter(this, void 0, void 0, function* () {
+            (0, create_content_gif_1.createContentGif)({
+                projectId,
+                slug,
+                storage,
+                prisma,
+            });
+            if (content.project.youtubeCredentials) {
+                fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}/${routes_1.ServiceUploadRoutes.UploadYoutubeShort}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        projectId,
+                        slug,
+                    }),
+                });
+            }
+            if (content.project.tikTokCredentials) {
+                fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}/${routes_1.ServiceUploadRoutes.UploadTiktok}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        projectId,
+                        slug,
+                    }),
+                });
+            }
+        }))
             .on("error", (err) => __awaiter(this, void 0, void 0, function* () {
             yield prisma.content.update({
                 where: {
@@ -73,44 +105,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
                     tikTokStatus: generated_1.UploadStatus.NOT_STARTED,
                 },
             });
-            throw new Error(`Error downloading from gcp bucket, ${err.message}`);
-        }))
-            .on("finish", () => __awaiter(this, void 0, void 0, function* () {
-            const channelUploadPostRequests = (0, lodash_1.compact)([
-                content.project.youtubeCredentials
-                    ? fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}/${routes_1.ServiceUploadRoutes.UploadYoutubeShort}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            projectId,
-                            slug,
-                        }),
-                    })
-                    : undefined,
-                content.project.tikTokCredentials
-                    ? fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}/${routes_1.ServiceUploadRoutes.UploadTiktok}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            projectId,
-                            slug,
-                        }),
-                    })
-                    : undefined,
-            ]);
-            yield Promise.all([
-                channelUploadPostRequests.map((channelUploadPostRequest) => channelUploadPostRequest),
-                (0, create_content_gif_1.createContentGif)({
-                    projectId,
-                    slug,
-                    storage,
-                    prisma,
-                }),
-            ]);
+            throw new Error(`Error downloading from ${bucketPath}, ${err.message}`);
         }));
         return {
             message: `Uploaded ${projectId} ${slug} to channels`,
