@@ -73,15 +73,15 @@ export const action: ActionFunction = async ({ request }) => {
 
   invariant(user.currentProjectId, "user must have a current project");
 
-  const project = await getProject({
+  const currentProject = await getProject({
     id: user.currentProjectId,
   });
 
   const formattedDate = `${date}T${time}`;
 
   const channelTypes = [
-    project.youtubeCredentials ? "YOUTUBE" : [],
-    project.tikTokCredentials ? "TIKTOK" : [],
+    currentProject.youtubeCredentials ? "YOUTUBE" : [],
+    currentProject.tikTokCredentials ? "TIKTOK" : [],
   ].flat();
 
   await upsertContent({
