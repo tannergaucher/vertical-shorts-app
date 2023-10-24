@@ -32,6 +32,18 @@ export async function uploadTikTok({
 
   console.log(`Starting upload to tiktok for ${projectId} ${slug}`);
 
+  await prisma.content.update({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    data: {
+      tikTokStatus: "UPLOADING",
+    },
+  });
+
   const res = await fetch(
     `https://open.tiktokapis.com/v2/post/publish/inbox/video/init/`,
     {
@@ -48,7 +60,18 @@ export async function uploadTikTok({
   );
 
   if (!res.ok) {
-    console.log(res, "error");
+    await prisma.content.update({
+      where: {
+        projectId_slug: {
+          projectId,
+          slug,
+        },
+      },
+      data: {
+        tikTokStatus: "NOT_STARTED",
+      },
+    });
+
     throw new Error(`Error initializing TikTok upload ${projectId} ${slug}`);
   }
 
