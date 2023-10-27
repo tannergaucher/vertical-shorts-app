@@ -12,10 +12,10 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 
-import styles from "./root.module.css";
+import stylesheet from "../node_modules/@t_g/default-ui/package/index.css";
 import { Routes } from "./routes";
 import { getUser } from "./session.server";
-import stylesheet from "./styles/index.css";
+import localStyles from "./styles/index.css";
 
 export const links: LinksFunction = () => {
   return [
@@ -27,6 +27,11 @@ export const links: LinksFunction = () => {
     {
       rel: "stylesheet",
       href: stylesheet,
+      type: "text/css",
+    },
+    {
+      rel: "stylesheet",
+      href: localStyles,
       type: "text/css",
     },
     ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
@@ -48,6 +53,8 @@ export async function loader({ request }: LoaderArgs) {
 export default function App() {
   const location = useLocation();
 
+  console.log(location.pathname);
+
   return (
     <html lang="en">
       <head>
@@ -61,25 +68,55 @@ export default function App() {
         ) : null}
       </head>
       <body>
-        <nav className={styles.nav}>
-          <Link to={Routes.Index}>
-            <h3>Content</h3>
-          </Link>
-          <menu className={styles.menu}>
-            <ul className={styles.ul}>
-              <li>
-                <Link to={Routes.Admin}>
-                  <h3>Settings</h3>
-                </Link>
-              </li>
-              <li>
-                <Link to={Routes.AdminContentTitle}>
-                  <h3>Create</h3>
-                </Link>
-              </li>
-            </ul>
+        <header>
+          <menu>
+            <details>
+              <summary>Menu</summary>
+              <nav>
+                <ul>
+                  <li>
+                    <Link
+                      to={Routes.Index}
+                      data-current={
+                        location.pathname === Routes.Index ? true : undefined
+                      }
+                    >
+                      <h3>Content</h3>
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      to={Routes.Admin}
+                      data-current={
+                        location.pathname === Routes.Admin
+                          ? true
+                          : undefined
+                          ? true
+                          : undefined
+                      }
+                    >
+                      <h3>Settings</h3>
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      to={Routes.AdminContentTitle}
+                      data-current={
+                        location.pathname.includes(Routes.AdminContentTitle)
+                          ? true
+                          : undefined
+                      }
+                    >
+                      <h3>Publish</h3>
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            </details>
           </menu>
-        </nav>
+        </header>
         <Outlet />
         <ScrollRestoration />
         <Scripts />

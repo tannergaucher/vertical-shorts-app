@@ -1,4 +1,4 @@
-import type { Project } from "@prisma/client";
+// import type { Project } from "@prisma/client";
 import type {
   ActionFunction,
   LoaderFunction,
@@ -7,7 +7,7 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
-  useLoaderData,
+  // useLoaderData,
   useNavigation,
   useParams,
 } from "@remix-run/react";
@@ -17,7 +17,6 @@ import { Breadcrumb } from "~/components/breadcrumb";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContent.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -25,9 +24,9 @@ export const meta: MetaFunction = () => {
   };
 };
 
-type LoaderData = {
-  project: Project;
-};
+// type LoaderData = {
+//   project: Project;
+// };
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
@@ -76,7 +75,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const transition = useNavigation();
 
-  const { project } = useLoaderData<LoaderData>();
+  // const { project } = useLoaderData<LoaderData>();
 
   const { slug } = useParams();
 
@@ -84,20 +83,12 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
-      <h2 className={styles.pageTitle}>
-        <em>{project.title}</em>
-      </h2>
+    <main>
+      <h1>Title</h1>
       <Breadcrumb slug={slug} />
-      <fieldset disabled={disabled} className={styles.fieldset}>
+      <fieldset disabled={disabled}>
         <Form method="post">
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            required
-            className={styles.input}
-          />
+          <input type="text" name="title" placeholder="Title" required />
           <button type="submit">Next</button>
         </Form>
       </fieldset>

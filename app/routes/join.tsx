@@ -13,7 +13,6 @@ import { zfd } from "zod-form-data";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { Routes } from "~/routes";
 import { createUserSession, getUserId } from "~/session.server";
-import styles from "~/styles/login.module.css";
 import { safeRedirect, validateEmail } from "~/utils";
 
 export async function loader({ request }: LoaderArgs) {
@@ -79,7 +78,7 @@ export async function action({ request }: ActionArgs) {
 
 export const meta: MetaFunction = () => {
   return {
-    title: "Sign Up",
+    title: "Join",
   };
 };
 
@@ -104,85 +103,67 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
-      <h1>Sign Up</h1>
-      <fieldset disabled={disabled} className={styles.fieldset}>
-        {actionData?.errors ? (
-          <legend className={styles.legend}>Error!</legend>
-        ) : null}
+    <main>
+      <h1>Join</h1>
+      <fieldset disabled={disabled}>
+        {actionData?.errors ? <legend>Error!</legend> : null}
         <Form method="post">
-          <div>
-            <label htmlFor="email">
-              Email address{" "}
-              {actionData?.errors?.email && (
-                <span
-                  style={{
-                    color: `var(--warning)`,
-                  }}
-                >
-                  {actionData.errors.email}
-                </span>
-              )}
-            </label>
-            <div>
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className={styles.input}
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="password">
-              Password{" "}
-              {actionData?.errors?.password && (
-                <span
-                  style={{
-                    color: `var(--warning)`,
-                  }}
-                >
-                  {actionData.errors.password}
-                </span>
-              )}
-            </label>
-            <div>
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className={styles.input}
-              />
-            </div>
-          </div>
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button type="submit" className={styles.button}>
-            Create Account
-          </button>
-          <div>
-            <small>
-              Already have an account?{" "}
-              <Link
-                className={styles.login}
-                to={{
-                  pathname: "/login",
-                  search: searchParams.toString(),
+          <label htmlFor="email">
+            Email address{" "}
+            {actionData?.errors?.email && (
+              <span
+                style={{
+                  color: `var(--warning)`,
                 }}
               >
-                Log in
-              </Link>
-            </small>
-          </div>
+                {actionData.errors.email}
+              </span>
+            )}
+          </label>
+          <br />
+          <input
+            ref={emailRef}
+            id="email"
+            required
+            autoFocus={true}
+            name="email"
+            type="email"
+            autoComplete="email"
+            aria-invalid={actionData?.errors?.email ? true : undefined}
+            aria-describedby="email-error"
+          />
+          <label htmlFor="password">
+            Password{" "}
+            {actionData?.errors?.password && (
+              <span
+                style={{
+                  color: `var(--warning)`,
+                }}
+              >
+                {actionData.errors.password}
+              </span>
+            )}
+          </label>
+          <br />
+          <input
+            id="password"
+            ref={passwordRef}
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            aria-invalid={actionData?.errors?.password ? true : undefined}
+            aria-describedby="password-error"
+          />
+          <input type="hidden" name="redirectTo" value={redirectTo} />
+          <button type="submit">Create Account</button>
+          <Link
+            to={{
+              pathname: "/login",
+              search: searchParams.toString(),
+            }}
+          >
+            <h3>Already have an account? Log in</h3>
+          </Link>
         </Form>
       </fieldset>
     </main>

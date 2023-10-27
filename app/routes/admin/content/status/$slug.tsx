@@ -4,17 +4,15 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, useLoaderData, useNavigation } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 import { ContentDetails } from "~/components/content-details";
 import { deleteContent, getContent } from "~/models/content.server";
-import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContentStatus.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -25,7 +23,6 @@ export const meta: MetaFunction = () => {
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
   user: Awaited<ReturnType<typeof getUser>>;
-  project: Awaited<ReturnType<typeof getProject>>;
 };
 
 const paramsSchema = z.object({
@@ -49,9 +46,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
       slug,
       projectId: user.currentProjectId,
     }),
-    project: await getProject({
-      id: user.currentProjectId,
-    }),
   });
 };
 
@@ -72,29 +66,11 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { content, project } = useLoaderData<LoaderData>();
-
-  const transition = useNavigation();
-
-  const disabled =
-    transition.state === "loading" || transition.state === "submitting";
+  const { content } = useLoaderData<LoaderData>();
 
   return (
-    <main className={styles.main}>
-      <h1 className={styles.contentTitle}>{content.title}</h1>
-      <img
-        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.gif`}
-        alt={content.title}
-        className={styles.gif}
-      />
-      <ContentDetails content={content} project={project} open={true} />
-      <fieldset disabled={disabled} className={styles.fieldset}>
-        <Form method="post">
-          <input type="hidden" name="slug" value={content.slug} />
-          <input type="hidden" name="projectId" value={content.projectId} />
-          <button type="submit">Delete</button>
-        </Form>
-      </fieldset>
+    <main>
+      <ContentDetails content={content} />
     </main>
   );
 }

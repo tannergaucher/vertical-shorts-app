@@ -3,25 +3,27 @@ import { Link } from "@remix-run/react";
 
 import { Routes } from "~/routes";
 
-import styles from "./index.module.css";
-
 export function Breadcrumb({ slug }: { slug?: string }) {
   const location = useLocation();
 
   return (
-    <menu className={styles.breadcrumbMenu}>
-      <ul className={styles.breadcrumbList}>
+    <section>
+      <ul
+        style={{
+          marginLeft: `var(--space-sm)`,
+          marginBlockEnd: `var(--space-lg)`,
+        }}
+      >
         <li>
           <Link
             to={Routes.AdminContentTitle}
-            className={styles.breadcrumbLink}
             data-current={
               location.pathname.includes(Routes.AdminContentTitle)
-                ? "true"
-                : "false"
+                ? true
+                : undefined
             }
           >
-            Title
+            <h3>Title</h3>
           </Link>
         </li>
         <li>
@@ -29,14 +31,13 @@ export function Breadcrumb({ slug }: { slug?: string }) {
             to={
               slug ? Routes.AdminContentVideo(slug) : Routes.AdminContentTitle
             }
-            className={styles.breadcrumbLink}
             data-current={
               slug && location.pathname.includes(Routes.AdminContentVideo(slug))
-                ? "true"
-                : "false"
+                ? true
+                : undefined
             }
           >
-            Video
+            <h3>Video</h3>
           </Link>
         </li>
         <li>
@@ -44,15 +45,14 @@ export function Breadcrumb({ slug }: { slug?: string }) {
             to={
               slug ? Routes.AdminContentDetails(slug) : Routes.AdminContentTitle
             }
-            className={styles.breadcrumbLink}
             data-current={
               slug &&
               location.pathname.includes(Routes.AdminContentDetails(slug))
-                ? "true"
-                : "false"
+                ? true
+                : undefined
             }
           >
-            Tags & Description
+            <h3>Details</h3>
           </Link>
         </li>
         <li>
@@ -62,18 +62,17 @@ export function Breadcrumb({ slug }: { slug?: string }) {
                 ? Routes.AdminContentScheduler(slug)
                 : Routes.AdminContentTitle
             }
-            className={styles.breadcrumbLink}
             data-current={
               slug &&
               location.pathname.includes(Routes.AdminContentScheduler(slug))
-                ? "true"
-                : "false"
+                ? true
+                : undefined
             }
           >
-            Schedule
+            <h3>Schedule</h3>
           </Link>
         </li>
       </ul>
-    </menu>
+    </section>
   );
 }
