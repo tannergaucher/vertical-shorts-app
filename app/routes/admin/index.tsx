@@ -10,7 +10,6 @@ import { getChannels } from "~/models/chanel.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/admin.module.css";
 import { SUPPORTED_CHANNELS } from "~/utils/constants";
 
 type LoaderData = {
@@ -75,8 +74,9 @@ export default function Page() {
   const allChannelTypes = Object.keys(ChannelType) as ChannelType[];
 
   return (
-    <main className={styles.main}>
-      <fieldset className={styles.fieldset}>
+    <main>
+      <h1>Settings</h1>
+      <fieldset>
         <Form method="post">
           <label htmlFor="currentProjectId">
             <h2>Select Project</h2>
@@ -84,7 +84,6 @@ export default function Page() {
           <select
             id="currentProjectId"
             name="currentProjectId"
-            className={styles.select}
             onChange={(event) => {
               submit(
                 {
@@ -109,11 +108,13 @@ export default function Page() {
           </select>
         </Form>
         <Link to={Routes.AdminCreateProject}>
-          <h3>New Project</h3>
+          <button>
+            <h3>New</h3>
+          </button>
         </Link>
       </fieldset>
-      <h2>Publish To</h2>
-      <section className={styles.channelsGrid}>
+      <h2>Publish to</h2>
+      <section>
         {allChannelTypes.map((channelType) => {
           return (
             <ChannelItem
@@ -126,24 +127,27 @@ export default function Page() {
           );
         })}
       </section>
-      <h2>Current Plan</h2>
-      <section className={styles.currentPlanSection}>
-        {user.planType ? (
-          <div className={styles.currentPlanName}>
-            <h2> {getChannelFromChannelType(user.planType)}</h2>
-            <Link to={Routes.Signup}>Update Plan</Link>
-          </div>
-        ) : (
-          <Link to={Routes.Signup}>
-            <h3>Select a Plan</h3>
-          </Link>
-        )}
-      </section>
+      <h2
+        style={{
+          marginBlockStart: 0,
+        }}
+      >
+        Select Plan
+      </h2>
+      <Link to={Routes.Signup}>
+        <button type="button">
+          <h3>
+            {user.planType
+              ? ` ${getPlanFromPlanType(user.planType)}`
+              : `Select Plan`}
+          </h3>
+        </button>
+      </Link>
     </main>
   );
 }
 
-function getChannelFromChannelType(planType: PlanType) {
+function getPlanFromPlanType(planType: PlanType) {
   switch (planType) {
     case "STARTER":
       return "Starter";
@@ -169,6 +173,21 @@ function getRouteFromChannelType(channelType: ChannelType) {
   }
 }
 
+function getChannelNameFromChannelType(channelType: ChannelType) {
+  switch (channelType) {
+    case "YOUTUBE":
+      return "YouTube";
+    case "TIKTOK":
+      return "TikTok";
+    case "INSTAGRAM":
+      return "Instagram";
+    case "TWITTER":
+      return "Twitter";
+    case "FACEBOOK":
+      return "Facebook";
+  }
+}
+
 function ChannelItem({
   channelType,
   projectChannel,
@@ -181,26 +200,32 @@ function ChannelItem({
 }) {
   return (
     <Link
-      className={styles.channel}
       to={
         SUPPORTED_CHANNELS.includes(channelType)
           ? getRouteFromChannelType(channelType)
           : "#"
       }
-      data-selected={projectChannel ? "true" : "false"}
-      data-supported={
-        SUPPORTED_CHANNELS.includes(channelType) ? "true" : "false"
-      }
     >
-      {SUPPORTED_CHANNELS.includes(channelType) ? (
-        <h3 className={styles.channelTitle}>{`${
-          projectChannel
-            ? `${channelType} | ${projectChannel.name}`
-            : `ADD ${channelType} CHANNEL`
-        }`}</h3>
-      ) : (
-        <h3 className={styles.channelTitle}>{`${channelType} COMING SOON`}</h3>
-      )}
+      <button
+        data-coming-soon={!SUPPORTED_CHANNELS.includes(channelType)}
+        style={{
+          marginBlockEnd: `var(--space-lg)`,
+        }}
+      >
+        <h3>
+          {SUPPORTED_CHANNELS.includes(channelType) ? (
+            <>{`${
+              projectChannel
+                ? `${getChannelNameFromChannelType(channelType)} - ${
+                    projectChannel.name
+                  }`
+                : `Add ${getChannelNameFromChannelType(channelType)} Channel`
+            }`}</>
+          ) : (
+            <>{`${getChannelNameFromChannelType(channelType)} - Coming Soon`}</>
+          )}
+        </h3>
+      </button>
     </Link>
   );
 }

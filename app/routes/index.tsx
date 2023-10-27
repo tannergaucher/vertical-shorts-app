@@ -1,17 +1,14 @@
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { useState } from "react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
-import { ContentDetails } from "~/components/content-details";
 import { prisma } from "~/db.server";
 import { getContents } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/index.module.css";
 
 type LoaderData = {
   contents?: Awaited<ReturnType<typeof getContents>>;
@@ -92,111 +89,20 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const [tagsFocused, setTagsFocused] = useState(false);
   const { contents, project } = useLoaderData<LoaderData>();
 
-  const fetcher = useFetcher();
-
-  const [selectedDetails, setSelectedDetails] = useState<string | null>(null);
-
   return (
-    <main className={styles.main}>
-      <h1 className={styles.title}>{project.title}</h1>
-      <section className={styles.contentAsideGrid}>
-        <section className={styles.contentGrid}>
-          {contents?.map((content) => (
-            <div
-              key={content.slug}
-              className={styles.contentCard}
-              data-current={content.slug === selectedDetails}
-            >
-              {content.gif ? (
-                <img src={content.gif} alt={content.title} />
-              ) : null}
-              <div className={styles.contentCardDetails}>
-                <Link to={Routes.AdminContentStatus(content.slug)}>
-                  <h3 className={styles.contentTitle}>{content.title}</h3>
-                </Link>
-                <ContentDetails
-                  project={project}
-                  content={content}
-                  selectedDetails={selectedDetails}
-                  setSelectedDetails={setSelectedDetails}
-                  scrollIntoView
-                />
-              </div>
-            </div>
-          ))}
-        </section>
-        <section className={styles.asideSection}>
-          <aside>
-            <fieldset
-              disabled={
-                fetcher.state === "loading" || fetcher.state === "submitting"
-              }
-            >
-              <Form method="post">
-                <input
-                  type="text"
-                  placeholder="Add Tag"
-                  name="tag"
-                  id="tag"
-                  onFocus={() => {
-                    setSelectedDetails(null);
-                    setTagsFocused(true);
-                  }}
-                />
-                {tagsFocused ? (
-                  <button
-                    className={styles.submitButton}
-                    onClick={(e) => {
-                      const tagInputElement =
-                        e.currentTarget.form?.elements.namedItem(
-                          "tag"
-                        ) as HTMLInputElement;
-
-                      fetcher.submit(
-                        {
-                          actionType: ActionType.AddTag,
-                          tag: tagInputElement.value,
-                        },
-                        {
-                          method: "post",
-                        }
-                      );
-
-                      tagInputElement.value = "";
-                    }}
-                  >
-                    Add Tag
-                  </button>
-                ) : null}
-                {project.tags.map((tag) => (
-                  <div key={tag} className={styles.tag}>
-                    <span>#{tag}</span>
-                    <button
-                      type="button"
-                      className={styles.removeTagButton}
-                      onClick={() =>
-                        fetcher.submit(
-                          {
-                            actionType: ActionType.RemoveTag,
-                            tag,
-                          },
-                          {
-                            method: "post",
-                          }
-                        )
-                      }
-                    >
-                      x
-                    </button>
-                  </div>
-                ))}
-              </Form>
-            </fieldset>
-          </aside>
-        </section>
+    <main>
+      <h1>{project.title}</h1>
+      <section>
+        {contents?.map((content) => (
+          <article key={content.slug}>
+            {content.gif ? <img src={content.gif} alt={content.title} /> : null}
+            <Link to={Routes.AdminContentStatus(content.slug)}>
+              <h3>{content.title}</h3>
+            </Link>
+          </article>
+        ))}
       </section>
     </main>
   );

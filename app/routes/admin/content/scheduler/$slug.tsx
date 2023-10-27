@@ -20,7 +20,6 @@ import { upsertContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContent.module.css";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -124,18 +123,15 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
-      <h1 className={styles.pageTitle}>{content.title}</h1>
-      <em>
-        <h2 className={styles.pageTitle}>{project.title}</h2>
-      </em>
+    <main>
+      <h1>Schedule</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">
           <label htmlFor="date">Date</label>
-          <input type="date" name="date" className={styles.input} required />
+          <input type="date" name="date" required />
           <label htmlFor="time">Time</label>
-          <input type="time" name="time" className={styles.input} required />
+          <input type="time" name="time" required />
           <input type="hidden" name="slug" value={content.slug} />
           <input type="hidden" name="projectId" value={content.projectId} />
           <button type="submit">Schedule</button>

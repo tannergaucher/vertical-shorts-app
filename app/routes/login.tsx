@@ -13,7 +13,6 @@ import { zfd } from "zod-form-data";
 import { verifyLogin } from "~/models/user.server";
 import { Routes } from "~/routes";
 import { createUserSession, getUserId } from "~/session.server";
-import styles from "~/styles/login.module.css";
 import { safeRedirect, validateEmail } from "~/utils";
 
 export async function loader({ request }: LoaderArgs) {
@@ -99,89 +98,93 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main className={styles.main}>
+    <main>
       <h1>Login</h1>
-      <fieldset disabled={disabled} className={styles.fieldset}>
-        {actionData?.errors ? (
-          <legend className={styles.legend}>Error!</legend>
-        ) : null}
+      <fieldset disabled={disabled}>
+        {actionData?.errors ? <legend>Error!</legend> : null}
         <Form method="post">
-          <div>
-            <label htmlFor="email">
-              Email address{" "}
-              {actionData?.errors?.email && (
-                <span style={{ color: `var(--warning)` }}>
-                  {actionData.errors.email}
-                </span>
-              )}
-            </label>
-            <div>
-              <input
-                ref={emailRef}
-                id="email"
-                required
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className={styles.input}
-              />
-            </div>
-          </div>
-          <div>
-            <label htmlFor="password">
-              Password{" "}
-              {actionData?.errors?.password && (
-                <span
-                  style={{
-                    color: `var(--warning)`,
-                  }}
-                >
-                  {actionData.errors.password}
-                </span>
-              )}
-            </label>
-            <div>
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className={styles.input}
-              />
-            </div>
-          </div>
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button type="submit" className={styles.button}>
-            Log in
-          </button>
-          <input
-            id="remember"
-            name="remember"
-            type="checkbox"
-            className={styles.checkbox}
-          />
-          <label htmlFor="remember">
-            <small>Remember me</small>
+          <label htmlFor="email">
+            Email address{" "}
+            {actionData?.errors?.email && (
+              <span style={{ color: `var(--warning)` }}>
+                {actionData.errors.email}
+              </span>
+            )}
           </label>
+
           <br />
-          <small>
-            Don't have an account?{" "}
-            <Link
-              className={styles.signUp}
-              to={{
-                pathname: "/join",
-                search: searchParams.toString(),
+
+          <input
+            ref={emailRef}
+            id="email"
+            required
+            autoFocus={true}
+            name="email"
+            type="email"
+            autoComplete="email"
+            aria-invalid={actionData?.errors?.email ? true : undefined}
+            aria-describedby="email-error"
+          />
+
+          <label htmlFor="password">
+            Password{" "}
+            {actionData?.errors?.password && (
+              <span
+                style={{
+                  color: `var(--warning)`,
+                }}
+              >
+                {actionData.errors.password}
+              </span>
+            )}
+          </label>
+
+          <br />
+
+          <input
+            id="password"
+            ref={passwordRef}
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            aria-invalid={actionData?.errors?.password ? true : undefined}
+            aria-describedby="password-error"
+          />
+
+          <input type="hidden" name="redirectTo" value={redirectTo} />
+          <button type="submit">Log in</button>
+          <br />
+          <div
+            style={{
+              display: `flex`,
+              alignItems: `center`,
+              justifyContent: `start`,
+            }}
+          >
+            <input
+              id="remember"
+              name="remember"
+              type="checkbox"
+              style={{
+                width: "fit-content",
+                marginBlock: `var(--space-md)`,
+                marginInline: 0,
               }}
-            >
-              Sign up
-            </Link>
-          </small>
+            />
+            <br />
+            <label htmlFor="remember" style={{ marginLeft: `var(--space-sm)` }}>
+              Remember me
+            </label>
+          </div>
+
+          <Link
+            to={{
+              pathname: "/join",
+              search: searchParams.toString(),
+            }}
+          >
+            <h4>Don't have an account? Sign up</h4>
+          </Link>
         </Form>
       </fieldset>
     </main>

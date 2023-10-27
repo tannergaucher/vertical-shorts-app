@@ -11,7 +11,6 @@ import { getContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContent.module.css";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
@@ -127,11 +126,8 @@ export default function Page() {
   }
 
   return (
-    <main className={styles.main}>
-      <h1 className={styles.pageTitle}>{content.title}</h1>
-      <h2 className={styles.pageTitle}>
-        <em>{project.title}</em>
-      </h2>
+    <main>
+      <h1>Video</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <form
@@ -140,12 +136,8 @@ export default function Page() {
             await handleSubmit();
           }}
         >
-          <input
-            type="file"
-            name="thumbnail"
-            required
-            className={styles.input}
-          />
+          <input type="file" name="thumbnail" required />
+
           <button type="submit">Next</button>
         </form>
       </fieldset>

@@ -5,7 +5,6 @@ import type {
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
-import { useEffect, useState } from "react";
 import invariant from "tiny-invariant";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -14,7 +13,6 @@ import type { Content } from "~/models/content.server";
 import type { Project } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
-import styles from "~/styles/adminContentTagsDescription.module.css";
 
 export const meta: MetaFunction = () => {
   return {
@@ -72,52 +70,24 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
 
-  // const tags = formData.getAll("tags");
   const projectId = formData.get("projectId");
   const slug = formData.get("slug");
-  // const description = formData.get("description");
+  const description = formData.get("description");
+  const tags = formData.get("tags");
 
   invariant(typeof projectId === "string", "projectId is required");
   invariant(typeof slug === "string", "slug is required");
 
-  // const content = await prisma.content.update({
-  //   where: {
-  //     projectId_slug: {
-  //       projectId,
-  //       slug,
-  //     },
-  //   },
-  //   data: {
-  //     tags: tags.length
-  //       ? {
-  //           set: tags.flatMap((tag) =>
-  //             tag.toString().length ? tag.toString().trim() : []
-  //           ),
-  //         }
-  //       : undefined,
-  //     description: description ? description.toString().trim() : undefined,
-  //   },
-  //   select: {
-  //     tags: true,
-  //   },
-  // });
+  console.log(description, "description");
+  console.log(tags, "tags");
 
   return {
     success: true,
-    // tags: content.tags,
   };
 };
 
 export default function Page() {
   const { project, content } = useLoaderData<LoaderData>();
-
-  const [hasGeneratedTags, setHasGeneratedTags] = useState(false);
-
-  useEffect(() => {
-    if (content.tags.length) {
-      setHasGeneratedTags(true);
-    }
-  }, [hasGeneratedTags, content.tags]);
 
   const { slug } = useParams();
 
@@ -125,96 +95,15 @@ export default function Page() {
 
   return (
     <main>
-      <h1 className={styles.pageTitle}>{content.title}</h1>
-      <h2 className={styles.pageTitle}>
-        <em>{project.title}</em>
-      </h2>
+      <h1>Details</h1>
       <Breadcrumb slug={slug} />
-      <div className={styles.tagsDescriptionGrid}>
-        {/* <section>
-          <TagsForm
-            project={project}
-            content={content}
-            slug={slug}
-            hasGeneratedTags={hasGeneratedTags}
-            setHasGeneratedTags={setHasGeneratedTags}
-          />
-        </section> */}
-        <section>
-          <DescriptionForm project={project} slug={slug} content={content} />
-        </section>
-      </div>
+      <section>
+        <DescriptionForm project={project} slug={slug} content={content} />
+        <TagsForm project={project} slug={slug} content={content} />
+      </section>
     </main>
   );
 }
-
-// function TagsForm({
-//   project,
-//   content,
-//   slug,
-//   hasGeneratedTags,
-//   setHasGeneratedTags,
-// }: {
-//   project: LoaderData["project"];
-//   content: LoaderData["content"];
-//   slug: string;
-//   hasGeneratedTags: boolean;
-//   setHasGeneratedTags: (value: boolean) => void;
-// }) {
-//   const tagsFetcher = useFetcher();
-
-//   const tags = tagsFetcher.data?.tags
-//     ? [...project.tags, ...content.tags, ...tagsFetcher.data.tags]
-//     : [...project.tags, ...content.tags];
-
-//   return (
-//     <>
-//       <h2 className={styles.sectionTitle}>Tags</h2>
-//       {!hasGeneratedTags ? (
-//         <button
-//           className={styles.generateTagsButton}
-//           disabled={
-//             tagsFetcher.state === "loading" ||
-//             tagsFetcher.state === "submitting"
-//           }
-//           onClick={() => {
-//             tagsFetcher.load(Routes.ResourceVideoTags(project.id, slug));
-//             setHasGeneratedTags(true);
-//           }}
-//         >
-//           Generate Tags
-//         </button>
-//       ) : null}
-//       <fieldset
-//         disabled={
-//           tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
-//         }
-//       >
-//         <tagsFetcher.Form method="post">
-//           {tags.map((tag) => (
-//             <div key={tag}>
-//               <label className={styles.tagLabel}>
-//                 {tag}
-//                 <input type="checkbox" name="tags" value={tag} defaultChecked />
-//               </label>
-//             </div>
-//           ))}
-//           <input
-//             type="text"
-//             placeholder="Tags"
-//             name="tags"
-//             className={styles.addTagInput}
-//           />
-//           <input type="hidden" name="projectId" value={project.id} />
-//           <input type="hidden" name="slug" value={slug} id="slug" />
-//           <button type="submit" className={styles.tagsSubmitButton}>
-//             Submit
-//           </button>
-//         </tagsFetcher.Form>
-//       </fieldset>
-//     </>
-//   );
-// }
 
 function DescriptionForm({
   project,
@@ -225,19 +114,11 @@ function DescriptionForm({
   content: LoaderData["content"];
   slug: string;
 }) {
-  const [isEditing, setIsEditing] = useState(false);
-
   const descriptionFetcher = useFetcher();
-
-  useEffect(() => {
-    if (descriptionFetcher.state === "idle") {
-      setIsEditing(false);
-    }
-  }, [descriptionFetcher.state]);
 
   return (
     <div>
-      <h2 className={styles.sectionTitle}>Description</h2>
+      <h2>Description</h2>
       <fieldset
         disabled={
           descriptionFetcher.state === "loading" ||
@@ -249,14 +130,46 @@ function DescriptionForm({
             name="description"
             id="description"
             defaultValue={content.description || ""}
-            onFocus={() => {
-              setIsEditing(true);
-            }}
           ></textarea>
           <input type="hidden" name="projectId" value={project.id} />
           <input type="hidden" name="slug" value={slug} id="slug" />
-          {isEditing ? <button type="submit">Save</button> : null}
+          <button type="submit">Save</button>
         </descriptionFetcher.Form>
+      </fieldset>
+    </div>
+  );
+}
+
+function TagsForm({
+  project,
+  slug,
+  content,
+}: {
+  project: LoaderData["project"];
+  content: LoaderData["content"];
+  slug: string;
+}) {
+  const tagsFetcher = useFetcher();
+
+  return (
+    <div>
+      <h2>Tags</h2>
+      <fieldset
+        disabled={
+          tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
+        }
+      >
+        <tagsFetcher.Form method="post">
+          <input
+            type="text"
+            name="tags"
+            id="tags"
+            defaultValue={content.tags.join(", ")}
+          />
+          <input type="hidden" name="projectId" value={project.id} />
+          <input type="hidden" name="slug" value={slug} id="slug" />
+          <button type="submit">Save</button>
+        </tagsFetcher.Form>
       </fieldset>
     </div>
   );
