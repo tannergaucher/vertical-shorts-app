@@ -84,11 +84,6 @@ export default function Page() {
           <select
             id="currentProjectId"
             name="currentProjectId"
-            style={
-              {
-                // fontWeight: "bold",
-              }
-            }
             onChange={(event) => {
               submit(
                 {
