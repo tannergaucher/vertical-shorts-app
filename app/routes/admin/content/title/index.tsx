@@ -1,16 +1,10 @@
-// import type { Project } from "@prisma/client";
 import type {
   ActionFunction,
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import {
-  Form,
-  // useLoaderData,
-  useNavigation,
-  useParams,
-} from "@remix-run/react";
+import { Form, useNavigation, useParams } from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -24,10 +18,6 @@ export const meta: MetaFunction = () => {
   };
 };
 
-// type LoaderData = {
-//   project: Project;
-// };
-
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
 
@@ -35,16 +25,8 @@ export const loader: LoaderFunction = async ({ request }) => {
     return redirect(Routes.Login);
   }
 
-  const project = user.projects.find(
-    (project) => project.id === user.currentProjectId
-  );
-
-  if (!project) {
-    return redirect(Routes.AdminCreateProject);
-  }
-
   return json({
-    project,
+    user,
   });
 };
 
@@ -74,8 +56,6 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function Page() {
   const transition = useNavigation();
-
-  // const { project } = useLoaderData<LoaderData>();
 
   const { slug } = useParams();
 
