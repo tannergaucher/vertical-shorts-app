@@ -115,6 +115,8 @@ export async function uploadYouTubeShort({
       },
     })
     .then(async (response) => {
+      console.log(response, "upload YouTube response");
+
       await prisma.content.update({
         where: {
           projectId_slug: {

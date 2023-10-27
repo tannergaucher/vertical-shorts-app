@@ -100,6 +100,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
         })
             .then((response) => __awaiter(this, void 0, void 0, function* () {
             var _d;
+            console.log(response, "upload YouTube response");
             yield prisma.content.update({
                 where: {
                     projectId_slug: {
