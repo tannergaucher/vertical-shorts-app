@@ -13,7 +13,6 @@ import {
 } from "@remix-run/react";
 
 import stylesheet from "../node_modules/@t_g/default-ui/package/index.css";
-import { getProject } from "./models/project.server";
 import { Routes } from "./routes";
 import { getUser } from "./session.server";
 import localStyles from "./styles/index.css";
@@ -50,9 +49,7 @@ type LoaderData = {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  const user = await getUser(request);
-
-  return json({ user } as LoaderData);
+  return json<LoaderData>({ user: await getUser(request) });
 }
 
 export default function App() {
