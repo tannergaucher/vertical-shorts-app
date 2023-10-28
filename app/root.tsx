@@ -2,7 +2,7 @@ import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useLoaderData, useLocation } from "@remix-run/react";
 import {
   Links,
   LiveReload,
@@ -44,16 +44,22 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+type LoaderData = {
+  user: ReturnType<typeof getUser> extends Promise<infer U> ? U : never;
+};
+
 export async function loader({ request }: LoaderArgs) {
-  return json({
-    user: await getUser(request),
-  });
+  return json<LoaderData>({ user: await getUser(request) });
 }
 
 export default function App() {
   const location = useLocation();
 
-  console.log(location.pathname);
+  const { user } = useLoaderData<LoaderData>();
+
+  const project = user?.projects.filter(
+    (project) => project.id === user.currentProjectId
+  )[0];
 
   return (
     <html lang="en">
@@ -81,10 +87,13 @@ export default function App() {
                         location.pathname === Routes.Index ? true : undefined
                       }
                     >
-                      <h3>Content</h3>
+                      <h3>
+                        {project?.title.trim().length
+                          ? project.title
+                          : "Content"}
+                      </h3>
                     </Link>
                   </li>
-
                   <li>
                     <Link
                       to={Routes.Admin}
