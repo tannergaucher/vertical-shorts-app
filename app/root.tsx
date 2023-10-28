@@ -2,7 +2,7 @@ import { cssBundleHref } from "@remix-run/css-bundle";
 import type { LoaderArgs, MetaFunction } from "@remix-run/node";
 import type { LinksFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useLoaderData, useLocation } from "@remix-run/react";
 import {
   Links,
   LiveReload,
@@ -13,6 +13,7 @@ import {
 } from "@remix-run/react";
 
 import stylesheet from "../node_modules/@t_g/default-ui/package/index.css";
+import { getProject } from "./models/project.server";
 import { Routes } from "./routes";
 import { getUser } from "./session.server";
 import localStyles from "./styles/index.css";
@@ -44,16 +45,24 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
+type LoaderData = {
+  user: ReturnType<typeof getUser> extends Promise<infer U> ? U : never;
+};
+
 export async function loader({ request }: LoaderArgs) {
-  return json({
-    user: await getUser(request),
-  });
+  const user = await getUser(request);
+
+  return json({ user } as LoaderData);
 }
 
 export default function App() {
   const location = useLocation();
 
-  console.log(location.pathname);
+  const { user } = useLoaderData<LoaderData>();
+
+  const project = user?.projects.filter(
+    (project) => project.id === user.currentProjectId
+  )[0];
 
   return (
     <html lang="en">
@@ -81,10 +90,13 @@ export default function App() {
                         location.pathname === Routes.Index ? true : undefined
                       }
                     >
-                      <h3>Content</h3>
+                      <h3>
+                        {project?.title.trim().length
+                          ? project.title
+                          : "Content"}
+                      </h3>
                     </Link>
                   </li>
-
                   <li>
                     <Link
                       to={Routes.Admin}

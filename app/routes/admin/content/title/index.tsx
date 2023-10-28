@@ -64,7 +64,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Title</h1>
+      <h1>Publish</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">

@@ -127,7 +127,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Video</h1>
+      <h1>Publish</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <form

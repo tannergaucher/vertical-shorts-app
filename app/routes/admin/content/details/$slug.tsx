@@ -118,7 +118,7 @@ function DescriptionForm({
 
   return (
     <div>
-      <h2>Description</h2>
+      <h2>Publish</h2>
       <fieldset
         disabled={
           descriptionFetcher.state === "loading" ||

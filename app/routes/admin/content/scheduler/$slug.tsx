@@ -114,7 +114,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { content, project } = useLoaderData<LoaderData>();
+  const { content } = useLoaderData<LoaderData>();
   const transition = useNavigation();
 
   const { slug } = useParams();
@@ -124,7 +124,7 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Schedule</h1>
+      <h1>Publish</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">
