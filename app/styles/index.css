@@ -50,11 +50,6 @@ main > article {
   margin-block-start: var(--space-xl);
 }
 
-button,
-select {
-  padding: var(--space-lg);
-}
-
 button[data-coming-soon="true"] {
   color: gray;
   border-color: gray;

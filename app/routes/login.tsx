@@ -183,7 +183,13 @@ export default function Page() {
               search: searchParams.toString(),
             }}
           >
-            <h4>Don't have an account? Sign up</h4>
+            <h4
+              style={{
+                marginLeft: `0`,
+              }}
+            >
+              Don't have an account? Sign up
+            </h4>
           </Link>
         </Form>
       </fieldset>
