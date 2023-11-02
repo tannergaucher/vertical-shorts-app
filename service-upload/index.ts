@@ -5,14 +5,19 @@ import dotenv from "dotenv";
 import type { Request, Response } from "express";
 import express from "express";
 
-import type { InitializeUploadBody } from "./functions/initialize-upload";
-import { initializeUpload } from "./functions/initialize-upload";
-import type { UploadTikTokBody } from "./functions/upload-tiktok";
-import { uploadTikTok } from "./functions/upload-tiktok";
-import type { UploadTikTokStatusQueryParams } from "./functions/upload-tiktok-status";
-import { uploadTikTokStatus } from "./functions/upload-tiktok-status";
-import type { UploadYoutubeShortBody } from "./functions/upload-youtube-short";
-import { uploadYouTubeShort } from "./functions/upload-youtube-short";
+import {
+  initializeUpload,
+  type InitializeUploadBody,
+} from "./functions/initialize-upload";
+import { uploadTikTok, type UploadTikTokBody } from "./functions/upload-tiktok";
+import {
+  uploadTikTokStatus,
+  type UploadTikTokStatusQueryParams,
+} from "./functions/upload-tiktok-status";
+import {
+  uploadYouTubeShort,
+  type UploadYoutubeShortBody,
+} from "./functions/upload-youtube-short";
 import { PrismaClient } from "./generated/index.js";
 import { ServiceUploadRoutes } from "./routes";
 import { APP_BASE_URL } from "./utils/constants";

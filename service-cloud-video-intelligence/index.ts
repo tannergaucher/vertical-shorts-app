@@ -5,12 +5,15 @@ import type { Request } from "express";
 import express, { json } from "express";
 
 import { CloudIntelligenceTypes } from "./cloud-intelligence-types";
-import type { GenerateTagsRequest } from "./functions/generate-tags";
-import { generateTags } from "./functions/generate-tags";
-import type { RecognizeTextRequest } from "./functions/recognize-text";
-import { recognizeText } from "./functions/recognize-text";
-import type { TranscribeRequest } from "./functions/transcribe";
-import { transcribe } from "./functions/transcribe";
+import {
+  generateTags,
+  type GenerateTagsRequest,
+} from "./functions/generate-tags";
+import {
+  recognizeText,
+  type RecognizeTextRequest,
+} from "./functions/recognize-text";
+import { transcribe, type TranscribeRequest } from "./functions/transcribe";
 import { PrismaClient } from "./generated/index.js";
 import { APP_BASE_URL } from "./utils/constants";
 
