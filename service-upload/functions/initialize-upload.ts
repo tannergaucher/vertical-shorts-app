@@ -41,15 +41,15 @@ export async function initializeUpload({
   });
 
   const bucketPath = `${projectId}/${content.slug}`;
-  const filePath = `${content.slug}.mp4`;
+  const videoPath = `${content.slug}.mp4`;
 
   storage
     .bucket(projectId)
-    .file(filePath)
+    .file(videoPath)
     .createReadStream()
-    .pipe(createWriteStream(filePath))
+    .pipe(createWriteStream(videoPath))
     .on("open", async () => {
-      console.log(`Downloading ${filePath} from ${bucketPath}`);
+      console.log(`Downloading ${videoPath} from ${bucketPath}`);
 
       await prisma.content.update({
         where: {

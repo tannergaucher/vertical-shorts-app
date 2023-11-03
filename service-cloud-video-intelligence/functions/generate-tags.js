@@ -32,8 +32,8 @@ function generateTags({ projectId, slug, prisma, }) {
         if (!content) {
             throw new Error("CONTENT_NOT_FOUND");
         }
-        const contentLabels = JSON.parse(content.labels);
-        const tags = getTagsFromLabelAnnotations(contentLabels);
+        const contentLabelAnnotations = JSON.parse(content.labels);
+        const tags = getTagsFromLabelAnnotations(contentLabelAnnotations);
         if (tags.length > 0) {
             return {
                 tags: [],

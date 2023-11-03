@@ -35,14 +35,14 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
             },
         });
         const bucketPath = `${projectId}/${content.slug}`;
-        const filePath = `${content.slug}.mp4`;
+        const videoPath = `${content.slug}.mp4`;
         storage
             .bucket(projectId)
-            .file(filePath)
+            .file(videoPath)
             .createReadStream()
-            .pipe((0, fs_1.createWriteStream)(filePath))
+            .pipe((0, fs_1.createWriteStream)(videoPath))
             .on("open", () => __awaiter(this, void 0, void 0, function* () {
-            console.log(`Downloading ${filePath} from ${bucketPath}`);
+            console.log(`Downloading ${videoPath} from ${bucketPath}`);
             yield prisma.content.update({
                 where: {
                     projectId_slug: {

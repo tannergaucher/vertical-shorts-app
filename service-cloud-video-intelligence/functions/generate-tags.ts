@@ -35,11 +35,11 @@ export async function generateTags({
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const contentLabels = JSON.parse(content.labels as string) as unknown as
-    | CloudIntelligenceTypes.LabelAnnotation[]
-    | null;
+  const contentLabelAnnotations = JSON.parse(
+    content.labels as string
+  ) as unknown as CloudIntelligenceTypes.LabelAnnotation[] | null;
 
-  const tags = getTagsFromLabelAnnotations(contentLabels);
+  const tags = getTagsFromLabelAnnotations(contentLabelAnnotations);
 
   if (tags.length > 0) {
     return {
