@@ -24,6 +24,9 @@ export function ContentDetails({ content }: { content: Content }) {
             <h3>YouTube</h3>
             <ul style={{ paddingLeft: `var(--space-md)` }}>
               <li>{content.youtubeStatus}</li>
+              {content.youtubePublishAt ? (
+                <li>{content.youtubePublishAt}</li>
+              ) : null}{" "}
               {content.youtubeId ? (
                 <li>
                   <a
@@ -40,7 +43,10 @@ export function ContentDetails({ content }: { content: Content }) {
           <article>
             <h3>TikTok</h3>
             <ul>
-              <li>{content.tikTokStatus}</li>
+              {content.tikTokPublishAt ? (
+                <li>{content.tikTokPublishAt}</li>
+              ) : null}
+              <li>{content.tikTokPublishAt}</li>
               {content.tikTokId ? (
                 <li>
                   <a
