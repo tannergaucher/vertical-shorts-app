@@ -50,9 +50,10 @@ main > article {
   margin-block-start: var(--space-xl);
 }
 
-button[data-coming-soon="true"] {
+article[data-coming-soon="true"] {
   color: gray;
   border-color: gray;
+  font-size: 100px;
 }
 
 main {
