@@ -149,7 +149,6 @@ export default function App() {
                       <h3>Settings</h3>
                     </Link>
                   </li>
-
                   <li>
                     <Link
                       to={Routes.AdminContentTitle}
@@ -164,7 +163,6 @@ export default function App() {
                   </li>
                 </ul>
               </nav>
-
               <fieldset style={{ padding: `0 var(--space-md)` }}>
                 <Form method="post">
                   <label htmlFor="currentProjectId">Select Project</label>
