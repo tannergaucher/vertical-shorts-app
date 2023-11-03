@@ -1,7 +1,11 @@
-import type { Channel, ChannelType } from "@prisma/client";
+import type { Channel as ChannelModel, ChannelType } from "@prisma/client";
 
 import { prisma } from "~/db.server";
-export type { Channel };
+
+export type Channel = Omit<ChannelModel, "createdAt" | "updatedAt"> & {
+  createdAt: string;
+  updatedAt: string;
+};
 
 export async function getChannel(params: {
   projectId: string;

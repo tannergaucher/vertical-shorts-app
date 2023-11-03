@@ -1,4 +1,4 @@
-import type { Channel, PlanType } from "@prisma/client";
+import type { PlanType } from "@prisma/client";
 import { ChannelType } from "@prisma/client";
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
@@ -6,7 +6,7 @@ import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
 import { prisma } from "~/db.server";
-import { getChannels } from "~/models/chanel.server";
+import { type Channel, getChannels } from "~/models/chanel.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
@@ -71,7 +71,7 @@ export default function Page() {
 
   if (!user) return null;
 
-  const allChannelTypes = Object.keys(ChannelType) as ChannelType[];
+  const channelTypes = Object.keys(ChannelType) as ChannelType[];
 
   return (
     <main>
@@ -115,15 +115,14 @@ export default function Page() {
       </fieldset>
       <h2>Publish to</h2>
       <section>
-        {allChannelTypes.map((channelType) => {
-          return (
-            <ChannelItem
-              key={channelType}
-              channelType={channelType}
-              projectChannel={project?.channels.find(
-                (channel) => channel.channelType === channelType
-              )}
-            />
+        {channelTypes.flatMap((channelType) => {
+          const channel = project?.channels.find(
+            (channel) => channel.channelType === channelType
+          );
+          return channel ? (
+            <ChannelItem key={channelType} channel={channel} />
+          ) : (
+            []
           );
         })}
       </section>
@@ -188,44 +187,56 @@ function getChannelNameFromChannelType(channelType: ChannelType) {
   }
 }
 
-function ChannelItem({
-  channelType,
-  projectChannel,
-}: {
-  channelType: ChannelType;
-  projectChannel?: Omit<Channel, "createdAt" | "updatedAt"> & {
-    createdAt: string;
-    updatedAt: string;
-  };
-}) {
+function ChannelItem({ channel }: { channel: Channel }) {
   return (
     <Link
       to={
-        SUPPORTED_CHANNELS.includes(channelType)
-          ? getRouteFromChannelType(channelType)
+        SUPPORTED_CHANNELS.includes(channel.channelType)
+          ? getRouteFromChannelType(channel.channelType)
           : "#"
       }
     >
-      <button
-        data-coming-soon={!SUPPORTED_CHANNELS.includes(channelType)}
+      <article
+        data-coming-soon={!SUPPORTED_CHANNELS.includes(channel.channelType)}
         style={{
           marginBlockEnd: `var(--space-lg)`,
         }}
       >
+        {channel.thumbnail ? (
+          <img
+            src={channel.thumbnail}
+            alt=""
+            style={{
+              width: "100%",
+            }}
+          />
+        ) : null}
         <h3>
-          {SUPPORTED_CHANNELS.includes(channelType) ? (
-            <>{`${
-              projectChannel
-                ? `${getChannelNameFromChannelType(channelType)} - ${
-                    projectChannel.name
-                  }`
-                : `Add ${getChannelNameFromChannelType(channelType)} Channel`
-            }`}</>
+          {SUPPORTED_CHANNELS.includes(channel.channelType) ? (
+            <span>{getChannelNameFromChannelType(channel.channelType)}</span>
           ) : (
-            <>{`${getChannelNameFromChannelType(channelType)} - Coming Soon`}</>
+            <span>
+              {getChannelNameFromChannelType(channel.channelType)} (Coming Soon)
+            </span>
           )}
         </h3>
-      </button>
+        <ul
+          style={{
+            color: `var(--text-color)`,
+            marginBlockEnd: `var(--space-sm)`,
+            paddingInlineStart: `var(--space-md)`,
+          }}
+        >
+          {channel.subscribers ? (
+            <li>Subscribers: {channel.subscribers}</li>
+          ) : null}
+          {channel.views ? <li>Views: {channel.views}</li> : null}
+          <li>Updated At: {channel.updatedAt}</li>
+        </ul>
+        <a href={getRouteFromChannelType(channel.channelType)}>
+          <button>Other Channel</button>
+        </a>
+      </article>
     </Link>
   );
 }
