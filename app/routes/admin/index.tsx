@@ -94,11 +94,9 @@ export default function Page() {
           );
         })}
       </section>
-
-      <h3>Add Channels</h3>
-
       {channelsToAdd.length ? (
         <section>
+          <h3>Add Channels</h3>
           {channelsToAdd.map((channelType) => (
             <Link
               key={channelType}
@@ -123,9 +121,7 @@ export default function Page() {
           ))}
         </section>
       ) : null}
-
       <hr />
-
       <h2
         style={{
           marginBlockStart: 0,
