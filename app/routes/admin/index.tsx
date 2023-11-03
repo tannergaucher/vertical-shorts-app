@@ -82,20 +82,26 @@ export default function Page() {
     <main>
       <h1>Settings | {project.title}</h1>
       <hr />
-      <h2> Publish To:</h2>
-      <section>
-        {channelTypes.flatMap((channelType) => {
-          const channel = project?.channels.find(
-            (channel) => channel.channelType === channelType
-          );
-          return channel ? (
-            <ChannelItem key={channelType} channel={channel} />
-          ) : (
-            []
-          );
-        })}
-      </section>
-      <hr />
+      {channelsToAdd.length !== channelTypes.length ? (
+        <>
+          <h2> Publish To:</h2>
+          <section>
+            {channelTypes.flatMap((channelType) => {
+              const channel = project?.channels.find(
+                (channel) => channel.channelType === channelType
+              );
+              return channel ? (
+                <ChannelItem key={channelType} channel={channel} />
+              ) : (
+                []
+              );
+            })}
+          </section>
+          <hr />
+        </>
+      ) : (
+        <h2>Connect a channel below!</h2>
+      )}
       {channelsToAdd.length ? (
         <>
           <h2>Add Channels</h2>
