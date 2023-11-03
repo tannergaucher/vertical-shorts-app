@@ -116,7 +116,11 @@ export default function App() {
             <details>
               <summary>Menu</summary>
               <nav>
-                <ul>
+                <ul
+                  style={{
+                    marginTop: 0,
+                  }}
+                >
                   <li>
                     <Link
                       to={Routes.Index}
@@ -194,8 +198,12 @@ export default function App() {
                   </select>
                 </Form>
                 <Link to={Routes.AdminCreateProject}>
-                  <button>
-                    <h3>New</h3>
+                  <button
+                    style={{
+                      marginBlockEnd: `var(--space-sm)`,
+                    }}
+                  >
+                    New
                   </button>
                 </Link>
               </fieldset>
