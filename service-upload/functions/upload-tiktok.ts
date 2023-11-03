@@ -6,11 +6,9 @@ export interface UploadTikTokBody {
   slug: string;
 }
 
-interface UploadTiktokParams {
-  projectId: string;
-  slug: string;
+type UploadTiktokParams = UploadTikTokBody & {
   prisma: PrismaClient;
-}
+};
 
 export async function uploadTikTok({
   projectId,
