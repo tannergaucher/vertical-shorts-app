@@ -2,7 +2,7 @@ import type { PlanType } from "@prisma/client";
 import { ChannelType } from "@prisma/client";
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
 import { prisma } from "~/db.server";
@@ -67,79 +67,85 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { user, project } = useLoaderData<LoaderData>();
 
-  const submit = useSubmit();
-
   if (!user) return null;
+
+  if (!project) return null;
 
   const channelTypes = Object.keys(ChannelType) as ChannelType[];
 
+  const channelsToAdd = channelTypes.filter(
+    (channelType) =>
+      !project?.channels.find((channel) => channel.channelType === channelType)
+  );
+
   return (
     <main>
-      <h1>Settings</h1>
-      <fieldset>
-        <Form method="post">
-          <label htmlFor="currentProjectId">
-            <h2>Select Project</h2>
-          </label>
-          <select
-            id="currentProjectId"
-            name="currentProjectId"
-            onChange={(event) => {
-              submit(
-                {
-                  currentProjectId: event.target.value,
-                  userId: user.id,
-                },
-                {
-                  method: "post",
-                }
+      <h1>Settings | {project.title}</h1>
+      <hr />
+      {channelsToAdd.length !== channelTypes.length ? (
+        <>
+          <h2> Publish To:</h2>
+          <section>
+            {channelTypes.flatMap((channelType) => {
+              const channel = project?.channels.find(
+                (channel) => channel.channelType === channelType
               );
-            }}
-          >
-            {user?.projects.map((project) => (
-              <option
-                key={project.id}
-                value={project.id}
-                selected={project.id === user.currentProjectId}
+              return channel ? (
+                <ChannelItem key={channelType} channel={channel} />
+              ) : (
+                []
+              );
+            })}
+          </section>
+          <hr />
+        </>
+      ) : (
+        <h2>Connect a channel below!</h2>
+      )}
+      {channelsToAdd.length ? (
+        <>
+          <h2>Add Channels</h2>
+          <section>
+            {channelsToAdd.map((channelType) => (
+              <Link
+                key={channelType}
+                to={
+                  SUPPORTED_CHANNELS.includes(channelType)
+                    ? getRouteFromChannelType(channelType)
+                    : "#"
+                }
               >
-                {project.title}
-              </option>
+                <article
+                  data-coming-soon={!SUPPORTED_CHANNELS.includes(channelType)}
+                >
+                  <h2>
+                    {SUPPORTED_CHANNELS.includes(channelType)
+                      ? getChannelNameFromChannelType(channelType)
+                      : ` ${getChannelNameFromChannelType(
+                          channelType
+                        )} - Coming Soon`}
+                  </h2>
+                </article>
+              </Link>
             ))}
-          </select>
-        </Form>
-        <Link to={Routes.AdminCreateProject}>
-          <button>
-            <h3>New</h3>
-          </button>
-        </Link>
-      </fieldset>
-      <h2>Publish to</h2>
-      <section>
-        {channelTypes.flatMap((channelType) => {
-          const channel = project?.channels.find(
-            (channel) => channel.channelType === channelType
-          );
-          return channel ? (
-            <ChannelItem key={channelType} channel={channel} />
-          ) : (
-            []
-          );
-        })}
-      </section>
+          </section>
+        </>
+      ) : null}
+      <hr />
       <h2
         style={{
           marginBlockStart: 0,
         }}
       >
-        Select Plan
+        {user.planType ? "Update Plan" : "Select Plan"}
       </h2>
       <Link to={Routes.Signup}>
         <button type="button">
-          <h3>
+          <h2>
             {user.planType
               ? ` ${getPlanFromPlanType(user.planType)}`
               : `Select Plan`}
-          </h3>
+          </h2>
         </button>
       </Link>
     </main>
@@ -211,15 +217,7 @@ function ChannelItem({ channel }: { channel: Channel }) {
             }}
           />
         ) : null}
-        <h3>
-          {SUPPORTED_CHANNELS.includes(channel.channelType) ? (
-            <span>{getChannelNameFromChannelType(channel.channelType)}</span>
-          ) : (
-            <span>
-              {getChannelNameFromChannelType(channel.channelType)} (Coming Soon)
-            </span>
-          )}
-        </h3>
+        <h2>{channel.name}</h2>
         <ul
           style={{
             color: `var(--text-color)`,

@@ -68,13 +68,6 @@ fieldset:disabled {
   animation: cycleFade 2s ease-in-out infinite;
 }
 
-input,
-textarea,
-button,
-select {
-  font-size: var(--text-lg);
-}
-
 @keyframes cycleFade {
   0% {
     opacity: 0.75;
