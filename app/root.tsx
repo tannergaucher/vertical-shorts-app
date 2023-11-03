@@ -1,8 +1,18 @@
 import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LoaderArgs, MetaFunction } from "@remix-run/node";
-import type { LinksFunction } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Link, useLoaderData, useLocation } from "@remix-run/react";
+import type {
+  ActionFunction,
+  LinksFunction,
+  LoaderArgs,
+  MetaFunction,
+} from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
+import {
+  Form,
+  Link,
+  useLoaderData,
+  useLocation,
+  useSubmit,
+} from "@remix-run/react";
 import {
   Links,
   LiveReload,
@@ -11,8 +21,10 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { zfd } from "zod-form-data";
 
 import stylesheet from "../node_modules/@t_g/default-ui/package/index.css";
+import { prisma } from "./db.server";
 import { Routes } from "./routes";
 import { getUser } from "./session.server";
 import localStyles from "./styles/index.css";
@@ -48,12 +60,37 @@ type LoaderData = {
   user: ReturnType<typeof getUser> extends Promise<infer U> ? U : never;
 };
 
+const schema = zfd.formData({
+  currentProjectId: zfd.text().optional(),
+  userId: zfd.text().optional(),
+});
+
+export const action: ActionFunction = async ({ request }) => {
+  const { currentProjectId, userId } = schema.parse(await request.formData());
+
+  if (!currentProjectId || !userId) {
+    throw new Error("Missing required fields");
+  }
+
+  const user = prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      currentProjectId,
+    },
+  });
+
+  return user;
+};
+
 export async function loader({ request }: LoaderArgs) {
   return json<LoaderData>({ user: await getUser(request) });
 }
 
 export default function App() {
   const location = useLocation();
+  const submit = useSubmit();
 
   const { user } = useLoaderData<LoaderData>();
 
@@ -123,6 +160,45 @@ export default function App() {
                   </li>
                 </ul>
               </nav>
+
+              <fieldset style={{ padding: `0 var(--space-md)` }}>
+                <Form method="post">
+                  <label htmlFor="currentProjectId">Select Project</label>
+                  <br />
+                  <select
+                    id="currentProjectId"
+                    name="currentProjectId"
+                    onChange={(event) => {
+                      if (!user?.id) return;
+
+                      submit(
+                        {
+                          currentProjectId: event.target.value,
+                          userId: user.id,
+                        },
+                        {
+                          method: "post",
+                        }
+                      );
+                    }}
+                  >
+                    {user?.projects.map((project) => (
+                      <option
+                        key={project.id}
+                        value={project.id}
+                        selected={project.id === user.currentProjectId}
+                      >
+                        {project.title}
+                      </option>
+                    ))}
+                  </select>
+                </Form>
+                <Link to={Routes.AdminCreateProject}>
+                  <button>
+                    <h3>New</h3>
+                  </button>
+                </Link>
+              </fieldset>
             </details>
           </menu>
         </header>
