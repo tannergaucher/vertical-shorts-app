@@ -218,10 +218,12 @@ function ChannelItem({ channel }: { channel: Channel }) {
           />
         ) : null}
         <h2>{channel.name}</h2>
+        <h3>{getChannelNameFromChannelType(channel.channelType)}</h3>
         <ul
           style={{
             color: `var(--text-color)`,
             marginBlockEnd: `var(--space-sm)`,
+            marginBlockStart: `var(--space-sm)`,
             paddingInlineStart: `var(--space-md)`,
           }}
         >
