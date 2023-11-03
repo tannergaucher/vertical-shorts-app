@@ -69,6 +69,8 @@ export default function Page() {
 
   if (!user) return null;
 
+  if (!project) return null;
+
   const channelTypes = Object.keys(ChannelType) as ChannelType[];
 
   const channelsToAdd = channelTypes.filter(
@@ -78,10 +80,9 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Settings</h1>
+      <h1>Settings | {project.title}</h1>
       <hr />
-      <h2>{project?.title}</h2>
-      <h3> Publish To:</h3>
+      <h2> Publish To:</h2>
       <section>
         {channelTypes.flatMap((channelType) => {
           const channel = project?.channels.find(
@@ -94,32 +95,35 @@ export default function Page() {
           );
         })}
       </section>
+      <hr />
       {channelsToAdd.length ? (
-        <section>
-          <h3>Add Channels</h3>
-          {channelsToAdd.map((channelType) => (
-            <Link
-              key={channelType}
-              to={
-                SUPPORTED_CHANNELS.includes(channelType)
-                  ? getRouteFromChannelType(channelType)
-                  : "#"
-              }
-            >
-              <article
-                data-coming-soon={!SUPPORTED_CHANNELS.includes(channelType)}
+        <>
+          <h2>Add Channels</h2>
+          <section>
+            {channelsToAdd.map((channelType) => (
+              <Link
+                key={channelType}
+                to={
+                  SUPPORTED_CHANNELS.includes(channelType)
+                    ? getRouteFromChannelType(channelType)
+                    : "#"
+                }
               >
-                <h2>
-                  {SUPPORTED_CHANNELS.includes(channelType)
-                    ? getChannelNameFromChannelType(channelType)
-                    : ` ${getChannelNameFromChannelType(
-                        channelType
-                      )} - Coming Soon`}
-                </h2>
-              </article>
-            </Link>
-          ))}
-        </section>
+                <article
+                  data-coming-soon={!SUPPORTED_CHANNELS.includes(channelType)}
+                >
+                  <h2>
+                    {SUPPORTED_CHANNELS.includes(channelType)
+                      ? getChannelNameFromChannelType(channelType)
+                      : ` ${getChannelNameFromChannelType(
+                          channelType
+                        )} - Coming Soon`}
+                  </h2>
+                </article>
+              </Link>
+            ))}
+          </section>
+        </>
       ) : null}
       <hr />
       <h2
@@ -131,14 +135,13 @@ export default function Page() {
       </h2>
       <Link to={Routes.Signup}>
         <button type="button">
-          <h3>
+          <h2>
             {user.planType
               ? ` ${getPlanFromPlanType(user.planType)}`
               : `Select Plan`}
-          </h3>
+          </h2>
         </button>
       </Link>
-      <hr />
     </main>
   );
 }
