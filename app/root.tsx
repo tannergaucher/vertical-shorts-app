@@ -112,101 +112,103 @@ export default function App() {
       </head>
       <body>
         <header>
-          <menu>
-            <details>
-              <summary>Menu</summary>
-              <nav>
-                <ul
-                  style={{
-                    marginTop: 0,
-                  }}
-                >
-                  <li>
-                    <Link
-                      to={Routes.Index}
-                      data-current={
-                        location.pathname === Routes.Index ? true : undefined
-                      }
-                    >
-                      <h3>
-                        {project?.title.trim().length
-                          ? project.title
-                          : "Content"}
-                      </h3>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to={Routes.Admin}
-                      data-current={
-                        location.pathname === Routes.Admin
-                          ? true
-                          : undefined
-                          ? true
-                          : undefined
-                      }
-                    >
-                      <h3>Settings</h3>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      to={Routes.AdminContentTitle}
-                      data-current={
-                        location.pathname.includes(Routes.AdminContentTitle)
-                          ? true
-                          : undefined
-                      }
-                    >
-                      <h3>Publish</h3>
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-              <fieldset style={{ padding: `0 var(--space-md)` }}>
-                <Form method="post">
-                  <label htmlFor="currentProjectId">Select Project</label>
-                  <br />
-                  <select
-                    id="currentProjectId"
-                    name="currentProjectId"
-                    onChange={(event) => {
-                      if (!user?.id) return;
-
-                      submit(
-                        {
-                          currentProjectId: event.target.value,
-                          userId: user.id,
-                        },
-                        {
-                          method: "post",
-                        }
-                      );
-                    }}
-                  >
-                    {user?.projects.map((project) => (
-                      <option
-                        key={project.id}
-                        value={project.id}
-                        selected={project.id === user.currentProjectId}
-                      >
-                        {project.title}
-                      </option>
-                    ))}
-                  </select>
-                </Form>
-                <Link to={Routes.AdminCreateProject}>
-                  <button
+          {location.pathname === Routes.Index ? null : (
+            <menu>
+              <details>
+                <summary>Menu</summary>
+                <nav>
+                  <ul
                     style={{
-                      marginBlockEnd: `var(--space-sm)`,
+                      marginTop: 0,
                     }}
                   >
-                    New
-                  </button>
-                </Link>
-              </fieldset>
-            </details>
-          </menu>
+                    <li>
+                      <Link
+                        to={Routes.Index}
+                        data-current={
+                          location.pathname === Routes.Index ? true : undefined
+                        }
+                      >
+                        <h3>
+                          {project?.title.trim().length
+                            ? project.title
+                            : "Content"}
+                        </h3>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to={Routes.Admin}
+                        data-current={
+                          location.pathname === Routes.Admin
+                            ? true
+                            : undefined
+                            ? true
+                            : undefined
+                        }
+                      >
+                        <h3>Settings</h3>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to={Routes.AdminContentTitle}
+                        data-current={
+                          location.pathname.includes(Routes.AdminContentTitle)
+                            ? true
+                            : undefined
+                        }
+                      >
+                        <h3>Publish</h3>
+                      </Link>
+                    </li>
+                  </ul>
+                </nav>
+                <fieldset style={{ padding: `0 var(--space-md)` }}>
+                  <Form method="post">
+                    <label htmlFor="currentProjectId">Select Project</label>
+                    <br />
+                    <select
+                      id="currentProjectId"
+                      name="currentProjectId"
+                      onChange={(event) => {
+                        if (!user?.id) return;
+
+                        submit(
+                          {
+                            currentProjectId: event.target.value,
+                            userId: user.id,
+                          },
+                          {
+                            method: "post",
+                          }
+                        );
+                      }}
+                    >
+                      {user?.projects.map((project) => (
+                        <option
+                          key={project.id}
+                          value={project.id}
+                          selected={project.id === user.currentProjectId}
+                        >
+                          {project.title}
+                        </option>
+                      ))}
+                    </select>
+                  </Form>
+                  <Link to={Routes.AdminCreateProject}>
+                    <button
+                      style={{
+                        marginBlockEnd: `var(--space-sm)`,
+                      }}
+                    >
+                      New
+                    </button>
+                  </Link>
+                </fieldset>
+              </details>
+            </menu>
+          )}
         </header>
         <Outlet />
         <ScrollRestoration />

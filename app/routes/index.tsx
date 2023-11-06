@@ -1,6 +1,5 @@
 import type { ActionFunction, LoaderArgs } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 import { zfd } from "zod-form-data";
 
@@ -89,21 +88,45 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { contents, project } = useLoaderData<LoaderData>();
-
   return (
-    <main>
-      <h1>{project.title}</h1>
+    <main
+      style={{
+        textAlign: `center`,
+      }}
+    >
+      <h1>Vertical Shorts App</h1>
+      <h2>
+        <em>Upload schedule, and manage your social media video content.</em>
+      </h2>
+      <hr />
       <section>
-        {contents?.map((content) => (
-          <article key={content.slug}>
-            {content.gif ? <img src={content.gif} alt={content.title} /> : null}
-            <Link to={Routes.AdminContentStatus(content.slug)}>
-              <h3>{content.title}</h3>
-            </Link>
-          </article>
-        ))}
+        <h2>1: </h2>
+        {/* create project video */}
+        <hr />
+        <h2>2: </h2>
+        {/* Upload Content video */}
+        <hr />
+        <h2>3: </h2>
+        {/* Schedule and post video */}
+        <hr />
       </section>
+      <h2>Get Started</h2>
+      <footer
+        style={{
+          position: `sticky`,
+          bottom: 0,
+          padding: `var(--space-md)`,
+          marginBlockStart: `var(--space-md)`,
+        }}
+      >
+        <fieldset>
+          <form action="" method="POST">
+            <button type="submit">Create Account</button>
+            <br />
+            <button type="button">Log In</button>
+          </form>
+        </fieldset>
+      </footer>
     </main>
   );
 }
