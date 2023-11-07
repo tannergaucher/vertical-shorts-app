@@ -5,7 +5,7 @@ import type {
   LoaderArgs,
   MetaFunction,
 } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import {
   Form,
   Link,
@@ -68,8 +68,12 @@ const schema = zfd.formData({
 export const action: ActionFunction = async ({ request }) => {
   const { currentProjectId, userId } = schema.parse(await request.formData());
 
-  if (!currentProjectId || !userId) {
-    throw new Error("Missing required fields");
+  if (currentProjectId === "create-new-project") {
+    return redirect(Routes.AdminCreateProject);
+  }
+
+  if (!userId) {
+    throw new Error("Missing user");
   }
 
   const user = prisma.user.update({
@@ -93,10 +97,6 @@ export default function App() {
   const submit = useSubmit();
 
   const { user } = useLoaderData<LoaderData>();
-
-  const project = user?.projects.filter(
-    (project) => project.id === user.currentProjectId
-  )[0];
 
   return (
     <html lang="en">
@@ -125,7 +125,8 @@ export default function App() {
                 <nav>
                   <ul
                     style={{
-                      marginTop: 0,
+                      marginBlockStart: 0,
+                      marginBlockEnd: `var(--space-sm)`,
                     }}
                   >
                     <li>
@@ -135,10 +136,12 @@ export default function App() {
                           location.pathname === Routes.Index ? true : undefined
                         }
                       >
-                        <h3>
-                          {project?.title.trim().length
-                            ? project.title
-                            : "Content"}
+                        <h3
+                          style={{
+                            marginBlockStart: `var(--space-sm)`,
+                          }}
+                        >
+                          Posts
                         </h3>
                       </Link>
                     </li>
@@ -200,17 +203,12 @@ export default function App() {
                           {project.title}
                         </option>
                       ))}
+                      <hr />
+                      <option value="create-new-project">
+                        Create New Project
+                      </option>
                     </select>
                   </Form>
-                  <Link to={Routes.AdminCreateProject}>
-                    <button
-                      style={{
-                        marginBlockEnd: `var(--space-sm)`,
-                      }}
-                    >
-                      New
-                    </button>
-                  </Link>
                 </fieldset>
               </details>
             </menu>
