@@ -173,7 +173,7 @@ export default function App() {
                     </li>
                   </ul>
                 </nav>
-                <fieldset style={{ padding: `0 var(--space-md)` }}>
+                <fieldset style={{ paddingInline: `var(--space-md)` }}>
                   <Form method="post">
                     <label htmlFor="currentProjectId">Select Project</label>
                     <br />
