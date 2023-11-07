@@ -2,6 +2,7 @@
 
 :root {
   --sans: "Fira Sans", sans-serif;
+  --thickness: calc(var(--0) / 2);
 }
 
 body {
@@ -18,32 +19,13 @@ article > details {
   box-shadow: 0;
 }
 
-article > h1,
-article > h2,
-article > h3,
-article > h4,
-article > h5,
-article > h6 {
-  margin-inline: var(--space-xs);
-  margin-block-start: var(--space-xs);
-  margin-block-end: var(--space-xxs);
-}
-
-a > h1,
-a > h2,
-a > h3,
-a > h4,
-a > h5,
-a > h6 {
-  margin-block-start: var(--space-md);
-}
-
 a {
   text-decoration: none;
 }
 
 a[data-current="true"] {
   text-decoration: underline;
+  color: var(--accent-2);
 }
 
 main > article {

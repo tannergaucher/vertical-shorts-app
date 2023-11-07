@@ -11,6 +11,7 @@ import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 import { SUPPORTED_CHANNELS } from "~/utils/constants";
+import { formatDate } from "~/utils/format-date";
 
 type LoaderData = {
   user?: Awaited<ReturnType<typeof getUser>>;
@@ -80,7 +81,8 @@ export default function Page() {
 
   return (
     <main>
-      <h1>Settings | {project.title}</h1>
+      <h1>Settings</h1>
+      <h2>{project.title}</h2>
       <hr />
       {channelsToAdd.length !== channelTypes.length ? (
         <>
@@ -104,7 +106,7 @@ export default function Page() {
       )}
       {channelsToAdd.length ? (
         <>
-          <h2>Add Channels</h2>
+          <h2>Add Channels:</h2>
           <section>
             {channelsToAdd.map((channelType) => (
               <Link
@@ -137,7 +139,7 @@ export default function Page() {
           marginBlockStart: 0,
         }}
       >
-        {user.planType ? "Update Plan" : "Select Plan"}
+        {user.planType ? "Update Plan:" : "Select Plan:"}
       </h2>
       <Link to={Routes.Signup}>
         <button type="button">
@@ -228,10 +230,27 @@ function ChannelItem({ channel }: { channel: Channel }) {
           }}
         >
           {channel.subscribers ? (
-            <li>Subscribers: {channel.subscribers}</li>
+            <li>
+              <small>
+                <b>Subscribers: </b>
+                {channel.subscribers}
+              </small>
+            </li>
           ) : null}
-          {channel.views ? <li>Views: {channel.views}</li> : null}
-          <li>Updated At: {channel.updatedAt}</li>
+          {channel.views ? (
+            <li>
+              <small>
+                <b>Views: </b>
+                {channel.views}
+              </small>
+            </li>
+          ) : null}
+          <li>
+            <small>
+              <b>Updated: </b>
+              {formatDate(channel.updatedAt)}
+            </small>
+          </li>
         </ul>
         <a href={getRouteFromChannelType(channel.channelType)}>
           <button>Other Channel</button>
