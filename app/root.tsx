@@ -111,8 +111,14 @@ export default function App() {
         ) : null}
       </head>
       <body>
-        <header>
-          {location.pathname === Routes.Index ? null : (
+        <header
+          style={{
+            width: `100%`,
+          }}
+        >
+          {location.pathname === Routes.Index ||
+          location.pathname === Routes.Login ||
+          location.pathname === Routes.Join ? null : (
             <menu>
               <details>
                 <summary>Menu</summary>
