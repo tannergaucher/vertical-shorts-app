@@ -36,16 +36,10 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
         </div>
       </header>
       <main>
-        <em>
-          <h1
-            style={{
-              textTransform: `uppercase`,
-            }}
-          >
-            {h1}
-          </h1>
-        </em>
-        <h2>{h2}</h2>
+        <h1>{h1}</h1>
+        <h2>
+          <em>{h2}</em>
+        </h2>
         {children}
       </main>
     </>

@@ -10,8 +10,10 @@ export function Breadcrumb({ slug }: { slug?: string }) {
     <section>
       <ul
         style={{
-          marginLeft: `var(--space-sm)`,
-          marginBlockEnd: `var(--space-lg)`,
+          margin: `0`,
+          padding: `0`,
+          display: `flex`,
+          listStyle: `none`,
         }}
       >
         <li>
@@ -23,9 +25,16 @@ export function Breadcrumb({ slug }: { slug?: string }) {
                 : undefined
             }
           >
-            <h3>Title</h3>
+            <h3
+              style={{
+                marginLeft: `0`,
+              }}
+            >
+              Title
+            </h3>
           </Link>
         </li>
+
         <li>
           <Link
             to={
