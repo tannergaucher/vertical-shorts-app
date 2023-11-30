@@ -44,10 +44,21 @@ main {
 
 fieldset {
   transition: opacity 2s ease-in-out;
+  width: 100%;
+}
+
+fieldset > input,
+fieldset > textarea {
+  width: calc(100% - var(--space-lg));
 }
 
 fieldset:disabled {
   animation: cycleFade 2s ease-in-out infinite;
+}
+
+#sticky-button {
+  position: sticky;
+  bottom: var(--space-md);
 }
 
 @keyframes cycleFade {

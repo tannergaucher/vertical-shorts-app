@@ -127,8 +127,7 @@ export default function Page() {
   }
 
   return (
-    <Layout>
-      <h1>Publish</h1>
+    <Layout h1="Publish" h2="Upload your video content">
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <form
@@ -138,8 +137,9 @@ export default function Page() {
           }}
         >
           <input type="file" name="thumbnail" required />
-
-          <button type="submit">Next</button>
+          <button type="submit" id="sticky-button">
+            Next
+          </button>
         </form>
       </fieldset>
     </Layout>

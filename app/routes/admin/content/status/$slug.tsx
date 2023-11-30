@@ -70,7 +70,7 @@ export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
   return (
-    <Layout>
+    <Layout h1="Content" h2="View content details">
       <ContentDetails content={content} />
     </Layout>
   );

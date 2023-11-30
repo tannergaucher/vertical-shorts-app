@@ -124,8 +124,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <Layout>
-      <h1>Publish</h1>
+    <Layout h1="Publish" h2="Select a date and time to publish your content">
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">

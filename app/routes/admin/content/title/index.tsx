@@ -64,13 +64,14 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <Layout>
-      <h1>Publish</h1>
+    <Layout h1="Publish" h2="Add your content title">
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">
           <input type="text" name="title" placeholder="Title" required />
-          <button type="submit">Next</button>
+          <button type="submit" id="sticky-button">
+            Next
+          </button>
         </Form>
       </fieldset>
     </Layout>

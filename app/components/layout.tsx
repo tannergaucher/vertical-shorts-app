@@ -5,9 +5,11 @@ import { Routes } from "../routes";
 
 type HeaderProps = {
   children: ReactNode;
+  h1: string;
+  h2: string;
 };
 
-export function Layout({ children }: HeaderProps) {
+export function Layout({ children, h1, h2 }: HeaderProps) {
   return (
     <>
       <header
@@ -33,7 +35,19 @@ export function Layout({ children }: HeaderProps) {
           </Link>
         </div>
       </header>
-      <main>{children}</main>
+      <main>
+        <em>
+          <h1
+            style={{
+              textTransform: `uppercase`,
+            }}
+          >
+            {h1}
+          </h1>
+        </em>
+        <h2>{h2}</h2>
+        {children}
+      </main>
     </>
   );
 }

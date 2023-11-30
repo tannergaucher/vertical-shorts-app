@@ -95,8 +95,10 @@ export default function Page() {
   invariant(slug, "slug is required");
 
   return (
-    <Layout>
-      <h1>Details</h1>
+    <Layout
+      h1="Details"
+      h2="Add or generate tags and a description for your video content."
+    >
       <Breadcrumb slug={slug} />
       <section>
         <DescriptionForm project={project} slug={slug} content={content} />
@@ -118,15 +120,14 @@ function DescriptionForm({
   const descriptionFetcher = useFetcher();
 
   return (
-    <div>
-      <h2>Description</h2>
-      <fieldset
-        disabled={
-          descriptionFetcher.state === "loading" ||
-          descriptionFetcher.state === "submitting"
-        }
-      >
-        <descriptionFetcher.Form method="post">
+    <article>
+      <descriptionFetcher.Form method="post">
+        <fieldset
+          disabled={
+            descriptionFetcher.state === "loading" ||
+            descriptionFetcher.state === "submitting"
+          }
+        >
           <textarea
             name="description"
             id="description"
@@ -134,10 +135,18 @@ function DescriptionForm({
           ></textarea>
           <input type="hidden" name="projectId" value={project.id} />
           <input type="hidden" name="slug" value={slug} id="slug" />
-          <button type="submit">Save</button>
-        </descriptionFetcher.Form>
-      </fieldset>
-    </div>
+        </fieldset>
+        <button
+          type="submit"
+          id="sticky-button"
+          style={{
+            marginBlockStart: `var(--space-xs)`,
+          }}
+        >
+          Save Description
+        </button>
+      </descriptionFetcher.Form>
+    </article>
   );
 }
 
@@ -153,14 +162,14 @@ function TagsForm({
   const tagsFetcher = useFetcher();
 
   return (
-    <div>
-      <h2>Tags</h2>
-      <fieldset
-        disabled={
-          tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
-        }
-      >
-        <tagsFetcher.Form method="post">
+    <article>
+      <tagsFetcher.Form method="post">
+        <fieldset
+          disabled={
+            tagsFetcher.state === "loading" ||
+            tagsFetcher.state === "submitting"
+          }
+        >
           <input
             type="text"
             name="tags"
@@ -169,9 +178,18 @@ function TagsForm({
           />
           <input type="hidden" name="projectId" value={project.id} />
           <input type="hidden" name="slug" value={slug} id="slug" />
-          <button type="submit">Save</button>
-        </tagsFetcher.Form>
-      </fieldset>
-    </div>
+        </fieldset>
+
+        <button
+          type="submit"
+          id="sticky-button"
+          style={{
+            marginBlockStart: `var(--space-sm)`,
+          }}
+        >
+          Save Tags
+        </button>
+      </tagsFetcher.Form>
+    </article>
   );
 }

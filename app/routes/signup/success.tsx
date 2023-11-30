@@ -15,7 +15,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Page() {
   return (
-    <Layout>
+    <Layout h1="Success" h2="You've Signed Up!">
       <h1>Success</h1>
     </Layout>
   );

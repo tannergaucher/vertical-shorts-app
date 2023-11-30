@@ -81,9 +81,10 @@ export default function Page() {
   );
 
   return (
-    <Layout>
-      <h1>Settings</h1>
-      <h2>{project.title}</h2>
+    <Layout
+      h1="Settings"
+      h2="Connect your channels, switch projects, update your billing"
+    >
       <hr />
       {channelsToAdd.length !== channelTypes.length ? (
         <>
