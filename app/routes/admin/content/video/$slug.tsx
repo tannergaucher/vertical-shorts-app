@@ -6,6 +6,7 @@ import invariant from "tiny-invariant";
 import { z } from "zod";
 
 import { Breadcrumb } from "~/components/breadcrumb";
+import { Layout } from "~/components/layout";
 import { storage } from "~/entry.server";
 import { getContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
@@ -83,7 +84,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export default function Page() {
-  const { content, signedUrl, project } = useLoaderData<LoaderData>();
+  const { signedUrl } = useLoaderData<LoaderData>();
 
   const [disabled, setDisabled] = useState(false);
 
@@ -126,7 +127,7 @@ export default function Page() {
   }
 
   return (
-    <main>
+    <Layout>
       <h1>Publish</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
@@ -141,6 +142,6 @@ export default function Page() {
           <button type="submit">Next</button>
         </form>
       </fieldset>
-    </main>
+    </Layout>
   );
 }

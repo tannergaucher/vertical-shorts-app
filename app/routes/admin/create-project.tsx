@@ -7,6 +7,7 @@ import { redirect } from "@remix-run/node";
 import { Form, useNavigation } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
+import { Layout } from "~/components/layout";
 import { prisma } from "~/db.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
@@ -65,7 +66,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
+    <Layout>
       <h1>Create Project</h1>
       <fieldset disabled={disabled}>
         <Form method="post">
@@ -75,6 +76,6 @@ export default function Page() {
           <button type="submit">Next</button>
         </Form>
       </fieldset>
-    </main>
+    </Layout>
   );
 }

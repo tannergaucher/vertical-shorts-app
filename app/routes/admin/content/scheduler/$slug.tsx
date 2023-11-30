@@ -15,6 +15,7 @@ import { z } from "zod";
 import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
+import { Layout } from "~/components/layout";
 import { getContent } from "~/models/content.server";
 import { upsertContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
@@ -78,9 +79,9 @@ export const action: ActionFunction = async ({ request }) => {
 
   const formattedDate = `${date}T${time}`;
 
-  const channelTypes = [
-    currentProject.youtubeCredentials ? "YOUTUBE" : [],
-    currentProject.tikTokCredentials ? "TIKTOK" : [],
+  const channelTypes: ChannelType[] = [
+    currentProject.youtubeCredentials ? ChannelType.YOUTUBE : [],
+    currentProject.tikTokCredentials ? ChannelType.TIKTOK : [],
   ].flat();
 
   await upsertContent({
@@ -123,7 +124,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
+    <Layout>
       <h1>Publish</h1>
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
@@ -137,6 +138,6 @@ export default function Page() {
           <button type="submit">Schedule</button>
         </Form>
       </fieldset>
-    </main>
+    </Layout>
   );
 }

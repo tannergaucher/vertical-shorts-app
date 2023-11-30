@@ -8,6 +8,7 @@ import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Breadcrumb } from "~/components/breadcrumb";
+import { Layout } from "~/components/layout";
 import { prisma } from "~/db.server";
 import type { Content } from "~/models/content.server";
 import type { Project } from "~/models/project.server";
@@ -94,14 +95,14 @@ export default function Page() {
   invariant(slug, "slug is required");
 
   return (
-    <main>
+    <Layout>
       <h1>Details</h1>
       <Breadcrumb slug={slug} />
       <section>
         <DescriptionForm project={project} slug={slug} content={content} />
         <TagsForm project={project} slug={slug} content={content} />
       </section>
-    </main>
+    </Layout>
   );
 }
 

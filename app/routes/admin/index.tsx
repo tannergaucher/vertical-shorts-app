@@ -5,6 +5,7 @@ import { json, redirect } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
+import { Layout } from "~/components/layout";
 import { prisma } from "~/db.server";
 import { type Channel, getChannels } from "~/models/chanel.server";
 import { getProject } from "~/models/project.server";
@@ -80,7 +81,7 @@ export default function Page() {
   );
 
   return (
-    <main>
+    <Layout>
       <h1>Settings</h1>
       <h2>{project.title}</h2>
       <hr />
@@ -150,7 +151,7 @@ export default function Page() {
           </h2>
         </button>
       </Link>
-    </main>
+    </Layout>
   );
 }
 

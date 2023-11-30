@@ -17,7 +17,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Page() {
   return (
-    <main>
+    <>
       <h1>Vertical Shorts App</h1>
       <h2>
         <em>Upload, schedule, and manage your social media video content.</em>
@@ -86,6 +86,6 @@ export default function Page() {
           <button type="button">Log In</button>
         </Link>
       </footer>
-    </main>
+    </>
   );
 }

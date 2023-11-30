@@ -1,6 +1,7 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
+import { Layout } from "~/components/layout";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
@@ -14,8 +15,8 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Page() {
   return (
-    <main>
+    <Layout>
       <h1>Success</h1>
-    </main>
+    </Layout>
   );
 }
