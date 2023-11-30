@@ -15,6 +15,8 @@ import { Routes } from "~/routes";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
 
+import { Layout } from "../components/layout";
+
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
@@ -98,8 +100,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
-      <h1>Login</h1>
+    <Layout h1="Log In" h2="Log in and start posting to all your channels">
       <fieldset disabled={disabled}>
         {actionData?.errors ? <legend>Error!</legend> : null}
         <Form method="post">
@@ -111,9 +112,7 @@ export default function Page() {
               </span>
             )}
           </label>
-
           <br />
-
           <input
             ref={emailRef}
             id="email"
@@ -125,7 +124,6 @@ export default function Page() {
             aria-invalid={actionData?.errors?.email ? true : undefined}
             aria-describedby="email-error"
           />
-
           <label htmlFor="password">
             Password{" "}
             {actionData?.errors?.password && (
@@ -138,9 +136,7 @@ export default function Page() {
               </span>
             )}
           </label>
-
           <br />
-
           <input
             id="password"
             ref={passwordRef}
@@ -150,7 +146,6 @@ export default function Page() {
             aria-invalid={actionData?.errors?.password ? true : undefined}
             aria-describedby="password-error"
           />
-
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <button type="submit">Log in</button>
           <br />
@@ -176,7 +171,6 @@ export default function Page() {
               Remember me
             </label>
           </div>
-
           <Link
             to={{
               pathname: "/join",
@@ -193,6 +187,6 @@ export default function Page() {
           </Link>
         </Form>
       </fieldset>
-    </main>
+    </Layout>
   );
 }

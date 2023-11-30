@@ -6,13 +6,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  useLoaderData,
-  useLocation,
-  useSubmit,
-} from "@remix-run/react";
+import { useLocation } from "@remix-run/react";
 import {
   Links,
   LiveReload,
@@ -94,9 +88,6 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function App() {
   const location = useLocation();
-  const submit = useSubmit();
-
-  const { user } = useLoaderData<LoaderData>();
 
   return (
     <html lang="en">
@@ -111,109 +102,6 @@ export default function App() {
         ) : null}
       </head>
       <body>
-        <header
-          style={{
-            width: `100%`,
-          }}
-        >
-          {location.pathname === Routes.Index ||
-          location.pathname === Routes.Login ||
-          location.pathname === Routes.Join ? null : (
-            <menu>
-              <details>
-                <summary>Menu</summary>
-                <nav>
-                  <ul
-                    style={{
-                      marginBlockStart: 0,
-                      marginBlockEnd: `var(--space-sm)`,
-                    }}
-                  >
-                    <li>
-                      <Link
-                        to={Routes.Index}
-                        data-current={
-                          location.pathname === Routes.Index ? true : undefined
-                        }
-                      >
-                        <h3
-                          style={{
-                            marginBlockStart: `var(--space-sm)`,
-                          }}
-                        >
-                          Posts
-                        </h3>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to={Routes.Admin}
-                        data-current={
-                          location.pathname === Routes.Admin
-                            ? true
-                            : undefined
-                            ? true
-                            : undefined
-                        }
-                      >
-                        <h3>Settings</h3>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to={Routes.AdminContentTitle}
-                        data-current={
-                          location.pathname.includes(Routes.AdminContentTitle)
-                            ? true
-                            : undefined
-                        }
-                      >
-                        <h3>Publish</h3>
-                      </Link>
-                    </li>
-                  </ul>
-                </nav>
-                <fieldset style={{ paddingInline: `var(--space-md)` }}>
-                  <Form method="post">
-                    <label htmlFor="currentProjectId">Select Project</label>
-                    <br />
-                    <select
-                      id="currentProjectId"
-                      name="currentProjectId"
-                      onChange={(event) => {
-                        if (!user?.id) return;
-
-                        submit(
-                          {
-                            currentProjectId: event.target.value,
-                            userId: user.id,
-                          },
-                          {
-                            method: "post",
-                          }
-                        );
-                      }}
-                    >
-                      {user?.projects.map((project) => (
-                        <option
-                          key={project.id}
-                          value={project.id}
-                          selected={project.id === user.currentProjectId}
-                        >
-                          {project.title}
-                        </option>
-                      ))}
-                      <hr />
-                      <option value="create-new-project">
-                        Create New Project
-                      </option>
-                    </select>
-                  </Form>
-                </fieldset>
-              </details>
-            </menu>
-          )}
-        </header>
         <Outlet />
         <ScrollRestoration />
         <Scripts />

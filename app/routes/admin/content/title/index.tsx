@@ -8,6 +8,7 @@ import { Form, useNavigation, useParams } from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
 import { Breadcrumb } from "~/components/breadcrumb";
+import { Layout } from "~/components/layout";
 import { upsertContent } from "~/models/content.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
@@ -63,15 +64,16 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
-      <h1>Publish</h1>
+    <Layout h1="Publish" h2="Add your content title">
       <Breadcrumb slug={slug} />
       <fieldset disabled={disabled}>
         <Form method="post">
           <input type="text" name="title" placeholder="Title" required />
-          <button type="submit">Next</button>
+          <button type="submit" id="sticky-button">
+            Next
+          </button>
         </Form>
       </fieldset>
-    </main>
+    </Layout>
   );
 }

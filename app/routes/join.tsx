@@ -15,6 +15,8 @@ import { Routes } from "~/routes";
 import { createUserSession, getUserId } from "~/session.server";
 import { safeRedirect, validateEmail } from "~/utils";
 
+import { Layout } from "../components/layout";
+
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect("/");
@@ -103,8 +105,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <main>
-      <h1>Join</h1>
+    <Layout h1="Join" h2="Sign up and start posting to all your channels">
       <fieldset disabled={disabled}>
         {actionData?.errors ? <legend>Error!</legend> : null}
         <Form method="post">
@@ -166,6 +167,6 @@ export default function Page() {
           </Link>
         </Form>
       </fieldset>
-    </main>
+    </Layout>
   );
 }
