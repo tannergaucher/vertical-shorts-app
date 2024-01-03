@@ -1,6 +1,6 @@
-# verticalshorts.app
+# Vertical Shorts App
 
-Single source of truth for posting vertical video content and publishing to all social media channels.
+Upload and publish social media videos to multiple platforms at once.
 
 ## Uses
 
