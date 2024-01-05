@@ -66,10 +66,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <Layout
-      h1="Create Project"
-      h2="Enter a project name for your vertical video series"
-    >
+    <Layout h1="Create Project" h2="Enter a project name for your video series">
       <fieldset disabled={disabled}>
         <Form method="post">
           <label htmlFor="name">Project Name</label>
