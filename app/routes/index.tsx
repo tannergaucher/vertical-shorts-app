@@ -2,6 +2,7 @@ import type { LoaderArgs } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Link } from "@remix-run/react";
 
+import { Layout } from "~/components/layout";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
@@ -17,11 +18,10 @@ export const loader = async ({ request }: LoaderArgs) => {
 
 export default function Page() {
   return (
-    <>
-      <h1>Vertical Shorts App</h1>
-      <h2>
-        <em>Upload, schedule, and manage your social media video content.</em>
-      </h2>
+    <Layout
+      h1="Vertical Shorts App"
+      h2="Post video content to multiple social media platforms at once."
+    >
       <hr />
       <section>
         <article>
@@ -32,7 +32,7 @@ export default function Page() {
             loop
             muted
           ></video>
-          <h2>1. Create </h2>
+          <h2>1. Connect Channels </h2>
         </article>
         <article>
           <video
@@ -42,7 +42,7 @@ export default function Page() {
             loop
             muted
           ></video>
-          <h2>2. Connect </h2>
+          <h2>2. Upload Content </h2>
         </article>
         <article>
           <video
@@ -52,7 +52,7 @@ export default function Page() {
             loop
             muted
           ></video>
-          <h2>3. Publish </h2>
+          <h2>3. Post </h2>
         </article>
       </section>
       <hr />
@@ -69,23 +69,42 @@ export default function Page() {
           bottom: 0,
           padding: `var(--space-md)`,
           marginBlockStart: `var(--space-md)`,
+          display: `grid`,
+          gridTemplateColumns: `1fr 1fr`,
+          gap: `var(--space-xs)`,
         }}
       >
-        <Link to={Routes.Join}>
+        <Link
+          to={Routes.Join}
+          style={{
+            width: `100%`,
+          }}
+        >
           <button
             type="submit"
             style={{
-              marginBlockEnd: `var(--space-md)`,
+              width: `100%`,
             }}
           >
             Sign Up
           </button>
         </Link>
-
-        <Link to={Routes.Login}>
-          <button type="button">Log In</button>
+        <Link
+          to={Routes.Login}
+          style={{
+            width: `100%`,
+          }}
+        >
+          <button
+            type="button"
+            style={{
+              width: `100%`,
+            }}
+          >
+            Log In
+          </button>
         </Link>
       </footer>
-    </>
+    </Layout>
   );
 }
