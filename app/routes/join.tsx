@@ -105,7 +105,7 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <Layout h1="Join" h2="Sign up and start posting to all your channels">
+    <Layout h1="Join" h2="Sign up to start posting content">
       <fieldset disabled={disabled}>
         {actionData?.errors ? <legend>Error!</legend> : null}
         <Form method="post">
