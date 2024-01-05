@@ -143,7 +143,12 @@ export default function Page() {
         {user.planType ? "Update Plan:" : "Select Plan:"}
       </h2>
       <Link to={Routes.Signup}>
-        <button type="button">
+        <button
+          type="button"
+          style={{
+            width: "100%",
+          }}
+        >
           <h2>
             {user.planType
               ? ` ${getPlanFromPlanType(user.planType)}`
