@@ -83,7 +83,7 @@ export default function Page() {
   return (
     <Layout
       h1="Settings"
-      h2="Connect your channels, switch projects, update your billing"
+      h2="Connect your channels, switch projects, and update your billing"
     >
       <hr />
       {channelsToAdd.length !== channelTypes.length ? (
@@ -104,11 +104,10 @@ export default function Page() {
           <hr />
         </>
       ) : (
-        <h2>Connect a channel below!</h2>
+        <h2>Connect a channel below to start posting!</h2>
       )}
       {channelsToAdd.length ? (
         <>
-          <h2>Add Channels:</h2>
           <section>
             {channelsToAdd.map((channelType) => (
               <Link
