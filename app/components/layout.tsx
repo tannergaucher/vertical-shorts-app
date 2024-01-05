@@ -6,7 +6,7 @@ import { Routes } from "../routes";
 type HeaderProps = {
   children: ReactNode;
   h1: string;
-  h2: string;
+  h2?: string;
 };
 
 export function Layout({ children, h1, h2 }: HeaderProps) {
