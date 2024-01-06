@@ -30,11 +30,11 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
                 marginRight: `var(--space-xs)`,
               }}
             >
-              Admin
+              Settings
             </button>
           </Link>
           <Link to={Routes.AdminContentUpload(id)}>
-            <button type="submit">Create</button>
+            <button type="submit">Upload</button>
           </Link>
         </div>
       </header>
