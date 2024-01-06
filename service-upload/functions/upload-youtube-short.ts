@@ -5,8 +5,7 @@ import type { PrismaClient } from "../generated";
 import { UploadStatus } from "../generated";
 
 export interface UploadYoutubeShortBody {
-  projectId: string;
-  slug: string;
+  contentId: string;
 }
 
 type UploadYoutubeShortParams = UploadYoutubeShortBody & {
@@ -14,21 +13,22 @@ type UploadYoutubeShortParams = UploadYoutubeShortBody & {
 };
 
 export async function uploadYouTubeShort({
-  projectId,
-  slug,
+  contentId,
   prisma,
 }: UploadYoutubeShortParams) {
   const content = await prisma.content.update({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id: contentId,
     },
     select: {
       title: true,
       description: true,
       tags: true,
+      project: {
+        select: {
+          id: true,
+        },
+      },
     },
     data: {
       youtubeStatus: UploadStatus.UPLOADING,
@@ -37,7 +37,7 @@ export async function uploadYouTubeShort({
 
   const project = await prisma.project.findUnique({
     where: {
-      id: projectId,
+      id: content.project.id,
     },
     select: {
       youtubeCredentials: true,
@@ -48,7 +48,9 @@ export async function uploadYouTubeShort({
     !project?.youtubeCredentials?.accessToken ||
     !project?.youtubeCredentials?.refreshToken
   ) {
-    throw new Error(`Missing YouTube credentials for project ${projectId}`);
+    throw new Error(
+      `Missing YouTube credentials for project ${content.project.id}`
+    );
   }
 
   const oauth2Client = setOauth2ClientCredentials({
@@ -59,10 +61,7 @@ export async function uploadYouTubeShort({
   if (oauth2Client === null) {
     await prisma.content.update({
       where: {
-        projectId_slug: {
-          projectId,
-          slug,
-        },
+        id: contentId,
       },
       data: {
         youtubeStatus: UploadStatus.NOT_STARTED,
@@ -76,16 +75,13 @@ export async function uploadYouTubeShort({
     auth: oauth2Client,
   });
 
-  const filePath = `${slug}.mp4`;
+  const filePath = `${contentId}.mp4`;
 
   const bodyStream = createReadStream(filePath);
 
   await prisma.content.update({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id: contentId,
     },
     data: {
       youtubeStatus: UploadStatus.UPLOADING,
@@ -93,7 +89,7 @@ export async function uploadYouTubeShort({
   });
 
   console.log(
-    `Uploading ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`
+    `Uploading ${contentId} to YouTube channel ${project.youtubeCredentials?.channelId}`
   );
 
   return youtube.videos
@@ -119,10 +115,7 @@ export async function uploadYouTubeShort({
 
       await prisma.content.update({
         where: {
-          projectId_slug: {
-            projectId,
-            slug,
-          },
+          id: contentId,
         },
         data: {
           youtubeStatus: UploadStatus.PRIVATE,
@@ -131,16 +124,13 @@ export async function uploadYouTubeShort({
       });
 
       return {
-        message: `Uploaded ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`,
+        message: `Uploaded ${contentId} to YouTube channel ${project.youtubeCredentials?.channelId}`,
       };
     })
     .catch(async (error) => {
       await prisma.content.update({
         where: {
-          projectId_slug: {
-            projectId,
-            slug,
-          },
+          id: contentId,
         },
         data: {
           youtubeStatus: UploadStatus.NOT_STARTED,
@@ -150,7 +140,7 @@ export async function uploadYouTubeShort({
       console.log(error);
 
       throw new Error(
-        `Error uploading ${projectId} ${slug} to YouTube channel ${project.youtubeCredentials?.channelId}`
+        `Error uploading ${contentId} to YouTube channel ${project.youtubeCredentials?.channelId}`
       );
     });
 }

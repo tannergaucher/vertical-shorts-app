@@ -157,6 +157,8 @@ function VideoForm({ signedUrl }: { signedUrl: string }) {
       }
 
       setDisabled(false);
+
+      // now call the create content gif endpoint
     };
   }
   return (

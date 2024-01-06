@@ -2,40 +2,37 @@ import type { PrismaClient } from "../generated";
 import { APP_BASE_URL } from "../utils/constants";
 
 export interface UploadTikTokBody {
-  projectId: string;
-  slug: string;
+  contentId: string;
 }
 
 type UploadTiktokParams = UploadTikTokBody & {
   prisma: PrismaClient;
 };
 
-export async function uploadTikTok({
-  projectId,
-  slug,
-  prisma,
-}: UploadTiktokParams) {
-  const project = await prisma.project.findUnique({
+export async function uploadTikTok({ contentId, prisma }: UploadTiktokParams) {
+  const content = await prisma.content.findUniqueOrThrow({
     where: {
-      id: projectId,
+      id: contentId,
     },
     select: {
-      tikTokCredentials: true,
+      project: {
+        select: {
+          id: true,
+          tikTokCredentials: true,
+        },
+      },
     },
   });
 
-  if (!project?.tikTokCredentials) {
+  if (!content.project.tikTokCredentials) {
     throw new Error("Missing TikTok credentials");
   }
 
-  console.log(`Starting upload to tiktok for ${projectId} ${slug}`);
+  console.log(`Starting upload to ${contentId} to tiktok`);
 
   await prisma.content.update({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id: contentId,
     },
     data: {
       tikTokStatus: "UPLOADING",
@@ -47,12 +44,12 @@ export async function uploadTikTok({
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
+        Authorization: `Bearer ${content.project.tikTokCredentials.accessToken}`,
         "Content-Type": "application/json;",
       },
       body: JSON.stringify({
         source: "PULL_FROM_URL",
-        video_url: `${APP_BASE_URL}/resource/serve-video/${projectId}/${slug}`,
+        video_url: `${APP_BASE_URL}/resource/serve-video/${content.project.id}/${contentId}`,
       }),
     }
   );
@@ -60,20 +57,17 @@ export async function uploadTikTok({
   if (!res.ok) {
     await prisma.content.update({
       where: {
-        projectId_slug: {
-          projectId,
-          slug,
-        },
+        id: contentId,
       },
       data: {
         tikTokStatus: "NOT_STARTED",
       },
     });
 
-    throw new Error(`Error initializing TikTok upload ${projectId} ${slug}`);
+    throw new Error(`Error initializing TikTok upload for ${contentId}`);
   }
 
   return {
-    message: `Initialized TikTok upload for ${projectId} ${slug}`,
+    message: `Initialized TikTok upload for ${contentId}`,
   };
 }
