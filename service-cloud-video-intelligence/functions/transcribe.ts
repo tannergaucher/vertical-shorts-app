@@ -2,29 +2,21 @@ import type { PrismaClient } from "../generated";
 import { cloudIntelligence, CloudIntelligenceTypes } from "../index";
 
 export interface TranscribeRequest {
-  projectId: string;
-  slug: string;
+  contentId: string;
 }
 
 type TranscribeParams = TranscribeRequest & {
   prisma: PrismaClient;
 };
 
-export async function transcribe({
-  projectId,
-  slug,
-  prisma,
-}: TranscribeParams) {
+export async function transcribe({ contentId, prisma }: TranscribeParams) {
   const content = await prisma.content.findUnique({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id: contentId,
     },
     select: {
+      id: true,
       projectId: true,
-      slug: true,
     },
   });
 
@@ -32,7 +24,7 @@ export async function transcribe({
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+  const gcsUri = `gs://${content.projectId}/${content.id}.mp4`;
 
   const videoContext = {
     speechTranscriptionConfig: {
@@ -61,10 +53,7 @@ export async function transcribe({
 
   await prisma.content.update({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id: contentId,
     },
     data: {
       transcription: JSON.stringify(operationResult),
@@ -72,7 +61,7 @@ export async function transcribe({
   });
 
   return {
-    message: `Created transcription for ${projectId} / ${slug}`,
+    message: `Created transcription for ${contentId}`,
     transcription: JSON.stringify(operationResult),
   };
 }

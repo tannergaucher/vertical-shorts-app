@@ -2,8 +2,7 @@ import type { PrismaClient } from "../generated";
 import { cloudIntelligence, CloudIntelligenceTypes } from "../index";
 
 export interface RecognizeTextRequest {
-  projectId: string;
-  slug: string;
+  contentId: string;
 }
 
 type RecognizeTextParams = RecognizeTextRequest & {
@@ -11,28 +10,24 @@ type RecognizeTextParams = RecognizeTextRequest & {
 };
 
 export async function recognizeText({
-  projectId,
-  slug,
+  contentId,
   prisma,
 }: RecognizeTextParams) {
   const content = await prisma.content.findUnique({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id: contentId,
     },
     select: {
+      id: true,
       projectId: true,
-      slug: true,
     },
   });
 
   if (!content) {
-    throw new Error(`No content for ${projectId} / ${slug}`);
+    throw new Error(`No content for ${contentId}`);
   }
 
-  const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+  const gcsUri = `gs://${content.projectId}/${content.id}.mp4`;
 
   const request = {
     inputUri: gcsUri,
@@ -58,10 +53,7 @@ export async function recognizeText({
   if (textAnnotations !== undefined) {
     await prisma.content.update({
       where: {
-        projectId_slug: {
-          projectId,
-          slug,
-        },
+        id: contentId,
       },
       data: {
         annotations: JSON.stringify(textAnnotations),
@@ -70,7 +62,7 @@ export async function recognizeText({
   }
 
   return {
-    message: `Created annotations for ${projectId} / ${slug}`,
+    message: `Created annotations for ${contentId}`,
     annotations: JSON.stringify(textAnnotations),
   };
 }
