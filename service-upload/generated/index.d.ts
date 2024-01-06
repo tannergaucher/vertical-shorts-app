@@ -12150,7 +12150,7 @@ export namespace Prisma {
   }
 
   export type ContentCreateInput = {
-    id?: string
+    id: string
     title?: string | null
     description?: string | null
     thumbnail?: string | null
@@ -12181,7 +12181,7 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedCreateInput = {
-    id?: string
+    id: string
     title?: string | null
     description?: string | null
     thumbnail?: string | null
@@ -12274,7 +12274,7 @@ export namespace Prisma {
   }
 
   export type ContentCreateManyInput = {
-    id?: string
+    id: string
     title?: string | null
     description?: string | null
     thumbnail?: string | null
@@ -14590,7 +14590,7 @@ export namespace Prisma {
   }
 
   export type ContentCreateWithoutProjectInput = {
-    id?: string
+    id: string
     title?: string | null
     description?: string | null
     thumbnail?: string | null
@@ -14620,7 +14620,7 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedCreateWithoutProjectInput = {
-    id?: string
+    id: string
     title?: string | null
     description?: string | null
     thumbnail?: string | null
@@ -15131,7 +15131,7 @@ export namespace Prisma {
   }
 
   export type ContentCreateManyProjectInput = {
-    id?: string
+    id: string
     title?: string | null
     description?: string | null
     thumbnail?: string | null

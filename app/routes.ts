@@ -9,7 +9,7 @@ export const Routes = {
   AdminCreateProject: `/admin/create-project`,
   AdminContent: (slug: string) => `/admin/content/${slug}`,
   AdminContentStatus: (slug: string) => `/admin/content/status/${slug}`,
-  AdminContentUpload: `/admin/content/upload`,
+  AdminContentUpload: (id: string) => `/admin/content/upload/${id}`,
   Login: `/login`,
   Logout: `/logout`,
   Signup: `/signup`,

@@ -137,7 +137,7 @@ model TwitterCredentials {
 }
 
 model Content {
-  id                 String        @id @default(cuid())
+  id                 String        @id
   title              String?
   description        String?
   thumbnail          String?

@@ -7,18 +7,16 @@ import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
-import { z } from "zod";
-import { zfd } from "zod-form-data";
 
 import { Layout } from "~/components/layout";
 import { storage } from "~/entry.server";
-import { createContent } from "~/models/content.server";
+import { upsertContent } from "~/models/content.server";
 import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
 type LoaderData = {
-  content: Awaited<ReturnType<typeof createContent>>;
+  content: Awaited<ReturnType<typeof upsertContent>>;
   project: Awaited<ReturnType<typeof getProject>>;
   signedUrl: string;
 };
@@ -32,6 +30,10 @@ export const meta: MetaFunction = () => {
 export const loader: LoaderFunction = async ({ params, request }) => {
   const user = await getUser(request);
 
+  if (!params.id) {
+    return redirect(Routes.Admin);
+  }
+
   if (!user) {
     return redirect(Routes.Login);
   }
@@ -44,11 +46,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 
   invariant(typeof projectId === "string", "user must have a current project");
 
-  const content = await createContent({
+  const content = await upsertContent({
+    id: params.id,
     projectId,
   });
-
-  console.log(content);
 
   const [signedUrl] = await storage
     .bucket(projectId)
@@ -67,16 +68,37 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   return json<LoaderData>({ signedUrl, project, content });
 };
 
-const actionSchema = z.object({
-  projectId: zfd.text(),
-});
-
 export const action: ActionFunction = async ({ request }) => {
-  const { projectId } = actionSchema.parse(await request.formData());
+  const user = await getUser(request);
 
-  console.log(projectId);
+  if (!user) return redirect(Routes.Login);
 
-  return null;
+  const formData = await request.formData();
+
+  const projectId = formData.get("projectId");
+  const contentId = formData.get("contentId");
+  const title = formData.get("title");
+  const description = formData.get("description");
+  const tags = formData.get("tags");
+
+  invariant(typeof projectId === "string", "Project ID is required");
+  invariant(typeof contentId === "string", "Content ID is required");
+
+  console.log({ projectId, contentId, title, description, tags });
+
+  const content = await upsertContent({
+    id: contentId,
+    projectId,
+    title: title?.toString().trim(),
+    description: description?.toString().trim(),
+    tags: tags
+      ?.toString()
+      .trim()
+      .split(",")
+      .map((tag) => tag.trim()),
+  });
+
+  return content;
 };
 
 export default function Page() {

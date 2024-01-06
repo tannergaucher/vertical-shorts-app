@@ -21,15 +21,6 @@ export type Content = Omit<
   twitterPublishAt: string | null;
 };
 
-export async function createContent(params: { projectId: string }) {
-  const { projectId } = params;
-  return await prisma.content.create({
-    data: {
-      projectId: projectId,
-    },
-  });
-}
-
 export async function getContent(params: { id: string }) {
   const { id } = params;
 
@@ -94,6 +85,7 @@ export async function upsertContent(content: UpsertContentParams) {
       id: content.id,
     },
     create: {
+      id: content.id,
       projectId: content.projectId,
       title: content.title || "Untitled Content",
       youtubeStatus: content.youtubePublishAt ? "SCHEDULED" : undefined,

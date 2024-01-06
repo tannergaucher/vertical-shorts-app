@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react";
 import { type ReactNode } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import { Routes } from "../routes";
 
@@ -10,6 +11,8 @@ type HeaderProps = {
 };
 
 export function Layout({ children, h1, h2 }: HeaderProps) {
+  const id = uuidv4();
+
   return (
     <>
       <header
@@ -30,7 +33,7 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
               Admin
             </button>
           </Link>
-          <Link to={Routes.AdminContentUpload}>
+          <Link to={Routes.AdminContentUpload(id)}>
             <button type="submit">Create</button>
           </Link>
         </div>
