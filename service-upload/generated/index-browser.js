@@ -98,7 +98,7 @@ exports.Prisma.ChannelScalarFieldEnum = {
 };
 
 exports.Prisma.ContentScalarFieldEnum = {
-  slug: 'slug',
+  id: 'id',
   title: 'title',
   description: 'description',
   thumbnail: 'thumbnail',

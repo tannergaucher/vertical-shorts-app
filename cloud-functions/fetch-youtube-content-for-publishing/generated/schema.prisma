@@ -137,8 +137,8 @@ model TwitterCredentials {
 }
 
 model Content {
-  slug               String
-  title              String
+  id                 String        @id @default(cuid())
+  title              String?
   description        String?
   thumbnail          String?
   gif                String?
@@ -166,8 +166,6 @@ model Content {
   labels             Json?
   transcription      Json?
   textDetection      Json?
-
-  @@unique([projectId, slug])
 }
 
 model Project {

@@ -107,8 +107,8 @@ export type TwitterCredentials = {
  * 
  */
 export type Content = {
-  slug: string
-  title: string
+  id: string
+  title: string | null
   description: string | null
   thumbnail: string | null
   gif: string | null
@@ -7791,7 +7791,7 @@ export namespace Prisma {
   }
 
   export type ContentMinAggregateOutputType = {
-    slug: string | null
+    id: string | null
     title: string | null
     description: string | null
     thumbnail: string | null
@@ -7817,7 +7817,7 @@ export namespace Prisma {
   }
 
   export type ContentMaxAggregateOutputType = {
-    slug: string | null
+    id: string | null
     title: string | null
     description: string | null
     thumbnail: string | null
@@ -7843,7 +7843,7 @@ export namespace Prisma {
   }
 
   export type ContentCountAggregateOutputType = {
-    slug: number
+    id: number
     title: number
     description: number
     thumbnail: number
@@ -7876,7 +7876,7 @@ export namespace Prisma {
 
 
   export type ContentMinAggregateInputType = {
-    slug?: true
+    id?: true
     title?: true
     description?: true
     thumbnail?: true
@@ -7902,7 +7902,7 @@ export namespace Prisma {
   }
 
   export type ContentMaxAggregateInputType = {
-    slug?: true
+    id?: true
     title?: true
     description?: true
     thumbnail?: true
@@ -7928,7 +7928,7 @@ export namespace Prisma {
   }
 
   export type ContentCountAggregateInputType = {
-    slug?: true
+    id?: true
     title?: true
     description?: true
     thumbnail?: true
@@ -8033,8 +8033,8 @@ export namespace Prisma {
 
 
   export type ContentGroupByOutputType = {
-    slug: string
-    title: string
+    id: string
+    title: string | null
     description: string | null
     thumbnail: string | null
     gif: string | null
@@ -8081,7 +8081,7 @@ export namespace Prisma {
 
 
   export type ContentSelect = {
-    slug?: boolean
+    id?: boolean
     title?: boolean
     description?: boolean
     thumbnail?: boolean
@@ -8219,8 +8219,8 @@ export namespace Prisma {
      * // Get first 10 Contents
      * const contents = await prisma.content.findMany({ take: 10 })
      * 
-     * // Only select the `slug`
-     * const contentWithSlugOnly = await prisma.content.findMany({ select: { slug: true } })
+     * // Only select the `id`
+     * const contentWithIdOnly = await prisma.content.findMany({ select: { id: true } })
      * 
     **/
     findMany<T extends ContentFindManyArgs>(
@@ -10909,7 +10909,7 @@ export namespace Prisma {
 
 
   export const ContentScalarFieldEnum: {
-    slug: 'slug',
+    id: 'id',
     title: 'title',
     description: 'description',
     thumbnail: 'thumbnail',
@@ -11452,8 +11452,8 @@ export namespace Prisma {
     AND?: Enumerable<ContentWhereInput>
     OR?: Enumerable<ContentWhereInput>
     NOT?: Enumerable<ContentWhereInput>
-    slug?: StringFilter | string
-    title?: StringFilter | string
+    id?: StringFilter | string
+    title?: StringNullableFilter | string | null
     description?: StringNullableFilter | string | null
     thumbnail?: StringNullableFilter | string | null
     gif?: StringNullableFilter | string | null
@@ -11484,7 +11484,7 @@ export namespace Prisma {
   }
 
   export type ContentOrderByWithRelationInput = {
-    slug?: SortOrder
+    id?: SortOrder
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
@@ -11516,11 +11516,11 @@ export namespace Prisma {
   }
 
   export type ContentWhereUniqueInput = {
-    projectId_slug?: ContentProjectIdSlugCompoundUniqueInput
+    id?: string
   }
 
   export type ContentOrderByWithAggregationInput = {
-    slug?: SortOrder
+    id?: SortOrder
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
@@ -11557,8 +11557,8 @@ export namespace Prisma {
     AND?: Enumerable<ContentScalarWhereWithAggregatesInput>
     OR?: Enumerable<ContentScalarWhereWithAggregatesInput>
     NOT?: Enumerable<ContentScalarWhereWithAggregatesInput>
-    slug?: StringWithAggregatesFilter | string
-    title?: StringWithAggregatesFilter | string
+    id?: StringWithAggregatesFilter | string
+    title?: StringNullableWithAggregatesFilter | string | null
     description?: StringNullableWithAggregatesFilter | string | null
     thumbnail?: StringNullableWithAggregatesFilter | string | null
     gif?: StringNullableWithAggregatesFilter | string | null
@@ -12150,8 +12150,8 @@ export namespace Prisma {
   }
 
   export type ContentCreateInput = {
-    slug: string
-    title: string
+    id?: string
+    title?: string | null
     description?: string | null
     thumbnail?: string | null
     gif?: string | null
@@ -12181,8 +12181,8 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedCreateInput = {
-    slug: string
-    title: string
+    id?: string
+    title?: string | null
     description?: string | null
     thumbnail?: string | null
     gif?: string | null
@@ -12212,8 +12212,8 @@ export namespace Prisma {
   }
 
   export type ContentUpdateInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     gif?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12243,8 +12243,8 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedUpdateInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     gif?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12274,8 +12274,8 @@ export namespace Prisma {
   }
 
   export type ContentCreateManyInput = {
-    slug: string
-    title: string
+    id?: string
+    title?: string | null
     description?: string | null
     thumbnail?: string | null
     gif?: string | null
@@ -12305,8 +12305,8 @@ export namespace Prisma {
   }
 
   export type ContentUpdateManyMutationInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     gif?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12335,8 +12335,8 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedUpdateManyInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     gif?: NullableStringFieldUpdateOperationsInput | string | null
@@ -12933,13 +12933,8 @@ export namespace Prisma {
     not?: InputJsonValue | JsonNullValueFilter
   }
 
-  export type ContentProjectIdSlugCompoundUniqueInput = {
-    projectId: string
-    slug: string
-  }
-
   export type ContentCountOrderByAggregateInput = {
-    slug?: SortOrder
+    id?: SortOrder
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
@@ -12970,7 +12965,7 @@ export namespace Prisma {
   }
 
   export type ContentMaxOrderByAggregateInput = {
-    slug?: SortOrder
+    id?: SortOrder
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
@@ -12996,7 +12991,7 @@ export namespace Prisma {
   }
 
   export type ContentMinOrderByAggregateInput = {
-    slug?: SortOrder
+    id?: SortOrder
     title?: SortOrder
     description?: SortOrder
     thumbnail?: SortOrder
@@ -14595,8 +14590,8 @@ export namespace Prisma {
   }
 
   export type ContentCreateWithoutProjectInput = {
-    slug: string
-    title: string
+    id?: string
+    title?: string | null
     description?: string | null
     thumbnail?: string | null
     gif?: string | null
@@ -14625,8 +14620,8 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedCreateWithoutProjectInput = {
-    slug: string
-    title: string
+    id?: string
+    title?: string | null
     description?: string | null
     thumbnail?: string | null
     gif?: string | null
@@ -14850,8 +14845,8 @@ export namespace Prisma {
     AND?: Enumerable<ContentScalarWhereInput>
     OR?: Enumerable<ContentScalarWhereInput>
     NOT?: Enumerable<ContentScalarWhereInput>
-    slug?: StringFilter | string
-    title?: StringFilter | string
+    id?: StringFilter | string
+    title?: StringNullableFilter | string | null
     description?: StringNullableFilter | string | null
     thumbnail?: StringNullableFilter | string | null
     gif?: StringNullableFilter | string | null
@@ -15136,8 +15131,8 @@ export namespace Prisma {
   }
 
   export type ContentCreateManyProjectInput = {
-    slug: string
-    title: string
+    id?: string
+    title?: string | null
     description?: string | null
     thumbnail?: string | null
     gif?: string | null
@@ -15176,8 +15171,8 @@ export namespace Prisma {
   }
 
   export type ContentUpdateWithoutProjectInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     gif?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15206,8 +15201,8 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedUpdateWithoutProjectInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     gif?: NullableStringFieldUpdateOperationsInput | string | null
@@ -15236,8 +15231,8 @@ export namespace Prisma {
   }
 
   export type ContentUncheckedUpdateManyWithoutContentInput = {
-    slug?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
+    id?: StringFieldUpdateOperationsInput | string
+    title?: NullableStringFieldUpdateOperationsInput | string | null
     description?: NullableStringFieldUpdateOperationsInput | string | null
     thumbnail?: NullableStringFieldUpdateOperationsInput | string | null
     gif?: NullableStringFieldUpdateOperationsInput | string | null

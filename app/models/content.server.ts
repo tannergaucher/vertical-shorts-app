@@ -21,15 +21,21 @@ export type Content = Omit<
   twitterPublishAt: string | null;
 };
 
-export async function getContent(params: { slug: string; projectId: string }) {
-  const { slug, projectId } = params;
+export async function createContent(params: { projectId: string }) {
+  const { projectId } = params;
+  return await prisma.content.create({
+    data: {
+      projectId: projectId,
+    },
+  });
+}
+
+export async function getContent(params: { id: string }) {
+  const { id } = params;
 
   return prisma.content.findUniqueOrThrow({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id,
     },
     include: {
       project: {
@@ -69,7 +75,7 @@ export async function getContents(params: {
 }
 
 interface UpsertContentParams {
-  slug: string;
+  id: string;
   projectId: string;
   title?: string;
   description?: string | null;
@@ -85,13 +91,9 @@ interface UpsertContentParams {
 export async function upsertContent(content: UpsertContentParams) {
   return prisma.content.upsert({
     where: {
-      projectId_slug: {
-        projectId: content.projectId,
-        slug: content.slug,
-      },
+      id: content.id,
     },
     create: {
-      slug: content.slug,
       projectId: content.projectId,
       title: content.title || "Untitled Content",
       youtubeStatus: content.youtubePublishAt ? "SCHEDULED" : undefined,
@@ -113,18 +115,12 @@ export async function upsertContent(content: UpsertContentParams) {
   });
 }
 
-export async function deleteContent(params: {
-  slug: string;
-  projectId: string;
-}) {
-  const { slug, projectId } = params;
+export async function deleteContent(params: { id: string }) {
+  const { id } = params;
 
   return prisma.content.delete({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id,
     },
   });
 }

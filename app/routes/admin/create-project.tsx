@@ -9,6 +9,7 @@ import invariant from "tiny-invariant";
 
 import { Layout } from "~/components/layout";
 import { prisma } from "~/db.server";
+import { storage } from "~/entry.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
@@ -55,6 +56,21 @@ export const action: ActionFunction = async ({ request }) => {
       currentProjectId: project.id,
     },
   });
+
+  const [bucket] = await storage.bucket(project.id).exists();
+
+  if (!bucket) {
+    await storage.createBucket(project.id).then(async () => {
+      await storage.bucket(project.id).makePublic();
+      await storage.bucket(project.id).setCorsConfiguration([
+        {
+          origin: ["*"],
+          method: ["PUT", "GET"],
+          responseHeader: ["Content-Type"],
+        },
+      ]);
+    });
+  }
 
   return redirect(Routes.Admin);
 };

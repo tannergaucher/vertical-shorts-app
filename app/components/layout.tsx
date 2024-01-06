@@ -30,7 +30,7 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
               Admin
             </button>
           </Link>
-          <Link to={Routes.AdminContentTitle}>
+          <Link to={Routes.AdminContentUpload}>
             <button type="submit">Create</button>
           </Link>
         </div>
