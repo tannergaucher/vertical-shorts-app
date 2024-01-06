@@ -107,7 +107,11 @@ export default function Page() {
   return (
     <Layout h1="Upload Content">
       <VideoForm signedUrl={signedUrl} />
-      <TitleForm projectId={project.id} contentId={content.id} />
+      <TitleForm
+        projectId={project.id}
+        contentId={content.id}
+        title={content.title || ""}
+      />
       <DescriptionForm
         projectId={project.id}
         contentId={content.id}
@@ -158,7 +162,7 @@ function VideoForm({ signedUrl }: { signedUrl: string }) {
 
       setDisabled(false);
 
-      // now call the create content gif endpoint
+      // and now call the create content gif endpoint
     };
   }
   return (
@@ -258,9 +262,11 @@ function TagsForm({
 function TitleForm({
   projectId,
   contentId,
+  title,
 }: {
   projectId: string;
   contentId: string;
+  title?: string;
 }) {
   const titleFetcher = useFetcher();
 
@@ -276,7 +282,7 @@ function TitleForm({
         <input
           type="text"
           name="title"
-          id="title"
+          defaultValue={title || ""}
           onBlur={async (e) => {
             e.preventDefault();
             titleFetcher.submit(e.currentTarget.form, {
