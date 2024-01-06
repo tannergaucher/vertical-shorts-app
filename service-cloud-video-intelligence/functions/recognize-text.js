@@ -11,25 +11,22 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.recognizeText = void 0;
 const index_1 = require("../index");
-function recognizeText({ projectId, slug, prisma, }) {
+function recognizeText({ contentId, prisma, }) {
     var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const content = yield prisma.content.findUnique({
             where: {
-                projectId_slug: {
-                    projectId,
-                    slug,
-                },
+                id: contentId,
             },
             select: {
+                id: true,
                 projectId: true,
-                slug: true,
             },
         });
         if (!content) {
-            throw new Error(`No content for ${projectId} / ${slug}`);
+            throw new Error(`No content for ${contentId}`);
         }
-        const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+        const gcsUri = `gs://${content.projectId}/${content.id}.mp4`;
         const request = {
             inputUri: gcsUri,
             features: [index_1.CloudIntelligenceTypes.Feature.TEXT_DETECTION.valueOf()],
@@ -45,10 +42,7 @@ function recognizeText({ projectId, slug, prisma, }) {
         if (textAnnotations !== undefined) {
             yield prisma.content.update({
                 where: {
-                    projectId_slug: {
-                        projectId,
-                        slug,
-                    },
+                    id: contentId,
                 },
                 data: {
                     annotations: JSON.stringify(textAnnotations),
@@ -56,7 +50,7 @@ function recognizeText({ projectId, slug, prisma, }) {
             });
         }
         return {
-            message: `Created annotations for ${projectId} / ${slug}`,
+            message: `Created annotations for ${contentId}`,
             annotations: JSON.stringify(textAnnotations),
         };
     });
