@@ -4,7 +4,12 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useFetcher, useLoaderData, useParams } from "@remix-run/react";
+import {
+  useFetcher,
+  useLoaderData,
+  useNavigate,
+  useParams,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Breadcrumb } from "~/components/breadcrumb";
@@ -79,18 +84,28 @@ export const action: ActionFunction = async ({ request }) => {
   invariant(typeof projectId === "string", "projectId is required");
   invariant(typeof slug === "string", "slug is required");
 
-  console.log(description, "description");
-  console.log(tags, "tags");
+  await prisma.content.update({
+    where: {
+      projectId_slug: {
+        projectId,
+        slug,
+      },
+    },
+    data: {
+      description: (description as string) ?? undefined,
+      tags: (tags as string)?.split(",") ?? undefined,
+    },
+  });
 
-  return {
-    success: true,
-  };
+  return {};
 };
 
 export default function Page() {
   const { project, content } = useLoaderData<LoaderData>();
 
   const { slug } = useParams();
+
+  const navigate = useNavigate();
 
   invariant(slug, "slug is required");
 
@@ -102,8 +117,16 @@ export default function Page() {
       <Breadcrumb slug={slug} />
       <section>
         <DescriptionForm project={project} slug={slug} content={content} />
+        <br />
         <TagsForm project={project} slug={slug} content={content} />
       </section>
+      <button
+        onClick={() => {
+          navigate(Routes.AdminContentScheduler(slug));
+        }}
+      >
+        Next
+      </button>
     </Layout>
   );
 }
@@ -120,33 +143,32 @@ function DescriptionForm({
   const descriptionFetcher = useFetcher();
 
   return (
-    <article>
-      <descriptionFetcher.Form method="post">
-        <fieldset
-          disabled={
-            descriptionFetcher.state === "loading" ||
-            descriptionFetcher.state === "submitting"
-          }
-        >
-          <textarea
-            name="description"
-            id="description"
-            defaultValue={content.description || ""}
-          ></textarea>
-          <input type="hidden" name="projectId" value={project.id} />
-          <input type="hidden" name="slug" value={slug} id="slug" />
-        </fieldset>
-        <button
-          type="submit"
-          id="sticky-button"
-          style={{
-            marginBlockStart: `var(--space-xs)`,
-          }}
-        >
-          Save Description
-        </button>
-      </descriptionFetcher.Form>
-    </article>
+    <descriptionFetcher.Form method="post">
+      <fieldset
+        disabled={
+          descriptionFetcher.state === "loading" ||
+          descriptionFetcher.state === "submitting"
+        }
+      >
+        <label htmlFor="description">Description</label>
+        <textarea
+          name="description"
+          id="description"
+          defaultValue={content.description || ""}
+        ></textarea>
+        <input type="hidden" name="projectId" value={project.id} />
+        <input type="hidden" name="slug" value={slug} id="slug" />
+      </fieldset>
+      <button
+        type="submit"
+        id="sticky-button"
+        style={{
+          marginBlockStart: `var(--space-xs)`,
+        }}
+      >
+        Save Description
+      </button>
+    </descriptionFetcher.Form>
   );
 }
 
@@ -162,34 +184,32 @@ function TagsForm({
   const tagsFetcher = useFetcher();
 
   return (
-    <article>
-      <tagsFetcher.Form method="post">
-        <fieldset
-          disabled={
-            tagsFetcher.state === "loading" ||
-            tagsFetcher.state === "submitting"
-          }
-        >
-          <input
-            type="text"
-            name="tags"
-            id="tags"
-            defaultValue={content.tags.join(", ")}
-          />
-          <input type="hidden" name="projectId" value={project.id} />
-          <input type="hidden" name="slug" value={slug} id="slug" />
-        </fieldset>
+    <tagsFetcher.Form method="post">
+      <fieldset
+        disabled={
+          tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
+        }
+      >
+        <label htmlFor="tags">Tags</label>
+        <input
+          type="text"
+          name="tags"
+          id="tags"
+          defaultValue={content.tags.join(", ")}
+        />
+        <input type="hidden" name="projectId" value={project.id} />
+        <input type="hidden" name="slug" value={slug} id="slug" />
+      </fieldset>
 
-        <button
-          type="submit"
-          id="sticky-button"
-          style={{
-            marginBlockStart: `var(--space-sm)`,
-          }}
-        >
-          Save Tags
-        </button>
-      </tagsFetcher.Form>
-    </article>
+      <button
+        type="submit"
+        id="sticky-button"
+        style={{
+          marginBlockStart: `var(--space-sm)`,
+        }}
+      >
+        Save Tags
+      </button>
+    </tagsFetcher.Form>
   );
 }
