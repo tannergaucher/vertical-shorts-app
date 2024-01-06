@@ -8,7 +8,7 @@ export function ContentDetails({ content }: { content: Content }) {
           borderTopLeftRadius: `var(--radius)`,
           borderTopRightRadius: `var(--radius)`,
         }}
-        src={`https://storage.googleapis.com/${content.projectId}/${content.slug}.mp4`}
+        src={`https://storage.googleapis.com/${content.projectId}/${content.id}.mp4`}
         controls
       ></video>
 
