@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ request }) => {
     }
   );
 
-  return redirect(Routes.Index);
+  return redirect(Routes.AdminContent);
 };
 
 export default function Page() {

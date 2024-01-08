@@ -127,6 +127,10 @@ export default function Page() {
         contentId={content.id}
       />
       <button
+        type="submit"
+        style={{
+          width: "100%",
+        }}
         onClick={() => {
           navigate(Routes.AdminContentPublish(content.id));
         }}
