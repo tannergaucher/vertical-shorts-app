@@ -4,7 +4,7 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
 import invariant from "tiny-invariant";
 
@@ -37,10 +37,6 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   if (!user) {
     return redirect(Routes.Login);
   }
-
-  // if (!user.planType) {
-  //   return redirect(Routes.Signup);
-  // }
 
   const projectId = user?.currentProjectId;
 
@@ -104,8 +100,10 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const { signedUrl, content, project } = useLoaderData<LoaderData>();
 
+  const navigate = useNavigate();
+
   return (
-    <Layout h1="Upload Content">
+    <Layout h1="Upload">
       <VideoForm signedUrl={signedUrl} />
       <TitleForm
         projectId={project.id}
@@ -122,7 +120,13 @@ export default function Page() {
         tags={content.tags || []}
         contentId={content.id}
       />
-      <button type="submit">Publish</button>
+      <button
+        onClick={() => {
+          navigate(Routes.AdminContentPublish(content.id));
+        }}
+      >
+        Publish
+      </button>
     </Layout>
   );
 }
