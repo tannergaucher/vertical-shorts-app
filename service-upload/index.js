@@ -19,6 +19,7 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
+const create_content_gif_1 = require("./functions/create-content-gif");
 const initialize_upload_1 = require("./functions/initialize-upload");
 const upload_tiktok_1 = require("./functions/upload-tiktok");
 const upload_tiktok_status_1 = require("./functions/upload-tiktok-status");
@@ -78,6 +79,22 @@ app.post(routes_1.ServiceUploadRoutes.UploadYoutubeShort, (req, res) => __awaite
     catch (error) {
         console.log(error);
         res.status(400).send(`Error uploading ${contentId} YouTube Short`);
+    }
+}));
+app.post(routes_1.ServiceUploadRoutes.CreateContentGif, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { projectId, contentId } = req.body;
+    try {
+        const { message } = yield (0, create_content_gif_1.createContentGif)({
+            projectId,
+            contentId,
+            storage: exports.storage,
+            prisma: exports.prisma,
+        });
+        res.status(200).send(message);
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).send(`Error creating gif for ${contentId}`);
     }
 }));
 app.get(routes_1.ServiceUploadRoutes.UploadTiktokStatus, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -6,6 +6,10 @@ import type { Request, Response } from "express";
 import express from "express";
 
 import {
+  createContentGif,
+  type CreateContentGifBody,
+} from "./functions/create-content-gif";
+import {
   initializeUpload,
   type InitializeUploadBody,
 } from "./functions/initialize-upload";
@@ -94,6 +98,27 @@ app.post(
     } catch (error) {
       console.log(error);
       res.status(400).send(`Error uploading ${contentId} YouTube Short`);
+    }
+  }
+);
+
+app.post(
+  ServiceUploadRoutes.CreateContentGif,
+  async (req: Request<{}, {}, CreateContentGifBody>, res) => {
+    const { projectId, contentId } = req.body;
+
+    try {
+      const { message } = await createContentGif({
+        projectId,
+        contentId,
+        storage,
+        prisma,
+      });
+
+      res.status(200).send(message);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(`Error creating gif for ${contentId}`);
     }
   }
 );

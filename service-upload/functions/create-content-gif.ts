@@ -4,12 +4,15 @@ import { exec } from "child_process";
 
 import type { PrismaClient } from "../generated";
 
-interface CreateGifParams {
-  projectId: string;
+export interface CreateContentGifBody {
   contentId: string;
+  projectId: string;
+}
+
+type CreateGifParams = CreateContentGifBody & {
   storage: Storage;
   prisma: PrismaClient;
-}
+};
 
 export async function createContentGif({
   projectId,
