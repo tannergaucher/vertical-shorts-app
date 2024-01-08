@@ -14,18 +14,13 @@ const fs_1 = require("fs");
 const generated_1 = require("../generated");
 const routes_1 = require("../routes");
 const constants_1 = require("../utils/constants");
-const create_content_gif_1 = require("./create-content-gif");
-function initializeUpload({ projectId, slug, prisma, storage, }) {
+function initializeUpload({ projectId, contentId, prisma, storage, }) {
     return __awaiter(this, void 0, void 0, function* () {
         const content = yield prisma.content.findUniqueOrThrow({
             where: {
-                projectId_slug: {
-                    projectId,
-                    slug,
-                },
+                id: contentId,
             },
             select: {
-                slug: true,
                 project: {
                     select: {
                         youtubeCredentials: true,
@@ -34,8 +29,8 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
                 },
             },
         });
-        const bucketPath = `${projectId}/${content.slug}`;
-        const videoPath = `${content.slug}.mp4`;
+        const bucketPath = `${projectId}/${contentId}`;
+        const videoPath = `${contentId}.mp4`;
         storage
             .bucket(projectId)
             .file(videoPath)
@@ -45,10 +40,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
             console.log(`Downloading ${videoPath} from ${bucketPath}`);
             yield prisma.content.update({
                 where: {
-                    projectId_slug: {
-                        projectId,
-                        slug: content.slug,
-                    },
+                    id: contentId,
                 },
                 data: {
                     youtubeStatus: content.project.youtubeCredentials
@@ -61,12 +53,6 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
             });
         }))
             .on("finish", () => __awaiter(this, void 0, void 0, function* () {
-            (0, create_content_gif_1.createContentGif)({
-                projectId,
-                slug,
-                storage,
-                prisma,
-            });
             if (content.project.youtubeCredentials) {
                 fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}/${routes_1.ServiceUploadRoutes.UploadYoutubeShort}`, {
                     method: "POST",
@@ -75,7 +61,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
                     },
                     body: JSON.stringify({
                         projectId,
-                        slug,
+                        contentId,
                     }),
                 });
             }
@@ -87,7 +73,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
                     },
                     body: JSON.stringify({
                         projectId,
-                        slug,
+                        contentId,
                     }),
                 });
             }
@@ -95,10 +81,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
             .on("error", (err) => __awaiter(this, void 0, void 0, function* () {
             yield prisma.content.update({
                 where: {
-                    projectId_slug: {
-                        projectId,
-                        slug,
-                    },
+                    id: contentId,
                 },
                 data: {
                     youtubeStatus: generated_1.UploadStatus.NOT_STARTED,
@@ -108,7 +91,7 @@ function initializeUpload({ projectId, slug, prisma, storage, }) {
             throw new Error(`Error downloading from ${bucketPath}, ${err.message}`);
         }));
         return {
-            message: `Uploaded ${projectId} ${slug} to channels`,
+            message: `Uploaded ${projectId} / ${contentId} to social channels`,
         };
     });
 }

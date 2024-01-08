@@ -13,20 +13,22 @@ exports.uploadYouTubeShort = void 0;
 const fs_1 = require("fs");
 const googleapis_1 = require("googleapis");
 const generated_1 = require("../generated");
-function uploadYouTubeShort({ projectId, slug, prisma, }) {
+function uploadYouTubeShort({ contentId, prisma, }) {
     var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         const content = yield prisma.content.update({
             where: {
-                projectId_slug: {
-                    projectId,
-                    slug,
-                },
+                id: contentId,
             },
             select: {
                 title: true,
                 description: true,
                 tags: true,
+                project: {
+                    select: {
+                        id: true,
+                    },
+                },
             },
             data: {
                 youtubeStatus: generated_1.UploadStatus.UPLOADING,
@@ -34,7 +36,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
         });
         const project = yield prisma.project.findUnique({
             where: {
-                id: projectId,
+                id: content.project.id,
             },
             select: {
                 youtubeCredentials: true,
@@ -42,7 +44,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
         });
         if (!((_a = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _a === void 0 ? void 0 : _a.accessToken) ||
             !((_b = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _b === void 0 ? void 0 : _b.refreshToken)) {
-            throw new Error(`Missing YouTube credentials for project ${projectId}`);
+            throw new Error(`Missing YouTube credentials for project ${content.project.id}`);
         }
         const oauth2Client = setOauth2ClientCredentials({
             accessToken: project.youtubeCredentials.accessToken,
@@ -51,10 +53,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
         if (oauth2Client === null) {
             yield prisma.content.update({
                 where: {
-                    projectId_slug: {
-                        projectId,
-                        slug,
-                    },
+                    id: contentId,
                 },
                 data: {
                     youtubeStatus: generated_1.UploadStatus.NOT_STARTED,
@@ -66,20 +65,17 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
             version: "v3",
             auth: oauth2Client,
         });
-        const filePath = `${slug}.mp4`;
+        const filePath = `${contentId}.mp4`;
         const bodyStream = (0, fs_1.createReadStream)(filePath);
         yield prisma.content.update({
             where: {
-                projectId_slug: {
-                    projectId,
-                    slug,
-                },
+                id: contentId,
             },
             data: {
                 youtubeStatus: generated_1.UploadStatus.UPLOADING,
             },
         });
-        console.log(`Uploading ${projectId} ${slug} to YouTube channel ${(_c = project.youtubeCredentials) === null || _c === void 0 ? void 0 : _c.channelId}`);
+        console.log(`Uploading ${contentId} to YouTube channel ${(_c = project.youtubeCredentials) === null || _c === void 0 ? void 0 : _c.channelId}`);
         return youtube.videos
             .insert({
             part: ["snippet", "status"],
@@ -103,10 +99,7 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
             console.log(response, "upload YouTube response");
             yield prisma.content.update({
                 where: {
-                    projectId_slug: {
-                        projectId,
-                        slug,
-                    },
+                    id: contentId,
                 },
                 data: {
                     youtubeStatus: generated_1.UploadStatus.PRIVATE,
@@ -114,24 +107,21 @@ function uploadYouTubeShort({ projectId, slug, prisma, }) {
                 },
             });
             return {
-                message: `Uploaded ${projectId} ${slug} to YouTube channel ${(_d = project.youtubeCredentials) === null || _d === void 0 ? void 0 : _d.channelId}`,
+                message: `Uploaded ${contentId} to YouTube channel ${(_d = project.youtubeCredentials) === null || _d === void 0 ? void 0 : _d.channelId}`,
             };
         }))
             .catch((error) => __awaiter(this, void 0, void 0, function* () {
             var _e;
             yield prisma.content.update({
                 where: {
-                    projectId_slug: {
-                        projectId,
-                        slug,
-                    },
+                    id: contentId,
                 },
                 data: {
                     youtubeStatus: generated_1.UploadStatus.NOT_STARTED,
                 },
             });
             console.log(error);
-            throw new Error(`Error uploading ${projectId} ${slug} to YouTube channel ${(_e = project.youtubeCredentials) === null || _e === void 0 ? void 0 : _e.channelId}`);
+            throw new Error(`Error uploading ${contentId} to YouTube channel ${(_e = project.youtubeCredentials) === null || _e === void 0 ? void 0 : _e.channelId}`);
         }));
     });
 }

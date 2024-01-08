@@ -35,11 +35,11 @@ app.use((0, cors_1.default)({
     origin: constants_1.APP_BASE_URL,
 }));
 app.post(routes_1.ServiceUploadRoutes.InitializeUpload, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { projectId, slug } = req.body;
+    const { projectId, contentId } = req.body;
     try {
         const { message } = yield (0, initialize_upload_1.initializeUpload)({
             projectId,
-            slug,
+            contentId,
             prisma: exports.prisma,
             storage: exports.storage,
         });
@@ -47,39 +47,37 @@ app.post(routes_1.ServiceUploadRoutes.InitializeUpload, (req, res) => __awaiter(
     }
     catch (error) {
         console.log(error);
-        res.status(400).send(`Error initializing upload ${projectId} ${slug}`);
+        res
+            .status(400)
+            .send(`Error initializing upload ${projectId} ${contentId}`);
     }
 }));
 app.post(routes_1.ServiceUploadRoutes.UploadTiktok, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
     try {
         const { message } = yield (0, upload_tiktok_1.uploadTikTok)({
-            projectId,
-            slug,
+            contentId,
             prisma: exports.prisma,
         });
         res.status(200).send(message);
     }
     catch (error) {
         console.log(error);
-        res.status(400).send(`Error uploading ${projectId} ${slug} to TikTok`);
+        res.status(400).send(`Error uploading ${contentId} to TikTok`);
     }
 }));
 app.post(routes_1.ServiceUploadRoutes.UploadYoutubeShort, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
     try {
         const { message } = yield (0, upload_youtube_short_1.uploadYouTubeShort)({
-            projectId,
-            slug,
+            contentId,
             prisma: exports.prisma,
         });
         res.status(200).send(message);
     }
     catch (error) {
         console.log(error);
-        res
-            .status(400)
-            .send(`Error uploading ${projectId} ${slug} YouTube Short`);
+        res.status(400).send(`Error uploading ${contentId} YouTube Short`);
     }
 }));
 app.get(routes_1.ServiceUploadRoutes.UploadTiktokStatus, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
