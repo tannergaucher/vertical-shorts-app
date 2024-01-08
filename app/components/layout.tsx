@@ -20,7 +20,7 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
           padding: `var(--space-xs)`,
         }}
       >
-        <Link to={Routes.Index}>
+        <Link to={Routes.AdminContent}>
           <button>Vertical Shorts</button>
         </Link>
         <div>
