@@ -85,7 +85,7 @@ export default function Page() {
       <hr />
       {channelsToAdd.length !== channelTypes.length ? (
         <>
-          <h2> Publish To:</h2>
+          <h2> Publish To</h2>
           <section>
             {channelTypes.flatMap((channelType) => {
               const channel = project?.channels.find(
@@ -222,8 +222,10 @@ function ChannelItem({ channel }: { channel: Channel }) {
             }}
           />
         ) : null}
-        <h2>{channel.name}</h2>
-        <h3>{getChannelNameFromChannelType(channel.channelType)}</h3>
+        <h2>{`${getChannelNameFromChannelType(channel.channelType)} | ${
+          channel.name
+        }`}</h2>
+
         <ul
           style={{
             color: `var(--text-color)`,
