@@ -7,7 +7,7 @@ export const Routes = {
   AuthorizeTwitter: `/authorize-integration/twitter`,
   Admin: `/admin`,
   AdminCreateProject: `/admin/create-project`,
-  AdminContent: (slug: string) => `/admin/content/${slug}`,
+  AdminContent: `/admin/content`,
   AdminContentPublish: (slug: string) => `/admin/content/publish/${slug}`,
   AdminContentStatus: (slug: string) => `/admin/content/status/${slug}`,
   AdminContentUpload: (id: string) => `/admin/content/upload/${id}`,
