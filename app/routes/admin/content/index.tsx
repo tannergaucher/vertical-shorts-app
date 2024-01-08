@@ -40,7 +40,11 @@ export default function Page() {
       <section>
         {content?.map((content) => (
           <article key={content.id}>
+            {content.bucketUrl ? (
+              <video autoPlay loop muted src={content.bucketUrl}></video>
+            ) : null}
             <h2>{content.title}</h2>
+            <p>{content.description}</p>
           </article>
         ))}
       </section>
