@@ -11,24 +11,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.transcribe = void 0;
 const index_1 = require("../index");
-function transcribe({ projectId, slug, prisma, }) {
+function transcribe({ contentId, prisma }) {
     return __awaiter(this, void 0, void 0, function* () {
         const content = yield prisma.content.findUnique({
             where: {
-                projectId_slug: {
-                    projectId,
-                    slug,
-                },
+                id: contentId,
             },
             select: {
+                id: true,
                 projectId: true,
-                slug: true,
             },
         });
         if (!content) {
             throw new Error("CONTENT_NOT_FOUND");
         }
-        const gcsUri = `gs://${content.projectId}/${content.slug}.mp4`;
+        const gcsUri = `gs://${content.projectId}/${content.id}.mp4`;
         const videoContext = {
             speechTranscriptionConfig: {
                 languageCode: "en-US",
@@ -49,17 +46,14 @@ function transcribe({ projectId, slug, prisma, }) {
         const [operationResult] = yield operation.promise();
         yield prisma.content.update({
             where: {
-                projectId_slug: {
-                    projectId,
-                    slug,
-                },
+                id: contentId,
             },
             data: {
                 transcription: JSON.stringify(operationResult),
             },
         });
         return {
-            message: `Created transcription for ${projectId} / ${slug}`,
+            message: `Created transcription for ${contentId}`,
             transcription: JSON.stringify(operationResult),
         };
     });

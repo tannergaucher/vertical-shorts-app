@@ -38,59 +38,54 @@ app.use(
 app.post(
   "/generate-tags",
   async (req: Request<{}, {}, GenerateTagsRequest>, res) => {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
 
     try {
       const { message } = await generateTags({
-        projectId,
-        slug,
+        contentId,
         prisma,
       });
 
       res.status(200).json(message);
     } catch (error) {
       console.log(error);
-      res.status(400).json(`Error generating tags for ${projectId} / ${slug}`);
+      res.status(400).json(`Error generating tags for ${contentId}`);
     }
   }
 );
 app.post(
   "/recognize-text",
   async (req: Request<{}, {}, RecognizeTextRequest>, res) => {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
 
     try {
       const { message } = await recognizeText({
-        projectId,
-        slug,
+        contentId,
         prisma,
       });
 
       res.status(200).json(message);
     } catch (error) {
       console.log(error);
-      res
-        .status(400)
-        .send(`Error recognizing text for content ${projectId} / ${slug}`);
+      res.status(400).send(`Error recognizing text for ${contentId}`);
     }
   }
 );
 app.post(
   "/transcribe",
   async (req: Request<{}, {}, TranscribeRequest>, res) => {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
 
     try {
       const { message } = await transcribe({
-        projectId,
-        slug,
+        contentId,
         prisma,
       });
 
       res.status(200).send(message);
     } catch (error) {
       console.log(error);
-      res.status(400).send(`Error transcribing content ${projectId} / ${slug}`);
+      res.status(400).send(`Error transcribing content ${contentId}`);
     }
   }
 );

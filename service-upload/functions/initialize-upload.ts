@@ -4,11 +4,12 @@ import { createWriteStream } from "fs";
 import { type PrismaClient, UploadStatus } from "../generated";
 import { ServiceUploadRoutes } from "../routes";
 import { SERVICE_UPLOAD_BASE_URL } from "../utils/constants";
-import { createContentGif } from "./create-content-gif";
+import type { UploadTikTokBody } from "./upload-tiktok";
+import type { UploadYoutubeShortBody } from "./upload-youtube-short";
 
 export interface InitializeUploadBody {
   projectId: string;
-  slug: string;
+  contentId: string;
 }
 
 type InitializeUploadParams = InitializeUploadBody & {
@@ -18,19 +19,15 @@ type InitializeUploadParams = InitializeUploadBody & {
 
 export async function initializeUpload({
   projectId,
-  slug,
+  contentId,
   prisma,
   storage,
 }: InitializeUploadParams) {
   const content = await prisma.content.findUniqueOrThrow({
     where: {
-      projectId_slug: {
-        projectId,
-        slug,
-      },
+      id: contentId,
     },
     select: {
-      slug: true,
       project: {
         select: {
           youtubeCredentials: true,
@@ -40,8 +37,8 @@ export async function initializeUpload({
     },
   });
 
-  const bucketPath = `${projectId}/${content.slug}`;
-  const videoPath = `${content.slug}.mp4`;
+  const bucketPath = `${projectId}/${contentId}`;
+  const videoPath = `${contentId}.mp4`;
 
   storage
     .bucket(projectId)
@@ -53,10 +50,7 @@ export async function initializeUpload({
 
       await prisma.content.update({
         where: {
-          projectId_slug: {
-            projectId,
-            slug: content.slug,
-          },
+          id: contentId,
         },
         data: {
           youtubeStatus: content.project.youtubeCredentials
@@ -69,13 +63,6 @@ export async function initializeUpload({
       });
     })
     .on("finish", async () => {
-      createContentGif({
-        projectId,
-        slug,
-        storage,
-        prisma,
-      });
-
       if (content.project.youtubeCredentials) {
         fetch(
           `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadYoutubeShort}`,
@@ -86,8 +73,8 @@ export async function initializeUpload({
             },
             body: JSON.stringify({
               projectId,
-              slug,
-            }),
+              contentId,
+            } as UploadYoutubeShortBody),
           }
         );
       }
@@ -102,8 +89,8 @@ export async function initializeUpload({
             },
             body: JSON.stringify({
               projectId,
-              slug,
-            }),
+              contentId,
+            } as UploadTikTokBody),
           }
         );
       }
@@ -111,10 +98,7 @@ export async function initializeUpload({
     .on("error", async (err) => {
       await prisma.content.update({
         where: {
-          projectId_slug: {
-            projectId,
-            slug,
-          },
+          id: contentId,
         },
         data: {
           youtubeStatus: UploadStatus.NOT_STARTED,
@@ -126,6 +110,6 @@ export async function initializeUpload({
     });
 
   return {
-    message: `Uploaded ${projectId} ${slug} to channels`,
+    message: `Uploaded ${projectId} / ${contentId} to social channels`,
   };
 }

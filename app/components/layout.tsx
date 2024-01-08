@@ -1,5 +1,6 @@
 import { Link } from "@remix-run/react";
 import { type ReactNode } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import { Routes } from "../routes";
 
@@ -10,6 +11,8 @@ type HeaderProps = {
 };
 
 export function Layout({ children, h1, h2 }: HeaderProps) {
+  const id = uuidv4();
+
   return (
     <>
       <header
@@ -17,7 +20,7 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
           padding: `var(--space-xs)`,
         }}
       >
-        <Link to={Routes.Index}>
+        <Link to={Routes.AdminContent}>
           <button>Vertical Shorts</button>
         </Link>
         <div>
@@ -27,11 +30,11 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
                 marginRight: `var(--space-xs)`,
               }}
             >
-              Admin
+              Settings
             </button>
           </Link>
-          <Link to={Routes.AdminContentTitle}>
-            <button type="submit">Create</button>
+          <Link to={Routes.AdminContentUpload(id)}>
+            <button type="submit">Upload</button>
           </Link>
         </div>
       </header>

@@ -12,19 +12,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generateTags = void 0;
 const index_1 = require("../index");
 const index_2 = require("../index");
-function generateTags({ projectId, slug, prisma, }) {
+function generateTags({ contentId, prisma }) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const content = yield prisma.content.findUnique({
             where: {
-                projectId_slug: {
-                    projectId,
-                    slug,
-                },
+                id: contentId,
             },
             select: {
+                id: true,
                 projectId: true,
-                slug: true,
                 annotations: true,
                 labels: true,
             },
@@ -42,7 +39,7 @@ function generateTags({ projectId, slug, prisma, }) {
         }
         try {
             const annotateVideoRequest = {
-                inputUri: `gs://${content.projectId}/${content.slug}.mp4`,
+                inputUri: `gs://${content.projectId}/${content.id}.mp4`,
                 features: [index_1.CloudIntelligenceTypes.Feature.LABEL_DETECTION.valueOf()],
             };
             const result = yield index_2.cloudIntelligence.annotateVideo(annotateVideoRequest);
@@ -57,10 +54,7 @@ function generateTags({ projectId, slug, prisma, }) {
             if (tags.length > 0) {
                 yield prisma.content.update({
                     where: {
-                        projectId_slug: {
-                            projectId,
-                            slug,
-                        },
+                        id: contentId,
                     },
                     data: {
                         tags,
@@ -78,7 +72,7 @@ function generateTags({ projectId, slug, prisma, }) {
         }
         catch (error) {
             console.error(error);
-            throw new Error(`Error generating tags for ${projectId} / ${slug}`);
+            throw new Error(`Error generating tags for ${contentId}`);
         }
     });
 }

@@ -4,24 +4,27 @@ import { exec } from "child_process";
 
 import type { PrismaClient } from "../generated";
 
-interface CreateGifParams {
+export interface CreateContentGifBody {
+  contentId: string;
   projectId: string;
-  slug: string;
+}
+
+type CreateGifParams = CreateContentGifBody & {
   storage: Storage;
   prisma: PrismaClient;
-}
+};
 
 export async function createContentGif({
   projectId,
-  slug,
+  contentId,
   storage,
   prisma,
 }: CreateGifParams) {
-  const gifFile = `${slug}.gif`;
+  const gifFile = `${contentId}.gif`;
   const gifStoragePath = `https://storage.googleapis.com/${projectId}/${gifFile}`;
 
   exec(
-    `${ffmpegPath} -i ${slug}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${gifFile}`,
+    `${ffmpegPath} -i ${contentId}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${gifFile}`,
 
     async (error) => {
       if (error) {
@@ -35,10 +38,7 @@ export async function createContentGif({
         .then(async () => {
           await prisma.content.update({
             where: {
-              projectId_slug: {
-                projectId,
-                slug,
-              },
+              id: contentId,
             },
             data: {
               gif: gifStoragePath,

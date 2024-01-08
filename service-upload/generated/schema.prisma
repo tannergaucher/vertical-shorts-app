@@ -137,11 +137,12 @@ model TwitterCredentials {
 }
 
 model Content {
-  slug               String
-  title              String
+  id                 String        @id
+  title              String?
   description        String?
   thumbnail          String?
   gif                String?
+  bucketUrl          String?
   tags               String[]
   createdAt          DateTime?     @default(now())
   updatedAt          DateTime?     @updatedAt
@@ -166,8 +167,6 @@ model Content {
   labels             Json?
   transcription      Json?
   textDetection      Json?
-
-  @@unique([projectId, slug])
 }
 
 model Project {

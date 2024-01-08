@@ -6,9 +6,17 @@ import type { Request, Response } from "express";
 import express from "express";
 
 import {
+  createContentGif,
+  type CreateContentGifBody,
+} from "./functions/create-content-gif";
+import {
   initializeUpload,
   type InitializeUploadBody,
 } from "./functions/initialize-upload";
+import {
+  updateContent,
+  type UpdateContentBody,
+} from "./functions/update-content";
 import { uploadTikTok, type UploadTikTokBody } from "./functions/upload-tiktok";
 import {
   uploadTikTokStatus,
@@ -41,12 +49,12 @@ app.use(
 app.post(
   ServiceUploadRoutes.InitializeUpload,
   async (req: Request<{}, {}, InitializeUploadBody>, res: Response) => {
-    const { projectId, slug } = req.body;
+    const { projectId, contentId } = req.body;
 
     try {
       const { message } = await initializeUpload({
         projectId,
-        slug,
+        contentId,
         prisma,
         storage,
       });
@@ -54,7 +62,9 @@ app.post(
       res.status(200).send(message);
     } catch (error) {
       console.log(error);
-      res.status(400).send(`Error initializing upload ${projectId} ${slug}`);
+      res
+        .status(400)
+        .send(`Error initializing upload ${projectId} ${contentId}`);
     }
   }
 );
@@ -62,19 +72,18 @@ app.post(
 app.post(
   ServiceUploadRoutes.UploadTiktok,
   async (req: Request<{}, {}, UploadTikTokBody>, res: Response) => {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
 
     try {
       const { message } = await uploadTikTok({
-        projectId,
-        slug,
+        contentId,
         prisma,
       });
 
       res.status(200).send(message);
     } catch (error) {
       console.log(error);
-      res.status(400).send(`Error uploading ${projectId} ${slug} to TikTok`);
+      res.status(400).send(`Error uploading ${contentId} to TikTok`);
     }
   }
 );
@@ -82,20 +91,61 @@ app.post(
 app.post(
   ServiceUploadRoutes.UploadYoutubeShort,
   async (req: Request<{}, {}, UploadYoutubeShortBody>, res) => {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
     try {
       const { message } = await uploadYouTubeShort({
-        projectId,
-        slug,
+        contentId,
         prisma,
       });
 
       res.status(200).send(message);
     } catch (error) {
       console.log(error);
-      res
-        .status(400)
-        .send(`Error uploading ${projectId} ${slug} YouTube Short`);
+      res.status(400).send(`Error uploading ${contentId} YouTube Short`);
+    }
+  }
+);
+
+app.post(
+  ServiceUploadRoutes.CreateContentGif,
+  async (req: Request<{}, {}, CreateContentGifBody>, res) => {
+    const { projectId, contentId } = req.body;
+
+    try {
+      const { message } = await createContentGif({
+        projectId,
+        contentId,
+        storage,
+        prisma,
+      });
+
+      res.status(200).send(message);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(`Error creating gif for ${contentId}`);
+    }
+  }
+);
+
+app.post(
+  ServiceUploadRoutes.UpdateContent,
+  async (req: Request<{}, {}, UpdateContentBody>, res) => {
+    const { contentId, bucketUrl } = req.body;
+
+    try {
+      const { message, content } = await updateContent({
+        prisma,
+        contentId,
+        bucketUrl,
+      });
+
+      res.status(200).json({
+        message,
+        content,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(`Error updating content ${contentId}`);
     }
   }
 );

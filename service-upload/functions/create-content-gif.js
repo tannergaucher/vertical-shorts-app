@@ -12,11 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createContentGif = void 0;
 const ffmpeg_1 = require("@ffmpeg-installer/ffmpeg");
 const child_process_1 = require("child_process");
-function createContentGif({ projectId, slug, storage, prisma, }) {
+function createContentGif({ projectId, contentId, storage, prisma, }) {
     return __awaiter(this, void 0, void 0, function* () {
-        const gifFile = `${slug}.gif`;
+        const gifFile = `${contentId}.gif`;
         const gifStoragePath = `https://storage.googleapis.com/${projectId}/${gifFile}`;
-        (0, child_process_1.exec)(`${ffmpeg_1.path} -i ${slug}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${gifFile}`, (error) => __awaiter(this, void 0, void 0, function* () {
+        (0, child_process_1.exec)(`${ffmpeg_1.path} -i ${contentId}.mp4 -vf "fps=31,scale=640:-1:flags=lanczos" -b:v 5000k -y -t 3 ${gifFile}`, (error) => __awaiter(this, void 0, void 0, function* () {
             if (error) {
                 console.log(`Error`, error);
                 throw new Error(`ffmpeg error creating ${gifFile}`);
@@ -27,10 +27,7 @@ function createContentGif({ projectId, slug, storage, prisma, }) {
                 .then(() => __awaiter(this, void 0, void 0, function* () {
                 yield prisma.content.update({
                     where: {
-                        projectId_slug: {
-                            projectId,
-                            slug,
-                        },
+                        id: contentId,
                     },
                     data: {
                         gif: gifStoragePath,
