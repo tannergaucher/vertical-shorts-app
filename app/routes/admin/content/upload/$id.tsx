@@ -6,6 +6,9 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
 import { useState } from "react";
+import type { UpdateContentBody } from "service-upload/functions/update-content";
+import { ServiceUploadRoutes } from "service-upload/routes";
+import { SERVICE_UPLOAD_BASE_URL } from "service-upload/utils/constants";
 import invariant from "tiny-invariant";
 
 import { Layout } from "~/components/layout";
@@ -80,8 +83,6 @@ export const action: ActionFunction = async ({ request }) => {
   invariant(typeof projectId === "string", "Project ID is required");
   invariant(typeof contentId === "string", "Content ID is required");
 
-  console.log({ projectId, contentId, title, description, tags });
-
   const content = await upsertContent({
     id: contentId,
     projectId,
@@ -104,7 +105,12 @@ export default function Page() {
 
   return (
     <Layout h1="Upload">
-      <VideoForm signedUrl={signedUrl} />
+      <VideoForm
+        signedUrl={signedUrl}
+        projectId={project.id}
+        contentId={content.id}
+        bucketUrl={content.bucketUrl}
+      />
       <TitleForm
         projectId={project.id}
         contentId={content.id}
@@ -131,8 +137,19 @@ export default function Page() {
   );
 }
 
-function VideoForm({ signedUrl }: { signedUrl: string }) {
+function VideoForm({
+  signedUrl,
+  projectId,
+  contentId,
+  bucketUrl,
+}: {
+  signedUrl: string;
+  bucketUrl: string | null;
+  projectId: string;
+  contentId: string;
+}) {
   const [disabled, setDisabled] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(bucketUrl || null);
 
   async function handleVideoUpload() {
     setDisabled(true);
@@ -166,24 +183,53 @@ function VideoForm({ signedUrl }: { signedUrl: string }) {
 
       setDisabled(false);
 
-      // and now call the create content gif endpoint
+      await fetch(
+        `${SERVICE_UPLOAD_BASE_URL}${ServiceUploadRoutes.UpdateContent}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectId,
+            contentId,
+            bucketUrl: `https://storage.googleapis.com/${projectId}/${contentId}.mp4`,
+          } as UpdateContentBody),
+        }
+      );
+
+      setVideoUrl(
+        `https://storage.googleapis.com/${projectId}/${contentId}.mp4`
+      );
     };
   }
+
   return (
-    <fieldset disabled={disabled}>
-      <form>
-        <label htmlFor="thumbnail">Video File</label>
-        <input
-          type="file"
-          name="thumbnail"
-          required
-          onChange={async (e) => {
-            e.preventDefault();
-            await handleVideoUpload();
+    <>
+      {videoUrl ? (
+        <video
+          src={videoUrl}
+          controls
+          style={{
+            width: "100%",
           }}
-        />
-      </form>
-    </fieldset>
+        ></video>
+      ) : null}
+      <fieldset disabled={disabled}>
+        <form>
+          <label htmlFor="thumbnail">Video File</label>
+          <input
+            type="file"
+            name="thumbnail"
+            required
+            onChange={async (e) => {
+              e.preventDefault();
+              await handleVideoUpload();
+            }}
+          />
+        </form>
+      </fieldset>
+    </>
   );
 }
 

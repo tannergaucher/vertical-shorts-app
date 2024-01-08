@@ -21,6 +21,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const create_content_gif_1 = require("./functions/create-content-gif");
 const initialize_upload_1 = require("./functions/initialize-upload");
+const update_content_1 = require("./functions/update-content");
 const upload_tiktok_1 = require("./functions/upload-tiktok");
 const upload_tiktok_status_1 = require("./functions/upload-tiktok-status");
 const upload_youtube_short_1 = require("./functions/upload-youtube-short");
@@ -95,6 +96,24 @@ app.post(routes_1.ServiceUploadRoutes.CreateContentGif, (req, res) => __awaiter(
     catch (error) {
         console.log(error);
         res.status(400).send(`Error creating gif for ${contentId}`);
+    }
+}));
+app.post(routes_1.ServiceUploadRoutes.UpdateContent, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { contentId, bucketUrl } = req.body;
+    try {
+        const { message, content } = yield (0, update_content_1.updateContent)({
+            prisma: exports.prisma,
+            contentId,
+            bucketUrl,
+        });
+        res.status(200).json({
+            message,
+            content,
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(400).send(`Error updating content ${contentId}`);
     }
 }));
 app.get(routes_1.ServiceUploadRoutes.UploadTiktokStatus, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

@@ -4,4 +4,5 @@ export const ServiceUploadRoutes = {
   UploadTiktokStatus: `/upload-tiktok-status`,
   UploadYoutubeShort: `/upload-youtube-short`,
   CreateContentGif: `/create-content-gif`,
+  UpdateContent: `/update-content`,
 };

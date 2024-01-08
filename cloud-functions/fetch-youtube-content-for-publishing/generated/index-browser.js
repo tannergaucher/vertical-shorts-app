@@ -103,6 +103,7 @@ exports.Prisma.ContentScalarFieldEnum = {
   description: 'description',
   thumbnail: 'thumbnail',
   gif: 'gif',
+  bucketUrl: 'bucketUrl',
   tags: 'tags',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',

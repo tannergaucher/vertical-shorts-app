@@ -13,6 +13,10 @@ import {
   initializeUpload,
   type InitializeUploadBody,
 } from "./functions/initialize-upload";
+import {
+  updateContent,
+  type UpdateContentBody,
+} from "./functions/update-content";
 import { uploadTikTok, type UploadTikTokBody } from "./functions/upload-tiktok";
 import {
   uploadTikTokStatus,
@@ -119,6 +123,29 @@ app.post(
     } catch (error) {
       console.log(error);
       res.status(400).send(`Error creating gif for ${contentId}`);
+    }
+  }
+);
+
+app.post(
+  ServiceUploadRoutes.UpdateContent,
+  async (req: Request<{}, {}, UpdateContentBody>, res) => {
+    const { contentId, bucketUrl } = req.body;
+
+    try {
+      const { message, content } = await updateContent({
+        prisma,
+        contentId,
+        bucketUrl,
+      });
+
+      res.status(200).json({
+        message,
+        content,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(`Error updating content ${contentId}`);
     }
   }
 );

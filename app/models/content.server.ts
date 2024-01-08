@@ -72,6 +72,7 @@ interface UpsertContentParams {
   description?: string | null;
   tags?: string[];
   thumbnail?: string | null;
+  bucketUrl?: string | null;
   youtubePublishAt?: Date | null;
   tikTokPublishAt?: Date | null;
   instagramPublishAt?: Date | null;
@@ -80,7 +81,7 @@ interface UpsertContentParams {
 }
 
 export async function upsertContent(content: UpsertContentParams) {
-  return prisma.content.upsert({
+  return await prisma.content.upsert({
     where: {
       id: content.id,
     },
@@ -90,6 +91,7 @@ export async function upsertContent(content: UpsertContentParams) {
       title: content.title || "Untitled Content",
       youtubeStatus: content.youtubePublishAt ? "SCHEDULED" : undefined,
       tikTokStatus: content.tikTokPublishAt ? "SCHEDULED" : undefined,
+      bucketUrl: content.bucketUrl,
     },
     update: {
       ...content,
