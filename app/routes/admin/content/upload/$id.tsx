@@ -131,7 +131,7 @@ export default function Page() {
           navigate(Routes.AdminContentPublish(content.id));
         }}
       >
-        Publish
+        Next
       </button>
     </Layout>
   );
