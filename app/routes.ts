@@ -8,6 +8,7 @@ export const Routes = {
   Admin: `/admin`,
   AdminCreateProject: `/admin/create-project`,
   AdminContent: (slug: string) => `/admin/content/${slug}`,
+  AdminContentPublish: (slug: string) => `/admin/content/publish/${slug}`,
   AdminContentStatus: (slug: string) => `/admin/content/status/${slug}`,
   AdminContentUpload: (id: string) => `/admin/content/upload/${id}`,
   Login: `/login`,
