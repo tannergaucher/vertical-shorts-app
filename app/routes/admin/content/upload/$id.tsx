@@ -127,6 +127,7 @@ export default function Page() {
         contentId={content.id}
       />
       <button
+        className="mt-2 w-full px-4 py-2 text-white bg-blue-500 rounded"
         onClick={() => {
           navigate(Routes.AdminContentPublish(content.id));
         }}
@@ -215,18 +216,27 @@ function VideoForm({
           }}
         ></video>
       ) : null}
-      <fieldset disabled={disabled}>
+
+      <fieldset disabled={disabled} className="p-4 my-4 bg-gray-100 rounded-md">
         <form>
-          <label htmlFor="thumbnail">Video File</label>
-          <input
-            type="file"
-            name="thumbnail"
-            required
-            onChange={async (e) => {
-              e.preventDefault();
-              await handleVideoUpload();
-            }}
-          />
+          <label
+            htmlFor="thumbnail"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Video File
+          </label>
+          <div className="mt-1">
+            <input
+              type="file"
+              name="thumbnail"
+              required
+              onChange={async (e) => {
+                e.preventDefault();
+                await handleVideoUpload();
+              }}
+              className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
         </form>
       </fieldset>
     </>
@@ -245,14 +255,20 @@ function DescriptionForm({
   const descriptionFetcher = useFetcher();
 
   return (
-    <descriptionFetcher.Form method="post">
+    <descriptionFetcher.Form method="post" className="space-y-4">
       <fieldset
         disabled={
           descriptionFetcher.state === "loading" ||
           descriptionFetcher.state === "submitting"
         }
+        className="p-4 my-4 bg-gray-100 rounded-md"
       >
-        <label htmlFor="description">Description</label>
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Description
+        </label>
         <textarea
           name="description"
           id="description"
@@ -263,6 +279,7 @@ function DescriptionForm({
               method: "post",
             });
           }}
+          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
         ></textarea>
         <input type="hidden" name="projectId" value={projectId} />
         <input type="hidden" name="contentId" value={contentId} />
@@ -283,13 +300,19 @@ function TagsForm({
   const tagsFetcher = useFetcher();
 
   return (
-    <tagsFetcher.Form method="post">
+    <tagsFetcher.Form method="post" className="space-y-4">
       <fieldset
         disabled={
           tagsFetcher.state === "loading" || tagsFetcher.state === "submitting"
         }
+        className="p-4 my-4 bg-gray-100 rounded-md"
       >
-        <label htmlFor="tags">Tags</label>
+        <label
+          htmlFor="tags"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Tags
+        </label>
         <input
           type="text"
           name="tags"
@@ -301,6 +324,7 @@ function TagsForm({
               method: "post",
             });
           }}
+          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
         />
         <input type="hidden" name="projectId" value={projectId} />
         <input type="hidden" name="contentId" value={contentId} />
@@ -321,17 +345,24 @@ function TitleForm({
   const titleFetcher = useFetcher();
 
   return (
-    <titleFetcher.Form method="post">
+    <titleFetcher.Form method="post" className="space-y-4">
       <fieldset
         disabled={
           titleFetcher.state === "loading" ||
           titleFetcher.state === "submitting"
         }
+        className="p-4 bg-gray-100 rounded-md"
       >
-        <label htmlFor="title">Title</label>
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Title
+        </label>
         <input
           type="text"
           name="title"
+          id="title"
           defaultValue={title || ""}
           onBlur={async (e) => {
             e.preventDefault();
@@ -339,6 +370,7 @@ function TitleForm({
               method: "post",
             });
           }}
+          className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
         />
         <input type="hidden" name="projectId" value={projectId} />
         <input type="hidden" name="contentId" value={contentId} />

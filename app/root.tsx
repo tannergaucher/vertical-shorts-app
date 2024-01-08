@@ -17,11 +17,11 @@ import {
 } from "@remix-run/react";
 import { zfd } from "zod-form-data";
 
-import stylesheet from "../node_modules/@t_g/default-ui/package/index.css";
 import { prisma } from "./db.server";
 import { Routes } from "./routes";
 import { getUser } from "./session.server";
-import localStyles from "./styles/index.css";
+import tailwindStyles from "./styles/app.css";
+
 
 export const links: LinksFunction = () => {
   return [
@@ -32,12 +32,7 @@ export const links: LinksFunction = () => {
     },
     {
       rel: "stylesheet",
-      href: stylesheet,
-      type: "text/css",
-    },
-    {
-      rel: "stylesheet",
-      href: localStyles,
+      href: tailwindStyles,
       type: "text/css",
     },
     ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),

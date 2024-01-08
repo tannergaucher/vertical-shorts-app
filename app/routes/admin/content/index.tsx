@@ -37,14 +37,34 @@ export default function Page() {
 
   return (
     <Layout h1="Content">
-      <section>
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {content?.map((content) => (
-          <article key={content.id}>
-            {content.bucketUrl ? (
-              <video autoPlay loop muted src={content.bucketUrl}></video>
-            ) : null}
-            <h2>{content.title}</h2>
-            <p>{content.description}</p>
+          <article
+            className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4"
+            key={content.id}
+          >
+            <div className="md:flex">
+              {content.bucketUrl ? (
+                <div className="md:flex-shrink-0">
+                  <video
+                    className="h-48 w-full object-cover md:w-48"
+                    src={content.bucketUrl}
+                  />
+                </div>
+              ) : null}
+              <div className="p-8">
+                <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">
+                  {content.tags}
+                </div>
+                <a
+                  href={Routes.AdminContentUpload(content.id)}
+                  className="block mt-1 text-lg leading-tight font-medium text-black hover:underline"
+                >
+                  {content.title}
+                </a>
+                <p className="mt-2 text-gray-500">{content.description}</p>
+              </div>
+            </div>
           </article>
         ))}
       </section>

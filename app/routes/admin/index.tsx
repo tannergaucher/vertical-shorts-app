@@ -75,84 +75,68 @@ export default function Page() {
 
   const channelTypes = Object.keys(ChannelType) as ChannelType[];
 
-  const channelsToAdd = channelTypes.filter(
-    (channelType) =>
-      !project?.channels.find((channel) => channel.channelType === channelType)
-  );
-
   return (
     <Layout h1="Settings">
-      <hr />
-      {channelsToAdd.length !== channelTypes.length ? (
-        <>
-          <h2> Publish To:</h2>
-          <section>
-            {channelTypes.flatMap((channelType) => {
-              const channel = project?.channels.find(
-                (channel) => channel.channelType === channelType
-              );
-              return channel ? (
-                <ChannelItem key={channelType} channel={channel} />
-              ) : (
-                []
-              );
-            })}
-          </section>
-          <hr />
-        </>
-      ) : (
-        <h2>Connect a channel below to start posting!</h2>
-      )}
-      {channelsToAdd.length ? (
-        <>
-          <section>
-            {channelsToAdd.map((channelType) => (
-              <Link
-                key={channelType}
-                to={
-                  SUPPORTED_CHANNELS.includes(channelType)
-                    ? getRouteFromChannelType(channelType)
-                    : "#"
-                }
-              >
-                <article
-                  data-coming-soon={!SUPPORTED_CHANNELS.includes(channelType)}
-                >
-                  <h2>
-                    {SUPPORTED_CHANNELS.includes(channelType)
-                      ? getChannelNameFromChannelType(channelType)
-                      : ` ${getChannelNameFromChannelType(
-                          channelType
-                        )} - Coming Soon`}
-                  </h2>
-                </article>
-              </Link>
-            ))}
-          </section>
-        </>
-      ) : null}
-      <hr />
-      <h2
-        style={{
-          marginBlockStart: 0,
-        }}
-      >
-        {user.planType ? "Update Plan:" : "Select Plan:"}
-      </h2>
-      <Link to={Routes.Signup}>
-        <button
-          type="button"
-          style={{
-            width: "100%",
-          }}
+      <section>
+        <h2> Connected Channels</h2>
+        {channelTypes.flatMap((channelType) => {
+          const channel = project?.channels.find(
+            (channel) => channel.channelType === channelType
+          );
+
+          return channel ? (
+            <ChannelItem key={channelType} channel={channel} />
+          ) : (
+            []
+          );
+        })}
+      </section>
+      <section>
+        <h2> Add Channels</h2>
+        {channelTypes.flatMap((channelType) => {
+          const channel = project?.channels.find(
+            (channel) => channel.channelType === channelType
+          );
+
+          return channel ? null : (
+            <Link
+              key={channelType}
+              to={
+                SUPPORTED_CHANNELS.includes(channelType)
+                  ? getRouteFromChannelType(channelType)
+                  : "#"
+              }
+              className="block bg-white rounded-lg shadow-md p-4 my-4"
+            >
+              <article>
+                <h2 className="text-xl text-gray-700">
+                  {SUPPORTED_CHANNELS.includes(channelType)
+                    ? getChannelNameFromChannelType(channelType)
+                    : `${getChannelNameFromChannelType(
+                        channelType
+                      )} (Coming Soon)`}
+                </h2>
+              </article>
+            </Link>
+          );
+        })}
+      </section>
+
+      <section>
+        <h2>Your Plan</h2>
+        <Link
+          to={Routes.Signup}
+          className="inline-block bg-blue-500 text-white rounded-lg px-4 py-2 w-full mt-4"
         >
-          <h2>
-            {user.planType
-              ? ` ${getPlanFromPlanType(user.planType)}`
-              : `Select Plan`}
-          </h2>
-        </button>
-      </Link>
+          <button type="button" className="text-lg font-bold">
+            <h2>
+              {user.planType
+                ? ` ${getPlanFromPlanType(user.planType)}`
+                : `Select Plan`}
+            </h2>
+          </button>
+        </Link>
+      </section>
     </Layout>
   );
 }
@@ -206,32 +190,25 @@ function ChannelItem({ channel }: { channel: Channel }) {
           ? getRouteFromChannelType(channel.channelType)
           : "#"
       }
+      className="block bg-white rounded-lg shadow-md p-4 my-4"
     >
       <article
         data-coming-soon={!SUPPORTED_CHANNELS.includes(channel.channelType)}
-        style={{
-          marginBlockEnd: `var(--space-lg)`,
-        }}
       >
         {channel.thumbnail ? (
           <img
             src={channel.thumbnail}
             alt=""
-            style={{
-              width: "100%",
-            }}
+            className="w-full object-cover h-48"
           />
         ) : null}
-        <h2>{channel.name}</h2>
-        <h3>{getChannelNameFromChannelType(channel.channelType)}</h3>
-        <ul
-          style={{
-            color: `var(--text-color)`,
-            marginBlockEnd: `var(--space-sm)`,
-            marginBlockStart: `var(--space-sm)`,
-            paddingInlineStart: `var(--space-md)`,
-          }}
-        >
+        <h2 className="text-xl text-gray-700">
+          {getChannelNameFromChannelType(channel.channelType)}
+        </h2>
+        <h3 className="text-2xl font-bold text-gray-900 mt-4">
+          {channel.name}
+        </h3>
+        <ul className="text-gray-600 mt-2 mb-4 pl-4">
           {channel.subscribers ? (
             <li>
               <small>
@@ -255,9 +232,6 @@ function ChannelItem({ channel }: { channel: Channel }) {
             </small>
           </li>
         </ul>
-        <a href={getRouteFromChannelType(channel.channelType)}>
-          <button>Other Channel</button>
-        </a>
       </article>
     </Link>
   );
