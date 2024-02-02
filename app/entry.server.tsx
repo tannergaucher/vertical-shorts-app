@@ -8,15 +8,14 @@ import { renderToPipeableStream } from "react-dom/server";
 import { PassThrough } from "stream";
 export * as functions from "@google-cloud/functions-framework";
 
-const projectId = "homerice";
+const serviceAccount = JSON.parse(process.env.GCP_SERVICE_ACCOUNT ?? "{}");
 
 export const storage = new Storage({
-  projectId,
-  keyFilename: "./service-account.json",
+  credentials: serviceAccount,
 });
 
 export const pubsub = new PubSub({
-  projectId,
+  projectId: "homerice",
   credentials: {
     client_email: process.env.GCP_CLIENT_EMAIL,
     private_key: process.env.GCP_PRIVATE_KEY?.replace(/\\n/g, "\n"),
