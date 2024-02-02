@@ -262,7 +262,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/Users/tg/Documents/GitHub/remix-blog/service-cloud-video-intelligence/generated",
+      "value": "/Users/tg/Documents/vertical-shorts-app/service-cloud-video-intelligence/generated",
       "fromEnvVar": null
     },
     "config": {
@@ -288,7 +288,8 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "dataProxy": false
+  "dataProxy": false,
+  "postinstall": false
 }
 
 const fs = require('fs')
