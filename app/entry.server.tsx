@@ -1,4 +1,3 @@
-import { PubSub } from "@google-cloud/pubsub";
 import { Storage } from "@google-cloud/storage";
 import type { EntryContext } from "@remix-run/node";
 import { Response } from "@remix-run/node";
@@ -8,18 +7,11 @@ import { renderToPipeableStream } from "react-dom/server";
 import { PassThrough } from "stream";
 export * as functions from "@google-cloud/functions-framework";
 
-const serviceAccount = JSON.parse(process.env.GCP_SERVICE_ACCOUNT ?? "{}");
-
 export const storage = new Storage({
-  credentials: serviceAccount,
-});
-
-export const pubsub = new PubSub({
   projectId: "homerice",
-  credentials: {
-    client_email: process.env.GCP_CLIENT_EMAIL,
-    private_key: process.env.GCP_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-  },
+  credentials:
+    process.env.GCP_SERVICE_ACCOUNT &&
+    JSON.parse(process.env.GCP_SERVICE_ACCOUNT),
 });
 
 const ABORT_DELAY = 5000;
