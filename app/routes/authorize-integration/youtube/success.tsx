@@ -47,7 +47,6 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
 
   const snippet = data?.items?.[0].snippet;
-  // const contentDetails = data.items?.[0].contentDetails;
   const statistics = data.items?.[0].statistics;
 
   if (tokens.access_token && user.currentProjectId) {
@@ -90,6 +89,7 @@ export const loader = async ({ request }: LoaderArgs) => {
                       statistics?.subscriberCount ?? "0",
                       10
                     ),
+                    thumbnail: snippet?.thumbnails?.default?.url,
                   },
                   update: {
                     name: snippet?.title ?? "Untitled",
@@ -98,6 +98,7 @@ export const loader = async ({ request }: LoaderArgs) => {
                       statistics?.subscriberCount ?? "0",
                       10
                     ),
+                    thumbnail: snippet?.thumbnails?.default?.url,
                   },
                 },
               },
