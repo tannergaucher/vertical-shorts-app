@@ -54,7 +54,7 @@ function initializeUpload({ projectId, contentId, prisma, storage, }) {
         }))
             .on("finish", () => __awaiter(this, void 0, void 0, function* () {
             if (content.project.youtubeCredentials) {
-                fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}/${routes_1.ServiceUploadRoutes.UploadYoutubeShort}`, {
+                fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}${routes_1.ServiceUploadRoutes.UploadYoutubeShort}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -66,7 +66,7 @@ function initializeUpload({ projectId, contentId, prisma, storage, }) {
                 });
             }
             if (content.project.tikTokCredentials) {
-                fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}/${routes_1.ServiceUploadRoutes.UploadTiktok}`, {
+                fetch(`${constants_1.SERVICE_UPLOAD_BASE_URL}${routes_1.ServiceUploadRoutes.UploadTiktok}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",

@@ -31,7 +31,6 @@ const constants_1 = require("./utils/constants");
 dotenv_1.default.config({
     path: `../.env.${process.env.NODE_ENV}`,
 });
-console.log(process.env.NODE_ENV, "NODE_ENV");
 exports.prisma = new index_js_1.PrismaClient();
 exports.storage = new storage_1.Storage();
 const app = (0, express_1.default)();
