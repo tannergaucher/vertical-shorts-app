@@ -6,6 +6,9 @@ WORKDIR /service-upload
 # Copy the package.json and package-lock.json files to the working directory
 COPY package*.json ./
 
+# Copy the tsconfig.json file to the working directory
+COPY tsconfig.json ./
+
 # Install dependencies
 RUN npm ci
 
