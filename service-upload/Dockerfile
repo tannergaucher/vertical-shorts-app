@@ -6,6 +6,9 @@ WORKDIR /service-upload
 # Copy all files from the source directory to the working directory
 COPY . .
 
+# Copy the tsconfig.json file to the working directory
+COPY tsconfig.json ./
+
 # Install dependencies
 RUN npm ci
 
