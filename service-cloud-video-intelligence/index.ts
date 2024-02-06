@@ -18,7 +18,7 @@ import { PrismaClient } from "./generated/index.js";
 import { APP_BASE_URL } from "./utils/constants";
 
 dotenv.config({
-  path: `.env.${process.env.NODE_ENV}`,
+  path: `../.env.${process.env.NODE_ENV}`,
 });
 
 export const cloudIntelligence = new v1.VideoIntelligenceServiceClient();

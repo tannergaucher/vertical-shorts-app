@@ -31,7 +31,7 @@ import { ServiceUploadRoutes } from "./routes";
 import { APP_BASE_URL } from "./utils/constants";
 
 dotenv.config({
-  path: `.env.${process.env.NODE_ENV}`,
+  path: `../.env.${process.env.NODE_ENV}`,
 });
 
 export const prisma = new PrismaClient();
@@ -94,6 +94,7 @@ app.post(
   ServiceUploadRoutes.UploadYoutubeShort,
   async (req: Request<{}, {}, UploadYoutubeShortBody>, res) => {
     const { contentId } = req.body;
+
     try {
       const { message } = await uploadYouTubeShort({
         contentId,
