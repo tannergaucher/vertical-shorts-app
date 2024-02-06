@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "start:dev": "NODE_ENV=development node index.js",
     "test": "vitest",
     "build": "tsc --p tsconfig.json",
     "postinstall": "npm run build"

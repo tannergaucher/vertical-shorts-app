@@ -49,7 +49,7 @@ const transcribe_1 = require("./functions/transcribe");
 const index_js_1 = require("./generated/index.js");
 const constants_1 = require("./utils/constants");
 dotenv_1.default.config({
-    path: `.env.${process.env.NODE_ENV}`,
+    path: `../.env.${process.env.NODE_ENV}`,
 });
 exports.cloudIntelligence = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
 exports.prisma = new index_js_1.PrismaClient();
