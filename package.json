@@ -5,6 +5,7 @@
   "scripts": {
     "build": "run-s build:*",
     "build:remix": "remix build",
+    "db:seed": "prisma db seed --preview-feature",
     "dev": "run-p dev:*",
     "dev:remix": "cross-env NODE_ENV=development binode --require ./mocks -- @remix-run/dev:remix dev",
     "format": "prettier --write .",
@@ -107,6 +108,6 @@
     "node": ">=14"
   },
   "prisma": {
-    "seed": "ts-node --require tsconfig-paths/register"
+    "seed": "ts-node ./prisma/seed.ts"
   }
 }
