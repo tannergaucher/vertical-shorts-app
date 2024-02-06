@@ -65,7 +65,7 @@ export async function initializeUpload({
     .on("finish", async () => {
       if (content.project.youtubeCredentials) {
         fetch(
-          `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadYoutubeShort}`,
+          `${SERVICE_UPLOAD_BASE_URL}${ServiceUploadRoutes.UploadYoutubeShort}`,
           {
             method: "POST",
             headers: {
@@ -80,19 +80,16 @@ export async function initializeUpload({
       }
 
       if (content.project.tikTokCredentials) {
-        fetch(
-          `${SERVICE_UPLOAD_BASE_URL}/${ServiceUploadRoutes.UploadTiktok}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              projectId,
-              contentId,
-            } as UploadTikTokBody),
-          }
-        );
+        fetch(`${SERVICE_UPLOAD_BASE_URL}${ServiceUploadRoutes.UploadTiktok}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            projectId,
+            contentId,
+          } as UploadTikTokBody),
+        });
       }
     })
     .on("error", async (err) => {
