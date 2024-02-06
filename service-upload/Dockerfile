@@ -3,6 +3,8 @@ FROM node:16
 # Set the working directory inside the container
 WORKDIR /service-upload
 
+RUN node -v
+
 # Copy all files from the source directory to the working directory
 COPY . .
 
