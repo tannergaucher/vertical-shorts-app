@@ -48,7 +48,9 @@ const recognize_text_1 = require("./functions/recognize-text");
 const transcribe_1 = require("./functions/transcribe");
 const index_js_1 = require("./generated/index.js");
 const constants_1 = require("./utils/constants");
-dotenv_1.default.config();
+dotenv_1.default.config({
+    path: `.env.${process.env.NODE_ENV}`,
+});
 exports.cloudIntelligence = new video_intelligence_1.v1.VideoIntelligenceServiceClient();
 exports.prisma = new index_js_1.PrismaClient();
 const app = (0, express_1.default)();
@@ -57,50 +59,45 @@ app.use((0, cors_1.default)({
     origin: constants_1.APP_BASE_URL,
 }));
 app.post("/generate-tags", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
     try {
         const { message } = yield (0, generate_tags_1.generateTags)({
-            projectId,
-            slug,
+            contentId,
             prisma: exports.prisma,
         });
         res.status(200).json(message);
     }
     catch (error) {
         console.log(error);
-        res.status(400).json(`Error generating tags for ${projectId} / ${slug}`);
+        res.status(400).json(`Error generating tags for ${contentId}`);
     }
 }));
 app.post("/recognize-text", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
     try {
         const { message } = yield (0, recognize_text_1.recognizeText)({
-            projectId,
-            slug,
+            contentId,
             prisma: exports.prisma,
         });
         res.status(200).json(message);
     }
     catch (error) {
         console.log(error);
-        res
-            .status(400)
-            .send(`Error recognizing text for content ${projectId} / ${slug}`);
+        res.status(400).send(`Error recognizing text for ${contentId}`);
     }
 }));
 app.post("/transcribe", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { projectId, slug } = req.body;
+    const { contentId } = req.body;
     try {
         const { message } = yield (0, transcribe_1.transcribe)({
-            projectId,
-            slug,
+            contentId,
             prisma: exports.prisma,
         });
         res.status(200).send(message);
     }
     catch (error) {
         console.log(error);
-        res.status(400).send(`Error transcribing content ${projectId} / ${slug}`);
+        res.status(400).send(`Error transcribing content ${contentId}`);
     }
 }));
 const port = parseInt((_a = process.env.PORT) !== null && _a !== void 0 ? _a : "8080");
