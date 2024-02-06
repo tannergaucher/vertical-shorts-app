@@ -4,6 +4,9 @@ node_modules
 /public/build
 /.netlify
 .env
+.env.local
+.env.development
+.env.production
 
 service-account.json
 

@@ -30,7 +30,9 @@ import { PrismaClient } from "./generated/index.js";
 import { ServiceUploadRoutes } from "./routes";
 import { APP_BASE_URL } from "./utils/constants";
 
-dotenv.config();
+dotenv.config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
 
 export const prisma = new PrismaClient();
 

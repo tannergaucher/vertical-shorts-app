@@ -1,5 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 
+require("dotenv").config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
+
 let prisma: PrismaClient;
 
 declare global {
