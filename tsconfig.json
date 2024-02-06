@@ -4,7 +4,7 @@
     "**/*.ts",
     "**/*.tsx",
     "mocks.js",
-    "prisma/seed.js"
+    "prisma/seed.ts"
   ],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2019"],
