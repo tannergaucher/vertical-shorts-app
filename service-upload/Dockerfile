@@ -3,14 +3,11 @@ FROM node:16
 # Set the working directory inside the container
 WORKDIR /service-upload
 
-# Copy the package.json and package-lock.json files to the working directory
-COPY package*.json ./
+# Copy all files from the source directory to the working directory
+COPY . .
 
 # Install dependencies
 RUN npm ci
-
-# Copy the TypeScript source code to the working directory
-COPY . .
 
 # Build the TypeScript app
 RUN npm run build
