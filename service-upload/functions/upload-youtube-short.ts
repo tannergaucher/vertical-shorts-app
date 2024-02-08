@@ -44,19 +44,29 @@ export async function uploadYouTubeShort({
     },
   });
 
-  if (
-    !project?.youtubeCredentials?.accessToken ||
-    !project?.youtubeCredentials?.refreshToken
-  ) {
+  if (!project?.youtubeCredentials?.accessToken) {
     throw new Error(
-      `Missing YouTube credentials for project ${content.project.id}`
+      `Missing YouTube credentials access token for project ${content.project.id}`
     );
   }
 
-  const oauth2Client = setOauth2ClientCredentials({
-    accessToken: project.youtubeCredentials.accessToken,
-    refreshToken: project.youtubeCredentials.refreshToken,
-  });
+  if (!project?.youtubeCredentials?.refreshToken) {
+    throw new Error(
+      `Missing YouTube credentials refresh token for project ${content.project.id}`
+    );
+  }
+
+  if (!project?.youtubeCredentials?.channelId) {
+    throw new Error(
+      `Missing YouTube credentials channel id for project ${content.project.id}`
+    );
+  }
+
+  const oauth2Client = new google.auth.OAuth2(
+    process.env.YOUTUBE_CLIENT_ID,
+    process.env.YOUTUBE_CLIENT_SECRET,
+    process.env.YOUTUBE_REDIRECT_URL
+  );
 
   if (oauth2Client === null) {
     await prisma.content.update({
@@ -69,6 +79,11 @@ export async function uploadYouTubeShort({
     });
     throw new Error("Error setting OAuth client credentials");
   }
+
+  oauth2Client.setCredentials({
+    access_token: project.youtubeCredentials.accessToken,
+    refresh_token: project.youtubeCredentials.refreshToken,
+  });
 
   const youtube = google.youtube({
     version: "v3",
@@ -89,7 +104,7 @@ export async function uploadYouTubeShort({
   });
 
   console.log(
-    `Uploading ${contentId} to YouTube channel ${project.youtubeCredentials?.channelId}`
+    `Uploading ${contentId} to YouTube channel id ${project.youtubeCredentials.channelId}`
   );
 
   return youtube.videos
@@ -123,8 +138,14 @@ export async function uploadYouTubeShort({
         },
       });
 
+      if (!project.youtubeCredentials?.channelId) {
+        throw new Error(
+          `Missing YouTube credentials channel id for project ${content.project.id}`
+        );
+      }
+
       return {
-        message: `Uploaded ${contentId} to YouTube channel ${project.youtubeCredentials?.channelId}`,
+        message: `Uploaded ${contentId} to YouTube channel ${project.youtubeCredentials.channelId}`,
       };
     })
     .catch(async (error) => {
@@ -143,31 +164,4 @@ export async function uploadYouTubeShort({
         `Error uploading ${contentId} to YouTube channel ${project.youtubeCredentials?.channelId}`
       );
     });
-}
-
-function setOauth2ClientCredentials({
-  accessToken,
-  refreshToken,
-}: {
-  accessToken: string;
-  refreshToken: string;
-}) {
-  try {
-    const oauth2Client = new google.auth.OAuth2(
-      process.env.YOUTUBE_CLIENT_ID,
-      process.env.YOUTUBE_CLIENT_SECRET,
-      process.env.YOUTUBE_REDIRECT_URL
-    );
-
-    oauth2Client.setCredentials({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    });
-
-    return oauth2Client;
-  } catch (error) {
-    console.log(error, "Error setting OAuth2 client credentials");
-
-    return null;
-  }
 }

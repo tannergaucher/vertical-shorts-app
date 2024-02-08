@@ -42,14 +42,16 @@ function uploadYouTubeShort({ contentId, prisma, }) {
                 youtubeCredentials: true,
             },
         });
-        if (!((_a = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _a === void 0 ? void 0 : _a.accessToken) ||
-            !((_b = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _b === void 0 ? void 0 : _b.refreshToken)) {
-            throw new Error(`Missing YouTube credentials for project ${content.project.id}`);
+        if (!((_a = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _a === void 0 ? void 0 : _a.accessToken)) {
+            throw new Error(`Missing YouTube credentials access token for project ${content.project.id}`);
         }
-        const oauth2Client = setOauth2ClientCredentials({
-            accessToken: project.youtubeCredentials.accessToken,
-            refreshToken: project.youtubeCredentials.refreshToken,
-        });
+        if (!((_b = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _b === void 0 ? void 0 : _b.refreshToken)) {
+            throw new Error(`Missing YouTube credentials refresh token for project ${content.project.id}`);
+        }
+        if (!((_c = project === null || project === void 0 ? void 0 : project.youtubeCredentials) === null || _c === void 0 ? void 0 : _c.channelId)) {
+            throw new Error(`Missing YouTube credentials channel id for project ${content.project.id}`);
+        }
+        const oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
         if (oauth2Client === null) {
             yield prisma.content.update({
                 where: {
@@ -61,6 +63,10 @@ function uploadYouTubeShort({ contentId, prisma, }) {
             });
             throw new Error("Error setting OAuth client credentials");
         }
+        oauth2Client.setCredentials({
+            access_token: project.youtubeCredentials.accessToken,
+            refresh_token: project.youtubeCredentials.refreshToken,
+        });
         const youtube = googleapis_1.google.youtube({
             version: "v3",
             auth: oauth2Client,
@@ -75,7 +81,7 @@ function uploadYouTubeShort({ contentId, prisma, }) {
                 youtubeStatus: generated_1.UploadStatus.UPLOADING,
             },
         });
-        console.log(`Uploading ${contentId} to YouTube channel ${(_c = project.youtubeCredentials) === null || _c === void 0 ? void 0 : _c.channelId}`);
+        console.log(`Uploading ${contentId} to YouTube channel id ${project.youtubeCredentials.channelId}`);
         return youtube.videos
             .insert({
             part: ["snippet", "status"],
@@ -106,8 +112,11 @@ function uploadYouTubeShort({ contentId, prisma, }) {
                     youtubeId: response.data.id,
                 },
             });
+            if (!((_d = project.youtubeCredentials) === null || _d === void 0 ? void 0 : _d.channelId)) {
+                throw new Error(`Missing YouTube credentials channel id for project ${content.project.id}`);
+            }
             return {
-                message: `Uploaded ${contentId} to YouTube channel ${(_d = project.youtubeCredentials) === null || _d === void 0 ? void 0 : _d.channelId}`,
+                message: `Uploaded ${contentId} to YouTube channel ${project.youtubeCredentials.channelId}`,
             };
         }))
             .catch((error) => __awaiter(this, void 0, void 0, function* () {
@@ -126,17 +135,3 @@ function uploadYouTubeShort({ contentId, prisma, }) {
     });
 }
 exports.uploadYouTubeShort = uploadYouTubeShort;
-function setOauth2ClientCredentials({ accessToken, refreshToken, }) {
-    try {
-        const oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
-        oauth2Client.setCredentials({
-            access_token: accessToken,
-            refresh_token: refreshToken,
-        });
-        return oauth2Client;
-    }
-    catch (error) {
-        console.log(error, "Error setting OAuth2 client credentials");
-        return null;
-    }
-}
