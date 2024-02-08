@@ -67,13 +67,13 @@ export default function Page() {
   const { content } = useLoaderData<LoaderData>();
 
   return (
-    <Layout h1="Publish">
+    <Layout h1="Confirm Publish">
       <h2>{content.title}</h2>
       <p>{content.description}</p>
       <Form method="post">
         <input type="text" name="contentId" value={content.id} hidden />
         <input type="text" name="projectId" value={content.projectId} hidden />
-        <button type="submit">Publish</button>
+        <button type="submit">Confirm Publish</button>
       </Form>
     </Layout>
   );

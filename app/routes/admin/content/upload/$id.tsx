@@ -104,7 +104,7 @@ export default function Page() {
   const navigate = useNavigate();
 
   return (
-    <Layout h1="Upload">
+    <Layout h1="Publish">
       <VideoForm
         signedUrl={signedUrl}
         projectId={project.id}
@@ -135,7 +135,7 @@ export default function Page() {
           navigate(Routes.AdminContentPublish(content.id));
         }}
       >
-        Next
+        Publish
       </button>
     </Layout>
   );
