@@ -68,26 +68,9 @@ export async function uploadYouTubeShort({
     process.env.YOUTUBE_REDIRECT_URL
   );
 
-  if (oauth2Client === null) {
-    await prisma.content.update({
-      where: {
-        id: contentId,
-      },
-      data: {
-        youtubeStatus: UploadStatus.NOT_STARTED,
-      },
-    });
-    throw new Error("Error setting OAuth client credentials");
-  }
-
   oauth2Client.setCredentials({
     access_token: project.youtubeCredentials.accessToken,
     refresh_token: project.youtubeCredentials.refreshToken,
-  });
-
-  const youtube = google.youtube({
-    version: "v3",
-    auth: oauth2Client,
   });
 
   const filePath = `${contentId}.mp4`;
@@ -103,9 +86,10 @@ export async function uploadYouTubeShort({
     },
   });
 
-  console.log(
-    `Uploading ${contentId} to YouTube channel id ${project.youtubeCredentials.channelId}`
-  );
+  const youtube = google.youtube({
+    version: "v3",
+    auth: oauth2Client,
+  });
 
   return youtube.videos
     .insert({
@@ -126,7 +110,7 @@ export async function uploadYouTubeShort({
       },
     })
     .then(async (response) => {
-      console.log(response, "upload YouTube response");
+      console.log(response, "upload-youtube response");
 
       await prisma.content.update({
         where: {

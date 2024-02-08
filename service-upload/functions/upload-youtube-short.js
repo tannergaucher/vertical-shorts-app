@@ -52,24 +52,9 @@ function uploadYouTubeShort({ contentId, prisma, }) {
             throw new Error(`Missing YouTube credentials channel id for project ${content.project.id}`);
         }
         const oauth2Client = new googleapis_1.google.auth.OAuth2(process.env.YOUTUBE_CLIENT_ID, process.env.YOUTUBE_CLIENT_SECRET, process.env.YOUTUBE_REDIRECT_URL);
-        if (oauth2Client === null) {
-            yield prisma.content.update({
-                where: {
-                    id: contentId,
-                },
-                data: {
-                    youtubeStatus: generated_1.UploadStatus.NOT_STARTED,
-                },
-            });
-            throw new Error("Error setting OAuth client credentials");
-        }
         oauth2Client.setCredentials({
             access_token: project.youtubeCredentials.accessToken,
             refresh_token: project.youtubeCredentials.refreshToken,
-        });
-        const youtube = googleapis_1.google.youtube({
-            version: "v3",
-            auth: oauth2Client,
         });
         const filePath = `${contentId}.mp4`;
         const bodyStream = (0, fs_1.createReadStream)(filePath);
@@ -81,7 +66,10 @@ function uploadYouTubeShort({ contentId, prisma, }) {
                 youtubeStatus: generated_1.UploadStatus.UPLOADING,
             },
         });
-        console.log(`Uploading ${contentId} to YouTube channel id ${project.youtubeCredentials.channelId}`);
+        const youtube = googleapis_1.google.youtube({
+            version: "v3",
+            auth: oauth2Client,
+        });
         return youtube.videos
             .insert({
             part: ["snippet", "status"],
