@@ -24,7 +24,7 @@ function uploadTikTokStatus({ prisma, projectId, publishId, }) {
         if (!((_a = project === null || project === void 0 ? void 0 : project.tikTokCredentials) === null || _a === void 0 ? void 0 : _a.accessToken)) {
             throw new Error(`Missing TikTok access token for project ${projectId}`);
         }
-        const statusRes = yield fetch("https://open.tiktokapis.com/v2/post/publish/status/fetch/", {
+        const res = yield fetch("https://open.tiktokapis.com/v2/post/publish/status/fetch/", {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${project.tikTokCredentials.accessToken}`,
@@ -34,12 +34,12 @@ function uploadTikTokStatus({ prisma, projectId, publishId, }) {
                 publish_id: publishId,
             }),
         });
-        if (!statusRes.ok) {
+        if (!res.ok) {
             throw new Error(`Error fetching tiktok status publish_id ${publishId}`);
         }
         return {
             message: `Status for publish_id ${publishId}`,
-            statusJson: statusRes.json(),
+            json: res.json(),
         };
     });
 }
