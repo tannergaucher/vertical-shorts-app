@@ -5,8 +5,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
     "start:dev": "NODE_ENV=development node index.js",
+    "start:prod": "NODE_ENV=production node index.js",
     "deploy": "npm run build && gcloud run deploy service-cloud-video-intelligence  --source .",
     "test": "vitest",
     "build": "tsc --p tsconfig.json",
