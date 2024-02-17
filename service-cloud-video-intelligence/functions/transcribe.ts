@@ -24,7 +24,7 @@ export async function transcribe({ contentId, prisma }: TranscribeParams) {
     throw new Error("CONTENT_NOT_FOUND");
   }
 
-  const gcsUri = `gs://${content.projectId}/${content.id}.mp4`;
+  const inputUri = `gs://${content.projectId}/${content.id}.mp4`;
 
   const videoContext = {
     speechTranscriptionConfig: {
@@ -34,8 +34,8 @@ export async function transcribe({ contentId, prisma }: TranscribeParams) {
   };
 
   const request = {
-    inputUri: gcsUri,
-    videoContext: videoContext,
+    inputUri,
+    videoContext,
     features: [CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION.valueOf()],
   };
 
