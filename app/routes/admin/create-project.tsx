@@ -10,6 +10,7 @@ import invariant from "tiny-invariant";
 import { Layout } from "~/components/layout";
 import { prisma } from "~/db.server";
 import { storage } from "~/entry.server";
+import { createProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
@@ -37,24 +38,9 @@ export const action: ActionFunction = async ({ request }) => {
 
   invariant(name, "Project name is required");
 
-  const project = await prisma.project.create({
-    data: {
-      title: name.toString().trim(),
-      user: {
-        connect: {
-          id: user.id,
-        },
-      },
-    },
-  });
-
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      currentProjectId: project.id,
-    },
+  const project = await createProject({
+    userId: user.id,
+    title: name.toString().trim(),
   });
 
   const [bucket] = await storage.bucket(project.id).exists();

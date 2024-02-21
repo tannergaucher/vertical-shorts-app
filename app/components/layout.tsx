@@ -15,28 +15,43 @@ export function Layout({ children, h1, h2 }: HeaderProps) {
 
   return (
     <>
-      <header
-        style={{
-          padding: `var(--space-xs)`,
-        }}
-      >
-        <Link to={Routes.AdminContent}>
-          <button>Vertical Shorts</button>
-        </Link>
-        <div>
-          <Link to={Routes.Admin}>
-            <button
-              style={{
-                marginRight: `var(--space-xs)`,
-              }}
-            >
-              Settings
-            </button>
-          </Link>
+      <header>
+        <details>
+          <summary>VERTICAL SHORTS</summary>
+          <ul>
+            <li>
+              <Link to={Routes.AdminContent}>
+                <h3>Content</h3>
+              </Link>
+            </li>
+            <li>
+              <Link to={Routes.Admin}>
+                <h3>Settings</h3>
+              </Link>
+            </li>
+          </ul>
+          <hr />
+
+          <label htmlFor="">Select Project</label>
+          <select
+            name=""
+            id=""
+            style={{
+              marginBlockEnd: `0`,
+              width: `100%`,
+            }}
+          >
+            <option value="1">Shorts</option>
+            <option value="2">Verticals</option>
+            <option value="3">Series</option>
+          </select>
+
+          <hr />
+
           <Link to={Routes.AdminContentUpload(id)}>
             <button type="submit">Upload</button>
           </Link>
-        </div>
+        </details>
       </header>
       <main>
         <h1>{h1}</h1>

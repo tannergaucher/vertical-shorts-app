@@ -6,6 +6,7 @@ export const Routes = {
   AuthorizeFacebook: `/authorize-integration/facebook`,
   AuthorizeTwitter: `/authorize-integration/twitter`,
   Admin: `/admin`,
+  AdminProjects: `/admin/projects`,
   AdminCreateProject: `/admin/create-project`,
   AdminContent: `/admin/content`,
   AdminContentDetails: (slug: string) => `/admin/content/details/${slug}`,

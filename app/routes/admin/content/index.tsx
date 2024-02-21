@@ -3,12 +3,14 @@ import { Link, useLoaderData } from "@remix-run/react";
 
 import { Layout } from "~/components/layout";
 import { getContents } from "~/models/content.server";
+import { getProject } from "~/models/project.server";
 import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
 type LoaderData = {
   user?: Awaited<ReturnType<typeof getUser>>;
   content?: Awaited<ReturnType<typeof getContents>>;
+  project?: Awaited<ReturnType<typeof getProject>>;
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -26,17 +28,22 @@ export const loader: LoaderFunction = async ({ request }) => {
     projectId: user.currentProjectId,
   });
 
+  const project = await getProject({
+    id: user.currentProjectId,
+  });
+
   return json({
     user,
     content,
+    project,
   });
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, project } = useLoaderData<LoaderData>();
 
   return (
-    <Layout h1="Content">
+    <Layout h1={project?.title || "Content"}>
       <section>
         {content?.map((content) => (
           <article key={content.id}>
