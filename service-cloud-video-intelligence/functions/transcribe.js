@@ -25,7 +25,7 @@ function transcribe({ contentId, prisma }) {
         if (!content) {
             throw new Error("CONTENT_NOT_FOUND");
         }
-        const gcsUri = `gs://${content.projectId}/${content.id}.mp4`;
+        const inputUri = `gs://${content.projectId}/${content.id}.mp4`;
         const videoContext = {
             speechTranscriptionConfig: {
                 languageCode: "en-US",
@@ -33,8 +33,8 @@ function transcribe({ contentId, prisma }) {
             },
         };
         const request = {
-            inputUri: gcsUri,
-            videoContext: videoContext,
+            inputUri,
+            videoContext,
             features: [index_1.CloudIntelligenceTypes.Feature.SPEECH_TRANSCRIPTION.valueOf()],
         };
         const result = yield index_1.cloudIntelligence.annotateVideo(request);

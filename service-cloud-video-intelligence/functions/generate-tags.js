@@ -29,12 +29,12 @@ function generateTags({ contentId, prisma }) {
         if (!content) {
             throw new Error("CONTENT_NOT_FOUND");
         }
-        const contentLabelAnnotations = JSON.parse(content.labels);
-        const tags = getTagsFromLabelAnnotations(contentLabelAnnotations);
+        const labelAnnotations = JSON.parse(content.labels);
+        const tags = getTagsFromLabelAnnotations(labelAnnotations);
         if (tags.length > 0) {
             return {
-                tags: [],
-                message: "No tags from content labels",
+                tags,
+                message: `${tags.length} tags already generated for ${contentId}`,
             };
         }
         try {
