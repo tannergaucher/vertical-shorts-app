@@ -106,15 +106,15 @@ export default function Page() {
 
   return (
     <Layout h1="Join" h2="Sign up to start posting content">
-      <fieldset disabled={disabled}>
-        {actionData?.errors ? <legend>Error!</legend> : null}
-        <Form method="post">
+      <Form method="post">
+        <fieldset disabled={disabled}>
+          {actionData?.errors ? <legend data-error>Error!</legend> : null}
           <label htmlFor="email">
             Email address{" "}
             {actionData?.errors?.email && (
               <span
                 style={{
-                  color: `var(--warning)`,
+                  color: `var(--error)`,
                 }}
               >
                 {actionData.errors.email}
@@ -138,7 +138,7 @@ export default function Page() {
             {actionData?.errors?.password && (
               <span
                 style={{
-                  color: `var(--warning)`,
+                  color: `var(--error)`,
                 }}
               >
                 {actionData.errors.password}
@@ -157,16 +157,20 @@ export default function Page() {
           />
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <button type="submit">Create Account</button>
+          <br />
           <Link
+            style={{
+              textDecoration: "underline",
+            }}
             to={{
               pathname: "/login",
               search: searchParams.toString(),
             }}
           >
-            <h3>Already have an account? Log in</h3>
+            <small>Already have an account? Log in</small>
           </Link>
-        </Form>
-      </fieldset>
+        </fieldset>
+      </Form>
     </Layout>
   );
 }

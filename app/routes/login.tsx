@@ -101,13 +101,13 @@ export default function Page() {
 
   return (
     <Layout h1="Log In" h2="Log in to start posting content">
-      <fieldset disabled={disabled}>
-        {actionData?.errors ? <legend>Error!</legend> : null}
-        <Form method="post">
+      <Form method="post">
+        <fieldset disabled={disabled}>
+          {actionData?.errors ? <legend data-error>Error!</legend> : null}
           <label htmlFor="email">
             Email address{" "}
             {actionData?.errors?.email && (
-              <span style={{ color: `var(--warning)` }}>
+              <span style={{ color: `var(--error)` }}>
                 {actionData.errors.email}
               </span>
             )}
@@ -129,7 +129,7 @@ export default function Page() {
             {actionData?.errors?.password && (
               <span
                 style={{
-                  color: `var(--warning)`,
+                  color: `var(--error)`,
                 }}
               >
                 {actionData.errors.password}
@@ -162,7 +162,7 @@ export default function Page() {
               type="checkbox"
               style={{
                 width: "fit-content",
-                marginBlock: `var(--space-md)`,
+                marginBlock: `var(--space-sm)`,
                 marginInline: 0,
               }}
             />
@@ -172,21 +172,18 @@ export default function Page() {
             </label>
           </div>
           <Link
+            style={{
+              textDecoration: "underline",
+            }}
             to={{
               pathname: "/join",
               search: searchParams.toString(),
             }}
           >
-            <h4
-              style={{
-                marginLeft: `0`,
-              }}
-            >
-              Don't have an account? Sign up
-            </h4>
+            <small>Don't have an account? Sign up</small>
           </Link>
-        </Form>
-      </fieldset>
+        </fieldset>
+      </Form>
     </Layout>
   );
 }
