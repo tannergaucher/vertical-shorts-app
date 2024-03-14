@@ -42,27 +42,8 @@ main {
   margin-block-end: var(--space-xl);
 }
 
-fieldset {
-  transition: opacity 2s ease-in-out;
-  width: 100%;
-  margin-inline: 0;
-  margin-block: 0;
-  padding-inline: 0;
-  padding-block: 0;
-}
-
-fieldset > input,
-fieldset > textarea {
-  width: calc(100% - var(--space-lg));
-}
-
 fieldset:disabled {
   animation: cycleFade 2s ease-in-out infinite;
-}
-
-#sticky-button {
-  position: sticky;
-  bottom: var(--space-md);
 }
 
 @keyframes cycleFade {
