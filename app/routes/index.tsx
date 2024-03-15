@@ -19,8 +19,8 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function Page() {
   return (
     <Layout
-      h1="Vertical Shorts App"
-      h2="Post video content to multiple social media platforms at once."
+      h1="Vertical Shorts"
+      h2="Upload once and post vertical videos to all your social media channels."
       user={null}
     >
       <hr />
