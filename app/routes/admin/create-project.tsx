@@ -3,8 +3,8 @@ import type {
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
-import { redirect } from "@remix-run/node";
-import { Form, useNavigation } from "@remix-run/react";
+import { json, redirect } from "@remix-run/node";
+import { Form, useLoaderData, useNavigation } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { Layout } from "~/components/layout";
@@ -19,12 +19,16 @@ export const meta: MetaFunction = () => {
   };
 };
 
+type LoaderData = {
+  user: Awaited<ReturnType<typeof getUser>>;
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await getUser(request);
 
   if (!user) return redirect(Routes.Login);
 
-  return null;
+  return json<LoaderData>({ user });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -78,11 +82,17 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Page() {
   const transition = useNavigation();
 
+  const { user } = useLoaderData<LoaderData>();
+
   const disabled =
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <Layout h1="Create Project" h2="Enter a project name for your video series">
+    <Layout
+      h1="Create Project"
+      h2="Enter a project name for your video series"
+      user={user}
+    >
       <fieldset disabled={disabled}>
         <Form method="post">
           <label htmlFor="name">Project Name</label>

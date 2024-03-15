@@ -6,12 +6,23 @@ import { prisma } from "~/db.server";
 export type { User } from "@prisma/client";
 
 export async function getUserById(id: User["id"]) {
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUniqueOrThrow({
     where: { id },
     include: {
       projects: true,
     },
   });
+
+  return {
+    ...user,
+    createdAt: user.createdAt.toISOString(),
+    updatedAt: user.updatedAt.toISOString(),
+    projects: user.projects.map((project) => ({
+      ...project,
+      createdAt: project.createdAt.toISOString(),
+      updatedAt: project.updatedAt.toISOString(),
+    })),
+  };
 }
 
 export async function getUserByEmail(email: User["email"]) {

@@ -100,7 +100,11 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <Layout h1="Log In" h2="Log in to start posting content">
+    <Layout
+      h1="Log In"
+      h2="Please log in below to start posting content."
+      user={null}
+    >
       <Form method="post">
         <fieldset disabled={disabled}>
           {actionData?.errors ? <legend data-error>Error!</legend> : null}
@@ -112,7 +116,6 @@ export default function Page() {
               </span>
             )}
           </label>
-          <br />
           <input
             ref={emailRef}
             id="email"
@@ -136,7 +139,6 @@ export default function Page() {
               </span>
             )}
           </label>
-          <br />
           <input
             id="password"
             ref={passwordRef}
@@ -148,7 +150,6 @@ export default function Page() {
           />
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <button type="submit">Log in</button>
-          <br />
           <div
             style={{
               display: `flex`,
@@ -166,9 +167,15 @@ export default function Page() {
                 marginInline: 0,
               }}
             />
-            <br />
-            <label htmlFor="remember" style={{ marginLeft: `var(--space-sm)` }}>
-              Remember me
+            <label
+              htmlFor="remember"
+              style={{
+                marginLeft: `var(--space-xs)`,
+                marginBlock: 0,
+                lineHeight: 0,
+              }}
+            >
+              <small>Remember me</small>
             </label>
           </div>
           <Link

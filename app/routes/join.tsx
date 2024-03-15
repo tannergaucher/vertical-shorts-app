@@ -105,7 +105,11 @@ export default function Page() {
     transition.state === "loading" || transition.state === "submitting";
 
   return (
-    <Layout h1="Join" h2="Sign up to start posting content">
+    <Layout
+      h1="Join"
+      h2="Please sign up to below to start posting content."
+      user={null}
+    >
       <Form method="post">
         <fieldset disabled={disabled}>
           {actionData?.errors ? <legend data-error>Error!</legend> : null}
@@ -121,7 +125,6 @@ export default function Page() {
               </span>
             )}
           </label>
-          <br />
           <input
             ref={emailRef}
             id="email"
@@ -145,7 +148,6 @@ export default function Page() {
               </span>
             )}
           </label>
-          <br />
           <input
             id="password"
             ref={passwordRef}
@@ -157,10 +159,10 @@ export default function Page() {
           />
           <input type="hidden" name="redirectTo" value={redirectTo} />
           <button type="submit">Create Account</button>
-          <br />
           <Link
             style={{
               textDecoration: "underline",
+              marginBlockStart: "var(--space-sm)",
             }}
             to={{
               pathname: "/login",

@@ -21,6 +21,7 @@ export default function Page() {
     <Layout
       h1="Vertical Shorts App"
       h2="Post video content to multiple social media platforms at once."
+      user={null}
     >
       <hr />
       <section>
