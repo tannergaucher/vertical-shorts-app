@@ -21,6 +21,7 @@ import { getUser } from "~/session.server";
 type LoaderData = {
   content: Awaited<ReturnType<typeof upsertContent>>;
   project: Awaited<ReturnType<typeof getProject>>;
+  user: Awaited<ReturnType<typeof getUser>>;
   signedUrl: string;
 };
 
@@ -64,7 +65,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     id: projectId,
   });
 
-  return json<LoaderData>({ signedUrl, project, content });
+  return json<LoaderData>({ signedUrl, project, content, user });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -99,12 +100,12 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { signedUrl, content, project } = useLoaderData<LoaderData>();
+  const { signedUrl, content, project, user } = useLoaderData<LoaderData>();
 
   const navigate = useNavigate();
 
   return (
-    <Layout h1="Publish">
+    <Layout h1="Publish" user={user}>
       <VideoForm
         signedUrl={signedUrl}
         projectId={project.id}

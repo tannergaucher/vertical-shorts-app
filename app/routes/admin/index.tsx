@@ -81,7 +81,7 @@ export default function Page() {
   );
 
   return (
-    <Layout h1="Settings">
+    <Layout h1="Settings" user={user}>
       <hr />
       {channelsToAdd.length !== channelTypes.length ? (
         <>

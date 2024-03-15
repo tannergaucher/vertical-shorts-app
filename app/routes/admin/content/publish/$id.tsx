@@ -17,6 +17,7 @@ import { getUser } from "~/session.server";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
+  user: Awaited<ReturnType<typeof getUser>>;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -34,7 +35,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
     id: params.id,
   });
 
-  return json({ content });
+  return json<LoaderData>({ content, user });
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -64,10 +65,10 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, user } = useLoaderData<LoaderData>();
 
   return (
-    <Layout h1="Confirm Publish">
+    <Layout h1="Confirm Publish" user={user}>
       <h2>{content.title}</h2>
       <p>{content.description}</p>
       <Form method="post">

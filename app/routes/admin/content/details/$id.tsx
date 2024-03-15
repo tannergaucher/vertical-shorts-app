@@ -7,6 +7,7 @@ import { getUser } from "~/session.server";
 
 type LoaderData = {
   content: Awaited<ReturnType<typeof getContent>>;
+  user: Awaited<ReturnType<typeof getUser>>;
 };
 
 export const loader: LoaderFunction = async ({ params, request }) => {
@@ -21,6 +22,7 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 
   return {
+    user,
     content: await getContent({
       id: params.id,
     }),
@@ -28,10 +30,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, user } = useLoaderData<LoaderData>();
 
   return (
-    <Layout h1={content.title || "Untitled Content"}>
+    <Layout h1={content.title || "Untitled Content"} user={user}>
       {content.gif ? <img src={content.gif} alt="" /> : null}
       <p>{content.description}</p>
     </Layout>

@@ -7,7 +7,7 @@ import { Routes } from "~/routes";
 import { getUser } from "~/session.server";
 
 type LoaderData = {
-  user?: Awaited<ReturnType<typeof getUser>>;
+  user: Awaited<ReturnType<typeof getUser>>;
   content?: Awaited<ReturnType<typeof getContents>>;
 };
 
@@ -33,10 +33,10 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Page() {
-  const { content } = useLoaderData<LoaderData>();
+  const { content, user } = useLoaderData<LoaderData>();
 
   return (
-    <Layout h1="Content">
+    <Layout h1="Content" user={user}>
       <section>
         {content?.map((content) => (
           <article key={content.id}>
