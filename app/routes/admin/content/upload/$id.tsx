@@ -111,21 +111,25 @@ export default function Page() {
         contentId={content.id}
         bucketUrl={content.bucketUrl}
       />
+      <br />
       <TitleForm
         projectId={project.id}
         contentId={content.id}
         title={content.title || ""}
       />
+      <br />
       <DescriptionForm
         projectId={project.id}
         contentId={content.id}
         description={content.description || ""}
       />
+      <br />
       <TagsForm
         projectId={project.id}
         tags={content.tags || []}
         contentId={content.id}
       />
+      <br />
       <button
         type="submit"
         style={{
@@ -219,8 +223,8 @@ function VideoForm({
           }}
         ></video>
       ) : null}
-      <fieldset disabled={disabled}>
-        <form>
+      <form>
+        <fieldset disabled={disabled}>
           <label htmlFor="thumbnail">Video File</label>
           <input
             type="file"
@@ -231,8 +235,8 @@ function VideoForm({
               await handleVideoUpload();
             }}
           />
-        </form>
-      </fieldset>
+        </fieldset>
+      </form>
     </>
   );
 }
